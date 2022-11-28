@@ -5,7 +5,7 @@ FactoryBot.define do
 
     trait :admin_access do
       admin { true }
-    end    
+    end
 
     factory :user_admin, traits: [:admin_access]
   end
