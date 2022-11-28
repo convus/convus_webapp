@@ -1,0 +1,5 @@
+#!/bin/bash
+> log/development.log # Clear out development log, otherwise it balloons
+> log/test.log # Clear out test log too
+redis-server &
+bundle exec foreman start -f Procfile.dev

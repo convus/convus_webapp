@@ -1,0 +1,35 @@
+{
+  "name": "convus_reviews",
+  "private": "false",
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds",
+    "build:css": "sass ./app/assets/stylesheets/application.scss ./app/assets/builds/application.css --no-source-map --load-path=node_modules",
+    "lint": "standard --fix"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.2",
+    "bootstrap": "^4.5.2",
+    "chart.js": "^3.9.1",
+    "chartkick": "^4.2.0",
+    "esbuild": "^0.15.3",
+    "jquery": "^3.6.1",
+    "popper.js": "^1.16.1",
+    "prettier-standard": "^16.4.1",
+    "sass": "^1.48.0",
+    "standard": "^16.0.4"
+  },
+  "standard": {
+    "globals": [
+      "$",
+      "_",
+      "alert",
+      "confirm",
+      "fetch",
+      "jQuery",
+      "localStorage"
+    ],
+    "ignore": [
+      "/public/*"
+    ]
+  }
+}
