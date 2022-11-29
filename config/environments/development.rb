@@ -14,6 +14,9 @@ Rails.application.configure do
   # Show full error reports.
   config.consider_all_requests_local = true
 
+  # Livereload, via hotwire-livereload. Hopefully it gets into rails core?
+  config.hotwire_livereload.listen_paths << Rails.root.join("app/assets/stylesheets")
+
   # Enable server timing
   config.server_timing = true
 
@@ -41,6 +44,15 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  config.action_mailer.default_url_options = {host: "localhost", port: 3009}
+  if Rails.root.join("tmp", "skip-letter_opener.txt").exist?
+    config.action_mailer.perform_deliveries = false
+    config.action_mailer.delivery_method = :smtp
+  else
+    config.action_mailer.perform_deliveries = true
+    config.action_mailer.delivery_method = :letter_opener
+  end
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
@@ -55,7 +67,6 @@ Rails.application.configure do
 
   # Highlight code that triggered database queries in logs.
   config.active_record.verbose_query_logs = true
-
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true

@@ -12,7 +12,6 @@ require "action_mailbox/engine"
 require "action_text/engine"
 require "action_view/railtie"
 require "action_cable/engine"
-# require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -28,8 +27,11 @@ module ConvusReviews
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    config.time_zone = "America/Los_Angeles"
+
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.active_record.belongs_to_required_by_default = false
 
     # Don't generate system test files.
     config.generators.system_tests = nil

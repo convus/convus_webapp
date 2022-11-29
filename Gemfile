@@ -76,10 +76,10 @@ end
 group :test do
   gem "guard", require: false
   gem "guard-rspec", require: false
-  # gem "guard-rubocop", require: false # Commented out for standardrb version bump
+  gem "rspec_junit_formatter" # For circle ci
   gem "rails-controller-testing" # Assert testing views
-  gem "simplecov", require: false # test coverage for Ruby
-  gem "timecop" # Time control
+  # gem "simplecov", require: false # test coverage for Ruby
+  # gem "timecop" # Time control
   gem "vcr" # Stub external HTTP requests
   gem "webmock" # mocking for VCR
 end

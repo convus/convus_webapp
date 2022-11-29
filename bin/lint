@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+# To test linting, rather than automatically fix it, set LINT_TEST. Used for CI
+lint_test = ENV["LINT_TEST"] == "true"
+
+require "fileutils"
+include FileUtils
+
+# path to your application root.
+APP_ROOT = File.expand_path("..", __dir__)
+
+def system!(*args)
+  system(*args) || abort("\n== Command #{args} failed ==")
+end
+
+chdir APP_ROOT do
+  if lint_test
+    puts "Testing lint (will not autofix)"
+    system!("bundle exec standardrb --no-fix")
+    system!("yarn standard")
+  else
+    system!("bundle exec standardrb --fix")
+    system!("yarn lint")
+  end
+end
