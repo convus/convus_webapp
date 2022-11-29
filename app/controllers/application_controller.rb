@@ -5,6 +5,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
   helper_method :display_dev_info?
 
   def append_info_to_payload(payload)
@@ -26,5 +28,11 @@ class ApplicationController < ActionController::Base
     # Tie display_dev_info to the rack mini profiler display
     @display_dev_info = !Rails.env.test? && current_user&.developer? &&
       Rack::MiniProfiler.current.present?
+  end
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:account_update, keys: [:username])
   end
 end
