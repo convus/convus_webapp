@@ -2,7 +2,7 @@
   "name": "convus_reviews",
   "private": "false",
   "scripts": {
-    "build": "esbuild.config.js",
+    "build": "node esbuild.config.js",
     "build:css": "sass ./app/assets/stylesheets/application.scss ./app/assets/builds/application.css --no-source-map --load-path=node_modules",
     "lint": "standard --fix"
   },
