@@ -2,7 +2,7 @@ const path = require('path')
 const fs = require('fs')
 
 const watch = process.argv.includes('--watch')
-const errorFilePath = 'esbuild_error_development.txt'
+const errorFilePath = 'esbuild_error'
 
 const watchOptions = {
   onRebuild (error, result) {
