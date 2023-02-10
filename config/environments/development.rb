@@ -38,7 +38,7 @@ Rails.application.configure do
 
   # Lograge is used in production
   # But it's failing right now
-  
+
   # unless Rails.root.join("tmp", "non-lograge-dev.txt").exist?
   #   config.lograge.enabled = true
   #   config.log_level = :debug

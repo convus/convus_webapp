@@ -4,7 +4,7 @@ import jQuery from 'jquery'
 import './controllers'
 
 document.addEventListener('turbo:load', () => {
-  console.log("party")
+  console.log('party')
 })
 
 window.$ = window.jQuery = jQuery
