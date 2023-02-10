@@ -1,14 +1,17 @@
 !!!
 %html
   %head
-    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+    %meta{content: "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}
+    %meta{content: "width=device-width,initial-scale=1", name: "viewport"}
+
     %title ConvusReviews
-    %meta{:content => "width=device-width,initial-scale=1", :name => "viewport"}/
+
     = csrf_meta_tags
     = csp_meta_tag
     = stylesheet_link_tag "application", "data-turbo-track": "reload"
-    = javascript_importmap_tags
+    = javascript_include_tag "application", "data-turbo-track": "reload", defer: true
     - if Rails.env.development?
       = hotwire_livereload_tags
+
   %body
     = yield
