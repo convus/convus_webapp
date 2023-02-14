@@ -1,12 +1,20 @@
 !!!
 %html
   %head
-    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
-    %title ConvusReviews
-    %meta{:content => "width=device-width,initial-scale=1", :name => "viewport"}/
+    %meta{content: "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}
+    %meta{content: "width=device-width,initial-scale=1", name: "viewport"}
+
+    %title= page_title
     = csrf_meta_tags
     = csp_meta_tag
-    = stylesheet_link_tag "application", "data-turbo-track": "reload"
-    = javascript_importmap_tags
+    = stylesheet_link_tag "application", "tranzito_utils-compiled", "data-turbo-track": "reload"
+    = javascript_include_tag "application", "data-turbo-track": "reload", defer: true
+    - if Rails.env.development?
+      %link{href: "/favicon-dev.png", rel: "icon", sizes: "192x192"}
+      = hotwire_livereload_tags
+    - else
+      %link{href: "/favicon.png", rel: "icon", sizes: "192x192"}
+
   %body
-    = yield
+    .main-content-container
+      = yield
