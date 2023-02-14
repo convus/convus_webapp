@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.2"
+ruby "3.1.3"
 
 gem "rails", "~> 7.0.4"
 
@@ -51,6 +51,7 @@ gem "importmap-rails", ">= 0.3.4" # Use JavaScript with ESM import maps [https:/
 gem "hotwire-livereload" # Livereload! Not sure this is required, or that it works.
 gem "turbo-rails", ">= 0.7.11" # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem "stimulus-rails", ">= 0.4.0"
+gem "tranzito_utils" # For timeparser, sortable, etc
 
 group :production, :staging do
   gem "honeybadger" # Error reporting

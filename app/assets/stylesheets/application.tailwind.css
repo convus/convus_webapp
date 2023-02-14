@@ -1,0 +1,38 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/*
+  Use serif fonts for the body
+*/
+@layer base {
+  html {
+    @apply font-serif;
+  }
+  body {
+    @apply flex;
+  }
+}
+
+/*
+  Use sans serif for headers and buttons
+  ... doesn't actually look good, paired with current serif, so commented out:
+  h1, h2, h3, h4, h5, h6, .btn, .sans-serif { @apply font-sans; }
+*/
+
+:root {
+  --max-width-text: 900px;
+  --max-width-padded: 930px;
+}
+
+.max-width-text-container, .main-content-container {
+  flex: 0 0 var(--max-width-padded);
+  max-width: 100%;
+}
+
+/*// Add a little padding to the bottom*/
+.main-content-container {
+  @apply mx-auto;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
