@@ -35,4 +35,37 @@ class ApplicationController < ActionController::Base
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:account_update, keys: [:username])
   end
+
+  def redirect_to_signup_unless_user_present!
+    if current_user.present?
+      user_redirect_to = permitted_user_redirect_path(session.delete(:user_return_to))
+      if user_redirect_to.present?
+        redirect_to(user_redirect_to, status: :see_other)
+        return
+      end
+      return current_user
+    end
+    store_return_to
+    redirect_to new_user_registration_path
+    return
+  end
+
+  def store_return_to
+    return if request.xhr? || not_stored_paths.include?(request.path)
+    # Don't overwrite existing unless it's for an admin path
+    if session[:user_return_to].blank? || request.path.start_with?("/admin")
+      session[:user_return_to] = request.fullpath
+    end
+    session[:user_return_to]
+  end
+
+  def not_stored_paths
+    ["/", "/users/sign_in", "/users/sign_up", "/users/password", "/users/sign_out"]
+  end
+
+  # TODO: actually clean things.
+  def permitted_user_redirect_path(path = nil)
+    return nil if path.blank? || path.start_with?("/")
+    path
+  end
 end
