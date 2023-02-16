@@ -78,7 +78,8 @@ RSpec.describe UrlCleaner do
     end
     it "returns without anchor" do
       target = "https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
-      expect(subject.without_utm("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target
+      expect(subject.without_utm("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target + "#cite_note-10"
+      expect(subject.without_utm_or_anchor("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target
     end
   end
 

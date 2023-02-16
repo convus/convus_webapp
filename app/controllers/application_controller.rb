@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
     end
     store_return_to
     redirect_to new_user_registration_path
-    return
+    nil
   end
 
   def store_return_to

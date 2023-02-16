@@ -19,15 +19,18 @@ class UrlCleaner
 
     def pretty_url(str)
       return str unless str.present?
-      without_utm(str)
+      without_utm_or_anchor(str)
         .gsub(/\Ahttps?:\/\//i, "") # Remove https
         .gsub(/\Awww\./i, "") # Remove www
     end
 
+    def without_utm_or_anchor(str)
+      without_utm(without_anchor(str))
+    end
+
     def without_utm(str)
       return nil unless str.present?
-      without_anchor(str)
-        .gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
+      str.gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
         .gsub(/\/?\??\z/, "") # Remove trailing slash and ?
     end
 
