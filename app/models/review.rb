@@ -1,13 +1,13 @@
 class Review < ApplicationRecord
   AGREEMENT_ENUM = {
-    disagree: 0,
-    neutral: 1,
+    neutral: 0,
+    disagree: 1,
     agree: 2
   }
 
   QUALITY_ENUM = {
-    quality_low: 0,
-    quality_med: 1,
+    quality_med: 0,
+    quality_low: 1, 
     quality_high: 2
   }
 

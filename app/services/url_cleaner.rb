@@ -66,5 +66,15 @@ class UrlCleaner
       return false if str.strip.match?(/\s/)
       str.match?(/\//) || str.match?(/\.\w+/)
     end
+
+    def query_hash(query)
+      qhash = Rack::Utils.parse_nested_query(query)
+      return nil if qhash.blank?
+      qhash.each do |k, v|
+        next unless v.is_a?(Array)
+        qhash[k] = v.reject { |v| [nil, ""].include?(v) }.sort
+      end
+      qhash
+    end
   end
 end

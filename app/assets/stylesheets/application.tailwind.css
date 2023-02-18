@@ -1,6 +1,6 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+
 
 /*
   Use serif fonts for the body
@@ -37,4 +37,14 @@
   padding-bottom: 2rem;
 }
 
-@import "sections/alerts.css"
+@import "sections/_alerts.css";
+@import "sections/_reviews_form.css";
+
+.reviews-radio-button, .reviews-check {
+  @apply block cursor-pointer py-1;
+}
+.form-control {
+  @apply bg-white border w-full border-gray-100 rounded-sm px-2 py-1  disabled:bg-gray-200 disabled:border-gray-300;
+}
+
+@import 'tailwindcss/utilities';

@@ -5,11 +5,11 @@ class CreateReviews < ActiveRecord::Migration[7.0]
       t.references :citation
       t.text :submitted_url
 
-      t.integer :agreement
-      t.integer :quality
+      t.integer :agreement, default: 0
+      t.integer :quality, default: 0
       t.boolean :changed_my_opinion, default: false, null: false
 
-      t.text :inaccuracies
+      t.boolean :significant_factual_error
       t.text :comment
       t.text :topics
 

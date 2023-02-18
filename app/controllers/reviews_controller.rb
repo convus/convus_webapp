@@ -18,8 +18,8 @@ class ReviewsController < ApplicationController
   private
 
   def permitted_create_params
-    params.require(:review).permit(:submitted_url, :agreement, :quality, :changed_my_opinion,
-      :inaccuracies, :comment, :topics)
+    params.require(:review).permit(:submitted_url, :agreement, :quality,
+      :changed_my_opinion, :significant_factual_error, :comment, :topics)
       .merge(user_id: current_user.id)
   end
 end

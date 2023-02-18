@@ -17,7 +17,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_14_162153) do
   create_table "citations", force: :cascade do |t|
     t.text "url"
     t.text "title"
-    t.jsonb "url_components"
+    t.jsonb "url_components_json"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -26,10 +26,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_14_162153) do
     t.bigint "user_id"
     t.bigint "citation_id"
     t.text "submitted_url"
-    t.integer "agreement"
-    t.integer "quality"
+    t.integer "agreement", default: 0
+    t.integer "quality", default: 0
     t.boolean "changed_my_opinion", default: false, null: false
-    t.text "inaccuracies"
+    t.boolean "significant_factual_error"
     t.text "comment"
     t.text "topics"
     t.datetime "created_at", null: false

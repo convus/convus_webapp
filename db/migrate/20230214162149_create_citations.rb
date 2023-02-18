@@ -4,7 +4,7 @@ class CreateCitations < ActiveRecord::Migration[7.0]
       t.text :url
       t.text :title
 
-      t.jsonb :url_components
+      t.jsonb :url_components_json
 
       t.timestamps
     end
