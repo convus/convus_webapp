@@ -13,9 +13,9 @@
   html {
     @apply font-serif;
   }
-  body {
+  /*body {
     @apply flex;
-  }
+  }*/
 }
 
 /*
@@ -30,6 +30,7 @@
 }
 
 .max-width-text-container, .main-content-container {
+  @apply flex;
   flex: 0 0 var(--max-width-padded);
   max-width: 100%;
 }

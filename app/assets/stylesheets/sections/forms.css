@@ -4,5 +4,5 @@
 }
 
 .form-control {
-  @apply bg-white border w-full border-gray-100 rounded-sm px-2 py-1  disabled:bg-gray-200 disabled:border-gray-300;
+  @apply bg-white border w-full border-gray-100 rounded-sm px-2 py-1 disabled:bg-gray-200 disabled:border-gray-300;
 }

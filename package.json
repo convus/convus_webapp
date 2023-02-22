@@ -9,17 +9,14 @@
   "dependencies": {
     "@hotwired/stimulus": "^3.2.1",
     "@hotwired/turbo-rails": "^7.2.5",
-    "@popperjs/core": "^2.11.2",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "^0.5.9",
     "autoprefixer": "^10.4.13",
-    "bootstrap": "^4.5.2",
     "chart.js": "^3.9.1",
     "chartkick": "^4.2.0",
     "esbuild": "^0.15.3",
-    "jquery": "^3.6.1",
-    "popper.js": "^1.16.1",
+    "flowbite": "^1.6.3",
     "postcss": "^8.4.21",
     "postcss-cli": "^10.1.0",
     "postcss-import": "^15.1.0",
@@ -36,7 +33,6 @@
       "alert",
       "confirm",
       "fetch",
-      "jQuery",
       "localStorage"
     ],
     "ignore": [
