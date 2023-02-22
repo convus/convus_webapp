@@ -1,6 +1,10 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 
+@import "sections/alerts.css";
+@import "sections/forms.css";
+
+@import 'tailwindcss/utilities';
 
 /*
   Use serif fonts for the body
@@ -37,7 +41,3 @@
   padding-bottom: 2rem;
 }
 
-@import "sections/alerts.css";
-@import "sections/reviews_form.css";
-
-@import 'tailwindcss/utilities';

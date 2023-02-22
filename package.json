@@ -3,7 +3,7 @@
   "private": "false",
   "scripts": {
     "build": "node esbuild.config.js",
-    "build:css": "postcss ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
+    "build:css": "postcss ./app/assets/stylesheets/application.css -o ./app/assets/builds/application.css --minify",
     "lint": "standard --fix"
   },
   "dependencies": {

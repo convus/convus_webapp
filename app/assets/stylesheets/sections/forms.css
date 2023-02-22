@@ -1,5 +1,6 @@
 .reviews-radio-button, .reviews-check {
   @apply block cursor-pointer py-1;
+  
 }
 
 .form-control {
