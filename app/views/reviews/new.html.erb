@@ -1,0 +1,51 @@
+<h1>
+  Reviews
+</h1>
+<%= form_for @review, url: reviews_path(@review), method: :post do |f| %>
+  <div class="row">
+    <%= f.text_field :submitted_url, placeholder: "URL", class: "form-control" %>
+  </div>
+  <div class="row">
+    <div class="col">
+      <%= f.label :agreement_disagree, class: "reviews-radio-button" do %>
+        <%= f.radio_button :agreement, "disagree" %>
+        Disagree
+      <% end %>
+      <%= f.label :agreement_neutral, class: "reviews-radio-button" do %>
+        <%= f.radio_button :agreement, "neutral" %>
+        Neutral
+      <% end %>
+      <%= f.label :agreement_agree, class: "reviews-radio-button" do %>
+        <%= f.radio_button :agreement, "agree" %>
+        Agree
+      <% end %>
+    </div>
+    <div class="col">
+      <%= f.label :quality_quality_low, class: "reviews-radio-button" do %>
+        <%= f.radio_button :quality, :quality_low %>
+        Low Quality
+      <% end %>
+      <%= f.label :quality_quality_med, class: "reviews-radio-button" do %>
+        <%= f.radio_button :quality, :quality_med %>
+        Neutral
+      <% end %>
+      <%= f.label :quality_quality_high, class: "reviews-radio-button" do %>
+        <%= f.radio_button :quality, :quality_high %>
+        High Quality
+      <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <%= f.label :changed_my_opinion, class: "reviews-check" do %>
+      <%= f.check_box :changed_my_opinion, class: "form-check-input" %>
+      Changed my opinion
+    <% end %>
+  </div>
+  <div class="row">
+    <%= f.label :significant_factual_error, class: "reviews-check" do %>
+      <%= f.check_box :significant_factual_error, class: "form-check-input" %>
+      Significant factual error
+    <% end %>
+  </div>
+  <%= f.submit "Apply", class: "btn btn-success" %>
+<% end %>

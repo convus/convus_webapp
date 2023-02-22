@@ -1,0 +1,35 @@
+<!-- 
+  Note:
+  -----
+  3 flash types - success, error, and notice
+  success - No actionable info. TODO: auto fade
+  error   - Messages because you did something wrong. Not faded
+  notice  - Messages that don't fit in the above categories. Not faded, may have actionable info
+-->
+
+<% if flash.any? %>
+  <div class="flash-alert-container">
+    <% i = 0 %>
+    <% flash.each do |type, message| %>
+      <% next unless message.present? %>
+      <div id="flashMessage-<%= i %>" class="alert alert-<%= type %>" role="alert">
+        <div class="alert-header">
+          <div class="flex items-center mr-2">
+            <h6 class="alert-header-title"><%= type.humanize %></h6>
+          </div>
+          <button type="button" data-dismis="alert" data-dismiss-target="#flashMessage-<%= i %>" aria-label="Close">
+            x
+          </button>
+        </div>
+        <div class="alert-message">
+          <%= message %>
+          <% if flash[:link].present? %>
+            <br />
+            link: <%= link_to(flash[:link], flash[:link]) %>
+          <% end %>
+        </div>
+      </div>
+      <% i += 1 %>
+    <% end %>
+  </div>
+<% end %>

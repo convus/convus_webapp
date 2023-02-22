@@ -26,11 +26,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_14_162153) do
     t.bigint "user_id"
     t.bigint "citation_id"
     t.text "submitted_url"
+    t.text "citation_title"
     t.integer "agreement", default: 0
     t.integer "quality", default: 0
     t.boolean "changed_my_opinion", default: false, null: false
     t.boolean "significant_factual_error"
-    t.text "comment"
+    t.text "significant_factual_error_quotes"
     t.text "topics"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

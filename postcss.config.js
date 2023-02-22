@@ -13,8 +13,10 @@ module.exports = {
         './app/views/**/*.erb'
       ],
       theme: {
-        fontFamily: {
-          serif: ['Iowan Old Style', 'Apple Garamond', 'Baskerville', 'Times New Roman', 'Droid Serif', 'Times', 'Source Serif Pro', 'serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol']
+        extend: {
+            fontFamily: {
+            serif: ['Iowan Old Style', 'Apple Garamond', 'Baskerville', 'Times New Roman', 'Droid Serif', 'Times', 'Source Serif Pro', 'serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol']
+          }
         }
       },
       plugins: [

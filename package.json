@@ -3,7 +3,7 @@
   "private": "false",
   "scripts": {
     "build": "node esbuild.config.js",
-    "build:css": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
+    "build:css": "postcss ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
     "lint": "standard --fix"
   },
   "dependencies": {
@@ -12,7 +12,8 @@
     "@popperjs/core": "^2.11.2",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.3",
-    "@tailwindcss/typography": "^0.5.8",
+    "@tailwindcss/typography": "^0.5.9",
+    "autoprefixer": "^10.4.13",
     "bootstrap": "^4.5.2",
     "chart.js": "^3.9.1",
     "chartkick": "^4.2.0",
@@ -24,9 +25,9 @@
     "postcss-import": "^15.1.0",
     "postcss-nesting": "^11.1.0",
     "prettier-standard": "^16.4.1",
-    "tailwindcss": "^3.2.4",
     "sass": "^1.48.0",
-    "standard": "^16.0.4"
+    "standard": "^16.0.4",
+    "tailwindcss": "^3.2.4"
   },
   "standard": {
     "globals": [

@@ -3,6 +3,7 @@ class ReviewsController < ApplicationController
 
   def new
     @review ||= Review.new
+    flash[:success] = "party onnnn"
   end
 
   def create
