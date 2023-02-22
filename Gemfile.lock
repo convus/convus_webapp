@@ -137,6 +137,7 @@ GEM
     hotwire-livereload (1.2.2)
       listen (>= 3.0.0)
       rails (>= 6.0.0)
+    htmlbeautifier (1.4.2)
     htmlentities (4.3.4)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
@@ -385,6 +386,7 @@ DEPENDENCIES
   hamlit
   honeybadger
   hotwire-livereload
+  htmlbeautifier
   importmap-rails (>= 0.3.4)
   jsbundling-rails
   kaminari

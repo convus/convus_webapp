@@ -8,20 +8,17 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "tranzito_utils-compiled", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
-
     <% if Rails.env.development? %>
       <link href="/favicon-dev.png" rel="icon" sizes="192x192"></link>
-      <%= hotwire_livereload_tags %>
-    <% else %>
-      <link href="/favicon.png" rel="icon" sizes="192x192"></link>
-    <% end %>
-
-  </head>
-  <body>
-    <%= render "shared/flash_messages" %>
-    <div class="main-content-container">
-      <%= yield %>
-    </div>
-  </body>
-
+    <%= hotwire_livereload_tags %>
+  <% else %>
+    <link href="/favicon.png" rel="icon" sizes="192x192"></link>
+<% end %>
+</head>
+<body>
+  <%= render "shared/flash_messages" %>
+  <div class="main-content-container">
+    <%= yield %>
+  </div>
+</body>
 </html>

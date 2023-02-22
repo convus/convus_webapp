@@ -17,12 +17,11 @@ class Citation < ApplicationRecord
   def self.matching_url_components(url_components)
     # TODO: fallback match path case insensitive
     matches = where("url_components_json ->> 'host' = ?", url_components[:host])
-    matches = if url_components[:path].blank?
-      matches.where("url_components_json ->> 'path' IS NULL")    
-    else 
+    if url_components[:path].blank?
+      matches.where("url_components_json ->> 'path' IS NULL")
+    else
       matches.where("url_components_json ->> 'path' = ?", url_components[:path])
     end
-    matches
   end
 
   def self.normalized_url(str)
@@ -42,13 +41,12 @@ class Citation < ApplicationRecord
     host = parsed_uri.host&.gsub(/\Awww\./i, "") # remove www.
     path = parsed_uri.path.gsub(/\/\z/, "") # remove trailing /
     query = UrlCleaner.query_hash(parsed_uri.query)
-    { 
+    {
       host: host&.downcase,
       path: path.blank? ? nil : path,
       query: query
     }.with_indifferent_access
   end
-
 
   def url_components
     url_components_json&.with_indifferent_access || {}

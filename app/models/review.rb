@@ -7,7 +7,7 @@ class Review < ApplicationRecord
 
   QUALITY_ENUM = {
     quality_med: 0,
-    quality_low: 1, 
+    quality_low: 1,
     quality_high: 2
   }
 
