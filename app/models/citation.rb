@@ -3,15 +3,25 @@ class Citation < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
+  def self.find_or_create_for_url_and_title(str, title = nil)
+    citation = find_or_create_for_url(str)
+    return citation if citation.blank? || citation.title.present?
+    citation
+  end
+
   def self.find_or_create_for_url(str, title = nil)
     url = normalized_url(str)
     return nil if url.blank?
     existing = where("url ILIKE ?", url).first
-    return existing if existing.present?
-    url_components = url_to_components(url)
-
-    matching_url_components(url_components).first ||
-      create(url: url, url_components_json: url_components)
+    if existing.blank?
+      url_components = url_to_components(url)
+      existing = matching_url_components(url_components).first
+    end
+    if existing.present?
+      existing.update(title: title) if existing.title.blank? && title.present?
+      return existing
+    end
+    create(url: url, url_components_json: url_components, title: title)
   end
 
   def self.matching_url_components(url_components)

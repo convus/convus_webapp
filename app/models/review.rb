@@ -19,9 +19,10 @@ class Review < ApplicationRecord
 
   validates_presence_of :user_id
 
-  before_create :associate_citation
+  before_save :associate_citation
 
   def associate_citation
-    self.citation ||= Citation.find_or_create_for_url(submitted_url)
+    self.citation_title = nil if citation_title.blank?
+    self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)
   end
 end

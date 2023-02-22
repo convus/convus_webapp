@@ -12,5 +12,5 @@
 }
 
 .form-row-btn {
-  @apply mt-3; /* slightly taller because line-height */
+  @apply mt-4; /* taller because line-height */
 }
