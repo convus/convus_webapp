@@ -3,7 +3,7 @@ class Citation < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
-  def self.find_or_create_for_url(str)
+  def self.find_or_create_for_url(str, title = nil)
     url = normalized_url(str)
     return nil if url.blank?
     existing = where("url ILIKE ?", url).first

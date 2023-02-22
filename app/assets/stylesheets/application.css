@@ -13,9 +13,6 @@
   html {
     @apply font-serif;
   }
-  /*body {
-    @apply flex;
-  }*/
 }
 
 /*
@@ -30,9 +27,8 @@
 }
 
 .max-width-text-container, .main-content-container {
-  @apply flex;
-  flex: 0 0 var(--max-width-padded);
-  max-width: 100%;
+  @apply flex flex-wrap w-full max-w-main-content;
+  /* might wanna use max-w-prose sometime */
 }
 
 /*// Add a little padding to the bottom*/
@@ -42,3 +38,7 @@
   padding-bottom: 2rem;
 }
 
+/* default classes */
+.btn {
+  @apply inline-flex items-center cursor-pointer rounded-sm py-2 px-4 justify-center disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
+}

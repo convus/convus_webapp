@@ -1,5 +1,5 @@
 .alert {
-  @apply bg-white border px-3 py-2 cursor-pointer;
+  @apply bg-white border px-3 py-2 mb-2;
   .alert-header {
     @apply flex w-full pb-2;
     z-index: 1;
@@ -15,15 +15,9 @@
 }
 
 .alert-error {
-
-}
-
-.alert-notice {
-@apply opacity-0;
+  @apply border-error;
 }
 
 .flash-alert-container {
-  .alert {
-    @apply mt-2 first-of-type:mt-0;
-  }
+  @apply w-full;
 }
