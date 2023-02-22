@@ -1,8 +1,16 @@
 .reviews-radio-button, .reviews-check {
   @apply block cursor-pointer py-1;
-  
+  input { @apply text-gray-800; }
 }
 
 .form-control {
-  @apply bg-white border w-full border-gray-100 rounded-sm px-2 py-1 disabled:bg-gray-200 disabled:border-gray-300;
+  @apply bg-white border w-full border-gray-300 rounded-sm px-2 py-1 disabled:bg-gray-200 disabled:border-gray-300;
+}
+
+.form-row {
+  @apply mt-2;
+}
+
+.form-row-btn {
+  @apply mt-3; /* slightly taller because line-height */
 }

@@ -1,12 +1,11 @@
-<h1>
-  Reviews
-</h1>
+<%= content_for :main_wrapper_class, "small-width-main-container" %>
+<h1 class="mb-3"> Add Review</h1>
 <%= form_for @review, url: reviews_path(@review), method: :post do |f| %>
-  <div class="row">
+  <div class="form-row">
     <%= f.text_field :submitted_url, placeholder: "URL", class: "form-control" %>
   </div>
-  <div class="row">
-    <div class="col">
+  <div class="grid grid-cols-2 divide-x">
+    <div class="px-2 pb-1">
       <%= f.label :agreement_disagree, class: "reviews-radio-button" do %>
         <%= f.radio_button :agreement, "disagree" %>
         Disagree
@@ -20,7 +19,7 @@
         Agree
       <% end %>
     </div>
-    <div class="col">
+    <div class="px-2 pb-1">
       <%= f.label :quality_quality_low, class: "reviews-radio-button" do %>
         <%= f.radio_button :quality, :quality_low %>
         Low Quality
@@ -35,17 +34,19 @@
       <% end %>
     </div>
   </div>
-  <div class="row">
+  <div class="form-row">
     <%= f.label :changed_my_opinion, class: "reviews-check" do %>
       <%= f.check_box :changed_my_opinion, class: "form-check-input" %>
       Changed my opinion
     <% end %>
   </div>
-  <div class="row">
+  <div class="form-row">
     <%= f.label :significant_factual_error, class: "reviews-check" do %>
       <%= f.check_box :significant_factual_error, class: "form-check-input" %>
       Significant factual error
     <% end %>
   </div>
-  <%= f.submit "Apply", class: "btn btn-success" %>
+  <div class="form-row-btn">
+    <%= f.submit "save", class: "btn btn-success" %>
+  </div>
 <% end %>

@@ -16,7 +16,8 @@
     <% end %>
   </head>
   <body>
-    <div class="main-content-container">
+    <h3 class="mb-4"></h3>
+    <div class="<%= content_for(:main_wrapper_class) || 'main-content-container' %>">
       <%= render "shared/flash_messages" %>
       <%= yield %>
     </div>

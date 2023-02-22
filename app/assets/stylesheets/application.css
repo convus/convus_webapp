@@ -11,34 +11,29 @@
 */
 @layer base {
   html {
-    @apply font-serif;
+    @apply font-serif text-gray-900;
   }
 }
 
-/*
-  Use sans serif for headers and buttons
-  ... doesn't actually look good, paired with current serif, so commented out:
-  h1, h2, h3, h4, h5, h6, .btn, .sans-serif { @apply font-sans; }
-*/
-
-:root {
-  --max-width-text: 900px;
-  --max-width-padded: 930px;
+/* Add a little padding to the bottom */
+.main-container {
+  @apply mx-auto py-4 w-full;
 }
 
-.max-width-text-container, .main-content-container {
-  @apply flex flex-wrap w-full max-w-main-content;
-  /* might wanna use max-w-prose sometime */
+.full-width-main-container {
+  @apply main-container max-w-main-content;
 }
 
-/*// Add a little padding to the bottom*/
-.main-content-container {
-  @apply mx-auto;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+.small-width-main-container {
+  @apply main-container max-w-xl;
+  /* might wanna use max-w-prose sometime - this is close*/
 }
 
-/* default classes */
 .btn {
-  @apply inline-flex items-center cursor-pointer rounded-sm py-2 px-4 justify-center disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
+  @apply inline-flex items-center border border-gray-500 bg-gray-100 cursor-pointer rounded-lg leading-none py-1 px-3 justify-center hover:bg-gray-200 hover:border-gray-600 disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
 }
+
+h1 { @apply text-2xl; }
+h2 { @apply text-xl; }
+h3 { @apply text-lg; }
+h4 { @apply font-bold; }
