@@ -21,14 +21,15 @@
         <th>
           Changed opinion?
         </th>
-        <th>Errors?</th>
+        <th>Error?</th>
       </tr>
     </thead>
     <tbody>
       <% @reviews.each do |review| %>
         <tr>
           <td>
-            <%= link_to l(review.created_at, format: :convert_time), edit_review_path(review), class: "convertTime" %>
+            <span class="convertTime"><%= l(review.created_at, format: :convert_time) %></span>
+            <small class="less-strong"><%= link_to "edit", edit_review_path(review), class: "link-underline" %></small>
           </td>
           <td>
             <% if review.display_name == "missing url" %>
