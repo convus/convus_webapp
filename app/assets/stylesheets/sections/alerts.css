@@ -1,0 +1,23 @@
+.alert {
+  @apply bg-white border px-3 py-2 mb-2;
+  .alert-header {
+    @apply flex w-full pb-2;
+    z-index: 1;
+  }
+
+  .alert-close {
+    @apply ml-auto -mx-1.5 -my-1.5 p-1.5 inline-flex h-8 w-8 focus:ring-2 rounded-lg opacity-70;
+  }
+}
+
+.alert-success {
+  @apply border-success;
+}
+
+.alert-error {
+  @apply border-error;
+}
+
+.flash-alert-container {
+  @apply w-full;
+}

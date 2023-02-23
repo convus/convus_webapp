@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   root "landing#index"
 
+  resources :reviews
+
   authenticate :user, lambda { |u| u.admin? } do
     mount Sidekiq::Web, at: "/sidekiq"
   end

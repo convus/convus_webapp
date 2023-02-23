@@ -1,0 +1,24 @@
+/*
+  Override (or cover) things from tranzito_utils bootstrap functionality
+*/
+
+#timeSelectionBtnGroup {
+  @apply mb-6;
+
+  .d-none { @apply hidden; }
+  /* without the mr-1, there is no space between things */
+  .d-md-inline-block { @apply md:inline-flex mr-1; }
+}
+
+#timeSelectionCustom {
+  @apply hidden;
+  &.in {
+    @apply flex visible -mt-2 mb-6;
+   }
+}
+
+#updatePeriodSelectCustom {
+  /* Make this button the same size as the other buttons */
+  margin-top: 2px;
+  margin-bottom: 2px;
+}

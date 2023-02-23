@@ -10,7 +10,7 @@ jobs:
       # Inexpicably, circleci uses system time rather than the ActiveSupport::TimeZone configuration
       TZ: /usr/share/zoneinfo/America/Los_Angeles
     docker:
-      - image: cimg/ruby:3.1.2-node
+      - image: cimg/ruby:3.1.3-node
         environment:
           PGHOST: 127.0.0.1
           PGUSER: root
@@ -26,11 +26,11 @@ jobs:
       - restore_cache:
           keys:
             # This branch if available
-            - v3-dep-{{ .Branch }}-
+            - v4-dep-{{ .Branch }}-
             # Default branch if not
-            - v3-dep-main-
+            - v4-dep-main-
             # Any branch if there are none on the default branch - this should be unnecessary if you have your default branch configured correctly
-            - v3-dep-
+            - v4-dep-
       - run:
           name: install dockerize
           command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz

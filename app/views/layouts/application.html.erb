@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="width=device-width,initial-scale=1" name="viewport"/>
+    <title><%= page_title %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tranzito_utils-compiled", "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+    <% if Rails.env.development? %>
+      <link href="/favicon-dev.png" rel="icon" sizes="192x192">
+      <%= hotwire_livereload_tags %>
+    <% else %>
+      <link href="/favicon.png" rel="icon" sizes="192x192">
+    <% end %>
+  </head>
+  <body>
+    <h3 class="mb-4"></h3>
+    <div class="<%= content_for(:main_wrapper_class) || 'full-width-main-container' %>">
+      <%= render "shared/flash_messages" %>
+      <%= yield %>
+    </div>
+  </body>
+</html>

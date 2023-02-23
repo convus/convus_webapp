@@ -19,15 +19,18 @@ class UrlCleaner
 
     def pretty_url(str)
       return str unless str.present?
-      without_utm(str)
+      without_utm_or_anchor(str)
         .gsub(/\Ahttps?:\/\//i, "") # Remove https
         .gsub(/\Awww\./i, "") # Remove www
     end
 
+    def without_utm_or_anchor(str)
+      without_utm(without_anchor(str))
+    end
+
     def without_utm(str)
       return nil unless str.present?
-      without_anchor(str)
-        .gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
+      str.gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
         .gsub(/\/?\??\z/, "") # Remove trailing slash and ?
     end
 
@@ -62,6 +65,16 @@ class UrlCleaner
       return false if str.blank?
       return false if str.strip.match?(/\s/)
       str.match?(/\//) || str.match?(/\.\w+/)
+    end
+
+    def query_hash(query)
+      qhash = Rack::Utils.parse_nested_query(query)
+      return nil if qhash.blank?
+      qhash.each do |k, v|
+        next unless v.is_a?(Array)
+        qhash[k] = v.reject { |v| [nil, ""].include?(v) }.sort
+      end
+      qhash
     end
   end
 end

@@ -1,10 +1,19 @@
 // Entry point for the build script in your package.json
 import '@hotwired/turbo-rails'
-import jQuery from 'jquery'
 import './controllers'
+// Import flowbite, a tailwind component library, for interactions
+import 'flowbite/dist/flowbite.turbo.js'
+import { TimeParser, PeriodSelector, Pagination } from 'tranzito_utils_js'
 
 document.addEventListener('turbo:load', () => {
-  console.log('party')
-})
+  if (document.getElementById('timeSelectionBtnGroup')) {
+    const periodSelector = new PeriodSelector()
+    periodSelector.init()
+  }
 
-window.$ = window.jQuery = jQuery
+  if (!window.timeParser) window.timeParser = new TimeParser()
+  window.timeParser.localize()
+
+  window.pagination = new Pagination()
+  window.pagination.init()
+})

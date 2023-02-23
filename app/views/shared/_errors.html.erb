@@ -1,0 +1,24 @@
+<%# Rendering errors requires an `obj` and also a `name` %>
+<% if obj.errors.any? %>
+  <div id="errorMessage" class="alert alert-error mb-4" role="alert">
+    <div class="alert-header">
+      <div class="flex items-center mr-2">
+        <h6>
+          <%= pluralize(obj.errors.count, "error") %> prevented this <%= name %> from being saved
+        </h6>
+      </div>
+      <button type="button" data-dismiss-target="#errorMessage" aria-label="Close">
+        <%= inline_svg "icons/alert/close.svg" %>
+      </button>
+    </div>
+    <div class="alert-description">
+      <ul>
+        <% obj.errors.full_messages.each do |message| %>
+          <li>
+            <%= message %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+<% end %>

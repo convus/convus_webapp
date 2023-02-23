@@ -13,13 +13,20 @@ def system!(*args)
   system(*args) || abort("\n== Command #{args} failed ==")
 end
 
+def html_files
+  Dir.glob("app/**/*.{html}{+*,}.erb")
+    .map { |f| "'#{f}'" }.join(" ")
+end
+
 chdir APP_ROOT do
   if lint_test
     puts "Testing lint (will not autofix)"
     system!("bundle exec standardrb --no-fix")
     system!("yarn standard")
+    system!("bundle exec htmlbeautifier --lint-only #{html_files}")
   else
     system!("bundle exec standardrb --fix")
+    system!("bundle exec htmlbeautifier #{html_files}")
     system!("yarn lint")
   end
 end
