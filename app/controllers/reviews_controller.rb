@@ -4,7 +4,7 @@ class ReviewsController < ApplicationController
   before_action :redirect_to_signup_unless_user_present!
 
   def index
-    if params[:user] != current_user.username
+    if user_subject&.id != current_user.id
       redirect_to reviews_path(user: current_user.username)
       return
     end

@@ -22,6 +22,7 @@ module.exports = {
           primary: '#0d6efd',
           success: '#75b798', // alternative: #a3cfbb
           error: '#fecba1', // orange
+          bodytext: '#212529', // gray-900
           gray: {
             DEFAULT: '#adb5bd', // bootstrap grays
             100: '#f8f9fa',

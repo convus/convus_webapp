@@ -75,6 +75,7 @@ RSpec.describe base_url, type: :request do
         expect(citation.url).to eq "http://example.com"
         expect(citation.title).to be_blank
       end
+
       context "full params" do
         let(:create_params) { full_params }
         it "creates with full params" do

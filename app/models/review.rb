@@ -21,6 +21,19 @@ class Review < ApplicationRecord
 
   before_save :associate_citation
 
+  def self.quality_humanized(str)
+    return nil if str.blank?
+    if str.to_sym == :quality_med
+      "medium"
+    else
+      str.to_s.gsub("quality_", "")
+    end
+  end
+
+  def quality_humanized
+    self.class.quality_humanized(quality)
+  end
+
   def display_name
     citation_title || citation&.display_name || "missing url"
   end

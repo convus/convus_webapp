@@ -1,13 +1,17 @@
 class ApplicationController < ActionController::Base
+  include TranzitoUtils::SetPeriod
+  ESBUILD_ERROR_RENDERED = Rails.env.development?
+  include RenderEsbuildErrors if ESBUILD_ERROR_RENDERED
+
   before_action do
     if Rails.env.production? && current_user.present?
-      Honeybadger.context(user_id: current_user.id, user_email: current_user.email)
+      Honeybadger.context(user: current_user.id, user_email: current_user.email)
     end
   end
 
-  include TranzitoUtils::SetPeriod
-
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :enable_rack_profiler, if: !Rails.env.test?
+  before_action :enable_rack_profiler
 
   helper_method :display_dev_info?, :user_subject
 
@@ -21,7 +25,7 @@ class ApplicationController < ActionController::Base
   end
 
   def enable_rack_profiler
-    return false unless current_user&.developer? && !Rails.env.test?
+    return false unless current_user&.developer?
     Rack::MiniProfiler.authorize_request
   end
 

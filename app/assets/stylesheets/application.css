@@ -4,6 +4,7 @@
 @import "sections/alerts.css";
 @import "sections/forms.css";
 @import "sections/tables.css";
+@import "sections/tranzito_utils.css";
 
 @import 'tailwindcss/utilities';
 
@@ -12,7 +13,7 @@
 */
 @layer base {
   html {
-    @apply font-serif text-gray-900;
+    @apply font-serif text-bodytext;
   }
 }
 
@@ -30,8 +31,16 @@
   /* might wanna use max-w-prose sometime - this is close*/
 }
 
+a {
+  @apply text-primary;
+}
+
 .btn {
-  @apply inline-flex items-center border border-gray-500 bg-gray-100 cursor-pointer rounded-lg leading-none py-1 px-3 justify-center hover:bg-gray-200 hover:border-gray-600 disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
+  @apply inline-flex text-bodytext items-center border border-gray-500 bg-gray-100 cursor-pointer rounded-lg py-1 px-3 justify-center disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
+/*  leading-none*/
+  &:hover, &.active, &:active {
+    @apply bg-gray-200 border-gray-600
+  }
 }
 
 h1 { @apply text-2xl; }
@@ -46,5 +55,3 @@ h4 { @apply font-bold; }
 .col {
   @apply px-4
 }
-
-/* utils overrides */
