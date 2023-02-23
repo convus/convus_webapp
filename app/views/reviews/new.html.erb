@@ -4,8 +4,8 @@
   <div class="form-row">
     <%= f.text_field :submitted_url, placeholder: "URL", class: "form-control" %>
   </div>
-  <div class="grid grid-cols-2 divide-x">
-    <div class="px-2 py-1">
+  <div class="row grid-cols-2 divide-x">
+    <div class="col py-1">
       <%= f.label :agreement_agree, class: "reviews-radio-button" do %>
         <%= f.radio_button :agreement, "agree" %>
         Agree
@@ -19,7 +19,7 @@
         Disagree
       <% end %>      
     </div>
-    <div class="px-2 py-1">
+    <div class="col py-1">
       <%= f.label :quality_quality_high, class: "reviews-radio-button" do %>
         <%= f.radio_button :quality, :quality_high %>
         High Quality
@@ -34,7 +34,7 @@
       <% end %>
     </div>
   </div>
-  <div class="form-row">
+  <div class="form-row ">
     <%= f.label :changed_my_opinion, class: "reviews-check" do %>
       <%= f.check_box :changed_my_opinion, class: "form-check-input" %>
       Changed my opinion

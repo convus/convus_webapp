@@ -3,7 +3,17 @@ import '@hotwired/turbo-rails'
 import './controllers'
 // Import flowbite, a tailwind component library, for interactions
 import 'flowbite/dist/flowbite.turbo.js'
+import { TimeParser, PeriodSelector, Pagination } from 'tranzito_utils_js'
 
 document.addEventListener('turbo:load', () => {
-  console.log('party')
+  if (document.getElementById('timeSelectionBtnGroup')) {
+    const periodSelector = new PeriodSelector()
+    periodSelector.init()
+  }
+
+  if (!window.timeParser) window.timeParser = new TimeParser()
+  window.timeParser.localize()
+
+  window.pagination = new Pagination()
+  window.pagination.init()
 })

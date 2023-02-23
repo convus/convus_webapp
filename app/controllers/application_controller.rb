@@ -5,9 +5,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  include TranzitoUtils::SetPeriod
+
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  helper_method :display_dev_info?
+  helper_method :display_dev_info?, :user_subject
 
   def append_info_to_payload(payload)
     super
@@ -28,6 +30,11 @@ class ApplicationController < ActionController::Base
     # Tie display_dev_info to the rack mini profiler display
     @display_dev_info = !Rails.env.test? && current_user&.developer? &&
       Rack::MiniProfiler.current.present?
+  end
+
+  def user_subject
+    return @user_subject if defined?(@user_subject)
+    @user_subject = User.friendly_find_username(params[:user])
   end
 
   protected

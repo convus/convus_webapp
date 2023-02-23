@@ -62,6 +62,14 @@ class Citation < ApplicationRecord
     url_components_json&.with_indifferent_access || {}
   end
 
+  def pretty_url
+    UrlCleaner.pretty_url(url)
+  end
+
+  def display_name
+    title.presence || pretty_url
+  end
+
   def set_calculated_attributes
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)

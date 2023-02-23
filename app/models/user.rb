@@ -4,6 +4,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :trackable,
     :recoverable, :rememberable, :validatable
 
+  has_many :reviews
+
   enum role: ROLE_ENUM
 
   validates_uniqueness_of :username, case_sensitive: false
@@ -19,6 +21,11 @@ class User < ApplicationRecord
     end
   end
 
+  def self.friendly_find_username(str = nil)
+    return nil if str.blank?
+    where("username ILIKE ?", str.strip).first
+  end
+
   def set_calculated_attributes
     self.role ||= "normal_user"
   end
@@ -27,7 +34,7 @@ class User < ApplicationRecord
 
   def generate_username
     new_username = username || SecureRandom.urlsafe_base64
-    while User.where(username: new_username).where.not(id: id).exists?
+    while User.where.not(id: id).friendly_find_username(new_username).present?
       new_username = SecureRandom.urlsafe_base64
     end
     self.username = new_username

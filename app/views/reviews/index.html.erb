@@ -1,0 +1,11 @@
+<h1 class="mb-4">Reviews</h1>
+
+<%#= render partial: "/tranzito_utils/period_select" %>
+
+<% if @reviews.total_count.zero? %>
+  <h4>No reviews found</h4>
+<% else %>
+  <%= render partial: "table", locals: {reviews: @reviews} %>
+
+  <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Reviews"} %>
+<% end %>

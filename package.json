@@ -24,7 +24,8 @@
     "prettier-standard": "^16.4.1",
     "sass": "^1.48.0",
     "standard": "^16.0.4",
-    "tailwindcss": "^3.2.4"
+    "tailwindcss": "^3.2.4",
+    "tranzito_utils_js": "^1.1.9"
   },
   "standard": {
     "globals": [

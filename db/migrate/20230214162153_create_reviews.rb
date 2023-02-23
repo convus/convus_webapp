@@ -11,7 +11,7 @@ class CreateReviews < ActiveRecord::Migration[7.0]
       t.boolean :changed_my_opinion, default: false, null: false
 
       t.boolean :significant_factual_error
-      t.text :significant_factual_error_quotes
+      t.text :error_quotes
       t.text :topics
 
       t.timestamps

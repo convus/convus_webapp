@@ -48,4 +48,19 @@ RSpec.describe Review, type: :model do
       end
     end
   end
+
+  describe "display_name" do
+    let(:review) { Review.new }
+    it "is missing url" do
+      expect(review.display_name).to eq "missing url"
+    end
+    context "with submitted_url" do
+      let(:review) { FactoryBot.create(:review, submitted_url: "https://en.wikipedia.org/wiki/Protocol_Buffers/") }
+      it "pretty url, overridden by citation_title" do
+        expect(review.display_name).to eq "en.wikipedia.org/wiki/Protocol_Buffers"
+        review.citation_title = "party"
+        expect(review.display_name).to eq "party"
+      end
+    end
+  end
 end

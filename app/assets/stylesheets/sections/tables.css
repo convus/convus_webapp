@@ -1,0 +1,21 @@
+.table {
+  @apply w-full text-left;
+
+  & thead {
+    @apply bg-gray-100;
+  }
+
+  & tr {
+    @apply border-y border-gray-200;
+  }
+
+  & th {
+    @apply !font-semibold text-xs;
+  }
+
+  & th,
+  td {
+    @apply py-4 px-5;
+  }
+}
+

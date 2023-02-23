@@ -21,6 +21,10 @@ class Review < ApplicationRecord
 
   before_save :associate_citation
 
+  def display_name
+    citation_title || citation&.display_name || "missing url"
+  end
+
   def associate_citation
     self.citation_title = nil if citation_title.blank?
     self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)

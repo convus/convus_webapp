@@ -1,0 +1,59 @@
+<% reviews ||= reviews %>
+<% skip_sortable ||= false %>
+
+<div class="full-width">
+  <table class="table">
+    <thead class="sortable">
+      <tr>
+        <th>
+          <%= sortable "created_at", "Requested At", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          Link
+        </th>
+        <th>Topics</th>
+        <th>
+          Agreement
+        </th>
+        <th>
+          Quality
+        </th>
+        <th>
+          Changed opinion?
+        </th>
+        <th>Errors?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @reviews.each do |review| %>
+        <tr>
+          <td>
+            <%= link_to l(review.created_at, format: :convert_time), edit_review_path(review), class: "convertTime" %>
+          </td>
+          <td>
+            <% if review.display_name == "missing url" %>
+              <span class="less-strong">missing url</span>
+            <% else %>
+              <%= link_to review.display_name, review.citation&.url %>
+            <% end %>
+          </td>
+          <td>
+            <%= review.topics %>
+          </td>
+          <td>
+            <%= agreement_display(review.agreement) %>
+          </td>
+          <td>
+            <%= quality_display(review.quality) %>
+          </td>
+          <td>
+            <%= check_mark if review.changed_my_opinion? %>
+          </td>
+          <td>
+            <%= check_mark if review.significant_factual_error? %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
