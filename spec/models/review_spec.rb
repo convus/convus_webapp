@@ -1,6 +1,17 @@
 require "rails_helper"
 
 RSpec.describe Review, type: :model do
+  describe "topics" do
+    it "is empty" do
+      expect(Review.new.topics).to eq([])
+    end
+    context "multiple topics" do
+      let(:review) { Review.new(topics_text: "something\nother\n\nthings\n") }
+      it "is the things" do
+        expect(review.topics).to eq(["something", "other", "things"])
+      end
+    end
+  end
   describe "associate_citation" do
     let(:url) { "https://example.com" }
     let(:review) { FactoryBot.create(:review, submitted_url: url, citation_title: title) }

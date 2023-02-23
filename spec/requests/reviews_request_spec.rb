@@ -11,7 +11,7 @@ RSpec.describe base_url, type: :request do
       changed_my_opinion: "true",
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
-      topics: "A topic\n\nAnd another topic"
+      topics_text: "A topic\n\nAnd another topic"
     }
   end
 
@@ -93,6 +93,43 @@ RSpec.describe base_url, type: :request do
           expect(citation.url).to eq "http://example.com"
           expect(citation.title).to eq "something"
         end
+      end
+    end
+
+    describe "edit" do
+      let(:review) { FactoryBot.create(:review, user: current_user) }
+      it "renders" do
+        get "#{base_url}/#{review.to_param}/edit"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("reviews/edit")
+      end
+      context "not user's" do
+        let(:review) { FactoryBot.create(:review) }
+        it "redirects" do
+          expect(review.user_id).to_not eq current_user.id
+          get "#{base_url}/#{review.to_param}/edit"
+          expect(response).to redirect_to root_path
+          expect(flash[:error]).to be_present
+        end
+      end
+    end
+
+    describe "update" do
+      let(:review) { FactoryBot.create(:review, user: current_user) }
+      let(:citation) { review.citation }
+      it "updates" do
+        expect(citation).to be_valid
+        expect {
+          patch "#{base_url}/#{review.to_param}", params: {
+            review: full_params
+          }
+        }.to_not change(Review, :count)
+        expect(flash[:success]).to be_present
+        review.reload
+        expect_attrs_to_match_hash(review, full_params)
+        expect(review.citation_id).to_not eq citation.id
+        expect(review.citation.url).to eq "http://example.com"
+        expect(review.citation.title).to eq "something"
       end
     end
   end

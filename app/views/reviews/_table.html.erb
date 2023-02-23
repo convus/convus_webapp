@@ -38,7 +38,7 @@
             <% end %>
           </td>
           <td>
-            <%= review.topics %>
+            <%= review.topics.join(", ") %>
           </td>
           <td>
             <%= agreement_display(review.agreement) %>

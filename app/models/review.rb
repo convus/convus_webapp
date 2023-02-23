@@ -30,6 +30,15 @@ class Review < ApplicationRecord
     end
   end
 
+  def edit_title?
+    true # TODO: hide if this was automatically collected?
+  end
+
+  def topics
+    return [] unless topics_text.present?
+    topics_text.strip.split("\n").reject(&:blank?)
+  end
+
   def quality_humanized
     self.class.quality_humanized(quality)
   end

@@ -8,6 +8,9 @@
 <% if total_count > 25 || @period != "all" %>
   <%= render partial: "/tranzito_utils/period_select" %>
 
-  <!-- Include these classes, required because period-select uses these classes and tailwind doesn't include them -->
-  <div class="hidden mr-2 ml-2 text-right"></div></div>
+  <%#
+    Include these classes, required because period-select uses these classes and tailwind doesn't include them
+  %>
+
+  <div class="hidden mr-2 ml-2 text-right"></div>
 <% end %>

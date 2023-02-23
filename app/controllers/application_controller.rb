@@ -41,6 +41,11 @@ class ApplicationController < ActionController::Base
     @user_subject = User.friendly_find_username(params[:user])
   end
 
+  def user_root_url
+    return root_url if current_user.blank?
+    root_url # TODO: make this something else
+  end
+
   protected
 
   def configure_permitted_parameters

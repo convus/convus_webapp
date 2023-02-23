@@ -16,3 +16,9 @@
     @apply flex visible -mt-2 mb-6;
    }
 }
+
+#updatePeriodSelectCustom {
+  /* Make this button the same size as the other buttons */
+  margin-top: 2px;
+  margin-bottom: 2px;
+}

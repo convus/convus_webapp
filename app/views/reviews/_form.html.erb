@@ -1,0 +1,69 @@
+<% editing_review = @review.id.present? %>
+
+<% render partial: "/shared/errors", locals: {name: "Review", obj: @review} %>
+<%= form_for @review do |f| %>
+  <div class="form-row">
+    <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && @review.submitted_url.present?, class: "form-control" %>
+  </div>
+  <div class="row grid-cols-2 divide-x">
+    <div class="col py-1">
+      <%= f.label :agreement_agree, class: "reviews-radio-button" do %>
+        <%= f.radio_button :agreement, "agree" %>
+        Agree
+      <% end %>
+      <%= f.label :agreement_neutral, class: "reviews-radio-button" do %>
+        <%= f.radio_button :agreement, "neutral" %>
+        Neutral
+      <% end %>
+      <%= f.label :agreement_disagree, class: "reviews-radio-button" do %>
+        <%= f.radio_button :agreement, "disagree" %>
+        Disagree
+      <% end %>      
+    </div>
+    <div class="col py-1">
+      <%= f.label :quality_quality_high, class: "reviews-radio-button" do %>
+        <%= f.radio_button :quality, :quality_high %>
+        High Quality
+      <% end %>
+      <%= f.label :quality_quality_med, class: "reviews-radio-button" do %>
+        <%= f.radio_button :quality, :quality_med %>
+        Neutral
+      <% end %>
+      <%= f.label :quality_quality_low, class: "reviews-radio-button" do %>
+        <%= f.radio_button :quality, :quality_low %>
+        Low Quality
+      <% end %>
+    </div>
+  </div>
+  <div class="form-row ">
+    <%= f.label :changed_my_opinion, class: "reviews-check" do %>
+      <%= f.check_box :changed_my_opinion, class: "form-check-input" %>
+      Changed my opinion
+    <% end %>
+  </div>
+  <div class="form-row">
+    <%= f.label :significant_factual_error, class: "reviews-check" do %>
+      <%= f.check_box :significant_factual_error, class: "form-check-input" %>
+      Significant factual error(s)
+    <% end %>
+  </div>
+  <div class="form-row-btn mb-3">
+    <%= f.submit "save", class: "btn btn-success" %>
+  </div>
+
+  <% if editing_review %>
+    <% if @review.edit_title? %>
+      <div class="form-row">
+        <%= f.label :citation_title, "Title" %>
+        <%= f.text_field :citation_title, placeholder: @review.citation&.title, class: "form-control" %>
+      </div>
+    <% end %>
+    <div class="form-row">
+      <%= f.label :topics_text do %>
+        Topics
+        <small class="less-strong">new line delineated</small>
+      <% end %>
+      <%= f.text_area :topics_text, placeholder: "", class: "form-control" %>
+    </div>
+  <% end %>
+<% end %>

@@ -12,7 +12,7 @@ class CreateReviews < ActiveRecord::Migration[7.0]
 
       t.boolean :significant_factual_error
       t.text :error_quotes
-      t.text :topics
+      t.text :topics_text
 
       t.timestamps
     end

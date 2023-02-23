@@ -32,7 +32,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_14_162153) do
     t.boolean "changed_my_opinion", default: false, null: false
     t.boolean "significant_factual_error"
     t.text "error_quotes"
-    t.text "topics"
+    t.text "topics_text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["citation_id"], name: "index_reviews_on_citation_id"
