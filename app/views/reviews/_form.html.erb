@@ -1,5 +1,4 @@
 <% editing_review = @review.id.present? %>
-
 <% render partial: "/shared/errors", locals: {name: "Review", obj: @review} %>
 <%= form_for @review do |f| %>
   <div class="form-row">
@@ -18,7 +17,7 @@
       <%= f.label :agreement_disagree, class: "reviews-radio-button" do %>
         <%= f.radio_button :agreement, "disagree" %>
         Disagree
-      <% end %>      
+      <% end %>
     </div>
     <div class="col py-1">
       <%= f.label :quality_quality_high, class: "reviews-radio-button" do %>
@@ -50,7 +49,6 @@
   <div class="form-row-btn mb-3">
     <%= f.submit "save", class: "btn btn-success" %>
   </div>
-
   <% if editing_review %>
     <% if @review.edit_title? %>
       <div class="form-row">

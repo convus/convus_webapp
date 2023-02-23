@@ -8,13 +8,13 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(agreement_display("")).to be_nil
     end
     context "neutral" do
-      let(:target) { "<span class=\"less-strong\">-</span>"}
+      let(:target) { "<span class=\"less-strong\">-</span>" }
       it "returns -" do
         expect(agreement_display(:neutral)).to eq target
       end
     end
     context "agree" do
-      let(:target) { "<span>agree</span>"}
+      let(:target) { "<span>agree</span>" }
       it "returns -" do
         expect(agreement_display(:agree)).to eq target
       end
@@ -26,13 +26,13 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(quality_display("")).to be_nil
     end
     context "neutral" do
-      let(:target) { "<span class=\"less-strong\">-</span>"}
+      let(:target) { "<span class=\"less-strong\">-</span>" }
       it "returns -" do
         expect(quality_display("quality_med")).to eq target
       end
     end
     context "agree" do
-      let(:target) { "<span>high</span>"}
+      let(:target) { "<span>high</span>" }
       it "returns -" do
         expect(quality_display(:quality_high)).to eq target
       end

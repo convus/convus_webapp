@@ -65,7 +65,7 @@ class ReviewsController < ApplicationController
   def find_and_authorize_review
     review = current_user.reviews.where(id: params[:id]).first
     if review.present?
-      return @review = review
+      @review = review
     else
       flash[:error] = "Unable to find that review"
       redirect_to(user_root_url) && return

@@ -2,12 +2,10 @@
   <%= user_subject.id == current_user.id ? "Your" : user_subject.username %>
   Reviews
 </h1>
-
 <% if @reviews.total_count.zero? %>
   <h4>No reviews found</h4>
 <% else %>
   <%= render partial: "/shared/period_select", locals: {total_count: @reviews.total_count} %>
-
   <%= render partial: "table", locals: {reviews: @reviews} %>
   <div class="row">
     <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review"} %>
