@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   before_action do
     if Rails.env.production? && current_user.present?
-      Honeybadger.context(user: current_user.id, user_email: current_user.email)
+      Honeybadger.context(user_id: current_user.id, user_email: current_user.email)
     end
   end
 

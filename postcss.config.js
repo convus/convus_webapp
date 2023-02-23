@@ -19,7 +19,7 @@ module.exports = {
           current: 'currentColor',
           white: '#ffffff',
           black: '#000000',
-          primary: '#0d6efd',
+          primary: '#3366cc',
           success: '#75b798', // alternative: #a3cfbb
           error: '#fecba1', // orange
           bodytext: '#212529', // gray-900

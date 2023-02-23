@@ -14,7 +14,7 @@ RSpec.describe "/", type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("landing/index")
       end
-      # TODO: fix these tests! Not sure why they fail
+      # TODO: fix these tests! ESBUILD_ERROR_RENDERED isn't stubbed correctly
       # describe "esbuild_error" do
       #   before { stub_const("ApplicationController::ESBUILD_ERROR_RENDERED", true) }
       #   it "doesn't render" do
