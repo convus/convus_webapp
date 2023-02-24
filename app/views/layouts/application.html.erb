@@ -24,15 +24,14 @@
             <%= image_tag("icon.png", alt: "Convus Logo") %>
             <span class="">Convus</span>
           <% end %>
-          <ul class="user-links">
-            <% if current_user.present? %>
-              <li><%= active_link current_user.username, reviews_path(user: current_user.username), class: "nav-link" %></li>
-              <span class="ml-1 mr-1 text-gray-400">|</span>
-              <li><%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "nav-link"  %></li>
-            <% else %>
-              <li><%= link_to "login", new_user_registration_path, class: "nav-link" %></li>
-            <% end %>
-          </ul>
+          <%= active_link "add", new_review_path, class: "nav-link mr-auto ml-3" %>
+          <% if current_user.present? %>
+            <%= active_link current_user.username, reviews_path(user: current_user.username), class: "nav-link" %>
+            <span class="ml-1 mr-1 text-gray-400">|</span>
+            <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "nav-link"  %>
+          <% else %>
+            <%= link_to "login", new_user_registration_path, class: "nav-link" %>
+          <% end %>
         </div>
       </nav>
     <% end %>
