@@ -35,25 +35,11 @@ jobs:
             # Any branch if there are none on the default branch - this should be unnecessary if you have your default branch configured correctly
             - CACHE_V1-dep-
 
-      - type: cache-restore
-        name: "Dockerize: cache restore"
-        key: CACHE_V1-dockerize-0.6.1
       - run:
-          name: "Dockerize: install"
+          name: install dockerize
           command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
             DOCKERIZE_VERSION: v0.6.1
-          command: |
-            dockerize_tar=dockerize-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
-            if [[ ! -f ~/.cache/dockerize/${dockerize_tar} ]]; then
-              wget https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/${dockerize_tar}
-            fi
-            sudo tar -C /usr/local/bin -xzvf ${dockerize_tar}
-      - type: cache-save
-        name: "Dockerize: cache save"
-        key: CACHE_V1-dockerize-0.6.1
-        paths:
-          - ~/.cache/dockerize
       - run:
           name: "install system libraries"
           command: sudo apt-get update && sudo apt-get -y install imagemagick postgresql-client
