@@ -39,7 +39,7 @@ jobs:
         name: "Dockerize: cache restore"
         key: CACHE_V1-dockerize-0.6.1
       - run:
-          name: install dockerize
+          name: "Dockerize: install"
           command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
             DOCKERIZE_VERSION: v0.6.1
@@ -55,7 +55,7 @@ jobs:
         paths:
           - ~/.cache/dockerize
       - run:
-          name: install system libraries
+          name: "install system libraries"
           command: sudo apt-get update && sudo apt-get -y install imagemagick postgresql-client
       - run:
           name: "Update Node.js and npm"
@@ -63,14 +63,14 @@ jobs:
             curl -sSL "https://nodejs.org/download/release/v18.14.2/node-v18.14.2-linux-x64.tar.xz" | sudo tar --strip-components=2 -xJ -C /usr/local/bin/ node-v18.14.2-linux-x64/bin/node
             curl https://www.npmjs.com/install.sh | sudo bash
       - run:
-          name: install bundler
+          name: "install bundler"
           command: gem install bundler
       - run:
-          name: bundle gems
+          name: "bundle gems"
           command: bundle install --path=vendor/bundle --jobs=4 --retry=3
       # So that we can compile assets, since we use node & yarn
       - run:
-          name: Yarn Install
+          name: "Yarn Install"
           command: yarn install --cache-folder ~/.cache/yarn
       - run:
           name: "Assets: precompile"
@@ -80,7 +80,7 @@ jobs:
             bundle exec rails assets:precompile assets:clean --trace
             rm -rf public/assets           
       - run:
-          name: Wait for PostgreSQL to start
+          name: "Wait for PostgreSQL to start"
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - save_cache:
           key: CACHE_V1-dep-{{ .Branch }}-{{ epoch }}
@@ -94,16 +94,16 @@ jobs:
             - ~/.cache/yarn
             - ~/.cache/bundle
       - run:
-          name: Ruby and JS lint check
+          name: "Ruby and JS lint check"
           command: bin/lint
           environment:
             LINT_TEST: "true"
       - run:
-          name: Setup Database
+          name: "Setup Database"
           command: |
             bundle exec rails db:create db:schema:load
       - run:
-          name: Rspec tests
+          name: "Rspec tests"
           command: |
             mkdir -p test-results/rspec test-artifacts
             TESTFILES=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
@@ -132,7 +132,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Deploying to Cloud66 production
+          name: "Deploying to Cloud66 production"
           command: |
             curl --insecure -X POST -d "" https://hooks.cloud66.com/stacks/redeploy/${CLOUD66_REDEPLOYMENT_PATH}
 
