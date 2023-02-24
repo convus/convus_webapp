@@ -17,7 +17,26 @@
     <% end %>
   </head>
   <body>
-    <h3 class="mb-4"></h3>
+    <% if render_navbar? %>
+      <nav class="main-navbar">
+        <div class="navbar-container container">
+          <%= link_to user_root_url, class: "root-link" do %>
+            <%= image_tag("icon.png", alt: "Convus Logo") %>
+            <span class="">Convus</span>
+          <% end %>
+          <ul class="user-links">
+            <% if current_user.present? %>
+              <li><%= active_link current_user.username, reviews_path(user: current_user.username), class: "nav-link" %></li>
+              <span class="ml-1 mr-1 text-gray-400">|</span>
+              <li><%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "nav-link"  %></li>
+            <% else %>
+              <li><%= link_to "login", new_user_registration_path, class: "nav-link" %></li>
+            <% end %>
+          </ul>
+        </div>
+      </nav>
+    <% end %>
+
     <div class="<%= content_for(:main_wrapper_class) || 'full-width-main-container' %>">
       <%= render "shared/flash_messages" %>
       <%= yield %>

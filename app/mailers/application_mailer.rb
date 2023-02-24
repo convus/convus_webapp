@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "support@convus.org"
+  default from: "info@convus.org"
   layout "mailer"
 end
