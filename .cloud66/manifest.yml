@@ -1,0 +1,7 @@
+production:
+  # postgresql:
+  #   configuration:
+  #     version: 14
+  rails:
+    configuration:
+      node_version: "18.14.2"
