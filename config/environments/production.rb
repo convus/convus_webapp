@@ -41,7 +41,7 @@ Rails.application.configure do
   # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  config.force_ssl = true
 
   # Include generic and useful information about system operation, but avoid logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII).
@@ -59,14 +59,25 @@ Rails.application.configure do
   end
 
   # Use a different cache store in production.
-  config.cache_store = :redis_cache_store, {url: ENV["REDIS_CACHE_URL"]}
+  config.cache_store = :redis_cache_store, {url: config.redis_cache_url}
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "convus_reviews_production"
 
   config.action_mailer.perform_caching = false
-  config.action_mailer.default_url_options = {protocol: "https", host: ENV["BASE_DOMAIN_NO_HTTP"]}
+  config.action_mailer.default_url_options = {protocol: "https", host: "www.convus.org"}
+
+  config.action_mailer.smtp_settings = {
+    address: ENV["MAILER_ADDRESS"],
+    user_name: ENV["MAILER_USER"],
+    password: ENV["MAILER_PASSWORD"],
+    port: 587,
+    enable_starttls_auto: true,
+    delivery_method: :smtp,
+    perform_caching: false,
+    authentication: :plain
+  }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

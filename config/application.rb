@@ -19,6 +19,9 @@ Bundler.require(*Rails.groups)
 
 module ConvusReviews
   class Application < Rails::Application
+    config.redis_default_url = ENV["REDIS_URL"]
+    config.redis_cache_url = ENV["REDIS_CACHE_URL"]
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
