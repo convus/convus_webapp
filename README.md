@@ -1,5 +1,6 @@
-# Convus Reviews [![CircleCI](https://dl.circleci.com/status-badge/img/gh/convus/convus_reviews/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/convus/convus_reviews/tree/main)
+# Convus
 
+View it: **[Convus.org](https://www.convus.org/)**
 
 ## local working
 
@@ -19,7 +20,9 @@ Run these commands in the terminal, from the directory the project is in.
 
 | Toggle in development | command                      | default  |
 | ---------             | -------                      | -------  |
-| Caching               | `bin/rails dev:cache`        | disabled |
-| [letter_opener](https://github.com/ryanb/letter_opener)     | `bin/rails dev:letter_opener` | enabled  |
-| logging with lograge  | `bin/rails dev:lograge`       | enabled  |
+| Caching               | `bundle exec rails dev:cache`| disabled |
+| [letter_opener][]     | `bin/rake dev:letter_opener` | enabled  |
+| logging with lograge  | `bin/rake dev:lograge`       | enabled  |
+
+[letter_opener]: https://github.com/ryanb/letter_opener
 
