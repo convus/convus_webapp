@@ -39,92 +39,92 @@ jobs:
         name: "Dockerize: cache restore"
         key: CACHE_V1-dockerize-0.6.1
       - run:
-          name: "Dockerize: install"
-          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-          environment:
-            DOCKERIZE_VERSION: v0.6.1
-          command: |
-            dockerize_tar=dockerize-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
-            if [[ ! -f ~/.cache/dockerize/${dockerize_tar} ]]; then
-              wget https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/${dockerize_tar}
-            fi
-            sudo tar -C /usr/local/bin -xzvf ${dockerize_tar}
+        name: "Dockerize: install"
+        command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+        environment:
+          DOCKERIZE_VERSION: v0.6.1
+        command: |
+          dockerize_tar=dockerize-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
+          if [[ ! -f ~/.cache/dockerize/${dockerize_tar} ]]; then
+            wget https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/${dockerize_tar}
+          fi
+          sudo tar -C /usr/local/bin -xzvf ${dockerize_tar}
       - type: cache-save
         name: "Dockerize: cache save"
         key: CACHE_V1-dockerize-0.6.1
         paths:
           - ~/.cache/dockerize
       - run:
-          name: "install system libraries"
-          command: sudo apt-get update && sudo apt-get -y install imagemagick postgresql-client
+        name: "install system libraries"
+        command: sudo apt-get update && sudo apt-get -y install imagemagick postgresql-client
       - run:
-          name: "Update Node.js and npm"
-          command: |
-            curl -sSL "https://nodejs.org/download/release/v18.14.2/node-v18.14.2-linux-x64.tar.xz" | sudo tar --strip-components=2 -xJ -C /usr/local/bin/ node-v18.14.2-linux-x64/bin/node
-            curl https://www.npmjs.com/install.sh | sudo bash
+        name: "Update Node.js and npm"
+        command: |
+          curl -sSL "https://nodejs.org/download/release/v18.14.2/node-v18.14.2-linux-x64.tar.xz" | sudo tar --strip-components=2 -xJ -C /usr/local/bin/ node-v18.14.2-linux-x64/bin/node
+          curl https://www.npmjs.com/install.sh | sudo bash
       - run:
-          name: "install bundler"
-          command: gem install bundler
+        name: "install bundler"
+        command: gem install bundler
       - run:
-          name: "bundle gems"
-          command: bundle install --path=vendor/bundle --jobs=4 --retry=3
+        name: "bundle gems"
+        command: bundle install --path=vendor/bundle --jobs=4 --retry=3
       # So that we can compile assets, since we use node & yarn
       - run:
-          name: "Yarn Install"
-          command: yarn install --cache-folder ~/.cache/yarn
+        name: "Yarn Install"
+        command: yarn install --cache-folder ~/.cache/yarn
       - run:
-          name: "Assets: precompile"
-          command: |
-            set -x
-            node --version
-            bundle exec rails assets:precompile assets:clean --trace
-            rm -rf public/assets           
+        name: "Assets: precompile"
+        command: |
+          set -x
+          node --version
+          bundle exec rails assets:precompile assets:clean --trace
+          rm -rf public/assets
       - run:
-          name: "Wait for PostgreSQL to start"
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+        name: "Wait for PostgreSQL to start"
+        command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - save_cache:
-          key: CACHE_V1-dep-{{ .Branch }}-{{ epoch }}
-          paths:
-            - ./vendor/bundle
-            - ~/.bundle
-            - public/assets
-            - public/packs
-            - public/packs-test
-            - tmp/cache/assets/sprockets
-            - ~/.cache/yarn
-            - ~/.cache/bundle
+        key: CACHE_V1-dep-{{ .Branch }}-{{ epoch }}
+        paths:
+          - ./vendor/bundle
+          - ~/.bundle
+          - public/assets
+          - public/packs
+          - public/packs-test
+          - tmp/cache/assets/sprockets
+          - ~/.cache/yarn
+          - ~/.cache/bundle
       - run:
-          name: "Ruby and JS lint check"
-          command: bin/lint
-          environment:
-            LINT_TEST: "true"
+        name: "Lint check"
+        command: bin/lint
+        environment:
+          LINT_TEST: "true"
       - run:
-          name: "Setup Database"
-          command: |
-            bundle exec rails db:create db:schema:load
+        name: "Setup Database"
+        command: |
+          bundle exec rails db:create db:schema:load
       - run:
-          name: "Rspec tests"
-          command: |
-            mkdir -p test-results/rspec test-artifacts
-            TESTFILES=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
-            bundle exec rspec --profile 10 \
-                              --color \
-                              --order random \
-                              --format RspecJunitFormatter \
-                              --out test-results/rspec/rspec.xml \
-                              --format progress \
-                              -- ${TESTFILES}
+        name: "Rspec tests"
+        command: |
+          mkdir -p test-results/rspec test-artifacts
+          TESTFILES=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+          bundle exec rspec --profile 10 \
+                            --color \
+                            --order random \
+                            --format RspecJunitFormatter \
+                            --out test-results/rspec/rspec.xml \
+                            --format progress \
+                            -- ${TESTFILES}
       # - run:
-      #     name: "Jest: Tests"
-      #     command: |
-      #       mkdir -p test-results/junit
-      #       yarn test --ci --runInBand --reporters=default --reporters=jest-junit
-      #     environment:
-      #       JEST_JUNIT_OUTPUT_DIR: "test-results/junit/"
+      #   name: "Jest: Tests"
+      #   command: |
+      #     mkdir -p test-results/junit
+      #     yarn test --ci --runInBand --reporters=default --reporters=jest-junit
+      #   environment:
+      #     JEST_JUNIT_OUTPUT_DIR: "test-results/junit/"
       - store_test_results:
-          path: test-results
+        path: test-results
       - store_artifacts:
-          path: test-artifacts
+        path: test-artifacts
   deploy_production:
     machine:
       enabled: true
@@ -132,9 +132,9 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Deploying to Cloud66 production"
-          command: |
-            curl --insecure -X POST -d "" https://hooks.cloud66.com/stacks/redeploy/${CLOUD66_REDEPLOYMENT_PATH}
+        name: "Deploying to Cloud66 production"
+        command: |
+          curl --insecure -X POST -d "" https://hooks.cloud66.com/stacks/redeploy/${CLOUD66_REDEPLOYMENT_PATH}
 
 workflows:
   version: 2
