@@ -5,6 +5,10 @@ module ApplicationHelper
     "Convus"
   end
 
+  def render_navbar?
+    true
+  end
+
   # maybe no display if neutral?
   def agreement_display(agreement = nil)
     return nil if agreement.blank?

@@ -1,6 +1,8 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 
+@import "sections/container_and_row.css";
+@import "sections/navbar.css";
 @import "sections/alerts.css";
 @import "sections/forms.css";
 @import "sections/tables.css";
@@ -17,20 +19,14 @@
   }
 }
 
-/* Add a little padding to the bottom */
-.main-container {
-  @apply mx-auto py-4 w-full;
-}
+h1 { @apply text-2xl; }
+h2 { @apply text-xl; }
+h3 { @apply text-lg; }
+h4 { @apply font-bold; }
 
-.full-width-main-container {
-  @apply main-container max-w-main-content;
-}
-
-.small-width-main-container {
-  @apply main-container max-w-xl;
-  /* might wanna use max-w-prose sometime - this is close*/
-}
-
+/*
+  Links and buttons
+*/
 a {
   @apply text-primary;
 }
@@ -45,17 +41,4 @@ a {
   &:hover, &.active, &:active {
     @apply bg-gray-200 border-gray-600
   }
-}
-
-h1 { @apply text-2xl; }
-h2 { @apply text-xl; }
-h3 { @apply text-lg; }
-h4 { @apply font-bold; }
-
-.row {
-  @apply grid -ml-4 -mr-4;
-}
-
-.col {
-  @apply px-4
 }

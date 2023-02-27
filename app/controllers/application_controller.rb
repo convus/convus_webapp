@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   before_action :enable_rack_profiler, if: !Rails.env.test?
   before_action :enable_rack_profiler
 
-  helper_method :display_dev_info?, :user_subject
+  helper_method :display_dev_info?, :user_subject, :user_root_url
 
   def append_info_to_payload(payload)
     super

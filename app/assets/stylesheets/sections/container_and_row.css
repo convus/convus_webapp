@@ -1,0 +1,29 @@
+.main-container {
+  /* Add a little padding to the bottom */
+  @apply mx-auto py-2 w-full;
+}
+
+.full-width-container {
+  @apply max-w-main-content;
+}
+
+.full-width-main-container {
+  @apply main-container full-width-container;
+}
+
+.small-width-main-container {
+  @apply main-container max-w-xl;
+  /* might wanna use max-w-prose sometime - this is close*/
+}
+
+/*
+  Grid! Not positive this is the best way of handling (negative margins), but going for it
+*/
+
+.row {
+  @apply grid -ml-4 -mr-4;
+}
+
+.col {
+  @apply px-4
+}
