@@ -11,7 +11,6 @@ gem "rack-cors" # Make cors requests
 # database stuff
 gem "pg", "~> 1.1" # Use postgresql as the database for Active Record
 
-
 # Redis, redis requirements
 gem "redis" # Redis itself
 gem "sidekiq" # Background job processing (with redis)
