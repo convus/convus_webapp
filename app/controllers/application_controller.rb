@@ -10,7 +10,6 @@ class ApplicationController < ActionController::Base
   end
 
   before_action :configure_permitted_parameters, if: :devise_controller?
-  before_action :enable_rack_profiler, if: !Rails.env.test?
   before_action :enable_rack_profiler
 
   helper_method :display_dev_info?, :user_subject, :user_root_url
@@ -25,7 +24,7 @@ class ApplicationController < ActionController::Base
   end
 
   def enable_rack_profiler
-    return false unless current_user&.developer?
+    return false if Rails.env.test? || !current_user&.developer?
     Rack::MiniProfiler.authorize_request
   end
 
@@ -44,27 +43,6 @@ class ApplicationController < ActionController::Base
   def user_root_url
     return root_url if current_user.blank?
     root_url # TODO: make this something else
-  end
-
-  def cors_set_access_control_headers
-    headers["Access-Control-Allow-Origin"] = "*"
-    headers["Access-Control-Allow-Methods"] = "POST, PUT, GET, OPTIONS"
-    headers["Access-Control-Request-Method"] = "*"
-    headers["Access-Control-Allow-Headers"] = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-    headers["Access-Control-Max-Age"] = "1728000"
-  end
-
-  # If this is a preflight OPTIONS request, then short-circuit the
-  # request, return only the necessary headers and return an empty
-  # text/plain.
-  def cors_preflight_check
-    if request.method == :options
-      headers["Access-Control-Allow-Origin"] = "*"
-      headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
-      headers["Access-Control-Allow-Headers"] = "*"
-      headers["Access-Control-Max-Age"] = "1728000"
-      render plain: ""
-    end
   end
 
   protected

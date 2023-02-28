@@ -6,14 +6,11 @@ ruby "3.1.3"
 gem "rails", "~> 7.0.4"
 
 gem "puma" # Use Puma as the app server
-
-gem "propshaft" # For Assets Pipeline
+gem "rack-cors" # Make cors requests
 
 # database stuff
 gem "pg", "~> 1.1" # Use postgresql as the database for Active Record
 
-# I expect to add postgis soon - holding off until it's actually useful
-# gem "activerecord-postgis-adapter" # Postgis adapter
 
 # Redis, redis requirements
 gem "redis" # Redis itself
@@ -45,6 +42,7 @@ gem "premailer-rails" # Inline styles for email
 gem "coderay" # For pretty printing JSON
 
 # New shiny frontend stuff
+gem "propshaft" # For Assets Pipeline
 gem "jsbundling-rails" # required for new sourcemaps stuff
 gem "cssbundling-rails" # required for new sourcemaps stuff
 gem "importmap-rails", ">= 0.3.4" # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]

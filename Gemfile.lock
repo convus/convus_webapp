@@ -228,6 +228,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.6.0)
     rack (2.2.4)
+    rack-cors (2.0.0)
+      rack (>= 2.0.0)
     rack-mini-profiler (3.0.0)
       rack (>= 1.2.0)
     rack-protection (3.0.4)
@@ -401,6 +403,7 @@ DEPENDENCIES
   premailer-rails
   propshaft
   puma
+  rack-cors
   rack-mini-profiler
   rails (~> 7.0.4)
   rails-controller-testing
