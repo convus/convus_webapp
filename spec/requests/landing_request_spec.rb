@@ -13,6 +13,7 @@ RSpec.describe "/", type: :request do
         get "/"
         expect(response.code).to eq "200"
         expect(response).to render_template("landing/index")
+        expect(response.headers["Access-Control-Allow-Origin"]).to be_blank
       end
       # TODO: fix these tests! ESBUILD_ERROR_RENDERED isn't stubbed correctly
       # describe "esbuild_error" do
@@ -31,6 +32,16 @@ RSpec.describe "/", type: :request do
       #     end
       #   end
       # end
+    end
+  end
+
+  describe "browser_extension" do
+    it "renders" do
+      get "/browser_extension"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("landing/browser_extension")
+      expect(response.headers["Access-Control-Allow-Origin"]).to eq("*")
+      expect(response.headers["Access-Control-Request-Method"]).to eq("*")
     end
   end
 end
