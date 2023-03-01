@@ -79,7 +79,7 @@ RSpec.describe base_url, type: :request do
         it "creates" do
           expect {
             post base_url, as: :turbo_stream, params: {review: create_params}
-            expect(response.media_type).to eq Mime[:turbo_stream]
+            expect_turbo_stream_response
           }.to change(Review, :count).by 1
           review = Review.last
           expect_attrs_to_match_hash(review, create_params)
@@ -94,7 +94,7 @@ RSpec.describe base_url, type: :request do
             expect(Review.count).to eq 0
             expect {
               post base_url, as: :turbo_stream, params: {review: error_params}
-              expect(response.media_type).to eq Mime[:turbo_stream]
+              expect_turbo_stream_response
             }.to change(Review, :count).by 0
             expect_attrs_to_match_hash(assigns(:review), error_params)
           end

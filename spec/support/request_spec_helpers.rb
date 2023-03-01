@@ -25,4 +25,9 @@ module RequestSpecHelpers
     r = JSON.parse(response.body)
     r.is_a?(Hash) ? r.with_indifferent_access : r
   end
+
+  def expect_turbo_stream_response
+    pp response.media_type
+    expect(response.media_type).to eq Mime[:turbo_stream]
+  end
 end
