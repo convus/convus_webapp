@@ -6,7 +6,6 @@ class ReviewsController < ApplicationController
   # TODO: verify authenticity in some other way!
   skip_before_action :verify_authenticity_token, only: %i[create]
 
-
   def index
     if user_subject&.id != current_user.id
       redirect_to reviews_path(user: current_user.username)
@@ -34,7 +33,7 @@ class ReviewsController < ApplicationController
     if @review.save
       respond_to do |format|
         format.html do
-          redirect_source = @review.source == "web" ? nil : @review.source
+          redirect_source = (@review.source == "web") ? nil : @review.source
           redirect_to new_review_path(source: redirect_source), status: :see_other, flash: {success: "Review added"}
         end
       end
