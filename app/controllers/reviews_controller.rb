@@ -36,7 +36,6 @@ class ReviewsController < ApplicationController
           redirect_source = (@review.source == "web") ? nil : @review.source
           redirect_to new_review_path(source: redirect_source), status: :see_other, flash: {success: "Review added"}
         end
-        # format.turbo_stream { render turbo_stream: turbo_stream.replace(@review, partial: "reviews/form", locals: {review: @review}) }
       end
     else
       respond_to do |format|
