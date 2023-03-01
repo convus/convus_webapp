@@ -103,8 +103,9 @@ RSpec.describe base_url, type: :request do
         it "creates, not turbo_stream" do
           expect {
             post base_url, as: :turbo_stream, params: {review: create_params}
-            expect(response.media_type).to eq Mime[:turbo_stream]
+            expect(response.media_type).to_not eq Mime[:turbo_stream]
           }.to change(Review, :count).by 1
+          expect(response).to redirect_to(new_review_path)
           review = Review.last
           expect_attrs_to_match_hash(review, create_params)
           expect(review.citation).to be_present
