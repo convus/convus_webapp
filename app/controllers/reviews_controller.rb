@@ -18,9 +18,9 @@ class ReviewsController < ApplicationController
   end
 
   def new
-    @source = params[:browser_extension].presence || "web"
+    @source = params[:source].presence || "web"
     @review ||= Review.new(source: @source)
-    if params[:browser_extension].blank?
+    if params[:source].blank?
       redirect_to_signup_unless_user_present!
     else
       render layout: false
@@ -36,6 +36,7 @@ class ReviewsController < ApplicationController
           redirect_source = (@review.source == "web") ? nil : @review.source
           redirect_to new_review_path(source: redirect_source), status: :see_other, flash: {success: "Review added"}
         end
+        format.turbo_stream { render turbo_stream: turbo_stream.replace(@review, partial: "reviews/form", locals: {review: @review}) }
       end
     else
       respond_to do |format|

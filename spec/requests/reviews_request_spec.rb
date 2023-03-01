@@ -12,7 +12,7 @@ RSpec.describe base_url, type: :request do
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
       topics_text: "A topic\n\nAnd another topic",
-      source: "chrome"
+      source: "chrome_extension"
     }
   end
 
@@ -22,9 +22,9 @@ RSpec.describe base_url, type: :request do
       expect(response).to redirect_to new_user_registration_path
       expect(session[:user_return_to]).to eq "#{base_url}/new"
     end
-    context "with browser_extension chrome" do
+    context "with source chrome" do
       it "renders without layout" do
-        get "#{base_url}/new?browser_extension=chrome"
+        get "#{base_url}/new?source=chrome_extension"
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/new")
         expect(response).to_not render_template("layouts/application")
@@ -42,13 +42,13 @@ RSpec.describe base_url, type: :request do
         expect(response).to render_template("layouts/application")
         expect(assigns(:review).source).to eq "web"
       end
-      context "browser_extension safari" do
+      context "source safari" do
         it "renders without layout" do
-          get "#{base_url}/new?browser_extension=safari", headers: {"HTTP_ORIGIN" => "*"}
+          get "#{base_url}/new?source=safari_extension", headers: {"HTTP_ORIGIN" => "*"}
           expect(response.code).to eq "200"
           expect(response).to render_template("reviews/new")
           expect(response).to_not render_template("layouts/application")
-          expect(assigns(:review).source).to eq "safari"
+          expect(assigns(:review).source).to eq "safari_extension"
           expect(response.headers["access-control-allow-origin"]).to eq("*")
           expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
         end
@@ -103,9 +103,8 @@ RSpec.describe base_url, type: :request do
         it "creates, not turbo_stream" do
           expect {
             post base_url, as: :turbo_stream, params: {review: create_params}
-            expect(response.media_type).to_not eq Mime[:turbo_stream]
+            expect(response.media_type).to eq Mime[:turbo_stream]
           }.to change(Review, :count).by 1
-          expect(response).to redirect_to(new_review_path)
           review = Review.last
           expect_attrs_to_match_hash(review, create_params)
           expect(review.citation).to be_present
@@ -150,7 +149,7 @@ RSpec.describe base_url, type: :request do
           expect {
             post base_url, params: {review: create_params.merge(user_id: 12111)}
           }.to change(Review, :count).by 1
-          expect(response).to redirect_to(new_review_path(source: "chrome"))
+          expect(response).to redirect_to(new_review_path(source: "chrome_extension"))
           expect(flash[:success]).to be_present
           review = Review.last
           expect(review.user_id).to eq current_user.id
