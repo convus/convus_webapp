@@ -2,6 +2,9 @@
 <% editing_review = review.id.present? %>
 <% render partial: "/shared/errors", locals: {name: "Review", obj: review} %>
 <%= form_for review do |f| %>
+  <% unless editing_review %>
+    <%= f.hidden_field :source, class: "form-control" %>
+  <% end %>
   <div class="form-row">
     <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && review.submitted_url.present?, class: "form-control", autocomplete: "off" %>
   </div>

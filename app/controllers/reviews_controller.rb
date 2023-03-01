@@ -1,7 +1,7 @@
 class ReviewsController < ApplicationController
   include TranzitoUtils::SortableTable
   before_action :set_period, only: %i[index]
-  before_action :redirect_to_signup_unless_user_present!
+  before_action :redirect_to_signup_unless_user_present!, except: %i[new]
   before_action :find_and_authorize_review, only: %i[edit update]
 
   def index
@@ -16,7 +16,13 @@ class ReviewsController < ApplicationController
   end
 
   def new
-    @review ||= Review.new
+    @source = params[:browser_extension].presence || "web"
+    @review ||= Review.new(source: @source)
+    if params[:browser_extension].blank?
+      redirect_to_signup_unless_user_present!
+    else
+      render layout: false
+    end
   end
 
   def create
@@ -60,7 +66,7 @@ class ReviewsController < ApplicationController
     params.require(:review)
       .permit(:submitted_url, :citation_title, :agreement, :quality,
         :changed_my_opinion, :significant_factual_error, :error_quotes,
-        :topics_text)
+        :topics_text, :source)
   end
 
   def sortable_columns

@@ -11,7 +11,8 @@ RSpec.describe base_url, type: :request do
       changed_my_opinion: "true",
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
-      topics_text: "A topic\n\nAnd another topic"
+      topics_text: "A topic\n\nAnd another topic",
+      source: "chrome"
     }
   end
 
@@ -21,15 +22,36 @@ RSpec.describe base_url, type: :request do
       expect(response).to redirect_to new_user_registration_path
       expect(session[:user_return_to]).to eq "#{base_url}/new"
     end
+    context "with browser_extension chrome" do
+      it "renders without layout" do
+        get "#{base_url}/new?browser_extension=chrome"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("reviews/new")
+        expect(response).to_not render_template("layouts/application")
+      end
+    end
   end
 
   context "current_user present" do
     include_context :logged_in_as_user
     describe "new" do
-      it "renders" do
+      it "renders with layout" do
         get "#{base_url}/new"
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/new")
+        expect(response).to render_template("layouts/application")
+        expect(assigns(:review).source).to eq "web"
+      end
+      context "browser_extension safari" do
+        it "renders without layout" do
+          get "#{base_url}/new?browser_extension=safari", headers: {"HTTP_ORIGIN" => "*"}
+          expect(response.code).to eq "200"
+          expect(response).to render_template("reviews/new")
+          expect(response).to_not render_template("layouts/application")
+          expect(assigns(:review).source).to eq "safari"
+          expect(response.headers["access-control-allow-origin"]).to eq("*")
+          expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
+        end
       end
     end
 
@@ -56,7 +78,8 @@ RSpec.describe base_url, type: :request do
         {
           submitted_url: "http://example.com",
           agreement: "agree",
-          quality: "quality_low"
+          quality: "quality_low",
+          source: "web"
         }
       end
 
@@ -79,7 +102,7 @@ RSpec.describe base_url, type: :request do
         it "creates" do
           expect {
             post base_url, as: :turbo_stream, params: {review: create_params}
-            expect_turbo_stream_response
+            expect(response.media_type).to eq Mime[:turbo_stream]
           }.to change(Review, :count).by 1
           review = Review.last
           expect_attrs_to_match_hash(review, create_params)
@@ -94,7 +117,7 @@ RSpec.describe base_url, type: :request do
             expect(Review.count).to eq 0
             expect {
               post base_url, as: :turbo_stream, params: {review: error_params}
-              expect_turbo_stream_response
+              expect(response.media_type).to eq Mime[:turbo_stream]
             }.to change(Review, :count).by 0
             expect_attrs_to_match_hash(assigns(:review), error_params)
           end

@@ -35,14 +35,4 @@ RSpec.describe "/", type: :request do
       # end
     end
   end
-
-  describe "browser_extension" do
-    it "renders" do
-      get "/browser_extension", headers: {"HTTP_ORIGIN" => "*"}
-      expect(response.code).to eq "200"
-      expect(response).to render_template("landing/browser_extension")
-      expect(response.headers["access-control-allow-origin"]).to eq("*")
-      expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
-    end
-  end
 end
