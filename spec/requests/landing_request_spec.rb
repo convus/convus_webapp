@@ -10,10 +10,11 @@ RSpec.describe "/", type: :request do
     context "current_user present" do
       include_context :logged_in_as_user
       it "renders" do
-        get "/"
+        get "/", headers: { 'HTTP_ORIGIN' => '*' }
         expect(response.code).to eq "200"
         expect(response).to render_template("landing/index")
-        # expect(response.headers["Access-Control-Allow-Origin"]).to be_blank
+        # Currently, including CORS everywhere. Not sure that's the best move though...
+        expect(response.headers["Access-Control-Allow-Origin"]).to be_present
       end
       # TODO: fix these tests! ESBUILD_ERROR_RENDERED isn't stubbed correctly
       # describe "esbuild_error" do
@@ -37,12 +38,11 @@ RSpec.describe "/", type: :request do
 
   describe "browser_extension" do
     it "renders" do
-      get "/browser_extension"
+      get "/browser_extension", headers: { 'HTTP_ORIGIN' => '*' }
       expect(response.code).to eq "200"
       expect(response).to render_template("landing/browser_extension")
-      # TODO: Figure out how to test rack-cors here
-      # expect(response.headers["Access-Control-Allow-Origin"]).to eq("*")
-      # expect(response.headers["Access-Control-Request-Method"]).to eq("*")
+      expect(response.headers["access-control-allow-origin"]).to eq("*")
+      expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
     end
   end
 end

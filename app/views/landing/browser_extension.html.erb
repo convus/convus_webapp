@@ -1,3 +1,5 @@
 <%= turbo_frame_tag :content do %>
   Hello from Convus.
+
+  <%= current_user&.username || "No user present" %>
 <% end %>
