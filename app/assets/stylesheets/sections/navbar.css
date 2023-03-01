@@ -2,7 +2,7 @@
   @apply px-2;
 
   .navbar-container {
-    @apply full-width-container flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4 ;
+    @apply full-width-container flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4;
   }
 
   .root-link {

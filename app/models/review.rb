@@ -18,6 +18,7 @@ class Review < ApplicationRecord
   belongs_to :user
 
   validates_presence_of :user_id
+  validate :not_error_url
 
   before_save :associate_citation
 
@@ -50,5 +51,11 @@ class Review < ApplicationRecord
   def associate_citation
     self.citation_title = nil if citation_title.blank?
     self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)
+  end
+
+  # Added to make testing review form errors easy
+  def not_error_url
+    return true if submitted_url.downcase != "error"
+    errors.add(:submitted_url, "'#{submitted_url}' is not valid")
   end
 end

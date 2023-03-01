@@ -74,4 +74,12 @@ RSpec.describe Review, type: :model do
       end
     end
   end
+
+  describe "validate not_error_url" do
+    let(:review) { FactoryBot.build(:review, submitted_url: "error") }
+    it "is invalid" do
+      expect(review).to_not be_valid
+      expect(review.errors.full_messages.join("")).to eq "Submitted url 'error' is not valid"
+    end
+  end
 end

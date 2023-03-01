@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   root "landing#index"
 
+  get "/browser_extension", to: "landing#browser_extension"
+
   resources :reviews
 
   authenticate :user, lambda { |u| u.admin? } do

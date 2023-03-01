@@ -5,6 +5,18 @@ module ApplicationHelper
     "Convus"
   end
 
+  def check_mark
+    "&#x2713;".html_safe
+  end
+
+  def cross_mark
+    "&#x274C;".html_safe
+  end
+
+  def search_emoji
+    "🔎"
+  end
+
   def render_navbar?
     true
   end

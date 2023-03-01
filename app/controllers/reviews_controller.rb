@@ -1,8 +1,10 @@
 class ReviewsController < ApplicationController
   include TranzitoUtils::SortableTable
   before_action :set_period, only: %i[index]
-  before_action :redirect_to_signup_unless_user_present!
+  before_action :redirect_to_signup_unless_user_present!, except: %i[new]
   before_action :find_and_authorize_review, only: %i[edit update]
+  # TODO: verify authenticity in some other way!
+  skip_before_action :verify_authenticity_token, only: %i[create]
 
   def index
     if user_subject&.id != current_user.id
@@ -16,17 +18,34 @@ class ReviewsController < ApplicationController
   end
 
   def new
-    @review ||= Review.new
+    @source = params[:source].presence || "web"
+    @review ||= Review.new(source: @source)
+    if params[:source].blank?
+      redirect_to_signup_unless_user_present!
+    else
+      render layout: false
+    end
   end
 
   def create
     @review = Review.new(permitted_params)
     @review.user = current_user
     if @review.save
-      flash[:success] = "Review created"
-      redirect_to root_path, status: :see_other
+      respond_to do |format|
+        format.html do
+          redirect_source = (@review.source == "web") ? nil : @review.source
+          redirect_to new_review_path(source: redirect_source), status: :see_other, flash: {success: "Review added"}
+        end
+        # format.turbo_stream { render turbo_stream: turbo_stream.replace(@review, partial: "reviews/form", locals: {review: @review}) }
+      end
     else
-      render :new
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace(@review, partial: "reviews/form", locals: {review: @review}) }
+        format.html do
+          flash[:error] = "Review not created"
+          render :new
+        end
+      end
     end
   end
 
@@ -48,7 +67,7 @@ class ReviewsController < ApplicationController
     params.require(:review)
       .permit(:submitted_url, :citation_title, :agreement, :quality,
         :changed_my_opinion, :significant_factual_error, :error_quotes,
-        :topics_text)
+        :topics_text, :source)
   end
 
   def sortable_columns

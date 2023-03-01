@@ -37,19 +37,17 @@ Rails.application.configure do
   end
 
   # Lograge is used in production
-  # But it's failing right now
-
-  # unless Rails.root.join("tmp", "non-lograge-dev.txt").exist?
-  #   config.lograge.enabled = true
-  #   config.log_level = :debug
-  #   config.lograge.formatter = Lograge::Formatters::Logstash.new # Use logstash format
-  #   config.lograge.custom_options = lambda do |event|
-  #     {
-  #       remote_ip: event.payload[:ip],
-  #       params: event.payload[:params].except("controller", "action", "format", "id")
-  #     }
-  #   end
-  # end
+  unless Rails.root.join("tmp", "non-lograge-dev.txt").exist?
+    config.lograge.enabled = true
+    config.log_level = :debug
+    config.lograge.formatter = Lograge::Formatters::Logstash.new # Use logstash format
+    config.lograge.custom_options = lambda do |event|
+      {
+        remote_ip: event.payload[:ip],
+        params: event.payload[:params]&.except("controller", "action", "format", "id")
+      }
+    end
+  end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local

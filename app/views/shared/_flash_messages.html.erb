@@ -7,7 +7,7 @@
   notice  - Messages that don't fit in the above categories. Not faded, may have actionable info
 %>
 <% if flash.any? %>
-  <div class="flash-alert-container">
+  <div class="flash-alerts">
     <% i = 0 %>
     <% flash.each do |type, message| %>
       <% next unless message.present? %>

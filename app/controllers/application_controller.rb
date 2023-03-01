@@ -10,7 +10,6 @@ class ApplicationController < ActionController::Base
   end
 
   before_action :configure_permitted_parameters, if: :devise_controller?
-  before_action :enable_rack_profiler, if: !Rails.env.test?
   before_action :enable_rack_profiler
 
   helper_method :display_dev_info?, :user_subject, :user_root_url
@@ -25,7 +24,7 @@ class ApplicationController < ActionController::Base
   end
 
   def enable_rack_profiler
-    return false unless current_user&.developer?
+    return false if Rails.env.test? || !current_user&.developer?
     Rack::MiniProfiler.authorize_request
   end
 

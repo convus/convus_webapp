@@ -11,7 +11,8 @@ RSpec.describe base_url, type: :request do
       changed_my_opinion: "true",
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
-      topics_text: "A topic\n\nAnd another topic"
+      topics_text: "A topic\n\nAnd another topic",
+      source: "chrome_extension"
     }
   end
 
@@ -21,15 +22,36 @@ RSpec.describe base_url, type: :request do
       expect(response).to redirect_to new_user_registration_path
       expect(session[:user_return_to]).to eq "#{base_url}/new"
     end
+    context "with source chrome" do
+      it "renders without layout" do
+        get "#{base_url}/new?source=chrome_extension"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("reviews/new")
+        expect(response).to_not render_template("layouts/application")
+      end
+    end
   end
 
   context "current_user present" do
     include_context :logged_in_as_user
     describe "new" do
-      it "renders" do
+      it "renders with layout" do
         get "#{base_url}/new"
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/new")
+        expect(response).to render_template("layouts/application")
+        expect(assigns(:review).source).to eq "web"
+      end
+      context "source safari" do
+        it "renders without layout" do
+          get "#{base_url}/new?source=safari_extension", headers: {"HTTP_ORIGIN" => "*"}
+          expect(response.code).to eq "200"
+          expect(response).to render_template("reviews/new")
+          expect(response).to_not render_template("layouts/application")
+          expect(assigns(:review).source).to eq "safari_extension"
+          expect(response.headers["access-control-allow-origin"]).to eq("*")
+          expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
+        end
       end
     end
 
@@ -56,16 +78,17 @@ RSpec.describe base_url, type: :request do
         {
           submitted_url: "http://example.com",
           agreement: "agree",
-          quality: "quality_low"
+          quality: "quality_low",
+          source: "web"
         }
       end
 
       it "creates with basic params" do
         expect(Review.count).to eq 0
-
         expect {
           post base_url, params: {review: create_params}
         }.to change(Review, :count).by 1
+        expect(response).to redirect_to(new_review_path)
         expect(flash[:success]).to be_present
         review = Review.last
         expect(review.user_id).to eq current_user.id
@@ -76,14 +99,58 @@ RSpec.describe base_url, type: :request do
         expect(citation.title).to be_blank
       end
 
+      context "turbo_stream" do
+        it "creates, not turbo_stream" do
+          expect {
+            post base_url, as: :turbo_stream, params: {review: create_params}
+            expect(response.media_type).to_not eq Mime[:turbo_stream]
+          }.to change(Review, :count).by 1
+          expect(response).to redirect_to(new_review_path)
+          review = Review.last
+          expect_attrs_to_match_hash(review, create_params)
+          expect(review.citation).to be_present
+          citation = review.citation
+          expect(citation.url).to eq "http://example.com"
+          expect(citation.title).to be_blank
+        end
+        context "with error" do
+          let(:error_params) { create_params.merge(submitted_url: "ERROR") }
+          it "errors" do
+            expect(Review.count).to eq 0
+            expect {
+              post base_url, as: :turbo_stream, params: {review: error_params}
+              expect(response.media_type).to eq Mime[:turbo_stream]
+            }.to change(Review, :count).by 0
+            expect_attrs_to_match_hash(assigns(:review), error_params)
+          end
+        end
+      end
+
+      context "no csrf" do
+        include_context :test_csrf_token
+        it "fails" do
+          expect(Review.count).to eq 0
+          expect {
+            post base_url, params: {review: create_params}, as: :turbo_stream
+          }.to change(Review, :count).by 1
+          review = Review.last
+          expect_attrs_to_match_hash(review, create_params)
+          expect(review.citation).to be_present
+          citation = review.citation
+          expect(citation.url).to eq "http://example.com"
+          expect(citation.title).to be_blank
+        end
+      end
+
       context "full params" do
         let(:create_params) { full_params }
         it "creates with full params" do
           expect(Review.count).to eq 0
 
           expect {
-            post base_url, params: {review: create_params}
+            post base_url, params: {review: create_params.merge(user_id: 12111)}
           }.to change(Review, :count).by 1
+          expect(response).to redirect_to(new_review_path(source: "chrome_extension"))
           expect(flash[:success]).to be_present
           review = Review.last
           expect(review.user_id).to eq current_user.id
@@ -130,6 +197,18 @@ RSpec.describe base_url, type: :request do
         expect(review.citation_id).to_not eq citation.id
         expect(review.citation.url).to eq "http://example.com"
         expect(review.citation.title).to eq "something"
+      end
+      context "no csrf" do
+        include_context :test_csrf_token
+        it "fails" do
+          expect(citation).to be_valid
+          expect {
+            patch "#{base_url}/#{review.to_param}", params: {
+              review: full_params
+            }
+          }.to raise_error(/csrf/i)
+          expect(review.reload.submitted_url).to_not eq full_params[:submitted_url]
+        end
       end
     end
   end

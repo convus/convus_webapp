@@ -1,3 +1,12 @@
-<%= content_for :main_wrapper_class, "small-width-main-container" %>
-<h1 class="mb-3"> Add Review</h1>
-<%= render partial: "form" %>
+<% if @source == "web" %>
+  <%= content_for :main_wrapper_class, "small-width-main-container" %>
+  <h1 class="mb-3">Add Review</h1>
+<% end %>
+<%= turbo_frame_tag :new_review do %>
+  <% if current_user.blank? %>
+    <h4>Please log in</h4>
+    <%= link_to "Log in", new_user_session_url, target: "_blank" %>
+  <% else %>
+    <%= render partial: "form", locals: {review: @review} %>
+  <% end %>
+<% end %>
