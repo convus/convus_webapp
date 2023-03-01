@@ -1,9 +1,8 @@
 <%= turbo_frame_tag :content do %>
-  Hello from Convus.
-
-  <% if current_user.present? %>
-    <h2><%= current_user&.username %>
+  <% if current_user.blank? %>
+    <h4>Please log in</h4>
+    <%= link_to "Log in", new_user_session_url %>
   <% else %>
-    <h4>No user present</h4>
+    <%= render partial: "/reviews/form" %>
   <% end %>
 <% end %>

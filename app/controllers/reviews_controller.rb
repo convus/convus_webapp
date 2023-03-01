@@ -23,10 +23,11 @@ class ReviewsController < ApplicationController
     @review = Review.new(permitted_params)
     @review.user = current_user
     if @review.save
-      flash[:success] = "Review created"
-      redirect_to root_path, status: :see_other
+      flash.now[:success] = "Review created"
+      format.html { redirect_to root_path, status: :see_other }
     else
-      render :new
+      format.turbo_stream { render turbo_stream: turbo_stream.replace(@review, partial: "reviews/form", locals: {review: @review}) }
+      format.html { render :new }
     end
   end
 

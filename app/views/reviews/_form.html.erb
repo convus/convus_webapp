@@ -1,3 +1,4 @@
+<% @review ||= Review.new %>
 <% editing_review = @review.id.present? %>
 <% render partial: "/shared/errors", locals: {name: "Review", obj: @review} %>
 <%= form_for @review do |f| %>

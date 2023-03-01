@@ -10,7 +10,7 @@ RSpec.describe "/", type: :request do
     context "current_user present" do
       include_context :logged_in_as_user
       it "renders" do
-        get "/", headers: { 'HTTP_ORIGIN' => '*' }
+        get "/", headers: {"HTTP_ORIGIN" => "*"}
         expect(response.code).to eq "200"
         expect(response).to render_template("landing/index")
         # Currently, including CORS everywhere. Not sure that's the best move though...
@@ -38,7 +38,7 @@ RSpec.describe "/", type: :request do
 
   describe "browser_extension" do
     it "renders" do
-      get "/browser_extension", headers: { 'HTTP_ORIGIN' => '*' }
+      get "/browser_extension", headers: {"HTTP_ORIGIN" => "*"}
       expect(response.code).to eq "200"
       expect(response).to render_template("landing/browser_extension")
       expect(response.headers["access-control-allow-origin"]).to eq("*")
