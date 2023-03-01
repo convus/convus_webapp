@@ -21,7 +21,6 @@ module ApplicationHelper
     true
   end
 
-  # maybe no display if neutral?
   def agreement_display(agreement = nil)
     return nil if agreement.blank?
     if agreement.to_s == "neutral"
@@ -39,5 +38,12 @@ module ApplicationHelper
     else
       content_tag(:span, str)
     end
+  end
+
+  # TODO: solve in a better way...
+  def stylesheet_link_tag_url(stylesheet)
+    base_url = Rails.env.production? ? "https://www.convus.org" : "http://localhost:3009"
+    stylesheet_link_tag(stylesheet).gsub("href=\"", "href=\"#{base_url}")
+      .html_safe
   end
 end
