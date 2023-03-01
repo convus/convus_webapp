@@ -18,6 +18,6 @@
   @apply border-error;
 }
 
-.flash-alert-container {
-  @apply w-full;
+.flash-alerts {
+  @apply w-full mb-4 -mt-3;
 }

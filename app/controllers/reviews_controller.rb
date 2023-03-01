@@ -3,6 +3,9 @@ class ReviewsController < ApplicationController
   before_action :set_period, only: %i[index]
   before_action :redirect_to_signup_unless_user_present!, except: %i[new]
   before_action :find_and_authorize_review, only: %i[edit update]
+  # TODO: verify authenticity in some other way!
+  skip_before_action :verify_authenticity_token, only: %i[create]
+
 
   def index
     if user_subject&.id != current_user.id
@@ -31,10 +34,8 @@ class ReviewsController < ApplicationController
     if @review.save
       respond_to do |format|
         format.html do
-          redirect_to new_review_path, status: :see_other, flash: {success: "Review added"}
-        end
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(@review, partial: "reviews/form", locals: {review: Review.new})
+          redirect_source = @review.source == "web" ? nil : @review.source
+          redirect_to new_review_path(source: redirect_source), status: :see_other, flash: {success: "Review added"}
         end
       end
     else

@@ -88,6 +88,7 @@ RSpec.describe base_url, type: :request do
         expect {
           post base_url, params: {review: create_params}
         }.to change(Review, :count).by 1
+        expect(response).to redirect_to(new_review_path)
         expect(flash[:success]).to be_present
         review = Review.last
         expect(review.user_id).to eq current_user.id
@@ -99,11 +100,12 @@ RSpec.describe base_url, type: :request do
       end
 
       context "turbo_stream" do
-        it "creates" do
+        it "creates, not turbo_stream" do
           expect {
             post base_url, as: :turbo_stream, params: {review: create_params}
-            expect(response.media_type).to eq Mime[:turbo_stream]
+            expect(response.media_type).to_not eq Mime[:turbo_stream]
           }.to change(Review, :count).by 1
+          expect(response).to redirect_to(new_review_path)
           review = Review.last
           expect_attrs_to_match_hash(review, create_params)
           expect(review.citation).to be_present
@@ -130,8 +132,13 @@ RSpec.describe base_url, type: :request do
           expect(Review.count).to eq 0
           expect {
             post base_url, params: {review: create_params}, as: :turbo_stream
-          }.to raise_error(/csrf/i)
-          expect(Review.count).to eq 0
+          }.to change(Review, :count).by 1
+          review = Review.last
+          expect_attrs_to_match_hash(review, create_params)
+          expect(review.citation).to be_present
+          citation = review.citation
+          expect(citation.url).to eq "http://example.com"
+          expect(citation.title).to be_blank
         end
       end
 
@@ -143,6 +150,7 @@ RSpec.describe base_url, type: :request do
           expect {
             post base_url, params: {review: create_params.merge(user_id: 12111)}
           }.to change(Review, :count).by 1
+          expect(response).to redirect_to(new_review_path(source: "chrome"))
           expect(flash[:success]).to be_present
           review = Review.last
           expect(review.user_id).to eq current_user.id
