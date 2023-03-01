@@ -1,7 +1,7 @@
-<%= turbo_frame_tag :content do %>
+<%= turbo_frame_tag :new_review do %>
   <% if current_user.blank? %>
     <h4>Please log in</h4>
-    <%= link_to "Log in", new_user_session_url %>
+    <%= link_to "Log in", new_user_session_url, target: "_blank" %>
   <% else %>
     <%= render partial: "/reviews/form" %>
   <% end %>

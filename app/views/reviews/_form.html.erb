@@ -1,9 +1,9 @@
-<% @review ||= Review.new %>
-<% editing_review = @review.id.present? %>
-<% render partial: "/shared/errors", locals: {name: "Review", obj: @review} %>
-<%= form_for @review do |f| %>
+<% review ||= Review.new %>
+<% editing_review = review.id.present? %>
+<% render partial: "/shared/errors", locals: {name: "Review", obj: review} %>
+<%= form_for review do |f| %>
   <div class="form-row">
-    <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && @review.submitted_url.present?, class: "form-control" %>
+    <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && review.submitted_url.present?, class: "form-control", autocomplete: "off" %>
   </div>
   <div class="row grid-cols-2 divide-x">
     <div class="col py-1">
@@ -51,10 +51,10 @@
     <%= f.submit "save", class: "btn btn-success" %>
   </div>
   <% if editing_review %>
-    <% if @review.edit_title? %>
+    <% if review.edit_title? %>
       <div class="form-row">
         <%= f.label :citation_title, "Title" %>
-        <%= f.text_field :citation_title, placeholder: @review.citation&.title, class: "form-control" %>
+        <%= f.text_field :citation_title, placeholder: review.citation&.title, class: "form-control" %>
       </div>
     <% end %>
     <div class="form-row">

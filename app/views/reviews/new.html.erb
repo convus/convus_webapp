@@ -1,3 +1,3 @@
 <%= content_for :main_wrapper_class, "small-width-main-container" %>
 <h1 class="mb-3"> Add Review</h1>
-<%= render partial: "form" %>
+<%= render partial: "form", locals: {review: @review} %>

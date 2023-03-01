@@ -62,7 +62,6 @@ RSpec.describe base_url, type: :request do
 
       it "creates with basic params" do
         expect(Review.count).to eq 0
-
         expect {
           post base_url, params: {review: create_params}
         }.to change(Review, :count).by 1
@@ -76,13 +75,50 @@ RSpec.describe base_url, type: :request do
         expect(citation.title).to be_blank
       end
 
+      context "turbo_stream" do
+        it "creates" do
+          expect {
+            post base_url, as: :turbo_stream, params: {review: create_params}
+            expect(response.media_type).to eq Mime[:turbo_stream]
+          }.to change(Review, :count).by 1
+          review = Review.last
+          expect_attrs_to_match_hash(review, create_params)
+          expect(review.citation).to be_present
+          citation = review.citation
+          expect(citation.url).to eq "http://example.com"
+          expect(citation.title).to be_blank
+        end
+        context "with error" do
+          let(:error_params) { create_params.merge(submitted_url: "ERROR") }
+          it "errors" do
+            expect(Review.count).to eq 0
+            expect {
+              post base_url, as: :turbo_stream, params: {review: error_params}
+              expect(response.media_type).to eq Mime[:turbo_stream]
+            }.to change(Review, :count).by 0
+            expect_attrs_to_match_hash(assigns(:review), error_params)
+          end
+        end
+      end
+
+      context "no csrf" do
+        include_context :test_csrf_token
+        it "fails" do
+          expect(Review.count).to eq 0
+          expect {
+            post base_url, params: {review: create_params}, as: :turbo_stream
+          }.to raise_error(/csrf/i)
+          expect(Review.count).to eq 0
+        end
+      end
+
       context "full params" do
         let(:create_params) { full_params }
         it "creates with full params" do
           expect(Review.count).to eq 0
 
           expect {
-            post base_url, params: {review: create_params}
+            post base_url, params: {review: create_params.merge(user_id: 12111)}
           }.to change(Review, :count).by 1
           expect(flash[:success]).to be_present
           review = Review.last
@@ -130,6 +166,18 @@ RSpec.describe base_url, type: :request do
         expect(review.citation_id).to_not eq citation.id
         expect(review.citation.url).to eq "http://example.com"
         expect(review.citation.title).to eq "something"
+      end
+      context "no csrf" do
+        include_context :test_csrf_token
+        it "fails" do
+          expect(citation).to be_valid
+          expect {
+            patch "#{base_url}/#{review.to_param}", params: {
+              review: full_params
+            }
+          }.to raise_error(/csrf/i)
+          expect(review.reload.submitted_url).to_not eq full_params[:submitted_url]
+        end
       end
     end
   end
