@@ -5,3 +5,7 @@
   padding-right: 1rem;
   padding-bottom: 1rem;
 }
+
+#body-popup .hidden-in-browser-ext {
+  display: none;
+}
