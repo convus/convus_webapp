@@ -75,13 +75,11 @@
   <div class="form-row-btn mb-3">
     <%= f.submit "save", class: "btn btn-success" %>
   </div>
+  <div class="form-row">
+    <%= f.label :citation_title, "Title" %>
+    <%= f.text_field :citation_title, placeholder: review.citation&.title, class: "form-control", disabled: !review.edit_title? %>
+  </div>
   <% if editing_review %>
-    <% if review.edit_title? %>
-      <div class="form-row">
-        <%= f.label :citation_title, "Title" %>
-        <%= f.text_field :citation_title, placeholder: review.citation&.title, class: "form-control" %>
-      </div>
-    <% end %>
     <div class="form-row">
       <%= f.label :topics_text do %>
         Topics
