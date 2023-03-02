@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   root "landing#index"
 
-  get "/browser_extension", to: "landing#browser_extension"
+  get "/about", to: "landing#about"
 
   resources :reviews
 

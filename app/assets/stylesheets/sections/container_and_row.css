@@ -16,6 +16,10 @@
   /* might wanna use max-w-prose sometime - this is close*/
 }
 
+turbo-frame {
+  display: block;
+}
+
 /*
   Grid! Not positive this is the best way of handling (negative margins), but going for it
 */

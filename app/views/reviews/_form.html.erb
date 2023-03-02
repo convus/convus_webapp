@@ -28,7 +28,7 @@
     <%= f.hidden_field :source, class: "form-control" %>
   <% end %>
   <div class="form-row">
-    <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && review.submitted_url.present?, class: "form-control", autocomplete: "off" %>
+    <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && review.submitted_url.present?, class: "form-control hidden-in-browser-ext", autocomplete: "off" %>
   </div>
   <div class="row grid-cols-2 divide-x">
     <div class="col py-1">
@@ -75,13 +75,11 @@
   <div class="form-row-btn mb-3">
     <%= f.submit "save", class: "btn btn-success" %>
   </div>
+  <div class="form-row hidden-in-browser-ext">
+    <%= f.label :citation_title, "Title" %>
+    <%= f.text_field :citation_title, placeholder: review.citation&.title, class: "form-control", disabled: !review.edit_title? %>
+  </div>
   <% if editing_review %>
-    <% if review.edit_title? %>
-      <div class="form-row">
-        <%= f.label :citation_title, "Title" %>
-        <%= f.text_field :citation_title, placeholder: review.citation&.title, class: "form-control" %>
-      </div>
-    <% end %>
     <div class="form-row">
       <%= f.label :topics_text do %>
         Topics

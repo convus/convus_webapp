@@ -38,4 +38,11 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "stylesheet_link_tag_url" do
+    let(:target) { "<link rel=\"stylesheet\" href=\"http://localhost:3009/stylesheets/application.css\" />" }
+    it "includes the full path" do
+      expect(stylesheet_link_tag_url("application")).to eq target
+    end
+  end
 end

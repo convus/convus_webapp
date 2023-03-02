@@ -1,0 +1,11 @@
+/* Turboframe ID - make sure it */
+#body-popup {
+  min-width: 500px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+}
+
+#body-popup .hidden-in-browser-ext {
+  display: none;
+}
