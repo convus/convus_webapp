@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   root "landing#index"
 
+  get "/about", to: "landing#about"
+
   resources :reviews
 
   authenticate :user, lambda { |u| u.admin? } do

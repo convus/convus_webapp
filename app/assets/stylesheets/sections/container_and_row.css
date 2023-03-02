@@ -16,6 +16,20 @@
   /* might wanna use max-w-prose sometime - this is close*/
 }
 
+turbo-frame {
+  display: block;
+}
+
+/* Turboframe ID */
+#new_review {
+  min-width: 200px;
+}
+@media (min-width: 370px) {
+  #new_review {
+    min-width: 300px;
+  }
+}
+
 /*
   Grid! Not positive this is the best way of handling (negative margins), but going for it
 */

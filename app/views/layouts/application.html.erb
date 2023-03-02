@@ -24,7 +24,7 @@
             <%= image_tag("icon.png", alt: "Convus Logo") %>
             <span class="">Convus</span>
           <% end %>
-          <%= active_link "add review", new_review_path, class: "nav-link mr-auto ml-3" %>
+          <%= active_link "about", about_path, class: "nav-link mr-auto ml-3" %>
           <% if current_user.present? %>
             <%= active_link current_user.username, reviews_path(user: current_user.username), class: "nav-link" %>
             <span class="ml-1 mr-1 text-gray-400">|</span>
