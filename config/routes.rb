@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   root "landing#index"
 
   get "/about", to: "landing#about"
+  get "/privacy", to: "landing#privacy"
 
   resources :reviews
 
