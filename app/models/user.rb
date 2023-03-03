@@ -11,7 +11,6 @@ class User < ApplicationRecord
   validates_uniqueness_of :username, case_sensitive: false
 
   before_validation :set_calculated_attributes
-  # after_save
 
   def self.friendly_find(str)
     if str.is_a?(Integer) || str.match(/\A\d+\z/).present?
