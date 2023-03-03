@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
   resources :reviews
 
-  authenticate :user, lambda { |u| u.admin? } do
+  authenticate :user, lambda { |u| u.developer? } do
     mount Sidekiq::Web, at: "/sidekiq"
   end
 end
