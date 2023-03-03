@@ -10,7 +10,6 @@ class User < ApplicationRecord
 
   validates_uniqueness_of :username, case_sensitive: false
 
-  before_create :generate_username
   before_validation :set_calculated_attributes
 
   def self.friendly_find(str)
@@ -26,17 +25,19 @@ class User < ApplicationRecord
     where("username ILIKE ?", str.strip).first
   end
 
+  # TODO: make this whole thing less terrible and more secure
+  def self.generate_api_token
+    SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64
+  end
+
   def set_calculated_attributes
     self.role ||= "normal_user"
+    self.api_token = self.class.generate_api_token if new_api_token?
   end
 
   private
 
-  def generate_username
-    new_username = username || SecureRandom.urlsafe_base64
-    while User.where.not(id: id).friendly_find_username(new_username).present?
-      new_username = SecureRandom.urlsafe_base64
-    end
-    self.username = new_username
+  def new_api_token?
+    api_token.blank? || encrypted_password_changed?
   end
 end

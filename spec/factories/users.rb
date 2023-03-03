@@ -2,11 +2,12 @@ FactoryBot.define do
   factory :user do
     sequence(:email) { |n| "email#{n}@convus.org" }
     sequence(:password) { |n| "password--#{n}" }
+    sequence(:username) { |n| "#{n}-name" }
 
-    trait :admin_access do
-      admin { true }
+    trait :developer_access do
+      role { true }
     end
 
-    factory :user_admin, traits: [:admin_access]
+    factory :user_developer, traits: [:developer_access]
   end
 end

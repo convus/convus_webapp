@@ -4,8 +4,8 @@ shared_context :logged_in_as_user do
   before { sign_in current_user }
 end
 
-shared_context :logged_in_as_administrator do
-  let(:current_user) { FactoryBot.create(:user_admin) }
+shared_context :logged_in_as_developer do
+  let(:current_user) { FactoryBot.create(:user_developer) }
 
   before { sign_in current_user }
 end
