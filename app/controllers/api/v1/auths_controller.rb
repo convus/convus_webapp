@@ -5,7 +5,7 @@ module API
 
       def status
         if current_user.present?
-          render json: {status: "authenticated"}
+          render json: {message: "authenticated"}
         end
       end
 
@@ -14,7 +14,7 @@ module API
         if user&.valid_password?(params[:password])
           render json: {api_token: user.api_token}
         else
-          render(json: {error: "Incorrect email or password"}, status: :unauthorized)
+          render(json: {message: "Incorrect email or password"}, status: :unauthorized)
         end
       end
     end

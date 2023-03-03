@@ -5,13 +5,12 @@ module API
       skip_before_action :verify_authenticity_token
 
       def not_found
-        message = {error: "404 - Couldn't find that"}
-        respond_with message, status: 404
+        respond_with({message: "404 - Couldn't find that"}, status: 404)
       end
 
       def ensure_current_user!
         return if current_user.present?
-        render(json: {error: "missing user"}, status: :unauthorized)
+        render(json: {message: "missing user"}, status: :unauthorized) && return
       end
 
       def current_user

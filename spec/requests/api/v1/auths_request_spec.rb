@@ -18,16 +18,16 @@ RSpec.describe base_url, type: :request do
     it "returns 401" do
       get "#{base_url}/status", headers: {"HTTP_ORIGIN" => "*"}
       expect(response.code).to eq "401"
-      expect_hashes_to_match(json_result, {error: "missing user"})
+      expect_hashes_to_match(json_result, {message: "missing user"})
       expect(response.headers["access-control-allow-origin"]).to eq("*")
       expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
     end
     context "with invalid user in params" do
-      it "returns 200" do
+      it "returns 401s" do
         get "#{base_url}/status", params: {api_token: "--#{current_user.api_token}"},
           headers: {"HTTP_ORIGIN" => "*"}
         expect(response.code).to eq "401"
-        expect_hashes_to_match(json_result, {error: "missing user"})
+        expect_hashes_to_match(json_result, {message: "missing user"})
         expect(response.headers["access-control-allow-origin"]).to eq("*")
         expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
       end
@@ -37,7 +37,7 @@ RSpec.describe base_url, type: :request do
         get "#{base_url}/status", params: {api_token: current_user.api_token},
           headers: {"HTTP_ORIGIN" => "*"}
         expect(response.code).to eq "200"
-        expect_hashes_to_match(json_result, {status: "authenticated"})
+        expect_hashes_to_match(json_result, {message: "authenticated"})
         expect(response.headers["access-control-allow-origin"]).to eq("*")
         expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
       end
@@ -49,7 +49,7 @@ RSpec.describe base_url, type: :request do
           "Authorization" => "Bearer #{current_user.api_token}"
         }
         expect(response.code).to eq "200"
-        expect_hashes_to_match(json_result, {status: "authenticated"})
+        expect_hashes_to_match(json_result, {message: "authenticated"})
         expect(response.headers["access-control-allow-origin"]).to eq("*")
         expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
       end
@@ -73,7 +73,7 @@ RSpec.describe base_url, type: :request do
           password: "not-correct-password"
         }
         expect(response.code).to eq "401"
-        expect_hashes_to_match(json_result, {error: "Incorrect email or password"})
+        expect_hashes_to_match(json_result, {message: "Incorrect email or password"})
       end
     end
 

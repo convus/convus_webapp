@@ -12,9 +12,10 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: {format: "json"} do
     namespace :v1 do
-      resource :auth, only: %i[create] do
+      resource :auth, only: [:create] do
         collection { get :status }
       end
+      resources :reviews, only: [:create]
 
       get "*a", to: "api_v1#not_found"
     end
