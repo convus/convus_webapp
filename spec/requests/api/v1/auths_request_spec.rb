@@ -18,7 +18,7 @@ RSpec.describe base_url, type: :request do
     it "returns 401" do
       get "#{base_url}/status", headers: {"HTTP_ORIGIN" => "*"}
       expect(response.code).to eq "401"
-      expect_hashes_to_match(json_result, {status: "no user"})
+      expect_hashes_to_match(json_result, {error: "missing user"})
       expect(response.headers["access-control-allow-origin"]).to eq("*")
       expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
     end
@@ -27,7 +27,7 @@ RSpec.describe base_url, type: :request do
         get "#{base_url}/status", params: {api_token: "--#{current_user.api_token}"},
           headers: {"HTTP_ORIGIN" => "*"}
         expect(response.code).to eq "401"
-        expect_hashes_to_match(json_result, {status: "no user"})
+        expect_hashes_to_match(json_result, {error: "missing user"})
         expect(response.headers["access-control-allow-origin"]).to eq("*")
         expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
       end
@@ -57,15 +57,37 @@ RSpec.describe base_url, type: :request do
   end
 
   describe "create" do
-    it "returns api_token"
+    it "returns api_token" do
+      post base_url, params: {
+        email: current_user.email,
+        password: "password--fakepassword"
+      }
+      expect(response.code).to eq "200"
+      expect(json_result[:api_token]).to eq current_user.api_token
+    end
 
     context "invalid" do
-      it "returns 401"
+      it "returns 401" do
+        post base_url, params: {
+          email: current_user.email,
+          password: "not-correct-password"
+        }
+        expect(response.code).to eq "401"
+        expect_hashes_to_match(json_result, {error: "Incorrect email or password"})
+      end
     end
 
     context "no csrf" do
       include_context :test_csrf_token
-      it "succeeds"
+      it "succeeds" do
+        post base_url, headers: {"HTTP_ORIGIN" => "*"}, params: {
+          email: current_user.email, password: "password--fakepassword"
+        }
+        expect(response.code).to eq "200"
+        expect(json_result[:api_token]).to eq current_user.api_token
+        expect(response.headers["access-control-allow-origin"]).to eq("*")
+        expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
+      end
     end
   end
 end
