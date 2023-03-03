@@ -43,4 +43,12 @@ RSpec.describe "/", type: :request do
       expect(response).to render_template("landing/about")
     end
   end
+
+  describe "/privacy" do
+    it "renders" do
+      get "/privacy"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("landing/privacy")
+    end
+  end
 end
