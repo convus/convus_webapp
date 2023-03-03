@@ -45,7 +45,7 @@ RSpec.describe base_url, type: :request do
     context "with valid user in auth basic" do
       it "returns 200" do
         get "#{base_url}/status", headers: {
-          "HTTP_ORIGIN" => "*"
+          "HTTP_ORIGIN" => "*",
           "Authorization" => "Bearer #{current_user.api_token}"
         }
         expect(response.code).to eq "200"
@@ -59,7 +59,7 @@ RSpec.describe base_url, type: :request do
   describe "create" do
     it "returns api_token"
 
-    context "invalid"
+    context "invalid" do
       it "returns 401"
     end
 
