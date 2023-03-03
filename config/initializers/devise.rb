@@ -14,7 +14,7 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = 'aa9730b6ebc3d1f19cbbdc5e8b89337f0b463cdefac8b0b2d85c678bea8a3f6d8e701078618ef3a9a6186d90c9e61c5eaa1ee4a0bdc4db5bfe4789d857ea18b6'
+  # config.secret_key =
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -123,7 +123,7 @@ Devise.setup do |config|
   # a value less than 10 in other environments. Note that, for bcrypt (the default
   # algorithm), the cost increases exponentially with the number of stretches (e.g.
   # a value of 20 is already extremely slow: approx. 60 seconds for 1 calculation).
-  config.stretches = Rails.env.test? ? 1 : 12
+  config.stretches = Rails.env.test? ? 1 : 13
 
   # Set up a pepper to generate the hashed password.
   # config.pepper = 'ec83fa8484c049c9be83e8975b8204c3c9e02e88aee02a8b902a9fd94d99b7520acf89f955bc67cd50cbbe50afa293092095b97a7c23499d66b03f4615e85cf1'
@@ -178,7 +178,7 @@ Devise.setup do |config|
 
   # ==> Configuration for :validatable
   # Range for password length.
-  config.password_length = 10..128
+  config.password_length = 11..128
 
   # Email regex used to validate email formats. It simply asserts that
   # one (and only one) @ exists in the given string. This is mainly
