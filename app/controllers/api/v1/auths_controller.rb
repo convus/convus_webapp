@@ -12,7 +12,7 @@ module API
       def create
         user = User.find_by_email(params[:email])
         if user&.valid_password?(params[:password])
-          render json: {api_token: user.api_token}
+          render json: {review_token: user.api_token}
         else
           render(json: {message: "Incorrect email or password"}, status: :unauthorized)
         end

@@ -63,7 +63,7 @@ RSpec.describe base_url, type: :request do
         password: "password--fakepassword"
       }
       expect(response.code).to eq "200"
-      expect(json_result[:api_token]).to eq current_user.api_token
+      expect(json_result[:review_token]).to eq current_user.api_token
     end
 
     context "invalid" do
@@ -84,7 +84,7 @@ RSpec.describe base_url, type: :request do
           email: current_user.email, password: "password--fakepassword"
         }
         expect(response.code).to eq "200"
-        expect(json_result[:api_token]).to eq current_user.api_token
+        expect(json_result[:review_token]).to eq current_user.api_token
         expect(response.headers["access-control-allow-origin"]).to eq("*")
         expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
       end
