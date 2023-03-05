@@ -27,9 +27,8 @@
   <% unless editing_review %>
     <%= f.hidden_field :source, class: "form-control" %>
   <% end %>
-  <div class="form-row hidden-in-browser-ext">
-    <%= f.label :submitted_url, "URL" %>
-    <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && review.submitted_url.present?, class: "form-control", autocomplete: "off" %>
+  <div class="form-row">
+    <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && review.submitted_url.present?, class: "form-control hidden-in-browser-ext", autocomplete: "off" %>
   </div>
   <div class="row grid-cols-2 divide-x">
     <div class="col py-1">
