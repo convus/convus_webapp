@@ -58,20 +58,30 @@ RSpec.describe base_url, type: :request do
 
   describe "create" do
     it "returns api_token" do
-      post base_url, params: {
-        email: current_user.email,
-        password: "password--fakepassword"
-      }
+      post base_url, headers: json_headers, params: {
+        user: {email: current_user.email, password: "password--fakepassword"}
+      }.to_json
       expect(response.code).to eq "200"
       expect(json_result[:review_token]).to eq current_user.api_token
     end
 
+    context "bare user" do
+      it "returns api_token" do
+        post base_url, headers: json_headers, params: {
+          email: current_user.email,
+          password: "password--fakepassword"
+        }.to_json
+        expect(response.code).to eq "200"
+        expect(json_result[:review_token]).to eq current_user.api_token
+      end
+    end
+
     context "invalid" do
       it "returns 401" do
-        post base_url, params: {
+        post base_url, params: {user: {
           email: current_user.email,
           password: "not-correct-password"
-        }
+        }}
         expect(response.code).to eq "401"
         expect_hashes_to_match(json_result, {message: "Incorrect email or password"})
       end
@@ -80,9 +90,10 @@ RSpec.describe base_url, type: :request do
     context "no csrf" do
       include_context :test_csrf_token
       it "succeeds" do
-        post base_url, headers: {"HTTP_ORIGIN" => "*"}, params: {
-          email: current_user.email, password: "password--fakepassword"
-        }
+        post base_url, headers: json_headers.merge("HTTP_ORIGIN" => "*"),
+          params: {
+            user: {email: current_user.email, password: "password--fakepassword"}
+          }.to_json
         expect(response.code).to eq "200"
         expect(json_result[:review_token]).to eq current_user.api_token
         expect(response.headers["access-control-allow-origin"]).to eq("*")
