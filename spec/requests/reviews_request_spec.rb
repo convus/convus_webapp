@@ -128,7 +128,7 @@ RSpec.describe base_url, type: :request do
 
       context "no csrf" do
         include_context :test_csrf_token
-        it "fails" do
+        it "succeeds" do
           expect(Review.count).to eq 0
           expect {
             post base_url, params: {review: create_params}, as: :turbo_stream
