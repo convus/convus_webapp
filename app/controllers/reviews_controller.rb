@@ -66,7 +66,6 @@ class ReviewsController < ApplicationController
       flash[:error] = "Unable to delete review!"
       redirect_to edit_review_path(@review), status: :see_other
     end
-
   end
 
   private
