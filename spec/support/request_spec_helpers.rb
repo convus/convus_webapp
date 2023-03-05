@@ -21,6 +21,7 @@ module RequestSpecHelpers
     {"CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json"}
   end
 
+  # Used when testing CORS
   def all_request_methods
     "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS"
   end
