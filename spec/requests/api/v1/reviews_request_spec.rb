@@ -20,10 +20,10 @@ RSpec.describe base_url, type: :request do
   describe "create" do
     it "returns 200" do
       expect(Review.count).to eq 0
-      post base_url, params: {review: review_params}, headers: {
+      post base_url, params: {review: review_params}.to_json, headers: json_headers.merge(
         "HTTP_ORIGIN" => "*",
         "Authorization" => "Bearer #{current_user.api_token}"
-      }
+      )
       expect(response.code).to eq "200"
 
       expect_hashes_to_match(json_result, {message: "Review added"})
@@ -37,6 +37,29 @@ RSpec.describe base_url, type: :request do
       citation = review.citation
       expect(citation.url).to eq "http://example.com"
       expect(citation.title).to eq "something"
+    end
+    context "review unwrapped" do
+      it "returns 200" do
+        expect(Review.count).to eq 0
+        # NOTE: no review key
+        post base_url, params: review_params.to_json, headers: json_headers.merge(
+          "HTTP_ORIGIN" => "*",
+          "Authorization" => "Bearer #{current_user.api_token}"
+        )
+        expect(response.code).to eq "200"
+
+        expect_hashes_to_match(json_result, {message: "Review added"})
+        expect(response.headers["access-control-allow-origin"]).to eq("*")
+        expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
+        expect(Review.count).to eq 1
+        review = Review.last
+        expect(review.user_id).to eq current_user.id
+        expect_attrs_to_match_hash(review, review_params)
+        expect(review.citation).to be_present
+        citation = review.citation
+        expect(citation.url).to eq "http://example.com"
+        expect(citation.title).to eq "something"
+      end
     end
     context "with invalid user in params" do
       it "returns 401" do
