@@ -21,6 +21,10 @@ module RequestSpecHelpers
     {"CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json"}
   end
 
+  def all_request_methods
+    "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS"
+  end
+
   def json_result
     r = JSON.parse(response.body)
     r.is_a?(Hash) ? r.with_indifferent_access : r

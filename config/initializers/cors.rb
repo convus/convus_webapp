@@ -8,6 +8,6 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
 
     resource "/api/*",
       headers: :any,
-      methods: %i[get post patch put options head]
+      methods: :any
   end
 end
