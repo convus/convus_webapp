@@ -39,6 +39,7 @@ RSpec.describe base_url, type: :request do
       expect(citation.title).to eq "something"
     end
     context "review unwrapped" do
+      include_context :test_csrf_token
       it "returns 200" do
         expect(Review.count).to eq 0
         # NOTE: no review key

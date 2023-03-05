@@ -49,8 +49,7 @@ RSpec.describe base_url, type: :request do
           expect(response).to render_template("reviews/new")
           expect(response).to_not render_template("layouts/application")
           expect(assigns(:review).source).to eq "safari_extension"
-          expect(response.headers["access-control-allow-origin"]).to eq("*")
-          expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
+          expect(response.headers["access-control-allow-origin"]).to be_blank
         end
       end
     end
@@ -132,13 +131,8 @@ RSpec.describe base_url, type: :request do
           expect(Review.count).to eq 0
           expect {
             post base_url, params: {review: create_params}, as: :turbo_stream
-          }.to change(Review, :count).by 1
-          review = Review.last
-          expect_attrs_to_match_hash(review, create_params)
-          expect(review.citation).to be_present
-          citation = review.citation
-          expect(citation.url).to eq "http://example.com"
-          expect(citation.title).to be_blank
+          }.to raise_error(/csrf/i)
+          expect(Review.count).to eq 0
         end
       end
 
@@ -208,6 +202,33 @@ RSpec.describe base_url, type: :request do
             }
           }.to raise_error(/csrf/i)
           expect(review.reload.submitted_url).to_not eq full_params[:submitted_url]
+        end
+      end
+    end
+
+    describe "delete" do
+      let(:review) { FactoryBot.create(:review, user: current_user) }
+      let(:citation) { review.citation }
+      it "updates" do
+        expect(review.user_id).to eq current_user.id
+        expect(citation).to be_valid
+        expect(Citation.count).to eq 1
+        expect {
+          delete "#{base_url}/#{review.to_param}"
+        }.to change(Review, :count).by(-1)
+        expect(flash[:success]).to be_present
+        expect(Citation.count).to eq 1
+      end
+      context "not users" do
+        let!(:review) { FactoryBot.create(:review) }
+        it "fails" do
+          expect(review.user_id).to_not eq current_user.id
+          expect(Review.count).to eq 1
+          expect(Citation.count).to eq 1
+          delete "#{base_url}/#{review.to_param}"
+          expect(flash[:error]).to be_present
+          expect(Review.count).to eq 1
+          expect(Citation.count).to eq 1
         end
       end
     end

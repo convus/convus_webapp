@@ -2,9 +2,7 @@ class ReviewsController < ApplicationController
   include TranzitoUtils::SortableTable
   before_action :set_period, only: %i[index]
   before_action :redirect_to_signup_unless_user_present!, except: %i[new]
-  before_action :find_and_authorize_review, only: %i[edit update]
-  # TODO: verify authenticity in some other way!
-  skip_before_action :verify_authenticity_token, only: %i[create]
+  before_action :find_and_authorize_review, only: %i[edit update destroy]
 
   def index
     if user_subject&.id != current_user.id
@@ -58,6 +56,17 @@ class ReviewsController < ApplicationController
     else
       render :edit
     end
+  end
+
+  def destroy
+    if @review.destroy
+      flash[:success] = "Review deleted"
+      redirect_to reviews_path, status: :see_other
+    else
+      flash[:error] = "Unable to delete review!"
+      redirect_to edit_review_path(@review), status: :see_other
+    end
+
   end
 
   private
