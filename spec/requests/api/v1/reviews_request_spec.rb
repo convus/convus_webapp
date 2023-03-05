@@ -28,7 +28,7 @@ RSpec.describe base_url, type: :request do
 
       expect_hashes_to_match(json_result, {message: "Review added"})
       expect(response.headers["access-control-allow-origin"]).to eq("*")
-      expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
+      expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
       expect(Review.count).to eq 1
       review = Review.last
       expect(review.user_id).to eq current_user.id
@@ -39,6 +39,7 @@ RSpec.describe base_url, type: :request do
       expect(citation.title).to eq "something"
     end
     context "review unwrapped" do
+      include_context :test_csrf_token
       it "returns 200" do
         expect(Review.count).to eq 0
         # NOTE: no review key
@@ -50,7 +51,7 @@ RSpec.describe base_url, type: :request do
 
         expect_hashes_to_match(json_result, {message: "Review added"})
         expect(response.headers["access-control-allow-origin"]).to eq("*")
-        expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
+        expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
         expect(Review.count).to eq 1
         review = Review.last
         expect(review.user_id).to eq current_user.id
@@ -71,7 +72,7 @@ RSpec.describe base_url, type: :request do
         expect(response.code).to eq "401"
         expect_hashes_to_match(json_result, {message: "missing user"})
         expect(response.headers["access-control-allow-origin"]).to eq("*")
-        expect(response.headers["access-control-allow-methods"]).to eq("GET, POST, PATCH, PUT")
+        expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
         expect(Review.count).to eq 0
       end
     end

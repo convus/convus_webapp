@@ -13,8 +13,7 @@ RSpec.describe "/", type: :request do
         get "/", headers: {"HTTP_ORIGIN" => "*"}
         expect(response.code).to eq "200"
         expect(response).to render_template("landing/index")
-        # Currently, including CORS everywhere. Not sure that's the best move though...
-        expect(response.headers["Access-Control-Allow-Origin"]).to be_present
+        expect(response.headers["Access-Control-Allow-Origin"]).to_not be_present
       end
       # TODO: fix these tests! ESBUILD_ERROR_RENDERED isn't stubbed correctly
       # describe "esbuild_error" do
