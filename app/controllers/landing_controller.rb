@@ -7,4 +7,7 @@ class LandingController < ApplicationController
 
   def privacy
   end
+
+  def browser_extensions
+  end
 end
