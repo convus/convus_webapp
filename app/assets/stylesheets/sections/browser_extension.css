@@ -6,6 +6,8 @@
   padding-bottom: 1rem;
 }
 
-#body-popup .hidden-in-browser-ext {
-  display: none;
+.extension-links {
+  & img {
+    @apply block mx-auto w-1/2 mt-4;
+  }
 }
