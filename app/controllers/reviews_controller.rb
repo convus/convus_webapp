@@ -17,7 +17,7 @@ class ReviewsController < ApplicationController
 
   def new
     @source = params[:source].presence || "web"
-    @no_layout = source != "web"
+    @no_layout = @source != "web"
     @review ||= Review.new(source: @source)
     if @source == "web"
       redirect_to_signup_unless_user_present!

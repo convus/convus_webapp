@@ -2,21 +2,20 @@
 <div class="row grid-cols-3 mt-10 extension-links">
   <div class="col text-center text-gray">
     <%#= link_to "https://apps.apple.com/us/app/convus/id6446099805" do %>
-
-      <h2 class="mt-5">Safari <small>not ready yet</small></h2>
-      <%= image_tag "safari_logo.svg", alt: "Safari logo" %>
-    <%# end %>
+      <h2 class="mt-5">Safari <small>not released yet</small></h2>
+      <%= image_tag "safari_logo.svg", alt: "Safari logo", class: "block mx-auto w-1/2 mt-4" %>
+      <%# end %>
+    </div>
+    <div class="col text-center">
+      <%= link_to "https://chrome.google.com/webstore/detail/convus-reviews/acbdomolfffoefmammccipemndnlmhbe" do %>
+        <h2 class="mt-5">Chrome</h2>
+        <%= image_tag "chrome_logo.svg", alt: "Chrome logo", class: "block mx-auto w-1/2 mt-4" %>
+      <% end %>
+    </div>
+    <div class="col text-center">
+      <%= link_to "https://addons.mozilla.org/en-US/firefox/addon/convus/" do %>
+        <h2 class="mt-5">Firefox</h2>
+        <%= image_tag "firefox_logo.svg", alt: "Firefox logo", class: "block mx-auto w-1/2 mt-4" %>
+      <% end %>
+    </div>
   </div>
-  <div class="col text-center">
-    <%= link_to "https://chrome.google.com/webstore/detail/convus-reviews/acbdomolfffoefmammccipemndnlmhbe" do %>
-      <h2 class="mt-5">Chrome</h2>
-      <%= image_tag "chrome_logo.svg", alt: "Chrome logo" %>
-    <% end %>
-  </div>
-  <div class="col text-center">
-    <%= link_to "https://addons.mozilla.org/en-US/firefox/addon/convus/" do %>
-      <h2 class="mt-5">Firefox</h2>
-      <%= image_tag "firefox_logo.svg", alt: "Firefox logo" %>
-    <% end %>
-  </div>
-</div>

@@ -27,7 +27,7 @@ RSpec.describe base_url, type: :request do
         get "#{base_url}/new?source=chrome_extension"
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/new")
-        expect(response).to_not render_template("layouts/application")
+        expect(response).to render_template("layouts/application")
       end
     end
   end

@@ -6,15 +6,10 @@
   padding-bottom: 1rem;
 }
 
+
+/* Special styles to mock up the extension for local testing */
 #new_review.no-layout {
   max-width: 500px;
   margin: 0 auto;
   border: 1px solid #ccc;
-  background: purple;
-}
-
-.extension-links {
-  & img {
-    @apply block mx-auto w-1/2 mt-4;
-  }
 }

@@ -1,9 +1,9 @@
-<% if @source == "web" %>
-  <%= content_for :main_wrapper_class, "small-width-main-container" %>
-  <h1 class="mb-3">Add Review</h1>
-<% end %>
 <%= turbo_frame_tag :new_review, class: (@source == "web" ? "" : "no-layout") do %>
-  <% if @source != "web" %>
+  <% if @source == "web" %>
+    <%= content_for :main_wrapper_class, "small-width-main-container" %>
+    <h1 class="mb-3">Add Review</h1>
+  <% else %>
+    <%= content_for :main_wrapper_class, "no-container" %>
     <%= stylesheet_link_tag_url("application") %>
     <% if Rails.env.development? %><%= hotwire_livereload_tags %><% end %>
   <% end %>
