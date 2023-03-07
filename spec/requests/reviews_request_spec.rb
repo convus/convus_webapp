@@ -41,15 +41,28 @@ RSpec.describe base_url, type: :request do
         expect(response).to render_template("reviews/new")
         expect(response).to render_template("layouts/application")
         expect(assigns(:review).source).to eq "web"
+        expect(assigns(:no_layout)).to be_falsey
       end
       context "source safari" do
         it "renders without layout" do
           get "#{base_url}/new?source=safari_extension", headers: {"HTTP_ORIGIN" => "*"}
           expect(response.code).to eq "200"
           expect(response).to render_template("reviews/new")
-          expect(response).to_not render_template("layouts/application")
+          expect(response).to render_template("layouts/application")
           expect(assigns(:review).source).to eq "safari_extension"
+          expect(assigns(:no_layout)).to be_truthy
+          # It doesn't do CORS
           expect(response.headers["access-control-allow-origin"]).to be_blank
+        end
+      end
+      context "source turbo_stream" do
+        it "renders without layout" do
+          get "#{base_url}/new?source=turbo_stream"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("reviews/new")
+          expect(response).to_not render_template("layouts/application")
+          expect(assigns(:review).source).to eq "turbo_stream"
+          expect(assigns(:no_layout)).to be_truthy
         end
       end
     end

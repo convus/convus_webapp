@@ -1,9 +1,16 @@
 /* Turboframe ID - make sure it */
-#body-popup {
+#body-popup, #new_review.no-layout {
   min-width: 375px;
   padding-left: 1rem;
   padding-right: 1rem;
   padding-bottom: 1rem;
+}
+
+#new_review.no-layout {
+  max-width: 500px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  background: purple;
 }
 
 .extension-links {

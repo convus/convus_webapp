@@ -2,7 +2,11 @@
   <%= content_for :main_wrapper_class, "small-width-main-container" %>
   <h1 class="mb-3">Add Review</h1>
 <% end %>
-<%= turbo_frame_tag :new_review do %>
+<%= turbo_frame_tag :new_review, class: (@source == "web" ? "" : "no-layout") do %>
+  <% if @source != "web" %>
+    <%= stylesheet_link_tag_url("application") %>
+    <% if Rails.env.development? %><%= hotwire_livereload_tags %><% end %>
+  <% end %>
   <% if current_user.blank? %>
     <h4>Please log in</h4>
     <%= link_to "Log in", new_user_session_url, target: "_blank" %>
