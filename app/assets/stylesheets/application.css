@@ -7,6 +7,7 @@
 @import "sections/forms.css";
 @import "sections/tables.css";
 @import "sections/browser_extension.css";
+@import "sections/animations.css";
 @import "sections/legal.css";
 /* Overrides for utils */
 @import "sections/tranzito_utils.css";

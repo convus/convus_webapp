@@ -1,4 +1,5 @@
 <% review ||= Review.new %>
+<% render_menu ||= false %>
 <% editing_review = review.id.present? %>
 <%# TODO: why does render partial: "/shared/errors" not actually render the errors from turbo_streams? %>
 <% if review.errors.any? %>
@@ -27,7 +28,7 @@
   <% unless editing_review %>
     <%= f.hidden_field :source, class: "form-control" %>
   <% end %>
-  <div class="form-row hidden" id="urlFieldGroup">
+  <div class="form-row collapsible <%= editing_review ? '' : 'hidden' %>" id="field-group-url">
     <%= f.label :submitted_url, "URL" %>
     <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && review.submitted_url.present?, class: "form-control", autocomplete: "off" %>
   </div>
@@ -73,14 +74,28 @@
       Significant factual error(s)
     <% end %>
   </div>
-  <div class="form-row-btn">
-    <%= f.submit "save", class: "btn btn-success" %>
+  <div class="row grid-cols-2">
+    <div class="col">
+      <div class="form-row-btn">
+        <%= f.submit "save", class: "btn btn-success" %>
+      </div>
+    </div>
+    <% if render_menu %>
+      <div class="col mt-4 text-right">
+        <button type="button" aria-label="Menu" id="menu-button" class="">
+          <span class="sr-only">Menu</span>
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"></path>
+</svg>
+        </button>
+      </div>
+    <% end %>
   </div>
-  <div class="form-row hidden" id="titleFieldGroup">
+  <div class="form-row collapsible <%= editing_review ? '' : 'hidden' %>" id="field-group-title">
     <%= f.label :citation_title, "Title" %>
     <%= f.text_field :citation_title, placeholder: review.citation&.title || "optional", class: "form-control", disabled: !review.edit_title? %>
   </div>
-  <div class="form-row mt-3 hidden" id="TopicsFieldGroup">
+  <div class="form-row mt-3 collapsible <%= editing_review ? '' : 'hidden' %>" id="field-group-Topics">
     <%= f.label :topics_text do %>
       Topics
       <small class="less-strong">new line delineated</small>

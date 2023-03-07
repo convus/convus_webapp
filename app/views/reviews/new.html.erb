@@ -11,6 +11,6 @@
     <h4>Please log in</h4>
     <%= link_to "Log in", new_user_session_url, target: "_blank" %>
   <% else %>
-    <%= render partial: "form", locals: {review: @review} %>
+    <%= render partial: "form", locals: {review: @review, render_menu: true} %>
   <% end %>
 <% end %>

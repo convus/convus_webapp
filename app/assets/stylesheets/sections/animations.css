@@ -1,0 +1,15 @@
+/*
+  Hide/reveal elements
+
+  Ideally, collapsible elements will slide in and out
+
+  ... right now they don't animate at all
+*/
+
+.collapsible, .fadeable {
+  @apply transition-opacity duration-300 ease-out opacity-100 visible;
+}
+
+.collapsible.hidden {
+  @apply opacity-0;
+}
