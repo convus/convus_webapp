@@ -4,6 +4,9 @@ const fs = require('fs')
 const watch = process.argv.includes('--watch')
 const errorFilePath = 'esbuild_error'
 
+// TODO: Figure out why this isn't assigned automatically
+process.env.RAILS_ENV ||= 'development'
+
 const watchOptions = {
   onRebuild (error, result) {
     if (error) {
@@ -18,6 +21,9 @@ const watchOptions = {
 
 require('esbuild')
   .build({
+    define: {
+      'process.env.RAILS_ENV': `"${process.env.RAILS_ENV}"`
+    },
     entryPoints: ['application.js'],
     bundle: true,
     sourcemap: true,

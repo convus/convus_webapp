@@ -3,14 +3,13 @@
     <%= content_for :main_wrapper_class, "small-width-main-container" %>
     <h1 class="mb-3">Add Review</h1>
   <% else %>
+    <%# Previously, this was rendered in the extension - but to remove remote code loading, switched out %>
     <%= content_for :main_wrapper_class, "no-container" %>
-    <%= stylesheet_link_tag_url("application") %>
-    <% if Rails.env.development? %><%= hotwire_livereload_tags %><% end %>
   <% end %>
   <% if current_user.blank? %>
     <h4>Please log in</h4>
     <%= link_to "Log in", new_user_session_url, target: "_blank" %>
   <% else %>
-    <%= render partial: "form", locals: {review: @review, render_menu: true} %>
+    <%= render partial: "form", locals: {review: @review, render_menu: @source != "web"} %>
   <% end %>
 <% end %>

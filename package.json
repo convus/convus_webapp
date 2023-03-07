@@ -17,6 +17,7 @@
     "chartkick": "^4.2.0",
     "esbuild": "^0.15.3",
     "flowbite": "^1.6.3",
+    "loglevel": "^1.8.1",
     "postcss": "^8.4.21",
     "postcss-cli": "^10.1.0",
     "postcss-import": "^15.1.0",

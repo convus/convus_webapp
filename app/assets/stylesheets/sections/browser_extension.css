@@ -6,13 +6,20 @@
   padding-bottom: 1rem;
 }
 
-#menu-button {
-  @apply rounded-lg focus:ring-2;
+#review-menu-btn {
+  @apply rounded-lg;
   &:hover, &:active, &.active, &:focus {
-    @apply  bg-gray-100 opacity-100;
+    @apply  opacity-100 focus:ring-2;
   }
   & svg {
     height: 1.75rem;
+  }
+}
+
+#review-menu {
+  @apply mt-4;
+  & hr {
+    margin: 0 -1rem;
   }
 }
 
