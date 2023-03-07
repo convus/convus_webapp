@@ -51,6 +51,14 @@ RSpec.describe "/", type: :request do
     end
   end
 
+  describe "/support" do
+    it "renders" do
+      get "/support"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("landing/support")
+    end
+  end
+
   describe "/browser_extensions" do
     it "renders" do
       get "/browser_extensions"

@@ -10,4 +10,7 @@ class LandingController < ApplicationController
 
   def browser_extensions
   end
+
+  def support
+  end
 end
