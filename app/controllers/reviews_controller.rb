@@ -17,10 +17,11 @@ class ReviewsController < ApplicationController
 
   def new
     @source = params[:source].presence || "web"
+    @no_layout = @source != "web"
     @review ||= Review.new(source: @source)
-    if params[:source].blank?
+    if @source == "web"
       redirect_to_signup_unless_user_present!
-    else
+    elsif @source == "turbo_stream"
       render layout: false
     end
   end

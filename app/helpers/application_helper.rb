@@ -18,7 +18,7 @@ module ApplicationHelper
   end
 
   def render_navbar?
-    true
+    !@no_layout
   end
 
   def agreement_display(agreement = nil)

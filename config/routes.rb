@@ -7,6 +7,9 @@ Rails.application.routes.draw do
 
   get "/about", to: "landing#about"
   get "/privacy", to: "landing#privacy"
+  get "/support", to: "landing#support"
+  get "/browser_extensions", to: "landing#browser_extensions"
+  get "/browser_extension", to: redirect("browser_extensions")
 
   resources :reviews
 

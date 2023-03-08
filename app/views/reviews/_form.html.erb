@@ -1,4 +1,5 @@
 <% review ||= Review.new %>
+<% render_menu ||= false %>
 <% editing_review = review.id.present? %>
 <%# TODO: why does render partial: "/shared/errors" not actually render the errors from turbo_streams? %>
 <% if review.errors.any? %>
@@ -23,70 +24,113 @@
 <% end %>
 <%# Need to manually specify the URL and method here because it can't just be the path %>
 <% form_url = editing_review ? review_url(review) : reviews_url %>
+<% collapsible_field_classes = editing_review ? '' : 'hidden' %>
 <%= form_with(model: review, url: form_url, method: (editing_review ? :patch : :post)) do |f| %>
   <% unless editing_review %>
     <%= f.hidden_field :source, class: "form-control" %>
   <% end %>
-  <div class="form-row hidden-in-browser-ext">
+  <div class="form-row collapsible <%= collapsible_field_classes %>" id="field-group-url">
     <%= f.label :submitted_url, "URL" %>
     <%= f.text_field :submitted_url, placeholder: "URL", disabled: editing_review && review.submitted_url.present?, class: "form-control", autocomplete: "off" %>
   </div>
   <div class="row grid-cols-2 divide-x">
     <div class="col py-1">
-      <%= f.label :agreement_agree, class: "reviews-radio-button" do %>
+      <%= f.label :agreement_agree, class: "form-control-radio" do %>
         <%= f.radio_button :agreement, "agree" %>
         Agree
       <% end %>
-      <%= f.label :agreement_neutral, class: "reviews-radio-button" do %>
+      <%= f.label :agreement_neutral, class: "form-control-radio" do %>
         <%= f.radio_button :agreement, "neutral" %>
         Neutral
       <% end %>
-      <%= f.label :agreement_disagree, class: "reviews-radio-button" do %>
+      <%= f.label :agreement_disagree, class: "form-control-radio" do %>
         <%= f.radio_button :agreement, "disagree" %>
         Disagree
       <% end %>
     </div>
     <div class="col py-1">
-      <%= f.label :quality_quality_high, class: "reviews-radio-button" do %>
+      <%= f.label :quality_quality_high, class: "form-control-radio" do %>
         <%= f.radio_button :quality, :quality_high %>
         High Quality
       <% end %>
-      <%= f.label :quality_quality_med, class: "reviews-radio-button" do %>
+      <%= f.label :quality_quality_med, class: "form-control-radio" do %>
         <%= f.radio_button :quality, :quality_med %>
         Neutral
       <% end %>
-      <%= f.label :quality_quality_low, class: "reviews-radio-button" do %>
+      <%= f.label :quality_quality_low, class: "form-control-radio" do %>
         <%= f.radio_button :quality, :quality_low %>
         Low Quality
       <% end %>
     </div>
   </div>
   <div class="form-row ">
-    <%= f.label :changed_my_opinion, class: "reviews-check" do %>
-      <%= f.check_box :changed_my_opinion, class: "form-check-input" %>
+    <%= f.label :changed_my_opinion, class: "form-control-check" do %>
+      <%= f.check_box :changed_my_opinion %>
       Changed my opinion
     <% end %>
   </div>
   <div class="form-row">
-    <%= f.label :significant_factual_error, class: "reviews-check" do %>
-      <%= f.check_box :significant_factual_error, class: "form-check-input" %>
+    <%= f.label :significant_factual_error, class: "form-control-check" do %>
+      <%= f.check_box :significant_factual_error %>
       Significant factual error(s)
     <% end %>
   </div>
-  <div class="form-row-btn mb-3">
-    <%= f.submit "save", class: "btn btn-success" %>
-  </div>
-  <div class="form-row hidden-in-browser-ext">
-    <%= f.label :citation_title, "Title" %>
-    <%= f.text_field :citation_title, placeholder: review.citation&.title, class: "form-control", disabled: !review.edit_title? %>
-  </div>
-  <% if editing_review %>
-    <div class="form-row">
-      <%= f.label :topics_text do %>
-        Topics
-        <small class="less-strong">new line delineated</small>
-      <% end %>
-      <%= f.text_area :topics_text, placeholder: "", class: "form-control" %>
+  <div class="row grid-cols-2">
+    <div class="col">
+      <div class="form-row-btn">
+        <%= f.submit "save", class: "btn btn-success" %>
+      </div>
     </div>
-  <% end %>
+    <% if render_menu %>
+      <div class="col mt-4 text-right">
+        <button type="button" aria-label="Menu" id="review-menu-btn" class="">
+          <span class="sr-only">Menu</span>
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"></path>
+          </svg>
+        </button>
+      </div>
+    <% end %>
+  </div>
+  <div class="form-row collapsible <%= collapsible_field_classes %>" id="field-group-title">
+    <%= f.label :citation_title, "Title" %>
+    <%= f.text_field :citation_title, placeholder: review.citation&.title || "optional", class: "form-control", disabled: !review.edit_title? %>
+  </div>
+  <div class="form-row mt-3 collapsible <%= collapsible_field_classes %>" id="field-group-topics">
+    <%= f.label :topics_text do %>
+      Topics
+      <small class="less-strong">new line delineated</small>
+    <% end %>
+    <%= f.text_area :topics_text, placeholder: "optional", class: "form-control" %>
+  </div>
+<% end %>
+<% if render_menu %>
+  <div id="review-menu"  class="collapsible hidden">
+    <hr>
+    <div class="form-row">
+      <label class="form-control-check" for="show_topics">
+        <input type="checkbox" name="show_topics" id="show_topics" value="1" data-target-id="field-group-topics">
+        Show Topics
+        <small class="less-strong">always</small>
+      </label>
+    </div>
+    <div class="form-row">
+      <label class="form-control-check" for="show_url">
+        <input type="checkbox" name="show_url" id="show_url" value="1" data-target-id="field-group-url">
+        Show URL
+        <small class="less-strong">only applies to current review</small>
+      </label>
+    </div>
+    <div class="form-row">
+      <label class="form-control-check" for="show_title">
+        <input type="checkbox" name="show_title" id="show_title" value="1" data-target-id="field-group-title">
+        Show Title
+        <small class="less-strong">only applies to current review</small>
+      </label>
+    </div>
+    <p class="text-sm mt-4">Open review dialog with <code>control</code> + <code>shift</code> + <code>R</code></p>
+    <div class="mt-4 text-right">
+      <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "gray-link text-sm"  %>
+    </div>
+  </div>
 <% end %>
