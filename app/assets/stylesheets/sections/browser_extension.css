@@ -1,7 +1,31 @@
-/* extension popup ID - make sure it */
-#body-popup {
-  min-width: 500px;
+/* extension popup ID - make sure it matches the extension! */
+#body-popup, #new_review.no-layout {
+  min-width: 375px;
   padding-left: 1rem;
   padding-right: 1rem;
   padding-bottom: 1rem;
+}
+
+#review-menu-btn {
+  @apply rounded-lg;
+  &:hover, &:active, &.active, &:focus {
+    @apply  opacity-100 focus:ring-2 bg-gray-200;
+  }
+  & svg {
+    height: 1.75rem;
+  }
+}
+
+#review-menu {
+  @apply mt-4;
+  & hr {
+    margin: 0 -1rem;
+  }
+}
+
+/* Special styles to mock up the extension for local testing */
+#new_review.no-layout {
+  max-width: 375px;
+  margin: 0 auto;
+  border: 1px solid #ccc;
 }

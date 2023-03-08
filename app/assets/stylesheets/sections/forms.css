@@ -1,14 +1,18 @@
-.reviews-radio-button, .reviews-check {
-  @apply block cursor-pointer py-1;
-  input { @apply text-gray-800; }
+.form-row {
+  @apply mt-2;
 }
 
 .form-control {
   @apply bg-white border w-full border-gray-300 rounded-sm px-2 py-1 disabled:bg-gray-200 disabled:border-gray-300;
 }
 
-.form-row {
-  @apply mt-2;
+.form-control-radio, .form-control-check {
+  @apply block cursor-pointer py-1;
+  & input {
+    /* TODO: alignment still looks off */
+    @apply text-gray-800 -mt-1;
+
+  }
 }
 
 .form-row-btn {

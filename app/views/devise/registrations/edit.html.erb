@@ -36,6 +36,9 @@
     <%= f.submit "Update", class: "btn btn-success" %>
   </div>
 <% end %>
+<div class="mt-8 text-right">
+  <%= button_to "Delete account", registration_path(resource_name), data: {turbo_confirm: "Are you sure? Your account can't be restored afterward."}, method: :delete, class: "gray-link" %>
+</div>
 <script type="text/javascript">
   console.log("Your API token is:")
   console.log("<%= current_user.api_token %>")
