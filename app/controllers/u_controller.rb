@@ -29,7 +29,7 @@ class UController < ApplicationController
 
   def ensure_user_is_current_user!
     if current_user.blank?
-      return redirect_to_signup_unless_user_present!
+      redirect_to_signup_unless_user_present!
     elsif current_user != @user
       flash[:error] = "You aren't able to edit that user"
       redirect_to user_root_url && return

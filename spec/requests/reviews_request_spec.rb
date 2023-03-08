@@ -15,7 +15,7 @@ RSpec.describe base_url, type: :request do
       source: "chrome_extension"
     }
   end
-  let(:user_public)   { FactoryBot.create(:user, reviews_public: true) }
+  let(:user_public) { FactoryBot.create(:user, reviews_public: true) }
   let(:user_private) { FactoryBot.create(:user, reviews_public: false) }
 
   describe "new" do
