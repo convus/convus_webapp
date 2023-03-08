@@ -26,7 +26,7 @@
           <% end %>
           <%= active_link "about", about_path, class: "nav-link mr-auto ml-3" %>
           <% if current_user.present? %>
-            <%= active_link current_user.username, reviews_path(user: current_user.username), class: "nav-link" %>
+            <%= active_link current_user.username, u_path(current_user.to_param), class: "nav-link" %>
             <span class="ml-1 mr-1 text-gray-400">|</span>
             <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "nav-link"  %>
           <% else %>

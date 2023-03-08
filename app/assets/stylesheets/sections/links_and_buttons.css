@@ -1,26 +1,3 @@
-.alert {
-  @apply bg-white border px-3 py-2 mb-2;
-  .alert-header {
-    @apply flex w-full pb-2 z-10;
-  }
-
-  .alert-close {
-    @apply ml-auto -mx-1.5 -my-1.5 p-1.5 inline-flex h-8 w-8 focus:ring-2 rounded-lg opacity-70;
-  }
-}
-
-.alert-success {
-  @apply border-success;
-}
-
-.alert-error {
-  @apply border-error;
-}
-
-.flash-alerts {
-  @apply w-full mb-4 -mt-3;
-}
-
 a {
   @apply text-primary;
 }
@@ -36,10 +13,12 @@ a {
   text-decoration: underline;
 }
 
-.btn {
-  @apply inline-flex text-bodytext leading-5 items-center border border-gray-500 bg-gray-100 cursor-pointer rounded-lg py-1 px-3 justify-center disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
+@layer components {
+  .btn {
+    @apply inline-flex text-bodytext leading-5 items-center border border-gray-500 bg-gray-100 cursor-pointer rounded-lg py-1 px-3 justify-center disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
 
-  &:hover, &.active, &:active {
-    @apply bg-gray-200 border-gray-600
+    &:hover, &.active, &:active {
+      @apply bg-gray-200 border-gray-600
+    }
   }
 }

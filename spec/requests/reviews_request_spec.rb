@@ -15,6 +15,8 @@ RSpec.describe base_url, type: :request do
       source: "chrome_extension"
     }
   end
+  let(:user_public) { FactoryBot.create(:user, reviews_public: true) }
+  let(:user_private) { FactoryBot.create(:user, reviews_public: false) }
 
   describe "new" do
     it "redirects" do
@@ -28,6 +30,31 @@ RSpec.describe base_url, type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/new")
         expect(response).to render_template("layouts/application")
+      end
+    end
+  end
+
+  context "index" do
+    it "redirects" do
+      get base_url
+      expect(response).to redirect_to new_user_registration_path
+      expect(session[:user_return_to]).to eq base_url
+    end
+    context "with private user" do
+      it "renders" do
+        expect(user_private.reviews_public).to be_falsey
+        get "#{base_url}?user=#{user_private.username}"
+        expect(response).to redirect_to new_user_registration_path
+        expect(session[:user_return_to]).to eq "#{base_url}?user=#{user_private.username}"
+      end
+    end
+    context "with public user" do
+      it "renders" do
+        expect(user_public.reviews_public).to be_truthy
+        get "#{base_url}?user=#{user_public.username}"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("reviews/index")
+        expect(assigns(:user_subject)&.id).to eq user_public.id
       end
     end
   end
@@ -77,6 +104,7 @@ RSpec.describe base_url, type: :request do
         let!(:review1) { FactoryBot.create(:review) }
         let!(:review2) { FactoryBot.create(:review, user: current_user) }
         it "renders" do
+          expect(current_user.reviews_private).to be_truthy
           get "#{base_url}?user=#{current_user.username}"
           expect(response.code).to eq "200"
           expect(response).to render_template("reviews/index")

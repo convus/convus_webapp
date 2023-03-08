@@ -2,17 +2,16 @@
 @import 'tailwindcss/components';
 
 @import "sections/container_and_row.css";
+@import "sections/links_and_buttons.css";
 @import "sections/navbar.css";
 @import "sections/alerts.css";
 @import "sections/forms.css";
 @import "sections/tables.css";
 @import "sections/browser_extension.css";
 @import "sections/animations.css";
-@import "sections/links_and_buttons.css";
 @import "sections/legal.css";
 /* Overrides for utils */
 @import "sections/tranzito_utils.css";
-
 @import 'tailwindcss/utilities';
 
 /*

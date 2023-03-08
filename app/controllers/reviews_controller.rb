@@ -1,12 +1,19 @@
 class ReviewsController < ApplicationController
   include TranzitoUtils::SortableTable
   before_action :set_period, only: %i[index]
-  before_action :redirect_to_signup_unless_user_present!, except: %i[new]
+  before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
   before_action :find_and_authorize_review, only: %i[edit update destroy]
 
   def index
-    if user_subject&.id != current_user.id
+    if current_user.blank? && (user_subject.blank? || user_subject.reviews_private)
+      redirect_to_signup_unless_user_present!
+      return
+    elsif user_subject.blank?
       redirect_to reviews_path(user: current_user.username)
+      return
+    elsif user_subject.reviews_private && user_subject != current_user
+      flash[:error] = "You don't have permission to view those reviews"
+      redirect_to user_root_url, status: :see_other
       return
     end
     page = params[:page] || 1

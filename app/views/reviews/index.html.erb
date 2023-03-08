@@ -1,21 +1,12 @@
-<div class="row grid-cols-2 mb-5">
-  <div class="col">
-    <h1>
-      <%= user_subject.id == current_user.id ? "Your" : user_subject.username %>
-      Reviews
-    </h1>
-  </div>
-  <% if user_subject.id == current_user.id %>
-    <div class="col text-right">
-      <%= link_to "edit your account", edit_user_registration_path %>
-    </div>
-  <% end %>
-</div>
+<h1 class="mb-5">
+  Reviews by
+  <%= link_to user_subject.username, u_path(user_subject) %>
+</h1>
 <% if @reviews.total_count.zero? %>
   <h4>No reviews found</h4>
 <% else %>
   <%= render partial: "/shared/period_select", locals: {total_count: @reviews.total_count} %>
-  <%= render partial: "table", locals: {reviews: @reviews} %>
+  <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user} %>
   <div class="row">
     <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review"} %>
   </div>

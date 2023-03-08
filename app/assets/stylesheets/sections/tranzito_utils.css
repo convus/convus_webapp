@@ -22,3 +22,20 @@
   margin-top: 2px;
   margin-bottom: 2px;
 }
+
+/* This pagination stuff is gross - */
+.pagination-container .page-item {
+  @apply inline-flex text-bodytext leading-5 items-center border border-gray-500 bg-gray-100 cursor-pointer rounded-lg py-1 px-3 justify-center disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
+
+  &:hover, &.active, &:active {
+    @apply bg-gray-200 border-gray-600
+  }
+}
+
+.pagination-container .page-item a {
+  color: inherit;
+}
+
+.pagination-container .pagination-flex.justify-content-md-end {
+  @apply min-w-full md:min-w-0 md:ml-auto;
+}
