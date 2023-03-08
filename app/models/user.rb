@@ -34,8 +34,13 @@ class User < ApplicationRecord
     SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64
   end
 
+  def reviews_private
+    !reviews_public
+  end
+
   def set_calculated_attributes
     self.role ||= "normal_user"
+    self.about = nil if about.blank?
     self.api_token = self.class.generate_api_token if new_api_token?
   end
 

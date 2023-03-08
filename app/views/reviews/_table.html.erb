@@ -1,5 +1,6 @@
 <% reviews ||= reviews %>
 <% skip_sortable ||= false %>
+<% edit_reviews ||= false %>
 <div class="full-width">
   <table class="table">
     <thead class="sortable">
@@ -28,7 +29,9 @@
         <tr>
           <td>
             <span class="convertTime"><%= l(review.created_at, format: :convert_time) %></span>
-            <small class="less-strong"><%= link_to "edit", edit_review_path(review), class: "link-underline" %></small>
+            <% if edit_reviews %>
+              <small class="less-strong"><%= link_to "edit", edit_review_path(review), class: "link-underline" %></small>
+            <% end %>
           </td>
           <td>
             <% if review.display_name == "missing url" %>

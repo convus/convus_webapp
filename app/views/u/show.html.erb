@@ -1,0 +1,41 @@
+<%= content_for :main_wrapper_class, "small-width-main-container" %>
+<% if @user == current_user %>
+  <div class="row grid-cols-2 text-center mb-1">
+    <div class="col">
+      <%= link_to "Your reviews", reviews_path(user: @user.to_param) %>
+    </div>
+    <div class="col">
+      <%= link_to "Edit your account", edit_u_path(@user.to_param) %>
+    </div>
+  </div>
+  <hr>
+<% end %>
+<div class="mt-6">
+  <p class="mb-4">
+    <strong class="block">User</strong>
+    <%= @user.username %>
+  </p>
+  <p class="mb-4">
+    <strong class="block">Created</strong>
+    <span class="convertTime"><%= l(@user.created_at, format: :convert_time) %></span>
+  </p>
+  <% if @user.about.present? %>
+    <p class="mb-4">
+      <strong class="block">About</strong>
+      <%= @user.about %>
+    </p>
+  <% end %>
+  <p class="mb-4">
+    <strong class="block">Reviews</strong>
+    <% reviews_count = @user.reviews.count %>
+    <% if @user.reviews_public %>
+      <%= link_to reviews_path(user: @user.to_param) do %>
+        <%= admin_number_display(reviews_count) %>
+        <%= "review".pluralize(reviews_count) %>
+      <% end %>
+    <% else %>
+      <%= admin_number_display(reviews_count) %>
+      <%= "review".pluralize(reviews_count) %> <span class="less-strong">(not public)</span>
+    <% end %>
+  </p>
+</div>
