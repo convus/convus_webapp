@@ -3,6 +3,8 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   devise_for :users
 
+  resources :u, only: %i[show edit update]
+
   root "landing#index"
 
   get "/about", to: "landing#about"

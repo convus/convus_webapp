@@ -20,6 +20,10 @@ class User < ApplicationRecord
     end
   end
 
+  def self.friendly_find!(str)
+    friendly_find(str) || (raise ActiveRecord::RecordNotFound)
+  end
+
   def self.friendly_find_username(str = nil)
     return nil if str.blank?
     where("username ILIKE ?", str.strip).first
