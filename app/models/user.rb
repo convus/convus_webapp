@@ -9,14 +9,16 @@ class User < ApplicationRecord
   enum role: ROLE_ENUM
 
   validates_uniqueness_of :username, case_sensitive: false
+  validates_with UsernameValidator
 
   before_validation :set_calculated_attributes
 
   def self.friendly_find(str)
-    if str.is_a?(Integer) || str.match(/\A\d+\z/).present?
+    return nil if str.blank?
+    if str.is_a?(Integer) || str.match?(/\A\d+\z/)
       where(id: str).first
     else
-      find_by_username(str) || find_by_email(str)
+      friendly_find_username(str)
     end
   end
 
@@ -26,7 +28,7 @@ class User < ApplicationRecord
 
   def self.friendly_find_username(str = nil)
     return nil if str.blank?
-    where("username ILIKE ?", str.strip).first
+    find_by_username_slug(Slugifyer.slugify(str))
   end
 
   # TODO: make this whole thing less terrible and more secure
@@ -42,6 +44,8 @@ class User < ApplicationRecord
     self.role ||= "normal_user"
     self.about = nil if about.blank?
     self.api_token = self.class.generate_api_token if new_api_token?
+    self.username = username&.strip
+    self.username_slug = Slugifyer.slugify(username)
   end
 
   private

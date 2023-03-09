@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
 
   def user_subject
     return @user_subject if defined?(@user_subject)
-    @user_subject = User.friendly_find_username(params[:user])
+    @user_subject = User.friendly_find(params[:user])
   end
 
   def user_root_url
