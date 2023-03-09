@@ -1,6 +1,6 @@
 <%= turbo_frame_tag :new_review, class: (@source == "web" ? "" : "no-layout") do %>
   <% if @source == "web" %>
-    <%= content_for :main_wrapper_class, "small-width-main-container" %>
+    <%= content_for :main_wrapper_class, "small-width-padded-container" %>
     <h1 class="mb-3">Add Review</h1>
   <% else %>
     <%# Previously, this was rendered in the extension - but to remove remote code loading, switched out %>

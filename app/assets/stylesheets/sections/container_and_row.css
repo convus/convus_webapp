@@ -1,4 +1,4 @@
-.main-container {
+.padded-container {
   /* Add a little padding to the bottom */
   @apply mx-auto py-2 w-full;
 }
@@ -7,12 +7,12 @@
   @apply max-w-main-content;
 }
 
-.full-width-main-container {
-  @apply main-container full-width-container;
+.full-width-padded-container {
+  @apply padded-container full-width-container max-lg:px-2;
 }
 
-.small-width-main-container {
-  @apply main-container max-w-xl;
+.small-width-padded-container {
+  @apply padded-container max-w-xl;
   /* might wanna use max-w-prose sometime - this is close*/
 }
 
@@ -29,7 +29,7 @@ turbo-frame {
 */
 
 .row {
-  @apply grid -ml-4 -mr-4;
+  @apply grid -mx-4;
 }
 
 .col {
