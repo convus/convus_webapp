@@ -26,7 +26,7 @@ RSpec.describe User, type: :model do
         expect(user.username_slug).to eq "some-thing"
         expect(User.friendly_find("some thing")&.id).to eq user.id
         expect(User.friendly_find("some THING ")&.id).to eq user.id
-        expect(User.friendly_find("#{user.id}")&.id).to eq user.id
+        expect(User.friendly_find(user.id.to_s)&.id).to eq user.id
         expect(user2).to_not be_valid
         expect(user2.username_slug).to eq "some-thing"
         expect(user2.errors.full_messages).to eq(["Username has already been taken"])

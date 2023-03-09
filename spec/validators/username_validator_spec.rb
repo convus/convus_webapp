@@ -15,8 +15,8 @@ RSpec.describe UsernameValidator do
   end
 
   describe "bad words" do
-    before { stub_const("UsernameValidator::BAD_WORDS", ['naughty']) }
-    let(:username) { 'NAugHty ' }
+    before { stub_const("UsernameValidator::BAD_WORDS", ["naughty"]) }
+    let(:username) { "NAugHty " }
     it "is invalid" do
       expect(user).to_not be_valid
       expect(user.errors.full_messages).to eq(["Username invalid"])
