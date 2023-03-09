@@ -84,7 +84,6 @@ RSpec.describe Review, type: :model do
   end
 
   describe "timezone and created_date" do
-
     let(:review) { FactoryBot.create(:review, timezone: nil) }
     it "is current date" do
       expect(review.timezone).to be_blank

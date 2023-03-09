@@ -36,6 +36,4 @@ document.addEventListener('turbo:load', () => {
   }
 
   // enableFullscreenTableOverflow();
-  document.getElementById('review_timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone
-
 })
