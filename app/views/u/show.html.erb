@@ -1,14 +1,11 @@
 <%= content_for :main_wrapper_class, "small-width-padded-container" %>
 <% if @user == current_user %>
-  <div class="row grid-cols-2 text-center mb-1">
-    <div class="col">
-      <%= link_to "Your reviews", reviews_path(user: @user.to_param) %>
-    </div>
-    <div class="col">
-      <%= link_to "Edit your account", edit_u_path(@user.to_param) %>
-    </div>
-  </div>
-  <hr>
+  <div class="mb-1">This is your account.</div>
+  <ul class="mb-2">
+    <li class="block mb-1"><%= link_to "Your reviews", reviews_path(user: @user.to_param) %></li>
+    <li class="block mb-1"><%= link_to "Edit your account", edit_u_path(@user.to_param) %></li>
+  </ul>
+  <hr class="mb-2">
 <% end %>
 <div class="mt-6">
   <p class="mb-4">

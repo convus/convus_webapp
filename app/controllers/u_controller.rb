@@ -13,7 +13,7 @@ class UController < ApplicationController
       flash[:success] = "Account updated"
       redirect_to u_path(@user.to_param), status: :see_other
     else
-      render :edit
+      render :edit, status: :see_other
     end
   end
 

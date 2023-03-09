@@ -11,13 +11,46 @@ RSpec.describe User, type: :model do
   end
 
   describe "duplicate username" do
-    let(:user) { FactoryBot.create(:user, username: "something", about: "  ") }
-    let(:user2) { FactoryBot.build(:user, username: "SOMeTHING") }
-    it "auto updates to be something else" do
+    let(:user) { FactoryBot.create(:user, username: "some thing", about: "  ") }
+    let(:user2) { FactoryBot.build(:user, username: "SOMe THING") }
+    it "is invalid" do
       expect(user).to be_valid
       expect(user.about).to be_nil
-      expect(user.reload.username).to eq "something"
+      expect(user.reload.username).to eq "some thing"
       expect(user2).to_not be_valid
+      # Should only have username taken once - even though slug is non-unique too
+      expect(user2.errors.full_messages).to eq(["Username has already been taken"])
+    end
+    context "same slug" do
+      let(:user2) { FactoryBot.build(:user, username: "some_thing") }
+      it "is invalid" do
+        expect(user.username_slug).to eq "some-thing"
+        expect(User.friendly_find("some thing")&.id).to eq user.id
+        expect(User.friendly_find("some THING ")&.id).to eq user.id
+        expect(User.friendly_find(user.id.to_s)&.id).to eq user.id
+        expect(user2).to_not be_valid
+        expect(user2.username_slug).to eq "some-thing"
+        expect(user2.errors.full_messages).to eq(["Username has already been taken"])
+      end
+      it "includes even if there are other errors" do
+        expect(user.username_slug).to eq "some-thing"
+        user2.email = "fake"
+        # if there is another error, it still shows username already taken
+        expect(user2).to_not be_valid
+        expect(user2.username_slug).to eq "some-thing"
+        expect(user2.errors.full_messages).to eq(["Email is invalid", "Username has already been taken"])
+      end
+    end
+    context "update" do
+      it "validates on update too" do
+        expect(user).to be_valid
+        expect(user.update(username: "somethinG")).to be_truthy
+        expect(user.reload.username).to eq "somethinG"
+        expect(user2.save).to be_truthy
+        expect(user2.username_slug).to eq "some-thing"
+        expect(user.update(username: "some-thinG")).to be_falsey
+        expect(user.reload.username).to eq "somethinG"
+      end
     end
   end
 

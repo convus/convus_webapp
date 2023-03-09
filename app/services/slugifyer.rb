@@ -6,7 +6,7 @@ class Slugifyer
       .gsub(/\(|\)/, "").strip # Remove parentheses
       .gsub(/https?:\/\//, "") # remove http://
       .gsub(/(\s|-|\+|_)+/, "-") # Replace spaces with -
-      .gsub(/-&-/, "-amp-") # Replace singular & with amp - since we permit & in names
+      .gsub(/-?&(amp;)?-?/, "-amp-") # Replace singular & with amp - since we permit & in names
       .gsub(/([^A-Za-z0-9_-]+)/, "-").squeeze("-") # Remove any lingering double -
       .gsub(/(\s|-|\+|_)+/, "-") # Replace spaces and underscores with -
       .gsub(/-&-/, "-amp-").squeeze("-") # Remove lingering double -
