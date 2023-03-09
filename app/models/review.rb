@@ -20,6 +20,7 @@ class Review < ApplicationRecord
   validates_presence_of :user_id
   validate :not_error_url
 
+  before_validation :set_calculated_attributes
   before_save :associate_citation
 
   def self.quality_humanized(str)
@@ -52,14 +53,26 @@ class Review < ApplicationRecord
     citation&.url || submitted_url
   end
 
+  # Added to make testing review form errors easy
+  def not_error_url
+    return true if submitted_url.downcase != "error"
+    errors.add(:submitted_url, "'#{submitted_url}' is not valid")
+  end
+
+  def calculated_created_date
+    c_at = (created_at || Time.current)
+    return c_at.to_date if timezone.blank?
+    tz = TranzitoUtils::TimeParser.parse_timezone(timezone)
+    c_at.in_time_zone(tz).to_date
+  end
+
   def associate_citation
     self.citation_title = nil if citation_title.blank?
     self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)
   end
 
-  # Added to make testing review form errors easy
-  def not_error_url
-    return true if submitted_url.downcase != "error"
-    errors.add(:submitted_url, "'#{submitted_url}' is not valid")
+  def set_calculated_attributes
+    self.timezone = nil if timezone.blank?
+    self.created_date ||= calculated_created_date
   end
 end

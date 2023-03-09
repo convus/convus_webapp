@@ -13,7 +13,8 @@ RSpec.describe base_url, type: :request do
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
       topics_text: "A topic\n\nAnd another topic",
-      source: "chrome_extension"
+      source: "chrome_extension",
+      timezone: "Europe/Kyiv"
     }
   end
 

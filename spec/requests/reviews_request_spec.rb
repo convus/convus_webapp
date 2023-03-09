@@ -12,7 +12,8 @@ RSpec.describe base_url, type: :request do
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
       topics_text: "A topic\n\nAnd another topic",
-      source: "chrome_extension"
+      source: "chrome_extension",
+      timezone: "America/Bogota"
     }
   end
   let(:user_public) { FactoryBot.create(:user, reviews_public: true) }
@@ -134,6 +135,8 @@ RSpec.describe base_url, type: :request do
         expect(review.user_id).to eq current_user.id
         expect_attrs_to_match_hash(review, create_params)
         expect(review.citation).to be_present
+        expect(review.timezone).to be_blank
+        expect(review.created_date).to eq Time.current.to_date
         citation = review.citation
         expect(citation.url).to eq "http://example.com"
         expect(citation.title).to be_blank
@@ -190,6 +193,7 @@ RSpec.describe base_url, type: :request do
           review = Review.last
           expect(review.user_id).to eq current_user.id
           expect_attrs_to_match_hash(review, create_params)
+          expect(review.timezone).to be_present
           expect(review.citation).to be_present
           citation = review.citation
           expect(citation.url).to eq "http://example.com"
@@ -221,6 +225,7 @@ RSpec.describe base_url, type: :request do
       let(:citation) { review.citation }
       it "updates" do
         expect(citation).to be_valid
+        expect(review.reload.timezone).to be_blank
         expect {
           patch "#{base_url}/#{review.to_param}", params: {
             review: full_params
@@ -228,7 +233,8 @@ RSpec.describe base_url, type: :request do
         }.to_not change(Review, :count)
         expect(flash[:success]).to be_present
         review.reload
-        expect_attrs_to_match_hash(review, full_params)
+        expect_attrs_to_match_hash(review, full_params.except("timezone"))
+        expect(review.timezone).to be_blank
         expect(review.citation_id).to_not eq citation.id
         expect(review.citation.url).to eq "http://example.com"
         expect(review.citation.title).to eq "something"

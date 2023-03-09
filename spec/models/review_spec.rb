@@ -82,4 +82,24 @@ RSpec.describe Review, type: :model do
       expect(review.errors.full_messages.join("")).to eq "Submitted url 'error' is not valid"
     end
   end
+
+  describe "timezone and created_date" do
+
+    let(:review) { FactoryBot.create(:review, timezone: nil) }
+    it "is current date" do
+      expect(review.timezone).to be_blank
+      expect(review.created_date).to eq Time.current.to_date
+    end
+    context "in a different timezone" do
+      let(:timezone) { "Europe/Kyiv" }
+      let(:created_at) { Time.at(1678345750) } # 2023-03-08 23:09:07
+      let(:review) { FactoryBot.create(:review, created_at: created_at, timezone: timezone) }
+      it "is timezone's" do
+        expect(review.reload.created_at.to_i).to be_within(1).of created_at.to_i
+        expect(review.timezone).to eq timezone
+        expect(created_at.to_date.to_s).to eq "2023-03-08"
+        expect(review.created_date.to_s).to eq "2023-03-09"
+      end
+    end
+  end
 end
