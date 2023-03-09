@@ -38,16 +38,16 @@ module ApplicationHelper
     else
       content_tag(:span, title: str) do
         concat(str[0])
-        concat(content_tag(:span, str[1..-1], class: "hidden sm:inline"))
+        concat(content_tag(:span, str[1..], class: "hidden sm:inline"))
       end
     end
   end
 
   def review_display_name(review)
     if review.display_name == "missing url"
-      content_tag(:span, "missing url", class:"less-strong")
+      content_tag(:span, "missing url", class: "less-strong")
     else
-      link_to(review.display_name, review.citation_url)
+      link_to(review.display_name, review.citation_url, class: "link-underline")
     end
   end
 

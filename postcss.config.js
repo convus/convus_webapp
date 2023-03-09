@@ -38,7 +38,7 @@ module.exports = {
         },
         extend: {
           spacing: {
-            "container-pad": '0.5rem'
+            'container-pad': '0.5rem'
           },
           fontFamily: {
             serif: ['Iowan Old Style', 'Apple Garamond', 'Baskerville', 'Times New Roman', 'Droid Serif', 'Times', 'Source Serif Pro', 'serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol']
