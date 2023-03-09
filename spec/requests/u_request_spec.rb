@@ -2,7 +2,7 @@ require "rails_helper"
 
 base_url = "/u"
 RSpec.describe base_url, type: :request do
-  let(:user_subject) { FactoryBot.create(:user, username: "othername") }
+  let(:user_subject) { FactoryBot.create(:user, username: "OTHer-name") }
 
   describe "show" do
     it "renders" do
@@ -14,10 +14,15 @@ RSpec.describe base_url, type: :request do
     context "username" do
       it "renders" do
         expect(user_subject).to be_present
-        get "#{base_url}/othername"
+        expect(user_subject.username_slug).to eq "other-name"
+        get "#{base_url}/other-name"
         expect(response.code).to eq "200"
         expect(assigns(:user).id).to eq user_subject.id
         expect(response).to render_template("u/show")
+        # Extra stuff
+        get "#{base_url}/%20other-namE"
+        expect(response.code).to eq "200"
+        expect(assigns(:user).id).to eq user_subject.id
       end
     end
     context "not a user" do

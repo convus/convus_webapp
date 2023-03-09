@@ -36,6 +36,10 @@ class User < ApplicationRecord
     SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64
   end
 
+  def to_param
+    username_slug
+  end
+
   def reviews_private
     !reviews_public
   end

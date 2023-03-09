@@ -11,8 +11,12 @@ RSpec.describe Slugifyer do
       expect(subject.slugify("something    thingggG-")).to eq "something-thingggg"
     end
     it "handles &" do
-      expect(subject.slugify("Bikes &amp; Trikes")).to eq "bikes-amp-trikes"
       expect(subject.slugify("Bikes & Trikes")).to eq "bikes-amp-trikes"
+      expect(subject.slugify("Bikes &amp; Trikes")).to eq "bikes-amp-trikes"
+      expect(subject.slugify("Bikes &amp;& Trikes")).to eq "bikes-amp-amp-trikes"
+      expect(subject.slugify("Bikes &&amp;-& Trikes")).to eq "bikes-amp-amp-amp-trikes"
+      expect(subject.slugify("S&M")).to eq "s-amp-m"
+      expect(subject.slugify("S&&M")).to eq "s-amp-amp-m"
     end
     it "removes diacritics, because safety and ease" do
       expect(subject.slugify("paké rum runñer")).to eq("pake-rum-runner")
@@ -43,7 +47,7 @@ RSpec.describe Slugifyer do
         expect(subject.slugify("https://bikeindex.org/bikes/323232")).to eq("bikeindex-org-bikes-323232")
       end
       it "handles more complicated" do
-        target = "scholar-google-com-scholar-hl-en-as-sdt-0-5-q-22lithium-ion-22-high-temperature-degradation"
+        target = "scholar-google-com-scholar-hl-en-amp-as-sdt-0-5-amp-q-22lithium-ion-22-high-temperature-degradation"
         expect(subject.slugify("https://scholar.google.com/scholar?hl=en&as_sdt=0,5&q=%22lithium+ion%22+high+temperature+degradation")).to eq target
       end
     end
