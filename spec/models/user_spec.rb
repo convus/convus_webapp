@@ -18,6 +18,7 @@ RSpec.describe User, type: :model do
       expect(user.about).to be_nil
       expect(user.reload.username).to eq "some thing"
       expect(user2).to_not be_valid
+      # Should only have username taken once - even though slug is non-unique too
       expect(user2.errors.full_messages).to eq(["Username has already been taken"])
     end
     context "same slug" do
@@ -30,6 +31,14 @@ RSpec.describe User, type: :model do
         expect(user2).to_not be_valid
         expect(user2.username_slug).to eq "some-thing"
         expect(user2.errors.full_messages).to eq(["Username has already been taken"])
+      end
+      it "includes even if there are other errors" do
+        expect(user.username_slug).to eq "some-thing"
+        user2.email = "fake"
+        # if there is another error, it still shows username already taken
+        expect(user2).to_not be_valid
+        expect(user2.username_slug).to eq "some-thing"
+        expect(user2.errors.full_messages).to eq(["Email is invalid", "Username has already been taken"])
       end
     end
     context "update" do
