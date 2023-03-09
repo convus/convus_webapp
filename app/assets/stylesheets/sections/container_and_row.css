@@ -16,6 +16,10 @@
   /* might wanna use max-w-prose sometime - this is close*/
 }
 
+.standard-top-offset {
+  @apply mt-8;
+}
+
 turbo-frame {
   display: block;
 }
