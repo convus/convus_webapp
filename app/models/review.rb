@@ -45,7 +45,11 @@ class Review < ApplicationRecord
   end
 
   def display_name
-    citation_title || citation&.display_name || "missing url"
+    citation_title.presence || citation&.display_name || "missing url"
+  end
+
+  def citation_url
+    citation&.url || submitted_url
   end
 
   def associate_citation

@@ -8,12 +8,19 @@
 }
 
 .full-width-padded-container {
-  @apply padded-container full-width-container max-lg:px-2;
+  @apply padded-container full-width-container max-lg:px-container-pad;
 }
 
 .small-width-padded-container {
-  @apply padded-container max-w-xl;
+  @apply padded-container max-w-small-container;
   /* might wanna use max-w-prose sometime - this is close*/
+}
+
+/* Have to manually update this to match `small-container + container-pad` because css is dumb */
+@media (max-width: 596px) {
+  .small-width-padded-container {
+    @apply px-container-pad;
+  }
 }
 
 .standard-top-offset {
@@ -29,9 +36,9 @@ turbo-frame {
 */
 
 .row {
-  @apply grid -mx-4;
+  @apply grid -mx-container-pad;
 }
 
 .col {
-  @apply px-4
+  @apply px-container-pad
 }

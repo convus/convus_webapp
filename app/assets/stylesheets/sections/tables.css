@@ -17,5 +17,25 @@
   td {
     @apply py-2 px-5;
   }
+
+  & td ul {
+    padding: 0 0 0 1.5rem;
+    margin: 0.5rem 0 0.5rem;
+  }
+
+  &.table-sm {
+    & th, td {
+      @apply py-1 px-2
+    }
+  }
 }
 
+.full-screen-table-overflown {
+  @apply overflow-x-scroll -mx-container-pad;
+}
+
+.full-screen-table {
+  @apply px-container-pad max-lg:-mx-container-pad px-0;
+}
+
+/*.full-width-table*/
