@@ -1,24 +1,16 @@
-.main-navbar {
-  @apply px-2;
-
-  .navbar-container {
-    @apply full-width-container flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4;
+.main-nav-root-link {
+  @apply flex items-center;
+  & img {
+    @apply h-6 mr-2 sm:h-6;
   }
-
-  .root-link {
-    @apply flex items-center;
-    & img {
-      @apply h-6 mr-2 sm:h-6;
-    }
-    & span {
-      @apply self-end text-lg font-semibold text-bodytext whitespace-nowrap;
-    }
+  & span {
+    @apply self-end text-lg font-semibold text-bodytext whitespace-nowrap;
   }
+}
 
-  .nav-link {
-    @apply text-bodytext;
-    &:hover, &:active, &.active {
-      @apply underline;
-    }
+.main-nav-link {
+  @apply text-bodytext;
+  &:hover, &:active, &.active {
+    @apply underline;
   }
 }

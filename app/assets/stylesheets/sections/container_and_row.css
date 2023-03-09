@@ -1,4 +1,4 @@
-.main-container {
+.padded-container {
   /* Add a little padding to the bottom */
   @apply mx-auto py-2 w-full;
 }
@@ -7,13 +7,24 @@
   @apply max-w-main-content;
 }
 
-.full-width-main-container {
-  @apply main-container full-width-container;
+.full-width-padded-container {
+  @apply padded-container full-width-container max-lg:px-container-pad;
 }
 
-.small-width-main-container {
-  @apply main-container max-w-xl;
+.small-width-padded-container {
+  @apply padded-container max-w-small-container;
   /* might wanna use max-w-prose sometime - this is close*/
+}
+
+/* Have to manually update this to match `small-container + container-pad` because css is dumb */
+@media (max-width: 596px) {
+  .small-width-padded-container {
+    @apply px-container-pad;
+  }
+}
+
+.standard-top-offset {
+  @apply mt-8;
 }
 
 turbo-frame {
@@ -25,9 +36,9 @@ turbo-frame {
 */
 
 .row {
-  @apply grid -ml-4 -mr-4;
+  @apply grid -mx-container-pad;
 }
 
 .col {
-  @apply px-4
+  @apply px-container-pad
 }

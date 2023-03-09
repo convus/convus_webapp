@@ -6,6 +6,19 @@ import BrowserExtensionScript from './scripts/browser_extension_script.js'
 import 'flowbite/dist/flowbite.turbo.js'
 import { TimeParser, PeriodSelector, Pagination } from 'tranzito_utils_js'
 
+// TODO: rewrite without jquery
+// enableFullscreenTableOverflow() {
+//   const pageWidth = $(window).width();
+//   $(".full-screen-table table").each(function(index) {
+//     const $this = $(this);
+//     if ($this.outerWidth() > pageWidth) {
+//       $this
+//         .parents(".full-screen-table")
+//         .addClass("full-screen-table-overflown");
+//     }
+//   });
+// }
+
 document.addEventListener('turbo:load', () => {
   if (document.getElementById('timeSelectionBtnGroup')) {
     const periodSelector = new PeriodSelector()
@@ -21,4 +34,6 @@ document.addEventListener('turbo:load', () => {
   if (document.getElementById('review-menu')) {
     BrowserExtensionScript()
   }
+
+  // enableFullscreenTableOverflow();
 })

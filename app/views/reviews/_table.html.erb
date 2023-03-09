@@ -1,27 +1,31 @@
 <% reviews ||= reviews %>
 <% skip_sortable ||= false %>
 <% edit_reviews ||= false %>
-<div class="full-width">
-  <table class="table">
+<div class="full-screen-table">
+  <table class="table table-sm">
     <thead class="sortable">
       <tr>
         <th>
           <%= sortable "created_at", "Reviewed At", skip_sortable: skip_sortable %>
         </th>
-        <th>
+        <th class="hidden md:table-cell">
           Link
         </th>
-        <th>Topics</th>
-        <th>
-          Agreement
+        <th class="hidden md:table-cell">
+          Topics
         </th>
         <th>
-          Quality
+          <span title="Agreement">A<span class="hidden md:inline">greement</span></span>
         </th>
         <th>
-          Changed opinion?
+          <span title="Quality">Q<span class="hidden md:inline">uality</span></span>
         </th>
-        <th>Error?</th>
+        <th>
+          <span title="Changed opinion?">C<span class="hidden md:inline">hanged opinion?</span></span>
+        </th>
+        <th>
+          <span title="Error?">E<span class="hidden md:inline">rror?</span></span>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -32,15 +36,13 @@
             <% if edit_reviews %>
               <small class="less-strong"><%= link_to "edit", edit_review_path(review), class: "link-underline" %></small>
             <% end %>
+            <span class="block md:hidden mt-2"><%= review_display_name(review) %></span>
+            <span class="block md:hidden text-sm"><%= review.topics.join(", ") %></span>
           </td>
-          <td>
-            <% if review.display_name == "missing url" %>
-              <span class="less-strong">missing url</span>
-            <% else %>
-              <%= link_to review.display_name, review.citation&.url %>
-            <% end %>
+          <td class="hidden md:table-cell">
+            <%= review_display_name(review) %>
           </td>
-          <td>
+          <td class="hidden md:table-cell">
             <%= review.topics.join(", ") %>
           </td>
           <td>
@@ -49,10 +51,10 @@
           <td>
             <%= quality_display(review.quality) %>
           </td>
-          <td>
+          <td class="table-cell-check">
             <%= check_mark if review.changed_my_opinion? %>
           </td>
-          <td>
+          <td class="table-cell-check">
             <%= check_mark if review.significant_factual_error? %>
           </td>
         </tr>
