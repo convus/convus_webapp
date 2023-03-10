@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :event do
-    user { FactoryBot.create(:user) }
-    target { FactoryBot.create(:review, user: user) }
+    target { FactoryBot.create(:review) }
+    user { target.user }
     kind { :review_created }
   end
 end

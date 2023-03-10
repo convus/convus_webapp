@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  ROLE_ENUM = {normal_user: 0, developer: 1}
+  ROLE_ENUM = {normal_user: 0, developer: 1}.freeze
 
   devise :database_authenticatable, :registerable, :trackable,
     :recoverable, :rememberable, :validatable

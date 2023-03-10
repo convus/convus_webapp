@@ -3,13 +3,13 @@ class Review < ApplicationRecord
     neutral: 0,
     disagree: 1,
     agree: 2
-  }
+  }.freeze
 
   QUALITY_ENUM = {
     quality_med: 0,
     quality_low: 1,
     quality_high: 2
-  }
+  }.freeze
 
   enum agreement: AGREEMENT_ENUM
   enum quality: QUALITY_ENUM

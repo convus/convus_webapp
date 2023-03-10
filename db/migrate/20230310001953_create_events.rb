@@ -4,6 +4,7 @@ class CreateEvents < ActiveRecord::Migration[7.0]
       t.references :user
       t.references :target, polymorphic: true
       t.integer :kind
+      t.date :created_date
 
       t.timestamps
     end

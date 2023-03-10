@@ -31,4 +31,15 @@ RSpec.describe ReviewCreatedEventJob, type: :job do
       expect(described_class.jobs.map { |j| j["args"] }.last).to eq([review.id])
     end
   end
+
+  describe "duplicate" do
+    let(:event1) { FactoryBot.create(:event, target: review) }
+    let(:event2) { FactoryBot.create(:event, target: review) }
+    it "deletes itself" do
+      expect(event1.user_id).to eq event2.user_id
+      expect(Event.pluck(:kind)).to eq(%w[review_created review_created])
+      instance.perform(review.id)
+      expect(Event.pluck(:id)).to eq([event1.id])
+    end
+  end
 end
