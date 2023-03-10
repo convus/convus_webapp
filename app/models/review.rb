@@ -1,5 +1,5 @@
 class Review < ApplicationRecord
-  include CreateDateable
+  include CreatedDateable
 
   AGREEMENT_ENUM = {
     neutral: 0,

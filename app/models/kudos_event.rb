@@ -1,11 +1,11 @@
 class KudosEvent < ApplicationRecord
-  include CreateDateable
+  include CreatedDateable
 
   belongs_to :event
   belongs_to :user
   belongs_to :kudos_event_kind
 
-  validates_uniqueness_of :event_id, scope: [:user_id, :kudos_event_kind_id]
+  validates_uniqueness_of :event_id, scope: %i[user_id kudos_event_kind_id]
 
   before_validation :set_calculated_attributes
 

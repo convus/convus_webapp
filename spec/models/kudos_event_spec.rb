@@ -33,7 +33,6 @@ RSpec.describe KudosEvent, type: :model do
     let(:review3) { FactoryBot.create(:review, user: user) }
     let(:kudos_event3) { FactoryBot.create(:kudos_event, review: review3, kudos_event_kind: kudos_event_kind) }
     let(:review4) { FactoryBot.create(:review, user: user, created_at: Time.current - 1.day) }
-    # let(:event4) { Event.create(user: user, target: review4, kind: :review_created) }
     let(:kudos_event4) { FactoryBot.create(:kudos_event, review: review4, kudos_event_kind: kudos_event_kind) }
     it "is the kudos_event_kind total" do
       expect(kudos_event2).to be_valid

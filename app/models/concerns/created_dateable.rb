@@ -1,4 +1,4 @@
-module CreateDateable
+module CreatedDateable
   extend ActiveSupport::Concern
 
   class_methods do

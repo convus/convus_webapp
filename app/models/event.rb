@@ -1,5 +1,5 @@
 class Event < ApplicationRecord
-  include CreateDateable
+  include CreatedDateable
 
   KIND_ENUM = {
     review_created: 0,
