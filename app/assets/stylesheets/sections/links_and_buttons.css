@@ -1,8 +1,5 @@
 a {
   @apply text-primary;
-
-  /* it's already active! This might be too clever */
-  &.active { cursor: default;  }
 }
 
 .link-underline {

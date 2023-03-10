@@ -1,6 +1,6 @@
 <h1 class="mb-5">
   Reviews by
-  <%= link_to user_subject.username, u_path(user_subject) %>
+  <%= link_to user_subject.username, u_path(user_subject), class: "link-underline" %>
 </h1>
 <% if @reviews.total_count.zero? %>
   <h4>No reviews found</h4>

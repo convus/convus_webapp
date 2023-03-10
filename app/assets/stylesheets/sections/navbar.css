@@ -13,4 +13,6 @@
   &:hover, &:active, &.active {
     @apply underline;
   }
+  /* it's already active! This might be too clever */
+  &.active { cursor: default;  }
 }
