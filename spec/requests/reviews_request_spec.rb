@@ -141,6 +141,12 @@ RSpec.describe base_url, type: :request do
         citation = review.citation
         expect(citation.url).to eq "http://example.com"
         expect(citation.title).to be_blank
+        expect(Event.count).to eq 0
+        expect {
+          ReviewCreatedEventJob.drain
+        }.to change(Event, :count).by 1
+        event = review.events.last
+        expect(event.kind).to eq "review_created"
       end
 
       context "turbo_stream" do

@@ -17,11 +17,17 @@ class Review < ApplicationRecord
   belongs_to :citation
   belongs_to :user
 
+  has_many :events, as: :target
+
   validates_presence_of :user_id
   validate :not_error_url
 
   before_validation :set_calculated_attributes
   before_save :associate_citation
+
+  after_commit :perform_review_created_event_job, only: :create
+
+  attr_accessor :skip_review_created_event
 
   def self.quality_humanized(str)
     return nil if str.blank?
@@ -74,5 +80,10 @@ class Review < ApplicationRecord
   def set_calculated_attributes
     self.timezone = nil if timezone.blank?
     self.created_date ||= calculated_created_date
+  end
+
+  def perform_review_created_event_job
+    return if !persisted? || skip_review_created_event
+    ReviewCreatedEventJob.perform_async(id)
   end
 end
