@@ -110,8 +110,8 @@ RSpec.describe Review, type: :model do
         expect(created_at.to_date.to_s).to eq "2023-03-08"
         expect(review.created_date.to_s).to eq "2023-03-09"
         # event uses the review date
-      expect(event.user_id).to eq review.user_id
-      expect(event.created_date).to eq review.created_date
+        expect(event.user_id).to eq review.user_id
+        expect(event.created_date).to eq review.created_date
       end
     end
   end

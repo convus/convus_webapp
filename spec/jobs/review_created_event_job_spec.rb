@@ -18,6 +18,10 @@ RSpec.describe ReviewCreatedEventJob, type: :job do
       expect(event.user_id).to eq user.id
       expect(event.kind).to eq "review_created"
       expect(event.target).to eq review
+      # expect(event.kudos_events.count).to eq 1
+      # kudos_event = event.kudos_events.first
+      # expect(kudos_event.kudos_event_kind.name).to eq "Review added"
+      # expect(kudos_event.total_kudos).to eq 10
     end
   end
 

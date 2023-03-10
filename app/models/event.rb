@@ -10,6 +10,8 @@ class Event < ApplicationRecord
   belongs_to :user
   belongs_to :target, polymorphic: true
 
+  has_many :kudos_events
+
   enum kind: KIND_ENUM
 
   before_validation :set_calculated_attributes
@@ -18,7 +20,7 @@ class Event < ApplicationRecord
     self.created_date = if defined?(target.created_date)
       target.created_date
     else
-      created_at.to_date
+      (created_at || Time.current).to_date
     end
   end
 end

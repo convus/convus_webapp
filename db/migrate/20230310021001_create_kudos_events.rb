@@ -4,6 +4,7 @@ class CreateKudosEvents < ActiveRecord::Migration[7.0]
       t.references :event
       t.references :user
       t.references :kudos_event_kind
+      t.integer :potential_kudos
       t.integer :total_kudos
       t.date :created_date
 

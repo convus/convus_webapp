@@ -12,6 +12,10 @@ class ReviewCreatedEventJob < ApplicationJob
       # If this event is destroyed, exit
       return if event.id > lowest_id
     end
-
+    # TODO: Handle multiple different types of review created
+    return true if event.kudos_events.user_review_created_kinds.any?
+    KudosEvent.create(event: event,
+      user: event.user,
+      kudos_event_kind: KudosEventKind.user_review_general)
   end
 end

@@ -47,6 +47,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_10_021103) do
     t.bigint "event_id"
     t.bigint "user_id"
     t.bigint "kudos_event_kind_id"
+    t.integer "potential_kudos"
     t.integer "total_kudos"
     t.date "created_date"
     t.datetime "created_at", null: false
