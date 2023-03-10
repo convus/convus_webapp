@@ -7,9 +7,9 @@ module ApplicationHelper
 
   def page_description
     return nil unless controller_name == "u" && action_name == "show" && @user.present?
-    "#{@user.username} - #{@user.total_kudos} Kudos " +
-    "(#{@user.total_kudos_today} today, #{@user.total_kudos_yesterday} yesterday) | " +
-    "#{@user.reviews.count} Reviews"
+    "#{@user.username} - #{@user.total_kudos} Kudos " \
+      "(#{@user.total_kudos_today} today, #{@user.total_kudos_yesterday} yesterday) | " \
+      "#{@user.reviews.count} Reviews"
   end
 
   def check_mark
