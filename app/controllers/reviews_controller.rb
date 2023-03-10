@@ -89,7 +89,7 @@ class ReviewsController < ApplicationController
 
   def permitted_attrs
     %i[agreement changed_my_opinion citation_title error_quotes learned_something
-       quality significant_factual_error source submitted_url topics_text]
+      quality significant_factual_error source submitted_url topics_text]
   end
 
   def sortable_columns

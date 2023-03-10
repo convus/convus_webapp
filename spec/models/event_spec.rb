@@ -1,5 +1,10 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Event, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe "factory" do
+    let(:event) { FactoryBot.create(:event) }
+    it "is valid" do
+      expect(event).to be_valid
+    end
+  end
 end

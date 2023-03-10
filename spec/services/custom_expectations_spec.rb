@@ -61,7 +61,7 @@ RSpec.describe "custom_expectations spec" do
 
     context "match_timezone" do
       let(:obj) { Review.new(submitted_url: "http://example.com", learned_something: true, timezone: nil) }
-      let(:hash) {{ submitted_url: "http://example.com", learned_something: "true", timezone: "Europe/Kyiv"}}
+      let(:hash) { {submitted_url: "http://example.com", learned_something: "true", timezone: "Europe/Kyiv"} }
       it "doesn't match if timezone is incorrect" do
         expect(obj.timezone).to_not eq hash[:timezone]
         # Timezone is ignored! This is the desired behavior, because timezone is submitted with requests and used to set the time
