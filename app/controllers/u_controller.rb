@@ -3,7 +3,7 @@ class UController < ApplicationController
   before_action :ensure_user_is_current_user!, except: [:show]
 
   def show
-    @page_title = "Account: #{@user.username} | Convus"
+    @page_title = "#{@user.username} | Convus"
   end
 
   def edit
