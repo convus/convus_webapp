@@ -1,9 +1,7 @@
 /* extension popup ID - make sure it matches the extension! */
 #body-popup, #new_review.no-layout {
+  @apply pt-2 px-3;
   min-width: 375px;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-bottom: 0.5rem;
 }
 
 #review-menu-btn {
@@ -28,4 +26,11 @@
   max-width: 375px;
   margin: 0 auto;
   border: 1px solid #ccc;
+}
+
+.target-firefox .hidden-firefox,
+.target-chrome .hidden-chrome,
+.target-safari .hidden-safari,
+.target-safari_ios .hidden-safari_ios {
+  @apply hidden;
 }

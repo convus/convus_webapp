@@ -25,7 +25,7 @@
 <%# Need to manually specify the URL and method here because it can't just be the path %>
 <% form_url = editing_review ? review_url(review) : reviews_url %>
 <% collapsible_field_classes = editing_review ? '' : 'hidden' %>
-<%= form_with(model: review, url: form_url, method: (editing_review ? :patch : :post)) do |f| %>
+<%= form_with(model: review, url: form_url, method: (editing_review ? :patch : :post), class: "pb-2") do |f| %>
   <% unless editing_review %>
     <%= f.hidden_field :source %>
     <%= f.hidden_field :timezone, class: "hiddenFieldTimezone" %>
@@ -141,9 +141,19 @@
         <small class="less-strong">only applies to current review</small>
       </label>
     </div>
-    <p class="text-sm mt-4">Open review dialog with <code>control</code> + <code>shift</code> + <code>R</code></p>
+    <p class="text-sm mt-4 hidden-safari_ios">Open review dialog with <code>control</code> + <code>shift</code> + <code>R</code></p>
+    <%# NOTE: This doesn't do anything in rails, included here only to make copying for browser extension possible %>
     <div class="mt-4 text-right">
-      <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "gray-link text-sm"  %>
+      <button class="gray-link text-sm" type="submit" id="logout-btn">logout</button>
+    </div>
+  </div>
+  <%# if rendering the menu, include the templates too %>
+  <div class="hidden" id="templates">
+    <div id="shareTemplate" class="text-center">
+      <button id="share" class="btn">
+        <span class="text-lg ml-2">Share</span>
+        <svg class="w-5 inline ml-3 mr-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"></path></svg>
+      </button>
     </div>
   </div>
 <% end %>

@@ -11,8 +11,7 @@
     <%= content_for :main_wrapper_class, "no-container" %>
   <% end %>
   <% if current_user.blank? %>
-    <h4>Please log in</h4>
-    <%= link_to "Log in", new_user_session_url, target: "_blank" %>
+    <h4 class="pt-4 pb-2">Please <%= link_to "log in", new_user_session_url, target: "_blank" %></h4>
   <% else %>
     <%= render partial: "form", locals: {review: @review, render_menu: @source != "web"} %>
   <% end %>
