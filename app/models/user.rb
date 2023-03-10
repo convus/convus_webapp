@@ -1,10 +1,12 @@
 class User < ApplicationRecord
-  ROLE_ENUM = {normal_user: 0, developer: 1}
+  ROLE_ENUM = {normal_user: 0, developer: 1}.freeze
 
   devise :database_authenticatable, :registerable, :trackable,
     :recoverable, :rememberable, :validatable
 
   has_many :reviews
+  has_many :events
+  has_many :kudos_events
 
   enum role: ROLE_ENUM
 
@@ -42,6 +44,16 @@ class User < ApplicationRecord
 
   def reviews_private
     !reviews_public
+  end
+
+  # Need to pass in the timezone here ;)
+  def total_kudos_today(timezone = nil)
+    kudos_events.created_today(timezone).sum(:total_kudos)
+  end
+
+  # Need to pass in the timezone here too
+  def total_kudos_yesterday(timezone = nil)
+    kudos_events.created_yesterday(timezone).sum(:total_kudos)
   end
 
   def set_calculated_attributes

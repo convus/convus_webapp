@@ -2,7 +2,14 @@ module ApplicationHelper
   include TranzitoUtils::Helpers
 
   def page_title
-    "Convus"
+    @page_title || "Convus"
+  end
+
+  def page_description
+    return nil unless controller_name == "u" && action_name == "show" && @user.present?
+    "#{@user.username} - #{@user.total_kudos} Kudos " \
+      "(#{@user.total_kudos_today} today, #{@user.total_kudos_yesterday} yesterday) | " \
+      "#{@user.reviews.count} Reviews"
   end
 
   def check_mark
@@ -26,7 +33,10 @@ module ApplicationHelper
     if agreement.to_s == "neutral"
       content_tag(:span, "-", class: "less-strong")
     else
-      content_tag(:span, agreement)
+      content_tag(:span, title: agreement) do
+        concat(agreement[0])
+        concat(content_tag(:span, agreement[1..], class: "hidden sm:inline"))
+      end
     end
   end
 

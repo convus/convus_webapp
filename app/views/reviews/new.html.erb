@@ -2,6 +2,10 @@
   <% if @source == "web" %>
     <%= content_for :main_wrapper_class, "small-width-padded-container" %>
     <h1 class="mb-3">Add Review</h1>
+    <%# manually override to display URL - hidden by default for styles with browser extension %>
+    <style>
+      #field-group-url {display: block; visibility: visible; opacity: 1;}
+    </style>
   <% else %>
     <%# Previously, this was rendered in the extension - but to remove remote code loading, switched out %>
     <%= content_for :main_wrapper_class, "no-container" %>

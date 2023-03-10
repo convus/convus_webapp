@@ -13,7 +13,9 @@ RSpec.describe base_url, type: :request do
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
       topics_text: "A topic\n\nAnd another topic",
-      source: "chrome_extension"
+      source: "chrome_extension",
+      learned_something: true,
+      timezone: "Europe/Kyiv"
     }
   end
 
@@ -32,7 +34,9 @@ RSpec.describe base_url, type: :request do
       expect(Review.count).to eq 1
       review = Review.last
       expect(review.user_id).to eq current_user.id
-      expect_attrs_to_match_hash(review, review_params)
+      expect_attrs_to_match_hash(review, review_params, match_timezone: true)
+      expect(review.timezone).to eq "Europe/Kyiv"
+      expect(review.created_date).to be_present
       expect(review.citation).to be_present
       citation = review.citation
       expect(citation.url).to eq "http://example.com"

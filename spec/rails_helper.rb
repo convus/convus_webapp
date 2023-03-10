@@ -55,6 +55,9 @@ RSpec.configure do |config|
   # Add our request spec things
   config.include RequestSpecHelpers, type: :request
 
+  # Clear the sidekiq queue to prevent weird test failures
+  config.before { Sidekiq::Worker.clear_all }
+
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
   # `post` in specs under `spec/controllers`.

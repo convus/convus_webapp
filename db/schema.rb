@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_08_183832) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_10_021103) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,6 +20,41 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_183832) do
     t.jsonb "url_components_json"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "target_type"
+    t.bigint "target_id"
+    t.integer "kind"
+    t.date "created_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["target_type", "target_id"], name: "index_events_on_target"
+    t.index ["user_id"], name: "index_events_on_user_id"
+  end
+
+  create_table "kudos_event_kinds", force: :cascade do |t|
+    t.string "name"
+    t.integer "period"
+    t.integer "max_per_period"
+    t.integer "total_kudos"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "kudos_events", force: :cascade do |t|
+    t.bigint "event_id"
+    t.bigint "user_id"
+    t.bigint "kudos_event_kind_id"
+    t.integer "potential_kudos"
+    t.integer "total_kudos"
+    t.date "created_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_kudos_events_on_event_id"
+    t.index ["kudos_event_kind_id"], name: "index_kudos_events_on_kudos_event_kind_id"
+    t.index ["user_id"], name: "index_kudos_events_on_user_id"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -36,6 +71,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_183832) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "source"
+    t.string "timezone"
+    t.date "created_date"
+    t.boolean "learned_something", default: false
     t.index ["citation_id"], name: "index_reviews_on_citation_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
@@ -59,6 +97,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_183832) do
     t.text "about"
     t.string "username_slug"
     t.boolean "reviews_public", default: false
+    t.integer "total_kudos"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

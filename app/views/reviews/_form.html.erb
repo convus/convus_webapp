@@ -27,7 +27,8 @@
 <% collapsible_field_classes = editing_review ? '' : 'hidden' %>
 <%= form_with(model: review, url: form_url, method: (editing_review ? :patch : :post)) do |f| %>
   <% unless editing_review %>
-    <%= f.hidden_field :source, class: "form-control" %>
+    <%= f.hidden_field :source %>
+    <%= f.hidden_field :timezone, class: "hiddenFieldTimezone" %>
   <% end %>
   <div class="form-row collapsible <%= collapsible_field_classes %>" id="field-group-url">
     <%= f.label :submitted_url, "URL" %>
@@ -62,6 +63,12 @@
         Low Quality
       <% end %>
     </div>
+  </div>
+  <div class="form-row ">
+    <%= f.label :learned_something, class: "form-control-check" do %>
+      <%= f.check_box :learned_something %>
+      Learned something new
+    <% end %>
   </div>
   <div class="form-row ">
     <%= f.label :changed_my_opinion, class: "form-control-check" do %>
