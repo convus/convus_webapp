@@ -35,7 +35,7 @@ class KudosEvent < ApplicationRecord
     if id.present?
       day_kudos_event_ids.include?(id) ? potential_kudos : 0
     else
-      day_kudos_event_ids.count < max_per_period ? potential_kudos : 0
+      (day_kudos_event_ids.count < max_per_period) ? potential_kudos : 0
     end
   end
 

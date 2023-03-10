@@ -9,7 +9,7 @@ class KudosEventKind < ApplicationRecord
   validates_uniqueness_of :name, case_sensitive: false
 
   def self.user_review_created_kinds
-    where("name ILIKE ?",  "Review added%")
+    where("name ILIKE ?", "Review added%")
   end
 
   # HACK HACK HACK

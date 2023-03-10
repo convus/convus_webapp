@@ -21,13 +21,12 @@
     <%= @user.about %>
   </p>
 <% end %>
-
 <p class="mt-8">
   <%= @user.total_kudos || 0 %>
   kudos
   <span class="ml-2">
     (<%= @user.total_kudos_yesterday %> today  |
-     <%= @user.total_kudos_yesterday %> yesterday)
+    <%= @user.total_kudos_yesterday %> yesterday)
   </span>
 </p>
 <p class="mt-1">

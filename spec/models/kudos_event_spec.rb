@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe KudosEvent, type: :model do
   describe "user_review_created_kinds" do
