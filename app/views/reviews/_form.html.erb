@@ -64,7 +64,7 @@
       <% end %>
     </div>
   </div>
-  <div class="form-row ">
+  <div class="form-row mt-2">
     <%= f.label :learned_something, class: "form-control-check" do %>
       <%= f.check_box :learned_something %>
       Learned something new
@@ -76,13 +76,19 @@
       Changed my opinion
     <% end %>
   </div>
+  <div class="form-row ">
+    <%= f.label :did_not_understand, class: "form-control-check" do %>
+      <%= f.check_box :did_not_understand %>
+      Did not understand
+    <% end %>
+  </div>
   <div class="form-row">
     <%= f.label :significant_factual_error, class: "form-control-check" do %>
       <%= f.check_box :significant_factual_error %>
       Significant factual error(s)
     <% end %>
   </div>
-  <div class="row grid-cols-2">
+  <div class="row grid-cols-2 mt-2">
     <div class="col">
       <div class="form-row-btn">
         <%= f.submit "save", class: "btn btn-success" %>
@@ -90,7 +96,7 @@
     </div>
     <% if render_menu %>
       <div class="col mt-4 text-right">
-        <button type="button" aria-label="Menu" id="review-menu-btn" class="">
+        <button type="button" aria-label="Menu" id="review-menu-btn">
           <span class="sr-only">Menu</span>
           <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"></path>

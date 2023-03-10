@@ -14,6 +14,7 @@ RSpec.describe base_url, type: :request do
       topics_text: "A topic\n\nAnd another topic",
       source: "chrome_extension",
       learned_something: "1",
+      did_not_understand: "1",
       timezone: "America/Bogota"
     }
   end

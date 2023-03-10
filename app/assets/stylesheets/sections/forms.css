@@ -7,7 +7,7 @@
 }
 
 .form-control-radio, .form-control-check {
-  @apply block cursor-pointer py-1;
+  @apply block cursor-pointer;
   & input {
     /* TODO: alignment still looks off */
     @apply text-gray-800 -mt-1;
