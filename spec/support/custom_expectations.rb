@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 # Define a way to check if an update hash matches an object. Particularly useful for request specs
-def expect_attrs_to_match_hash(obj, hash, match_time_within: 1)
+def expect_attrs_to_match_hash(obj, hash, match_time_within: 1, match_timezone: false)
   unmatched_obj_attrs = {}
   # So far, not putting timezone on objects - so ignore it.
   hash = hash.dup
-  timezone = hash&.delete(:timezone) || hash&.delete("timezone")
+  unless match_timezone
+    timezone = hash&.delete(:timezone) || hash&.delete("timezone")
+  end
   hash.each do |key, value|
     obj_value = obj.send(key)
     # Just in case there are some type issues
@@ -26,7 +28,7 @@ def expect_attrs_to_match_hash(obj, hash, match_time_within: 1)
 end
 
 # Define a hash matchers to display better results and match more loosely (not on type, indifferent access)
-def expect_hashes_to_match(hash1, hash2, inside = nil, match_time_within: nil)
+def expect_hashes_to_match(hash1, hash2, inside = nil, match_time_within: nil, match_timezone: false)
   hash1 = hash1.with_indifferent_access if hash1&.is_a?(Hash)
   if hash2.is_a?(Hash)
     hash2 = hash2.with_indifferent_access
