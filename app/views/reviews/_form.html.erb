@@ -65,6 +65,12 @@
     </div>
   </div>
   <div class="form-row ">
+    <%= f.label :learned_something, class: "form-control-check" do %>
+      <%= f.check_box :learned_something %>
+      Learned something new
+    <% end %>
+  </div>
+  <div class="form-row ">
     <%= f.label :changed_my_opinion, class: "form-control-check" do %>
       <%= f.check_box :changed_my_opinion %>
       Changed my opinion

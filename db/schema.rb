@@ -38,6 +38,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_09_214651) do
     t.string "source"
     t.string "timezone"
     t.date "created_date"
+    t.boolean "learned_something", default: false
     t.index ["citation_id"], name: "index_reviews_on_citation_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end

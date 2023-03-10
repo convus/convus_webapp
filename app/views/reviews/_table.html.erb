@@ -21,6 +21,9 @@
           <span title="Quality">Q<span class="hidden md:inline">uality</span></span>
         </th>
         <th>
+          <span title="Learned something?">L<span class="hidden md:inline">earned something?</span></span>
+        </th>
+        <th>
           <span title="Changed opinion?">C<span class="hidden md:inline">hanged opinion?</span></span>
         </th>
         <th>
@@ -50,6 +53,9 @@
           </td>
           <td>
             <%= quality_display(review.quality) %>
+          </td>
+          <td class="table-cell-check">
+            <%= check_mark if review.learned_something? %>
           </td>
           <td class="table-cell-check">
             <%= check_mark if review.changed_my_opinion? %>

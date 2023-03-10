@@ -13,6 +13,7 @@ RSpec.describe base_url, type: :request do
       error_quotes: "Quote goes here",
       topics_text: "A topic\n\nAnd another topic",
       source: "chrome_extension",
+      learned_something: "1",
       timezone: "America/Bogota"
     }
   end
@@ -192,7 +193,7 @@ RSpec.describe base_url, type: :request do
           expect(flash[:success]).to be_present
           review = Review.last
           expect(review.user_id).to eq current_user.id
-          expect_attrs_to_match_hash(review, create_params)
+          expect_attrs_to_match_hash(review, create_params, match_timezone: true)
           expect(review.timezone).to be_present
           expect(review.citation).to be_present
           citation = review.citation

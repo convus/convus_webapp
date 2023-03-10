@@ -17,7 +17,7 @@ module API
         params.require(:review)
           .permit(:submitted_url, :citation_title, :agreement, :quality,
             :changed_my_opinion, :significant_factual_error, :error_quotes,
-            :topics_text, :source)
+            :topics_text, :source, :learned_something, :timezone)
       end
     end
   end

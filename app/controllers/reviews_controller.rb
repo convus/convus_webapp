@@ -39,8 +39,9 @@ class ReviewsController < ApplicationController
     if @review.save
       respond_to do |format|
         format.html do
+          flash.now[:success] = "Review added"
           redirect_source = (@review.source == "web") ? nil : @review.source
-          redirect_to new_review_path(source: redirect_source), status: :see_other, flash: {success: "Review added"}
+          redirect_to new_review_path(source: redirect_source), status: :see_other
         end
       end
     else
@@ -87,8 +88,8 @@ class ReviewsController < ApplicationController
   end
 
   def permitted_attrs
-    %i[submitted_url citation_title agreement quality changed_my_opinion
-      significant_factual_error error_quotes topics_text source]
+    %i[agreement changed_my_opinion citation_title error_quotes learned_something
+       quality significant_factual_error source submitted_url topics_text]
   end
 
   def sortable_columns
