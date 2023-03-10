@@ -11,7 +11,7 @@ RSpec.describe ReviewCreatedEventJob, type: :job do
     before { Sidekiq::Worker.clear_all }
 
     it "creates an event" do
-      expect(user.reload.total_kudos).to eq nil
+      expect(user.reload.total_kudos).to eq 0
       expect(review.events.count).to eq 0
       expect(instance.perform(review.id))
       expect(review.reload.events.count).to eq 1
@@ -27,14 +27,25 @@ RSpec.describe ReviewCreatedEventJob, type: :job do
     end
   end
 
-  describe "review creation" do
-    it "enqueus the job" do
+  describe "review perform_review_created_event_job" do
+    it "enqueues the job" do
       expect(described_class.jobs.count).to eq 0
       review = FactoryBot.build(:review)
       expect {
         review.save
+        expect(review).to be_valid
       }.to change(described_class.jobs, :count).by(1)
       expect(described_class.jobs.map { |j| j["args"] }.last).to eq([review.id])
+    end
+    context "skip_review_created_event" do
+      it "doesn't enqueue" do
+        expect(described_class.jobs.count).to eq 0
+        review = FactoryBot.build(:review, skip_review_created_event: true)
+        expect {
+          review.save
+          expect(review).to be_valid
+        }.to change(described_class.jobs, :count).by(0)
+      end
     end
   end
 

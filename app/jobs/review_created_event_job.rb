@@ -1,6 +1,7 @@
 class ReviewCreatedEventJob < ApplicationJob
-  def perform(id = nil)
-    review = Review.find_by_id(id)
+  # Enable passing in object, it's run inline sometimes
+  def perform(id = nil, review = nil)
+    review ||= Review.find_by_id(id)
     return if review.blank?
     event = review.events.review_created.first
     event ||= Event.create(user_id: review.user_id, target: review, kind: :review_created)

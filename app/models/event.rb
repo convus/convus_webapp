@@ -18,6 +18,10 @@ class Event < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
+  def total_kudos
+    kudos_events.sum(:total_kudos)
+  end
+
   def set_calculated_attributes
     self.created_date = if defined?(target.created_date)
       target.created_date
