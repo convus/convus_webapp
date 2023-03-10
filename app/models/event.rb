@@ -12,7 +12,7 @@ class Event < ApplicationRecord
   belongs_to :user
   belongs_to :target, polymorphic: true
 
-  has_many :kudos_events
+  has_many :kudos_events, dependent: :delete_all
 
   enum kind: KIND_ENUM
 
