@@ -1,4 +1,6 @@
 class Review < ApplicationRecord
+  include CreateDateable
+
   AGREEMENT_ENUM = {
     neutral: 0,
     disagree: 1,
@@ -18,6 +20,7 @@ class Review < ApplicationRecord
   belongs_to :user
 
   has_many :events, as: :target
+  has_many :kudos_events, through: :events
 
   validates_presence_of :user_id
   validate :not_error_url
@@ -65,13 +68,6 @@ class Review < ApplicationRecord
     errors.add(:submitted_url, "'#{submitted_url}' is not valid")
   end
 
-  def calculated_created_date
-    c_at = (created_at || Time.current)
-    return c_at.to_date if timezone.blank?
-    tz = TranzitoUtils::TimeParser.parse_timezone(timezone)
-    c_at.in_time_zone(tz).to_date
-  end
-
   def associate_citation
     self.citation_title = nil if citation_title.blank?
     self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)
@@ -79,7 +75,7 @@ class Review < ApplicationRecord
 
   def set_calculated_attributes
     self.timezone = nil if timezone.blank?
-    self.created_date ||= calculated_created_date
+    self.created_date ||= self.class.date_in_timezone(created_at, timezone)
   end
 
   def perform_review_created_event_job

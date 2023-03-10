@@ -35,6 +35,7 @@
       <% @reviews.each do |review| %>
         <tr>
           <td>
+            <% if display_dev_info? %><code class="only-dev-visible-small"><%= review.id %></code><% end %>
             <small class="convertTime"><%= l(review.created_at, format: :convert_time) %></small>
             <% if edit_reviews %>
               <small class="less-strong"><%= link_to "edit", edit_review_path(review), class: "link-underline" %></small>

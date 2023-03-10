@@ -18,10 +18,8 @@ class ReviewCreatedEventJob < ApplicationJob
         user_id: event.user_id,
         kudos_event_kind: KudosEventKind.user_review_general)
     end
-    pp "fasdfs"
     user = review.user
     return if user.blank?
-    pp user.id
     user.update(total_kudos: user.kudos_events.sum(:total_kudos))
   end
 end

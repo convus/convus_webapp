@@ -24,8 +24,8 @@
 <p class="mt-8">
   <%= @user.total_kudos || 0 %>
   kudos
-  <span class="ml-2">
-    (<%= @user.total_kudos_yesterday %> today  |
+  <span class="less-strong">
+    (<%= @user.total_kudos_today %> today  |
     <%= @user.total_kudos_yesterday %> yesterday)
   </span>
 </p>
@@ -40,4 +40,8 @@
     <%= admin_number_display(reviews_count) %>
     <%= "review".pluralize(reviews_count) %> <span class="less-strong">(not public)</span>
   <% end %>
+  <span class="ml-2 less-strong">
+    (<%= @user.reviews.created_today.count %> today  |
+    <%= @user.reviews.created_yesterday.count %> yesterday)
+  </span>
 </p>

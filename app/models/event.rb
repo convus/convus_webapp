@@ -1,4 +1,6 @@
 class Event < ApplicationRecord
+  include CreateDateable
+
   KIND_ENUM = {
     review_created: 0,
     user_enabled_public_view: 1,

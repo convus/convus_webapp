@@ -1,4 +1,6 @@
 class KudosEvent < ApplicationRecord
+  include CreateDateable
+
   belongs_to :event
   belongs_to :user
   belongs_to :kudos_event_kind

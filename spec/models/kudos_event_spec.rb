@@ -56,8 +56,12 @@ RSpec.describe KudosEvent, type: :model do
       # Sanity check
       expect(kudos_event2.reload.calculated_total_kudos).to eq 9
 
+      expect(user.reviews.created_today.count).to eq 3
+      expect(user.reviews.created_yesterday.count).to eq 1
       expect(user.total_kudos_today).to eq 18
       expect(user.total_kudos_yesterday).to eq 9
+      expect(user.kudos_events.created_today.count).to eq 3
+      expect(user.kudos_events.created_yesterday.count).to eq 1
     end
   end
 end

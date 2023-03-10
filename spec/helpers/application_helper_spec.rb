@@ -14,7 +14,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
     context "agree" do
-      let(:target) { "<span>agree</span>" }
+      let(:target) { "<span title=\"agree\">a<span class=\"hidden sm:inline\">gree</span></span>" }
       it "returns -" do
         expect(agreement_display(:agree)).to eq target
       end
