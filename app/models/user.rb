@@ -46,6 +46,16 @@ class User < ApplicationRecord
     !reviews_public
   end
 
+  # Need to pass in the timezone here ;)
+  def total_kudos_yesterday
+    kudos_events.where(created_date: Time.current.to_date - 1.day).sum(:total_kudos)
+  end
+
+  # Need to pass in the timezone here too
+  def total_kudos_today
+    kudos_events.where(created_date: Time.current.to_date).sum(:total_kudos)
+  end
+
   def set_calculated_attributes
     self.role ||= "normal_user"
     self.about = nil if about.blank?

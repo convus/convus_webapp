@@ -35,11 +35,11 @@
       <% @reviews.each do |review| %>
         <tr>
           <td>
-            <span class="convertTime"><%= l(review.created_at, format: :convert_time) %></span>
+            <small class="convertTime"><%= l(review.created_at, format: :convert_time) %></small>
             <% if edit_reviews %>
               <small class="less-strong"><%= link_to "edit", edit_review_path(review), class: "link-underline" %></small>
             <% end %>
-            <span class="block md:hidden mt-2"><%= review_display_name(review) %></span>
+            <span class="block md:hidden mt-1"><%= review_display_name(review) %></span>
             <span class="block md:hidden text-sm"><%= review.topics.join(", ") %></span>
           </td>
           <td class="hidden md:table-cell">

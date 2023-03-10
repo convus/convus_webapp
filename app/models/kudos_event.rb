@@ -24,7 +24,7 @@ class KudosEvent < ApplicationRecord
   end
 
   def user_day_kudos
-    user.kudos_events.where(created_date: created_date)
+    KudosEvent.where(user_id: user_id, created_date: created_date)
   end
 
   def calculated_total_kudos

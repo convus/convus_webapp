@@ -26,7 +26,10 @@ module ApplicationHelper
     if agreement.to_s == "neutral"
       content_tag(:span, "-", class: "less-strong")
     else
-      content_tag(:span, agreement)
+      content_tag(:span, title: agreement) do
+        concat(agreement[0])
+        concat(content_tag(:span, agreement[1..], class: "hidden sm:inline"))
+      end
     end
   end
 

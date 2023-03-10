@@ -3,7 +3,7 @@ class ReviewCreatedEventJob < ApplicationJob
     review = Review.find_by_id(id)
     return if review.blank?
     event = review.events.review_created.first
-    event ||= Event.create(user: review.user, target: review, kind: :review_created)
+    event ||= Event.create(user_id: review.user_id, target: review, kind: :review_created)
     event_ids = Event.review_created.where(target_id: id).pluck(:id)
     # probably will create duplicates, so handle it
     if event_ids.count > 1
@@ -13,9 +13,15 @@ class ReviewCreatedEventJob < ApplicationJob
       return if event.id > lowest_id
     end
     # TODO: Handle multiple different types of review created
-    return true if event.kudos_events.user_review_created_kinds.any?
-    KudosEvent.create(event: event,
-      user: event.user,
-      kudos_event_kind: KudosEventKind.user_review_general)
+    if event.kudos_events.user_review_created_kinds.none?
+      KudosEvent.create(event: event,
+        user_id: event.user_id,
+        kudos_event_kind: KudosEventKind.user_review_general)
+    end
+    pp "fasdfs"
+    user = review.user
+    return if user.blank?
+    pp user.id
+    user.update(total_kudos: user.kudos_events.sum(:total_kudos))
   end
 end

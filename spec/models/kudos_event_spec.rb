@@ -38,7 +38,6 @@ RSpec.describe KudosEvent, type: :model do
     it "is the kudos_event_kind total" do
       expect(kudos_event2).to be_valid
       expect(kudos_event3).to be_valid
-      pp user.kudos_events.user_review_created_kinds.pluck(:id)
       expect(user.kudos_events.user_review_created_kinds.pluck(:id)).to eq([kudos_event1.id, kudos_event2.id, kudos_event3.id])
       expect(kudos_event1.calculated_total_kudos).to eq 9
       expect(kudos_event1.total_kudos).to eq 9
@@ -56,6 +55,9 @@ RSpec.describe KudosEvent, type: :model do
       expect(kudos_event4.total_kudos).to eq 9
       # Sanity check
       expect(kudos_event2.reload.calculated_total_kudos).to eq 9
+
+      expect(user.total_kudos_today).to eq 18
+      expect(user.total_kudos_yesterday).to eq 9
     end
   end
 end
