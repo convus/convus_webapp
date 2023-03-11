@@ -62,6 +62,7 @@ class User < ApplicationRecord
     self.api_token = self.class.generate_api_token if new_api_token?
     self.username = username&.strip
     self.username_slug = Slugifyer.slugify(username)
+    self.total_kudos ||= 0
   end
 
   private

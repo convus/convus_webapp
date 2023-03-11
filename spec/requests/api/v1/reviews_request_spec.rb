@@ -15,11 +15,19 @@ RSpec.describe base_url, type: :request do
       topics_text: "A topic\n\nAnd another topic",
       source: "chrome_extension",
       learned_something: true,
+      did_not_understand: true,
       timezone: "Europe/Kyiv"
     }
   end
 
   describe "create" do
+    let(:user_url) { "http://test.com/u/#{current_user.username}" }
+    let(:target_response) { {message: "Review added", share: "10 kudos tday, 0 yday\n\n#{user_url}"} }
+    def expect_event_created(review)
+      expect(review.events.count).to eq 1
+      event = review.events.last
+      expect(event.total_kudos).to eq 10
+    end
     it "returns 200" do
       expect(Review.count).to eq 0
       post base_url, params: {review: review_params}.to_json, headers: json_headers.merge(
@@ -27,8 +35,7 @@ RSpec.describe base_url, type: :request do
         "Authorization" => "Bearer #{current_user.api_token}"
       )
       expect(response.code).to eq "200"
-
-      expect_hashes_to_match(json_result, {message: "Review added"})
+      expect_hashes_to_match(json_result, target_response)
       expect(response.headers["access-control-allow-origin"]).to eq("*")
       expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
       expect(Review.count).to eq 1
@@ -41,6 +48,7 @@ RSpec.describe base_url, type: :request do
       citation = review.citation
       expect(citation.url).to eq "http://example.com"
       expect(citation.title).to eq "something"
+      expect_event_created(review)
     end
     context "review unwrapped" do
       include_context :test_csrf_token
@@ -53,7 +61,7 @@ RSpec.describe base_url, type: :request do
         )
         expect(response.code).to eq "200"
 
-        expect_hashes_to_match(json_result, {message: "Review added"})
+        expect_hashes_to_match(json_result, target_response)
         expect(response.headers["access-control-allow-origin"]).to eq("*")
         expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
         expect(Review.count).to eq 1

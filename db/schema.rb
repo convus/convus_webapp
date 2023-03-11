@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_10_021103) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_10_164401) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -74,6 +74,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_10_021103) do
     t.string "timezone"
     t.date "created_date"
     t.boolean "learned_something", default: false
+    t.boolean "did_not_understand", default: false
     t.index ["citation_id"], name: "index_reviews_on_citation_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end

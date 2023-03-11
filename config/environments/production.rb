@@ -65,6 +65,8 @@ Rails.application.configure do
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "convus_reviews_production"
 
+  # TODO: handle setting this better - shouldn't need to specify twice?
+  Rails.application.routes.default_url_options[:host] = "www.convus.org"
   config.action_mailer.perform_caching = false
   config.action_mailer.default_url_options = {protocol: "https", host: "www.convus.org"}
 

@@ -12,11 +12,15 @@ class Event < ApplicationRecord
   belongs_to :user
   belongs_to :target, polymorphic: true
 
-  has_many :kudos_events
+  has_many :kudos_events, dependent: :delete_all
 
   enum kind: KIND_ENUM
 
   before_validation :set_calculated_attributes
+
+  def total_kudos
+    kudos_events.sum(:total_kudos)
+  end
 
   def set_calculated_attributes
     self.created_date = if defined?(target.created_date)

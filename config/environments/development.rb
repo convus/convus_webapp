@@ -57,6 +57,8 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  # TODO: handle setting this better - shouldn't need to specify twice?
+  Rails.application.routes.default_url_options[:host] = "http://localhost:3009"
   config.action_mailer.default_url_options = {host: "localhost", port: 3009}
   if Rails.root.join("tmp", "skip-letter_opener.txt").exist?
     config.action_mailer.perform_deliveries = false

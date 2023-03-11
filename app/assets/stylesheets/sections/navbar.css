@@ -13,4 +13,5 @@
   &:hover, &:active, &.active {
     @apply underline;
   }
+  &.active { cursor: default;  }
 }
