@@ -18,8 +18,6 @@ RSpec.describe base_url, type: :request do
       timezone: "America/Bogota"
     }
   end
-  let(:user_public) { FactoryBot.create(:user, reviews_public: true) }
-  let(:user_private) { FactoryBot.create(:user, reviews_public: false) }
 
   describe "new" do
     it "redirects" do
@@ -38,6 +36,9 @@ RSpec.describe base_url, type: :request do
   end
 
   context "index" do
+    let(:user_subject) { FactoryBot.create(:user, username: "cO0l-name", reviews_public: reviews_public) }
+    let(:reviews_public) { false}
+    let!(:review) { FactoryBot.create(:review, user: user_subject) }
     it "redirects" do
       get base_url
       expect(response).to redirect_to new_user_registration_path
@@ -45,19 +46,38 @@ RSpec.describe base_url, type: :request do
     end
     context "with private user" do
       it "renders" do
-        expect(user_private.reviews_public).to be_falsey
-        get "#{base_url}?user=#{user_private.username}"
-        expect(response).to redirect_to new_user_registration_path
-        expect(session[:user_return_to]).to eq "#{base_url}?user=#{user_private.username}"
+        expect(user_subject.reviews_public).to be_falsey
+        expect(user_subject.username_slug).to eq "co0l-name"
+        get "#{base_url}?user=cO0l-name"
+        expect(assigns(:user_subject)&.id).to eq user_subject.id
+        expect(response).to render_template("reviews/index")
+        expect(assigns(:reviews)).to eq([])
+      end
+      context "current_user is user_subject" do
+        let(:current_user) { user_subject }
+        it "shows reviews" do
+          expect(user_subject.reload.reviews_public).to be_falsey
+          expect(user_subject.username_slug).to eq "co0l-name"
+          get "#{base_url}?user=cO0l-name"
+          expect(assigns(:user_subject)&.id).to eq user_subject.id
+          expect(response).to render_template("reviews/index")
+          expect(assigns(:reviews)).to eq([review.id])
+        end
       end
     end
     context "with public user" do
+      let(:reviews_public) { true}
       it "renders" do
-        expect(user_public.reviews_public).to be_truthy
-        get "#{base_url}?user=#{user_public.username}"
+        expect(current_user.reviews_public).to be_truthy
+        get "#{base_url}?user=#{user_subject.username}"
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/index")
-        expect(assigns(:user_subject)&.id).to eq user_public.id
+        expect(assigns(:user_subject)&.id).to eq user_subject.id
+        expect(assigns(:reviews).pluck(:id)).to eq([review.id])
+        # Extra stuff
+        get "#{base_url}/%20CO0l_namE"
+        expect(response.code).to eq "200"
+        expect(assigns(:user).id).to eq user_subject.id
       end
     end
   end
@@ -66,6 +86,7 @@ RSpec.describe base_url, type: :request do
     include_context :logged_in_as_user
     describe "new" do
       it "renders with layout" do
+        expect(current_user.reviews_public).to be_falsey
         get "#{base_url}/new"
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/new")

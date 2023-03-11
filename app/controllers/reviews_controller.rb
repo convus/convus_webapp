@@ -5,20 +5,18 @@ class ReviewsController < ApplicationController
   before_action :find_and_authorize_review, only: %i[edit update destroy]
 
   def index
-    if current_user.blank? && (user_subject.blank? || user_subject.reviews_private)
+    if user_subject.blank? && current_user.blank?
       redirect_to_signup_unless_user_present!
       return
     elsif user_subject.blank?
-      redirect_to reviews_path(user: current_user.username)
-      return
-    elsif user_subject.reviews_private && user_subject != current_user
-      flash[:error] = "You don't have permission to view those reviews"
-      redirect_to user_root_url, status: :see_other
+      redirect_to reviews_path(user: current_user.username), status: :see_other
       return
     end
+    @reviews_hidden = user_subject.reviews_private && user_subject.id != current_user.id
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
-    @reviews = searched_requests.reorder("reviews.#{sort_column} #{sort_direction}")
+    viewable_reviews = @reviews_hidden ? Review.none : searched_requests
+    @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
       .includes(:citation).page(page).per(@per_page)
   end
 

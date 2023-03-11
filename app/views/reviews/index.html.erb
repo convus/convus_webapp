@@ -1,8 +1,8 @@
-<h1 class="mb-5">
-  Reviews by
-  <%= link_to user_subject.username, u_path(user_subject), class: "link-underline" %>
-</h1>
-<% if @reviews.total_count.zero? %>
+<%= render partial: "/u/user_display", locals: {user: user_subject } %>
+
+<% if @reviews_private %>
+  <h4>User's reviews are private</h4>
+<% elsif @reviews.total_count.zero? %>
   <h4>No reviews found</h4>
 <% else %>
   <%= render partial: "/shared/period_select", locals: {total_count: @reviews.total_count} %>

@@ -5,29 +5,20 @@ RSpec.describe base_url, type: :request do
   let(:user_subject) { FactoryBot.create(:user, username: "OTHer-name") }
 
   describe "show" do
-    it "renders" do
+    it "redirects" do
       get "#{base_url}/#{user_subject.id}"
-      expect(response.code).to eq "200"
-      expect(response).to render_template("u/show")
-      expect(assigns(:user).id).to eq user_subject.id
+      expect(response).to redirect_to(reviews_path(user: user_subject.to_param)
     end
     context "username" do
-      it "renders" do
+      it "redirects" do
         expect(user_subject).to be_present
         expect(user_subject.username_slug).to eq "other-name"
         get "#{base_url}/other-name"
-        expect(response.code).to eq "200"
-        expect(assigns(:user).id).to eq user_subject.id
-        expect(response).to render_template("u/show")
-        # Extra stuff
-        get "#{base_url}/%20other-namE"
-        expect(response.code).to eq "200"
-        expect(assigns(:user).id).to eq user_subject.id
+        expect(response).to redirect_to(reviews_path(user: user_subject.to_param)
       end
     end
     context "not a user" do
-      it "redirects" do
-        # TODO: why is this failing?
+      it "raises" do
         expect {
           get "#{base_url}/32342342333"
         }.to raise_error(ActiveRecord::RecordNotFound)
@@ -45,6 +36,12 @@ RSpec.describe base_url, type: :request do
 
   context "current_user present" do
     include_context :logged_in_as_user
+    describe "show" do
+      it "redirects" do
+        get "#{base_url}/#{current_user.id}"
+        expect(response).to redirect_to(reviews_path(user: current_user.to_param)
+      end
+    end
     describe "edit" do
       it "renders" do
         get "#{base_url}/#{current_user.to_param}/edit"

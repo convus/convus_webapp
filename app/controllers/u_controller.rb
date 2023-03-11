@@ -3,7 +3,8 @@ class UController < ApplicationController
   before_action :ensure_user_is_current_user!, except: [:show]
 
   def show
-    @page_title = "#{@user.username} | Convus"
+    redirect_to reviews_path(user: @user.to_param)
+    return
   end
 
   def edit
