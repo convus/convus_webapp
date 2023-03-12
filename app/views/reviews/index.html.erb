@@ -1,5 +1,4 @@
 <%= render partial: "/u/user_display", locals: {user: user_subject } %>
-
 <% if @reviews_private %>
   <h4>User's reviews are private</h4>
 <% elsif @reviews.total_count.zero? %>

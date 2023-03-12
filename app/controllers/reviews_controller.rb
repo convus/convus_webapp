@@ -5,17 +5,16 @@ class ReviewsController < ApplicationController
   before_action :find_and_authorize_review, only: %i[edit update destroy]
 
   def index
-    if user_subject.blank? && current_user.blank?
-      redirect_to_signup_unless_user_present!
-      return
-    elsif user_subject.blank?
-      redirect_to reviews_path(user: current_user.username), status: :see_other
+    if user_subject.blank?
+      if current_user.blank?
+        redirect_to_signup_unless_user_present!
+      else
+        redirect_to reviews_path(user: current_user.username), status: :see_other
+      end
       return
     end
-    @reviews_hidden = user_subject.reviews_private && user_subject.id != current_user.id
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
-    viewable_reviews = @reviews_hidden ? Review.none : searched_requests
     @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
       .includes(:citation).page(page).per(@per_page)
   end
@@ -95,7 +94,12 @@ class ReviewsController < ApplicationController
     %w[created_at] # TODO: Add agreement and quality
   end
 
-  def searched_requests
+  def viewable_reviews
+    @reviews_private = user_subject.reviews_private
+    (user_subject == current_user || !@reviews_private) ? searched_reviews : Review.none
+  end
+
+  def searched_reviews
     reviews = user_subject.reviews
 
     @time_range_column = "created_at"

@@ -7,14 +7,14 @@ RSpec.describe base_url, type: :request do
   describe "show" do
     it "redirects" do
       get "#{base_url}/#{user_subject.id}"
-      expect(response).to redirect_to(reviews_path(user: user_subject.to_param)
+      expect(response).to redirect_to(reviews_path(user: user_subject.to_param))
     end
     context "username" do
       it "redirects" do
         expect(user_subject).to be_present
         expect(user_subject.username_slug).to eq "other-name"
         get "#{base_url}/other-name"
-        expect(response).to redirect_to(reviews_path(user: user_subject.to_param)
+        expect(response).to redirect_to(reviews_path(user: user_subject.to_param))
       end
     end
     context "not a user" do
@@ -39,7 +39,7 @@ RSpec.describe base_url, type: :request do
     describe "show" do
       it "redirects" do
         get "#{base_url}/#{current_user.id}"
-        expect(response).to redirect_to(reviews_path(user: current_user.to_param)
+        expect(response).to redirect_to(reviews_path(user: current_user.to_param))
       end
     end
     describe "edit" do

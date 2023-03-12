@@ -4,7 +4,7 @@ class UController < ApplicationController
 
   def show
     redirect_to reviews_path(user: @user.to_param)
-    return
+    nil
   end
 
   def edit

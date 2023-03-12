@@ -61,8 +61,8 @@ class ApplicationController < ActionController::Base
       return current_user
     end
     store_return_to
-    redirect_to new_user_registration_path
-    nil
+    redirect_to new_user_registration_path, status: :see_other
+    false
   end
 
   def store_return_to
