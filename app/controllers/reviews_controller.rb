@@ -5,14 +5,7 @@ class ReviewsController < ApplicationController
   before_action :find_and_authorize_review, only: %i[edit update destroy]
 
   def index
-    if user_subject.blank?
-      if current_user.blank?
-        redirect_to_signup_unless_user_present!
-      else
-        redirect_to reviews_path(user: current_user.username), status: :see_other
-      end
-      return
-    end
+    raise ActiveRecord::RecordNotFound if user_subject.blank?
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
     @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
@@ -96,7 +89,8 @@ class ReviewsController < ApplicationController
 
   def viewable_reviews
     @reviews_private = user_subject.reviews_private
-    (user_subject == current_user || !@reviews_private) ? searched_reviews : Review.none
+    @can_view_reviews = user_subject.reviews_public || user_subject == current_user
+    @can_view_reviews ? searched_reviews : Review.none
   end
 
   def searched_reviews

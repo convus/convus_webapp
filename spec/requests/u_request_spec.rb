@@ -29,8 +29,8 @@ RSpec.describe base_url, type: :request do
   describe "edit" do
     it "redirects" do
       get "#{base_url}/#{user_subject.id}/edit"
-      expect(response.code).to eq "302"
       expect(session[:user_return_to]).to eq "#{base_url}/#{user_subject.id}/edit"
+      expect(response).to redirect_to("/users/sign_up")
     end
   end
 

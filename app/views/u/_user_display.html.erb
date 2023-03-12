@@ -2,35 +2,41 @@
   <div>This is you. <%= link_to "Edit your account", edit_u_path(user.to_param) %>.</div>
   <hr class="mt-1 mb-6">
 <% end %>
-<p class="mt-3">
-  <strong class="block">User</strong>
-  <%= user.username %>
-</p>
-<p class="mt-3">
-  <strong class="block">Created</strong>
-  <span class="convertTime"><%= l(user.created_at, format: :convert_time) %></span>
-</p>
-<% if user.about.present? %>
-  <p class="mt-3">
-    <strong class="block">About</strong>
-    <%= user.about %>
-  </p>
-<% end %>
-<p class="mt-8">
-  <%= user.total_kudos || 0 %>
-  kudos
-  <span class="less-strong">
-    (<%= user.total_kudos_today %> today  |
-    <%= user.total_kudos_yesterday %> yesterday)
-  </span>
-</p>
-<p class="mt-1">
-  <% reviews_count = user.reviews.count %>
-  <%= admin_number_display(reviews_count) %>
-  <%= "review".pluralize(reviews_count) %>
-  <% if user.reviews_private %><span class="less-strong">(not public)</span><% end %>
-  <span class="ml-2 less-strong opacity-0">
-    (<%= user.reviews.created_today.count %> today  |
-    <%= user.reviews.created_yesterday.count %> yesterday)
-  </span>
-</p>
+<div class="row sm:grid-cols-2 mb-8">
+  <div class="col">
+    <p class="mt-2">
+      <strong class="block">User</strong>
+      <%= user.username %>
+    </p>
+    <p class="mt-2">
+      <%= user.total_kudos || 0 %>
+      kudos
+      <span class="less-strong">
+        (<%= user.total_kudos_today %> today  |
+        <%= user.total_kudos_yesterday %> yesterday)
+      </span>
+    </p>
+    <p class="mt-2">
+      <% reviews_count = user.reviews.count %>
+      <%= admin_number_display(reviews_count) %>
+      <%= "review".pluralize(reviews_count) %>
+      <% if user.reviews_private %><span class="less-strong">(not public)</span><% end %>
+      <span class="ml-2 less-strong opacity-0">
+        (<%= user.reviews.created_today.count %> today  |
+        <%= user.reviews.created_yesterday.count %> yesterday)
+      </span>
+    </p>
+  </div>
+  <div class="col">
+    <p class="mt-2">
+      <strong class="block">Signed up</strong>
+      <span class="convertTime"><%= l(user.created_at, format: :convert_time) %></span>
+    </p>
+    <% if user.about.present? %>
+      <p class="mt-2">
+        <strong class="block">About</strong>
+        <%= user.about %>
+      </p>
+    <% end %>
+  </div>
+</div>

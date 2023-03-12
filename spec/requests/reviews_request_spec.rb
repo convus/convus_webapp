@@ -40,10 +40,10 @@ RSpec.describe base_url, type: :request do
 
   context "index" do
     before { expect(review).to be_present }
-    it "redirects" do
-      get base_url
-      expect(response).to redirect_to new_user_registration_path
-      expect(session[:user_return_to]).to eq base_url
+    it "raises" do
+      expect {
+        get base_url
+      }.to raise_error(ActiveRecord::RecordNotFound)
     end
     context "with private user" do
       it "renders" do
@@ -53,6 +53,7 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:user_subject)&.id).to eq user_subject.id
         expect(response).to render_template("reviews/index")
         expect(assigns(:reviews_private)).to be_truthy
+        expect(assigns(:can_view_reviews)).to be_falsey
         expect(assigns(:reviews)&.pluck(:id)).to eq([])
       end
     end
@@ -64,8 +65,9 @@ RSpec.describe base_url, type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/index")
         expect(assigns(:user_subject)&.id).to eq user_subject.id
+        expect(assigns(:can_view_reviews)).to be_truthy
         expect(assigns(:reviews).pluck(:id)).to eq([review.id])
-        # Extra stuff
+        # username finding test
         get "#{base_url}?user=%20CO0l_namE"
         expect(response.code).to eq "200"
         expect(assigns(:user_subject).id).to eq user_subject.id
@@ -78,9 +80,9 @@ RSpec.describe base_url, type: :request do
     describe "index" do
       before { expect(review && user_subject).to be_present }
       it "redirects" do
-        # This will be updated eventually to render somethiing
-        get base_url
-        expect(response).to redirect_to("#{base_url}?user=#{current_user.username}")
+        expect {
+          get "#{base_url}?user=fff"
+        }.to raise_error(ActiveRecord::RecordNotFound)
       end
       it "renders a private user" do
         expect(current_user.reviews_private).to be_truthy
@@ -88,6 +90,7 @@ RSpec.describe base_url, type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/index")
         expect(assigns(:reviews_private)).to be_truthy
+        expect(assigns(:can_view_reviews)).to be_falsey
         expect(assigns(:reviews).pluck(:id)).to eq([])
       end
       context "current_user is user_subject" do
@@ -98,6 +101,7 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:current_user)&.id).to eq user_subject.id
           expect(response).to render_template("reviews/index")
           expect(assigns(:reviews_private)).to be_truthy
+          expect(assigns(:can_view_reviews)).to be_truthy
           expect(assigns(:reviews)&.pluck(:id)).to eq([review.id])
         end
       end

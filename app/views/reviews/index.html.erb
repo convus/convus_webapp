@@ -1,12 +1,15 @@
 <%= render partial: "/u/user_display", locals: {user: user_subject } %>
 <% if @reviews_private %>
-  <h4>User's reviews are private</h4>
-<% elsif @reviews.total_count.zero? %>
-  <h4>No reviews found</h4>
-<% else %>
-  <%= render partial: "/shared/period_select", locals: {total_count: @reviews.total_count} %>
-  <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user} %>
-  <div class="row">
-    <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review"} %>
-  </div>
+  <h2>User's reviews are private</h2>
+<% end %>
+<% if @can_view_reviews %>
+  <% if @reviews.none? %>
+    <h4><%= user_subject.username %> has no reviews</h4>
+  <% else %>
+    <%= render partial: "/shared/period_select", locals: {total_count: @reviews.total_count} %>
+    <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user} %>
+    <div class="row">
+      <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review"} %>
+    </div>
+  <% end %>
 <% end %>
