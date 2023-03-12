@@ -8,6 +8,7 @@ class ReviewsController < ApplicationController
     raise ActiveRecord::RecordNotFound if user_subject.blank?
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
+    @page_title = "#{user_subject&.username} | Convus"
     @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
       .includes(:citation).page(page).per(@per_page)
   end
