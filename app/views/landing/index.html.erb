@@ -1,4 +1,23 @@
-<h1 class="standard-top-offset mb-3">About</h1>
-<p class="mb-3">Convus is a project to help humanity communicate better.</p>
-<p class="mb-3">It aims to support well-reasoned, diverse conversation&mdash;instead of outrage and hot takes.</p>
-<p class="mb-3">Get the <%= link_to "browser extension", browser_extensions_path %>.</p>
+<%= content_for :main_wrapper_class, "small-width-padded-container" %>
+<p class="standard-top-offset mb-2">Right now, the internet <em>very</em> effectively rewards generating outrage.</p>
+<p class="mb-2">Convus is an attempt to incentivize other behavior&mdash;like high quality writing, changing opinions and teaching.</p>
+<p class="mb-2">Please, participate, it's simple:</p>
+<div class="container px-6">
+  <ol class="list-decimal mt-3 mb-6">
+    <li class="mb-3">Read something on the internet</li>
+    <li class="mb-3">
+      Open the Convus browser extension
+      <div class="landing-list-screenshots">
+        <%= link_to image_tag("screenshots/ios-open-extension.png"), image_path("screenshots/ios-open-extension.png") %>
+        <%= link_to image_tag("screenshots/ios-click-extension.png"), image_path("screenshots/ios-click-extension.png"), class: "ml-3" %>
+      </div>
+    </li>
+    <li class="mb-3">
+      Check the boxes to review
+      <div class="landing-list-screenshots">
+        <%= link_to image_tag("screenshots/ios-extension-review.png"), image_path("screenshots/ios-extension-review.png") %>
+      </div>
+    </li>
+  </ol>
+</div>
+<p class="mb-3">Reviewing is fast and doesn't require writing anything&mdash;install the <%= link_to "browser extension", browser_extensions_path %> and give it a try.</p>
