@@ -5,20 +5,11 @@ class ReviewsController < ApplicationController
   before_action :find_and_authorize_review, only: %i[edit update destroy]
 
   def index
-    if current_user.blank? && (user_subject.blank? || user_subject.reviews_private)
-      redirect_to_signup_unless_user_present!
-      return
-    elsif user_subject.blank?
-      redirect_to reviews_path(user: current_user.username)
-      return
-    elsif user_subject.reviews_private && user_subject != current_user
-      flash[:error] = "You don't have permission to view those reviews"
-      redirect_to user_root_url, status: :see_other
-      return
-    end
+    raise ActiveRecord::RecordNotFound if user_subject.blank?
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
-    @reviews = searched_requests.reorder("reviews.#{sort_column} #{sort_direction}")
+    @page_title = "#{user_subject&.username} | Convus"
+    @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
       .includes(:citation).page(page).per(@per_page)
   end
 
@@ -97,7 +88,13 @@ class ReviewsController < ApplicationController
     %w[created_at] # TODO: Add agreement and quality
   end
 
-  def searched_requests
+  def viewable_reviews
+    @reviews_private = user_subject.reviews_private
+    @can_view_reviews = user_subject.reviews_public || user_subject == current_user
+    @can_view_reviews ? searched_reviews : Review.none
+  end
+
+  def searched_reviews
     reviews = user_subject.reviews
 
     @time_range_column = "created_at"

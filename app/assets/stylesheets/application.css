@@ -44,3 +44,16 @@ h4 { @apply font-bold; }
     padding: 2px 0.25rem;
   }
 }
+
+/* landing root styles */
+
+.landing-list-screenshots {
+  @apply flex;
+  & a {
+    @apply flex;
+    max-width: 100px;
+    border: 1px solid #ccc;
+  }
+  & img { cursor: pointer;
+  }
+}
