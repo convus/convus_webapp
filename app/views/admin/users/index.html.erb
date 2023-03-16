@@ -1,0 +1,48 @@
+<h1 class="mt-4 mb-4">Admin users</h1>
+
+<%= render partial: "/shared/period_select", locals: {total_count: @users.total_count} %>
+
+<% skip_sortable ||= false %>
+<div class="full-screen-table">
+  <table class="table table-sm">
+    <thead class="sortable">
+      <tr>
+        <th>
+          <%= sortable "created_at", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          <small><%= sortable "updated_at", skip_sortable: skip_sortable %></small>
+        </th>
+        <th>
+          <%= sortable "username", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          <small><%= sortable "email", skip_sortable: skip_sortable %></small>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td>
+            <% if display_dev_info? %><code class="only-dev-visible-small"><%= user.id %></code><% end %>
+            <small class="convertTime"><%= l(user.created_at, format: :convert_time) %></small>
+          </td>
+          <td>
+            <small class="convertTime"><%= l(user.updated_at, format: :convert_time) %></small>
+          </td>
+          <td>
+            <%= link_to user&.username, reviews_path(sortable_search_params.merge(user: user.username)) %>
+          </td>
+          <td>
+            <small><%= user.email %></small>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="row">
+  <%= render partial: "tranzito_utils/pagination", locals: {collection: @users, name: "User"} %>
+</div>

@@ -10,6 +10,16 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "admin_search" do
+    let!(:user1) { FactoryBot.create(:user, email: "georgeemail@example.com") }
+    let!(:user2) { FactoryBot.create(:user, username: "name-george") }
+    it "finds expected" do
+      expect(User.admin_search("georgE").pluck(:id)).to match_array([user1.id, user2.id])
+      expect(User.admin_search("georgeem").pluck(:id)).to match_array([user1.id])
+      expect(User.admin_search("-george").pluck(:id)).to match_array([user2.id])
+    end
+  end
+
   describe "duplicate username" do
     let(:user) { FactoryBot.create(:user, username: "some thing", about: "  ") }
     let(:user2) { FactoryBot.build(:user, username: "SOMe THING") }
