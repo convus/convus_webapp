@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   resources :u, only: %i[show edit update]
+  resource :followers, only: %i[create destroy]
 
   root "landing#index"
 

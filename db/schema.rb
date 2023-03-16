@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_10_164401) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_16_172841) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -77,6 +77,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_10_164401) do
     t.boolean "did_not_understand", default: false
     t.index ["citation_id"], name: "index_reviews_on_citation_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
+  create_table "user_follows", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "following_id"
+    t.boolean "reviews_public", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["following_id"], name: "index_user_follows_on_following_id"
+    t.index ["user_id"], name: "index_user_follows_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|

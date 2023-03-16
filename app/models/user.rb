@@ -7,6 +7,10 @@ class User < ApplicationRecord
   has_many :reviews
   has_many :events
   has_many :kudos_events
+  has_many :user_follows, dependent: :destroy
+  has_many :followings, through: :user_follows, source: :following
+  has_many :user_followers, class_name: "UserFollow", foreign_key: :following_id, dependent: :destroy
+  has_many :followers, through: :user_followers, source: :user
 
   enum role: ROLE_ENUM
 
@@ -14,6 +18,7 @@ class User < ApplicationRecord
   validates_with UsernameValidator
 
   before_validation :set_calculated_attributes
+  after_commit :update_associations
 
   def self.friendly_find(str)
     return nil if str.blank?
@@ -36,6 +41,10 @@ class User < ApplicationRecord
   # TODO: make this whole thing less terrible and more secure
   def self.generate_api_token
     SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64
+  end
+
+  def following_reviews_public
+    Review.where(user_id: user_follows.reviews_public.pluck(:following_id))
   end
 
   def to_param
@@ -63,6 +72,11 @@ class User < ApplicationRecord
     self.username = username&.strip
     self.username_slug = Slugifyer.slugify(username)
     self.total_kudos ||= 0
+  end
+
+  def update_associations
+    user_followers.where.not(reviews_public: reviews_public)
+      .each { |f| f.update(updated_at: Time.current) }
   end
 
   private
