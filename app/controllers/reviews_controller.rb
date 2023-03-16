@@ -11,8 +11,8 @@ class ReviewsController < ApplicationController
         redirect_to_signup_unless_user_present!
         return
       end
-    else
-      raise ActiveRecord::RecordNotFound if user_subject.blank?
+    elsif user_subject.blank?
+      raise ActiveRecord::RecordNotFound
     end
     page = params[:page] || 1
     @per_page = params[:per_page] || 25

@@ -121,7 +121,7 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:reviews).pluck(:id)).to eq([])
         end
         context "with following" do
-          let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject)}
+          let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject) }
           before { expect(review).to be_present }
           it "renders" do
             expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
