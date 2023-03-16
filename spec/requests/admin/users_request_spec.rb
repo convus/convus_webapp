@@ -2,7 +2,6 @@ require "rails_helper"
 
 base_url = "/admin/users"
 RSpec.describe base_url, type: :request do
-
   describe "index" do
     it "sets return to" do
       get base_url

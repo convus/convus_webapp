@@ -1,7 +1,5 @@
 <h1 class="mt-4 mb-4">Admin users</h1>
-
 <%= render partial: "/shared/period_select", locals: {total_count: @users.total_count} %>
-
 <% skip_sortable ||= false %>
 <div class="full-screen-table">
   <table class="table table-sm">
@@ -19,6 +17,7 @@
         <th>
           <small><%= sortable "email", skip_sortable: skip_sortable %></small>
         </th>
+        <th>Roles</th>
       </tr>
     </thead>
     <tbody>
@@ -37,12 +36,16 @@
           <td>
             <small><%= user.email %></small>
           </td>
+          <td>
+            <% unless user.normal_user? %>
+              <%= user.role %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
   </table>
 </div>
-
 <div class="row">
   <%= render partial: "tranzito_utils/pagination", locals: {collection: @users, name: "User"} %>
 </div>
