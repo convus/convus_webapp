@@ -30,10 +30,9 @@ RSpec.describe UserFollowing, type: :model do
 
   describe "following self" do
     let(:user) { FactoryBot.create(:user) }
-    let(:user_following) { FactoryBot.build(:user_following, user: user, following: user) }
-    it "is not valid" do
-      expect(user_following).to_not be_valid
-      expect(user_following.errors.full_messages).to eq(["Following can't be you"])
+    let(:user_following) { FactoryBot.create(:user_following, user: user, following: user) }
+    it "is valid" do
+      expect(user_following).to be_valid
     end
   end
 

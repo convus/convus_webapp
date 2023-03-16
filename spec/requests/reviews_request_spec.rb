@@ -80,6 +80,13 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:user_subject).id).to eq user_subject.id
       end
     end
+    context "unknown user" do
+      it "raises" do
+        expect {
+          get "#{base_url}?user=asdf8212"
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 
   context "current_user present" do
@@ -99,6 +106,8 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:reviews_private)).to be_truthy
         expect(assigns(:can_view_reviews)).to be_falsey
         expect(assigns(:reviews).pluck(:id)).to eq([])
+        expect(assigns(:viewing_single_user)).to be_truthy
+        expect(assigns(:viewing_display_name)).to eq user_subject.username
       end
       context "current_user is user_subject" do
         let(:current_user) { user_subject }
@@ -119,6 +128,8 @@ RSpec.describe base_url, type: :request do
           expect(response).to render_template("reviews/index")
           expect(assigns(:can_view_reviews)).to be_truthy
           expect(assigns(:reviews).pluck(:id)).to eq([])
+          expect(assigns(:viewing_single_user)).to be_falsey
+          expect(assigns(:viewing_display_name)).to eq "Following"
         end
         context "with following" do
           let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject) }

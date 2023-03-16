@@ -37,5 +37,7 @@ class FollowingController < ApplicationController
 
   def find_user
     @user = User.friendly_find(params[:id])
+    return if @user.present?
+    raise ActiveRecord::RecordNotFound
   end
 end

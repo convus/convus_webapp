@@ -6,9 +6,9 @@ module ApplicationHelper
   end
 
   def page_description
-    return nil unless controller_name == "reviews" && action_name == "index" && user_subject.present?
-    "#{user_subject.reviews.created_today.count} reviews and #{user_subject.total_kudos_today} kudos today " \
-    "(#{user_subject.reviews.created_yesterday.count} reviews and #{user_subject.total_kudos_yesterday} kudos yesterday)"
+    return nil unless controller_name == "u" && action_name == "show" && @user.present?
+    "#{@user.reviews.created_today.count} reviews and #{@user.total_kudos_today} kudos today " \
+    "(#{@user.reviews.created_yesterday.count} reviews and #{@user.total_kudos_yesterday} kudos yesterday)"
   end
 
   def check_mark
@@ -56,7 +56,7 @@ module ApplicationHelper
     if review.display_name == "missing url"
       content_tag(:span, "missing url", class: "less-strong")
     else
-      link_to(review.display_name, review.citation_url, class: "link-underline")
+      link_to(review.display_name, review.citation_url)
     end
   end
 

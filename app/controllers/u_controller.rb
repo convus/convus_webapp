@@ -1,10 +1,12 @@
 class UController < ApplicationController
   before_action :find_user!
-  before_action :ensure_user_is_current_user!, except: [:show]
+  before_action :ensure_user_is_current_user!, except: %i[show following]
 
   def show
-    redirect_to reviews_path(user: @user.to_param)
-    nil
+  end
+
+  def following
+    @followings = @user.followings
   end
 
   def edit

@@ -11,6 +11,10 @@
   @apply padded-container full-width-container max-lg:px-container-pad;
 }
 
+.small-width-container {
+  @apply max-w-small-container mx-auto;
+}
+
 .small-width-padded-container {
   @apply padded-container max-w-small-container;
   /* might wanna use max-w-prose sometime - this is close*/

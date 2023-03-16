@@ -50,19 +50,12 @@ RSpec.describe base_url, type: :request do
           expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
         end
       end
-      context "self" do
-        it "flash error" do
-          expect(current_user.followings.pluck(:id)).to eq([])
-          get "#{base_url}/#{current_user.username}/add"
-          expect(flash[:error]).to be_present
-          expect(current_user.reload.followings.pluck(:id)).to eq([])
-        end
-      end
       context "not found user" do
-        it "flash errors" do
+        it "not found" do
           expect(current_user.followings.pluck(:id)).to eq([])
-          get "#{base_url}/fake-user-not-present/add"
-          expect(flash[:error]).to be_present
+          expect {
+            get "#{base_url}/fake-user-not-present/add"
+          }.to raise_error(ActiveRecord::RecordNotFound)
           expect(current_user.reload.followings.pluck(:id)).to eq([])
         end
       end
@@ -82,8 +75,9 @@ RSpec.describe base_url, type: :request do
       end
       context "user not present" do
         it "errors" do
-          delete "#{base_url}/ffasdfaooiaosd"
-          expect(flash[:error]).to be_present
+          expect {
+            delete "#{base_url}/ffasdfaooiaosd"
+          }.to raise_error(ActiveRecord::RecordNotFound)
           expect(current_user.reload.followings.pluck(:id)).to eq([user_following.following.id])
         end
       end

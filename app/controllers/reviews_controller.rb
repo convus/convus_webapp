@@ -16,9 +16,9 @@ class ReviewsController < ApplicationController
     end
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
-    @page_title = "#{viewing_display_name} - Reviews | Convus"
     @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
       .includes(:citation, :user).page(page).per(@per_page)
+    @page_title = "#{viewing_display_name} - reviews | Convus"
   end
 
   def new
@@ -113,7 +113,11 @@ class ReviewsController < ApplicationController
   end
 
   def viewing_display_name
-    @viewing_display_name ||= @viewing_single_user ? user_subject&.username : params[:user]
+    @viewing_display_name ||= if @viewing_single_user
+      user_subject.username
+    else
+      params[:user]&.titleize
+    end
   end
 
   def user_reviews

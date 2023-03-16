@@ -20,6 +20,8 @@ class User < ApplicationRecord
   before_validation :set_calculated_attributes
   after_commit :update_associations
 
+  scope :reviews_public, -> { where(reviews_public: true) }
+
   def self.friendly_find(str)
     return nil if str.blank?
     if str.is_a?(Integer) || str.match?(/\A\d+\z/)
@@ -63,6 +65,11 @@ class User < ApplicationRecord
   # Need to pass in the timezone here too
   def total_kudos_yesterday(timezone = nil)
     kudos_events.created_yesterday(timezone).sum(:total_kudos)
+  end
+
+  def following?(user_or_id)
+    f_id = user_or_id.is_a?(User) ? user_or_id.id : user_or_id
+    user_followings.where(following_id: f_id).limit(1).present?
   end
 
   def set_calculated_attributes

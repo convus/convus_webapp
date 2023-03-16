@@ -1,42 +1,50 @@
-<% if user == current_user %>
-  <div>This is you; <%= link_to "edit your account", edit_u_path(user.to_param) %>.</div>
-  <hr class="mt-1 mb-6">
-<% end %>
-<div class="row sm:grid-cols-2 mb-8">
-  <div class="col">
-    <p class="mt-2">
-      <strong class="block">User</strong>
-      <%= user.username %>
-    </p>
-    <p class="mt-2">
-      <%= user.total_kudos || 0 %>
-      kudos
-      <span class="less-strong">
-        (<%= user.total_kudos_today %> today  |
-        <%= user.total_kudos_yesterday %> yesterday)
-      </span>
-    </p>
-    <p class="mt-2">
-      <% reviews_count = user.reviews.count %>
-      <%= admin_number_display(reviews_count) %>
-      <%= "review".pluralize(reviews_count) %>
-      <% if user.reviews_private %><span class="less-strong">(not public)</span><% end %>
-      <span class="ml-2 less-strong opacity-0">
-        (<%= user.reviews.created_today.count %> today  |
-        <%= user.reviews.created_yesterday.count %> yesterday)
-      </span>
-    </p>
-  </div>
-  <div class="col">
-    <p class="mt-2">
-      <strong class="block">Signed up</strong>
-      <span class="convertTime"><%= l(user.created_at, format: :convert_time) %></span>
-    </p>
-    <% if user.about.present? %>
-      <p class="mt-2">
-        <strong class="block">About</strong>
-        <%= user.about %>
-      </p>
+<div class="mb-10">
+  <% if user == current_user %>
+  <div>This is you, <%= link_to "edit your account", edit_u_path(user.to_param), class: "link-primary" %>.</div>
+    <hr class="mt-1 mb-6">
+  <% end %>
+  <p class="mt-2">
+    <strong class="inline-block mr-1">User</strong>
+    <%= user.username %>
+    <span class="mx-1">-</span>
+    <% if current_user&.following?(user) %>
+      <%= link_to "stop following", following_path(user.to_param), data: {turbo_method: :delete} %>
+    <% else %>
+      <%= link_to "follow", add_following_path(user.to_param) %>
     <% end %>
-  </div>
+  </p>
+  <p class="mt-2">
+    <strong class="inline-block mr-1">Signed up</strong>
+    <span class="convertTime"><%= l(user.created_at, format: :convert_time) %></span>
+  </p>
+  <% if user.about.present? %>
+    <p class="mt-2">
+      <strong class="inline-block mr-1">About</strong>
+      <%= user.about %>
+    </p>
+  <% end %>
+  <p class="mt-2">
+    <%= user.total_kudos || 0 %>
+    kudos
+    <span class="less-strong">
+      (<%= user.total_kudos_today %> today  |
+      <%= user.total_kudos_yesterday %> yesterday)
+    </span>
+  </p>
+  <p class="mt-2">
+    <% reviews_count = user.reviews.count %>
+    <% if user.reviews_public %>
+      <%= pluralize(number_with_delimiter(reviews_count), "review") %>
+    <% else %>
+      <%= link_to pluralize(number_with_delimiter(reviews_count), "review"), reviews_path(user: user.to_param) %>
+    <% end %>
+    <% if user.reviews_private %><span class="less-strong">(private)</span><% end %>
+    <span class="ml-2 less-strong opacity-0">
+      (<%= number_with_delimiter(user.reviews.created_today.count) %> today  |
+      <%= number_with_delimiter(user.reviews.created_yesterday.count) %> yesterday)
+    </span>
+  </p>
+  <p class="mt-2">
+    <%= link_to "Following #{number_with_delimiter(user.followings.count)}", following_u_path(id: user.to_param) %>
+  </p>
 </div>

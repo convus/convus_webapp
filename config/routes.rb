@@ -3,8 +3,10 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   devise_for :users
 
-  resources :u, only: %i[show edit update]
-  resources :following, only: [:destroy] do
+  resources :u, only: %i[show edit update] do
+    member { get :following }
+  end
+  resources :following, only: %i[destroy] do
     member { get :add } # Use get so that it can redirect
   end
 

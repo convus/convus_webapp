@@ -26,10 +26,10 @@
           <%= image_tag("icon.png", alt: "Convus Logo") %>
           <span class="">Convus</span>
         <% end %>
-        <%= active_link "reviews", reviews_path(user: "following"), class: "main-nav-link ml-3" %>
-        <%#= active_link "about", about_path, class: "main-nav-link mr-auto ml-3" %>
+        <% reviews_active = controller_name == "reviews" && params[:user] == "following" %>
+        <%= link_to "reviews", reviews_path(user: "following"), class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
         <% if current_user.present? %>
-          <%= active_link current_user.username, reviews_path(user: current_user.to_param), class: "main-nav-link ml-auto" %>
+          <%= active_link current_user.username, u_path(current_user.to_param), class: "main-nav-link ml-auto" %>
           <span class="ml-1 mr-1 text-gray-400">|</span>
           <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "main-nav-link"  %>
         <% else %>
