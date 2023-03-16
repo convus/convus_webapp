@@ -73,6 +73,15 @@ class ApplicationController < ActionController::Base
     false
   end
 
+  def ensure_user_admin!
+    if current_user.blank?
+      redirect_to_signup_unless_user_present!
+    elsif !current_user.admin?
+      flash.now[:error] = "No authorized"
+      redirect_to user_root_url, status: :see_other
+    end
+  end
+
   def store_return_to
     return if request.xhr? || not_stored_paths.include?(request.path)
     # Don't overwrite existing unless it's for an admin path

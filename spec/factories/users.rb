@@ -5,9 +5,11 @@ FactoryBot.define do
     sequence(:username) { |n| "#{n}-name" }
 
     trait :developer_access do
-      role { true }
+      role { :developer }
     end
 
     factory :user_developer, traits: [:developer_access]
+
+    factory :user_admin, traits: [:developer_access]
   end
 end

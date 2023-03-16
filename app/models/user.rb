@@ -40,9 +40,19 @@ class User < ApplicationRecord
     find_by_username_slug(Slugifyer.slugify(str))
   end
 
+  def self.admin_search(str)
+    val = "%#{str.strip}%"
+    where("username ILIKE ?", val)
+      .or(where("email ILIKE ?", val))
+  end
+
   # TODO: make this whole thing less terrible and more secure
   def self.generate_api_token
     SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64
+  end
+
+  def admin?
+    developer?
   end
 
   def following_reviews_public

@@ -10,6 +10,12 @@ shared_context :logged_in_as_developer do
   before { sign_in current_user }
 end
 
+shared_context :logged_in_as_admin do
+  let(:current_user) { FactoryBot.create(:user_admin) }
+
+  before { sign_in current_user }
+end
+
 RSpec.shared_context :test_csrf_token do
   before { ActionController::Base.allow_forgery_protection = true }
   after { ActionController::Base.allow_forgery_protection = false }

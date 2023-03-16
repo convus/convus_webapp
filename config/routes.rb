@@ -31,6 +31,11 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :admin do
+    root to: "users#index"
+    resources :users, only: [:index]
+  end
+
   authenticate :user, lambda { |u| u.developer? } do
     mount Sidekiq::Web, at: "/sidekiq"
   end
