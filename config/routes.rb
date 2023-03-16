@@ -4,7 +4,9 @@ Rails.application.routes.draw do
   devise_for :users
 
   resources :u, only: %i[show edit update]
-  resource :followers, only: %i[create destroy]
+  resources :following, only: [:destroy] do
+    member { get :add } # Use get so that it can redirect
+  end
 
   root "landing#index"
 
