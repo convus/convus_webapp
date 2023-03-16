@@ -26,7 +26,7 @@
       <%= user.about %>
     </p>
   <% end %>
-  <% if user.following_public %>
+  <% if user.following_public || user == current_user %>
     <p class="mt-2">
       <%= link_to "Following #{number_with_delimiter(user.followings.count)}", following_u_path(id: user.to_param) %>
     </p>
