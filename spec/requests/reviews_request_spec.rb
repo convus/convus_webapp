@@ -45,6 +45,13 @@ RSpec.describe base_url, type: :request do
         get base_url
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
+    context "following" do
+      it "sends to sign in" do
+        get "#{base_url}?user=following"
+        expect(response).to redirect_to new_user_registration_path
+        expect(session[:user_return_to]).to eq "/reviews?user=following"
+      end
+    end
     context "with private user" do
       it "renders" do
         expect(user_subject.reviews_public).to be_falsey
@@ -73,6 +80,13 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:user_subject).id).to eq user_subject.id
       end
     end
+    context "unknown user" do
+      it "raises" do
+        expect {
+          get "#{base_url}?user=asdf8212"
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 
   context "current_user present" do
@@ -92,6 +106,8 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:reviews_private)).to be_truthy
         expect(assigns(:can_view_reviews)).to be_falsey
         expect(assigns(:reviews).pluck(:id)).to eq([])
+        expect(assigns(:viewing_single_user)).to be_truthy
+        expect(assigns(:viewing_display_name)).to eq user_subject.username
       end
       context "current_user is user_subject" do
         let(:current_user) { user_subject }
@@ -103,6 +119,40 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:reviews_private)).to be_truthy
           expect(assigns(:can_view_reviews)).to be_truthy
           expect(assigns(:reviews)&.pluck(:id)).to eq([review.id])
+        end
+      end
+      context "following" do
+        it "renders" do
+          get "#{base_url}?user=following"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("reviews/index")
+          expect(assigns(:can_view_reviews)).to be_truthy
+          expect(assigns(:reviews).pluck(:id)).to eq([])
+          expect(assigns(:viewing_single_user)).to be_falsey
+          expect(assigns(:viewing_display_name)).to eq "Following"
+        end
+        context "with following" do
+          let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject) }
+          before { expect(review).to be_present }
+          it "renders" do
+            expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
+            get "#{base_url}?user=following"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("reviews/index")
+            expect(assigns(:can_view_reviews)).to be_truthy
+            expect(assigns(:reviews).pluck(:id)).to eq([])
+          end
+          context "public" do
+            let(:reviews_public) { true }
+            it "renders" do
+              expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
+              get "#{base_url}?user=following"
+              expect(response.code).to eq "200"
+              expect(response).to render_template("reviews/index")
+              expect(assigns(:can_view_reviews)).to be_truthy
+              expect(assigns(:reviews).pluck(:id)).to eq([review.id])
+            end
+          end
         end
       end
     end

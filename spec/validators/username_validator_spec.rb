@@ -21,11 +21,13 @@ RSpec.describe UsernameValidator do
       expect(user).to_not be_valid
       expect(user.errors.full_messages).to eq(["Username invalid"])
     end
-    context "with extra things" do
-      let(:username) { "nice and naughty" }
-      it "is still invalid" do
-        expect(user).to_not be_valid
-        expect(user.errors.full_messages).to eq(["Username invalid"])
+    %w[following you user u].each do |name|
+      context "blocked words" do
+        let(:username) { name }
+        it "is still invalid" do
+          expect(user).to_not be_valid
+          expect(user.errors.full_messages).to eq(["Username invalid"])
+        end
       end
     end
   end

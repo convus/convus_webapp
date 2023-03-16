@@ -52,7 +52,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(review_display_name(Review.new)).to eq target
     end
     context "with review" do
-      let(:target) { "<a class=\"link-underline\" href=\"https://example.com\">Somewhere</a>" }
+      let(:target) { "<a href=\"https://example.com\">Somewhere</a>" }
       let(:review) { Review.new(submitted_url: "https://example.com", citation_title: "Somewhere") }
       it "returns target" do
         expect(review_display_name(review)).to eq target

@@ -7,6 +7,10 @@ class User < ApplicationRecord
   has_many :reviews
   has_many :events
   has_many :kudos_events
+  has_many :user_followings, dependent: :destroy
+  has_many :followings, through: :user_followings, source: :following
+  has_many :user_followers, class_name: "UserFollowing", foreign_key: :following_id, dependent: :destroy
+  has_many :followers, through: :user_followers, source: :user
 
   enum role: ROLE_ENUM
 
@@ -14,6 +18,9 @@ class User < ApplicationRecord
   validates_with UsernameValidator
 
   before_validation :set_calculated_attributes
+  after_commit :update_associations
+
+  scope :reviews_public, -> { where(reviews_public: true) }
 
   def self.friendly_find(str)
     return nil if str.blank?
@@ -38,6 +45,10 @@ class User < ApplicationRecord
     SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64
   end
 
+  def following_reviews_public
+    Review.where(user_id: user_followings.reviews_public.pluck(:following_id))
+  end
+
   def to_param
     username_slug
   end
@@ -56,6 +67,11 @@ class User < ApplicationRecord
     kudos_events.created_yesterday(timezone).sum(:total_kudos)
   end
 
+  def following?(user_or_id)
+    f_id = user_or_id.is_a?(User) ? user_or_id.id : user_or_id
+    user_followings.where(following_id: f_id).limit(1).present?
+  end
+
   def set_calculated_attributes
     self.role ||= "normal_user"
     self.about = nil if about.blank?
@@ -63,6 +79,11 @@ class User < ApplicationRecord
     self.username = username&.strip
     self.username_slug = Slugifyer.slugify(username)
     self.total_kudos ||= 0
+  end
+
+  def update_associations
+    user_followers.where.not(reviews_public: reviews_public)
+      .each { |f| f.update(updated_at: Time.current) }
   end
 
   private

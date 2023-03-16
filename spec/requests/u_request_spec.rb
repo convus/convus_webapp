@@ -5,16 +5,18 @@ RSpec.describe base_url, type: :request do
   let(:user_subject) { FactoryBot.create(:user, username: "OTHer-name") }
 
   describe "show" do
-    it "redirects" do
+    it "renders" do
       get "#{base_url}/#{user_subject.id}"
-      expect(response).to redirect_to(reviews_path(user: user_subject.to_param))
+      expect(response.code).to eq "200"
+      expect(response).to render_template("u/show")
     end
     context "username" do
-      it "redirects" do
+      it "renders" do
         expect(user_subject).to be_present
         expect(user_subject.username_slug).to eq "other-name"
         get "#{base_url}/other-name"
-        expect(response).to redirect_to(reviews_path(user: user_subject.to_param))
+        expect(response.code).to eq "200"
+        expect(response).to render_template("u/show")
       end
     end
     context "not a user" do
@@ -23,6 +25,15 @@ RSpec.describe base_url, type: :request do
           get "#{base_url}/32342342333"
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
+    end
+  end
+
+  describe "following" do
+    it "renders" do
+      get "#{base_url}/#{user_subject.id}/following"
+      expect(flash).to be_blank
+      expect(assigns(:user)&.id).to eq user_subject.id
+      expect(response).to render_template("u/following")
     end
   end
 
@@ -37,9 +48,10 @@ RSpec.describe base_url, type: :request do
   context "current_user present" do
     include_context :logged_in_as_user
     describe "show" do
-      it "redirects" do
+      it "renders" do
         get "#{base_url}/#{current_user.id}"
-        expect(response).to redirect_to(reviews_path(user: current_user.to_param))
+        expect(response.code).to eq "200"
+        expect(response).to render_template("u/show")
       end
     end
     describe "edit" do
@@ -55,6 +67,7 @@ RSpec.describe base_url, type: :request do
         {
           username: "new-username",
           reviews_public: 1,
+          following_public: 1,
           about: "new things are about!!"
         }
       end

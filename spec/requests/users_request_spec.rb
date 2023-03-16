@@ -24,6 +24,17 @@ RSpec.describe "user requests", type: :request do
     end
   end
 
+  describe "sign_in" do
+    let(:user) { FactoryBot.create(:user, email: "example@convus.org", password: "fake-password666") }
+    it "signs in" do
+      expect(user).to be_valid
+      post "/users/sign_in", params: {user: {email: user.email, password: "fake-password666"}}
+      expect(response).to redirect_to root_url
+      expect(flash[:notice]).to be_present # Should be success, whateves
+      expect(assigns(:current_user)&.id).to eq user.id
+    end
+  end
+
   context "current_user present" do
     include_context :logged_in_as_user
     describe "edit" do

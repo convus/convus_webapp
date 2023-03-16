@@ -1,6 +1,7 @@
 <% reviews ||= reviews %>
 <% skip_sortable ||= false %>
 <% edit_reviews ||= false %>
+<% render_user ||= false %>
 <div class="full-screen-table">
   <table class="table table-sm">
     <thead class="sortable">
@@ -8,6 +9,11 @@
         <th>
           <%= sortable "created_at", "Reviewed At", skip_sortable: skip_sortable %>
         </th>
+        <% if render_user %>
+          <th class="hidden md:table-cell">
+            <%= sortable "user_id", skip_sortable: skip_sortable %>
+          </th>
+        <% end %>
         <th class="hidden md:table-cell">
           Link
         </th>
@@ -38,11 +44,19 @@
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= review.id %></code><% end %>
             <small class="convertTime"><%= l(review.created_at, format: :convert_time) %></small>
             <% if edit_reviews %>
-              <small class="less-strong"><%= link_to "edit", edit_review_path(review), class: "link-underline" %></small>
+              <small class="less-strong"><%= link_to "edit", edit_review_path(review) %></small>
+            <% end %>
+            <% if render_user %>
+              <small class="inline md:hidden less-strong"><%= link_to review.user&.username, reviews_path(sortable_search_params.merge(user: review.user.username)) %></small>
             <% end %>
             <span class="block md:hidden mt-1"><%= review_display_name(review) %></span>
             <span class="block md:hidden text-sm"><%= review.topics.join(", ") %></span>
           </td>
+          <% if render_user %>
+            <td class="hidden md:table-cell less-strong">
+              <small><%= link_to review.user&.username, reviews_path(sortable_search_params.merge(user: review.user.username)) %></small>
+            </td>
+          <% end %>
           <td class="hidden md:table-cell">
             <%= review_display_name(review) %>
           </td>

@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
   end
 
   def enable_rack_profiler
-    return false if Rails.env.test? || !current_user&.developer?
+    return false if !current_user&.developer? || Rails.env.test?
     Rack::MiniProfiler.authorize_request
   end
 
@@ -43,6 +43,14 @@ class ApplicationController < ActionController::Base
   def user_root_url
     return root_url if current_user.blank?
     root_url # TODO: make this something else
+  end
+
+  def after_sign_in_path_for(resource)
+    stored_location_for(resource) || user_root_url
+  end
+
+  def after_sign_up_path_for(resource)
+    after_sign_in_path_for(resource) || user_root_url
   end
 
   protected

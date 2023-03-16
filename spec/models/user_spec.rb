@@ -82,4 +82,16 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe "following?" do
+    let(:user_following) { FactoryBot.create(:user_following) }
+    let(:user) { user_following.user }
+    let(:following) { user_following.following }
+    it "is truthy" do
+      expect(user.following?(user)).to be_falsey
+      expect(user.following?(user.id)).to be_falsey
+      expect(user.following?(following)).to be_truthy
+      expect(user.following?(following.id)).to be_truthy
+    end
+  end
 end

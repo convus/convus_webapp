@@ -3,7 +3,12 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   devise_for :users
 
-  resources :u, only: %i[show edit update]
+  resources :u, only: %i[show edit update] do
+    member { get :following }
+  end
+  resources :following, only: %i[destroy] do
+    member { get :add } # Use get instead of create so it can store redirect
+  end
 
   root "landing#index"
 

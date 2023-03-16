@@ -22,17 +22,19 @@
   <body>
     <% if render_navbar? %>
       <nav class="full-width-padded-container flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4">
-        <%= link_to user_root_url, class: "main-nav-root-link mr-auto" do %>
+        <%= link_to user_root_url, class: "main-nav-root-link" do %>
           <%= image_tag("icon.png", alt: "Convus Logo") %>
           <span class="">Convus</span>
         <% end %>
-        <%#= active_link "about", about_path, class: "main-nav-link mr-auto ml-3" %>
+        <% reviews_active = controller_name == "reviews" && params[:user] == "following" %>
+        <%= link_to "reviews", reviews_path(user: "following"), class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
         <% if current_user.present? %>
-          <%= active_link current_user.username, reviews_path(user: current_user.to_param), class: "main-nav-link" %>
+          <% user_active = controller_name == "reviews" && user_subject&.id == current_user.id %>
+          <%= link_to current_user.username, reviews_path(user: current_user.to_param), class: "main-nav-link ml-auto #{user_active ? 'active' : ''}" %>
           <span class="ml-1 mr-1 text-gray-400">|</span>
           <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "main-nav-link"  %>
         <% else %>
-          <%= link_to "login", new_user_session_path, class: "main-nav-link" %>
+          <%= link_to "login", new_user_session_path, class: "main-nav-link ml-auto" %>
         <% end %>
       </div>
     </nav>
