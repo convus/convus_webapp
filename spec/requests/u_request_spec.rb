@@ -67,6 +67,7 @@ RSpec.describe base_url, type: :request do
         {
           username: "new-username",
           reviews_public: 1,
+          following_public: 1,
           about: "new things are about!!"
         }
       end

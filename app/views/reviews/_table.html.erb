@@ -46,12 +46,15 @@
             <% if edit_reviews %>
               <small class="less-strong"><%= link_to "edit", edit_review_path(review) %></small>
             <% end %>
+            <% if render_user %>
+              <small class="inline md:hidden"><%= link_to review.user&.username, reviews_path(sortable_search_params.merge(user: review.user.username)) %></small>
+            <% end %>
             <span class="block md:hidden mt-1"><%= review_display_name(review) %></span>
             <span class="block md:hidden text-sm"><%= review.topics.join(", ") %></span>
           </td>
           <% if render_user %>
             <td class="hidden md:table-cell">
-              <%= review.user&.username %>
+              <small><%= link_to review.user&.username, reviews_path(sortable_search_params.merge(user: review.user.username)) %></small>
             </td>
           <% end %>
           <td class="hidden md:table-cell">

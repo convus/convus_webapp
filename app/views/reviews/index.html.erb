@@ -1,14 +1,17 @@
 <% if @viewing_single_user %>
-  <%= render partial: "/u/user_display", locals: {user: user_subject} %>
+  <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true} %>
+  <h1 class="mb-8">Reviews by <%= user_subject.username %></h1>
   <% if @reviews_private %>
     <h2>User's reviews are private</h2>
   <% end %>
+<% elsif @viewing_display_name == "Following" %>
+  <h1 class="mt-4 mb-4">Reviews by people you follow</h1>
 <% end %>
 <% if @can_view_reviews %>
   <% if @reviews.total_count == 0 %>
     <% if viewing_display_name == "Following" %>
       <h4 class="standard-top-offset">No one you follow has visible reviews</h4>
-      <p class="mt-4">Follow some more people!</p>
+      <p class="mt-4">Try following more people</p>
     <% else %>
       <h4 class="standard-top-offset"><%= user_subject.username %> has no reviews</h4>
     <% end %>

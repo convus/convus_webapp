@@ -1,12 +1,16 @@
 class UController < ApplicationController
   before_action :find_user!
   before_action :ensure_user_is_current_user!, except: %i[show following]
+  include TranzitoUtils::SortableTable
 
   def show
   end
 
   def following
-    @followings = @user.followings
+    page = params[:page] || 1
+    @per_page = params[:per_page] || 50
+    @user_followings = @user.user_followings.reorder("user_followings.#{sort_column} #{sort_direction}")
+      .includes(:following).page(page).per(@per_page)
   end
 
   def edit
@@ -23,8 +27,12 @@ class UController < ApplicationController
 
   private
 
+  def sortable_columns
+    %w[created_at]
+  end
+
   def permitted_params
-    params.require(:user).permit(:username, :reviews_public, :about)
+    params.require(:user).permit(:about, :following_public, :reviews_public, :username)
   end
 
   def find_user!
