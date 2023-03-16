@@ -9,8 +9,7 @@
 }
 
 .main-nav-link {
-  @apply text-bodytext;
-  text-decoration: none;
+  @apply text-bodytext no-underline;
   &:hover, &:active, &.active {
     @apply underline;
   }
