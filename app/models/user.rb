@@ -7,9 +7,9 @@ class User < ApplicationRecord
   has_many :reviews
   has_many :events
   has_many :kudos_events
-  has_many :user_follows, dependent: :destroy
-  has_many :followings, through: :user_follows, source: :following
-  has_many :user_followers, class_name: "UserFollow", foreign_key: :following_id, dependent: :destroy
+  has_many :user_followings, dependent: :destroy
+  has_many :followings, through: :user_followings, source: :following
+  has_many :user_followers, class_name: "UserFollowing", foreign_key: :following_id, dependent: :destroy
   has_many :followers, through: :user_followers, source: :user
 
   enum role: ROLE_ENUM
@@ -44,7 +44,7 @@ class User < ApplicationRecord
   end
 
   def following_reviews_public
-    Review.where(user_id: user_follows.reviews_public.pluck(:following_id))
+    Review.where(user_id: user_followings.reviews_public.pluck(:following_id))
   end
 
   def to_param

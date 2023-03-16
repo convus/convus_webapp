@@ -79,14 +79,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_16_172841) do
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
-  create_table "user_follows", force: :cascade do |t|
+  create_table "user_followings", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "following_id"
     t.boolean "reviews_public", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["following_id"], name: "index_user_follows_on_following_id"
-    t.index ["user_id"], name: "index_user_follows_on_user_id"
+    t.index ["following_id"], name: "index_user_followings_on_following_id"
+    t.index ["user_id"], name: "index_user_followings_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|

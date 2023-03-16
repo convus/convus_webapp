@@ -1,6 +1,6 @@
-class CreateUserFollows < ActiveRecord::Migration[7.0]
+class CreateUserFollowings < ActiveRecord::Migration[7.0]
   def change
-    create_table :user_follows do |t|
+    create_table :user_followings do |t|
       t.references :user
       t.references :following
       t.boolean :reviews_public, default: false
