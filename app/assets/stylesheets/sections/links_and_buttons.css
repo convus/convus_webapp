@@ -3,8 +3,7 @@ a {
 }
 
 .link-primary {
-  @apply text-primary;
-  text-decoration: none;
+  @apply text-primary no-underline;
 }
 
 /* Done by tranzito_utils, but - may modify later */
@@ -16,8 +15,7 @@ a {
 
 @layer components {
   .btn {
-    @apply inline-flex text-bodytext leading-5 items-center border border-gray-500 bg-gray-100 cursor-pointer rounded-lg py-1 px-3 justify-center disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
-    text-decoration: none;
+    @apply inline-flex text-bodytext no-underline leading-5 items-center border border-gray-500 bg-gray-100 cursor-pointer rounded-lg py-1 px-3 justify-center disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
     &:hover, &.active, &:active {
       @apply bg-gray-200 border-gray-600
     }

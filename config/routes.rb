@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     member { get :following }
   end
   resources :following, only: %i[destroy] do
-    member { get :add } # Use get so that it can redirect
+    member { get :add } # Use get instead of create so it can store redirect
   end
 
   root "landing#index"
