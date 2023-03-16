@@ -3,14 +3,22 @@ class ReviewsController < ApplicationController
   before_action :set_period, only: %i[index]
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
   before_action :find_and_authorize_review, only: %i[edit update destroy]
+  helper_method :viewing_display_name
 
   def index
-    raise ActiveRecord::RecordNotFound if user_subject.blank?
+    if params[:user] == "following"
+      if current_user.blank?
+        redirect_to_signup_unless_user_present!
+        return
+      end
+    else
+      raise ActiveRecord::RecordNotFound if user_subject.blank?
+    end
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
-    @page_title = "#{user_subject&.username} | Convus"
+    @page_title = "#{viewing_display_name} - Reviews | Convus"
     @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
-      .includes(:citation).page(page).per(@per_page)
+      .includes(:citation, :user).page(page).per(@per_page)
   end
 
   def new
@@ -88,14 +96,36 @@ class ReviewsController < ApplicationController
     %w[created_at] # TODO: Add agreement and quality
   end
 
+  def multi_user_searches
+    ["following"]
+  end
+
   def viewable_reviews
-    @reviews_private = user_subject.reviews_private
-    @can_view_reviews = user_subject.reviews_public || user_subject == current_user
-    @can_view_reviews ? searched_reviews : Review.none
+    @viewing_single_user = !multi_user_searches.include?(params[:user])
+
+    if @viewing_single_user
+      @reviews_private = user_subject.reviews_private
+      @can_view_reviews = user_subject.reviews_public || user_subject == current_user
+    else
+      @can_view_reviews = true
+    end
+    searched_reviews
+  end
+
+  def viewing_display_name
+    @viewing_display_name ||= @viewing_single_user ? user_subject&.username : params[:user]
+  end
+
+  def user_reviews
+    if params[:user] == "following"
+      current_user&.following_reviews_public || Review.none
+    else
+      @can_view_reviews ? user_subject.reviews : Review.none
+    end
   end
 
   def searched_reviews
-    reviews = user_subject.reviews
+    reviews = user_reviews
 
     @time_range_column = "created_at"
     reviews.where(@time_range_column => @time_range)

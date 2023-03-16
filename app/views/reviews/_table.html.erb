@@ -1,6 +1,7 @@
 <% reviews ||= reviews %>
 <% skip_sortable ||= false %>
 <% edit_reviews ||= false %>
+<% render_user ||= false %>
 <div class="full-screen-table">
   <table class="table table-sm">
     <thead class="sortable">
@@ -8,6 +9,11 @@
         <th>
           <%= sortable "created_at", "Reviewed At", skip_sortable: skip_sortable %>
         </th>
+        <% if render_user %>
+          <th class="hidden md:table-cell">
+            <%= sortable "user_id", skip_sortable: skip_sortable %>
+          </th>
+        <% end %>
         <th class="hidden md:table-cell">
           Link
         </th>
@@ -43,6 +49,11 @@
             <span class="block md:hidden mt-1"><%= review_display_name(review) %></span>
             <span class="block md:hidden text-sm"><%= review.topics.join(", ") %></span>
           </td>
+          <% if render_user %>
+            <td class="hidden md:table-cell">
+              <%= review.user&.username %>
+            </td>
+          <% end %>
           <td class="hidden md:table-cell">
             <%= review_display_name(review) %>
           </td>

@@ -1,13 +1,21 @@
-<%= render partial: "/u/user_display", locals: {user: user_subject } %>
-<% if @reviews_private %>
-  <h2>User's reviews are private</h2>
+<% if @viewing_single_user %>
+  <%= render partial: "/u/user_display", locals: {user: user_subject } %>
+  <% if @reviews_private %>
+    <h2>User's reviews are private</h2>
+  <% end %>
 <% end %>
 <% if @can_view_reviews %>
-  <% if @reviews.none? %>
-    <h4><%= user_subject.username %> has no reviews</h4>
+  <% if @reviews.total_count == 0 %>
+
+    <% if viewing_display_name == "following" %>
+      <h4 class="standard-top-offset">No one you are following has visible reviews</h4>
+      <p class="mt-4">Follow some more people!</p>
+    <% else %>
+      <h4 class="standard-top-offset"><%= user_subject.username %> has no reviews</h4>
+    <% end %>
   <% else %>
     <%= render partial: "/shared/period_select", locals: {total_count: @reviews.total_count} %>
-    <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user} %>
+    <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user, render_user: !@viewing_single_user} %>
     <div class="row">
       <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review"} %>
     </div>

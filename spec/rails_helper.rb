@@ -52,6 +52,7 @@ RSpec.configure do |config|
 
   # Enable logging in
   config.include Devise::Test::IntegrationHelpers, type: :request
+  config.include Devise::Test::ControllerHelpers, type: :controller
   # Add our request spec things
   config.include RequestSpecHelpers, type: :request
 
