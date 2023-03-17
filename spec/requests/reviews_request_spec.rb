@@ -131,6 +131,7 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:reviews).pluck(:id)).to eq([])
           expect(assigns(:viewing_single_user)).to be_falsey
           expect(assigns(:viewing_display_name)).to eq "Following"
+          # Obviously, we do eventually want to have a description here too - but for now, skipping
           expect(response.body).to_not match("<meta name=\"description\" content=\"")
         end
         context "with following" do
