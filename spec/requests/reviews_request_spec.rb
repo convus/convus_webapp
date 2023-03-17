@@ -62,6 +62,7 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:reviews_private)).to be_truthy
         expect(assigns(:can_view_reviews)).to be_falsey
         expect(assigns(:reviews)&.pluck(:id)).to eq([])
+        expect(response.body).to match("<meta name=\"description\" content=\"")
       end
     end
     context "with reviews_public user" do
@@ -130,6 +131,7 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:reviews).pluck(:id)).to eq([])
           expect(assigns(:viewing_single_user)).to be_falsey
           expect(assigns(:viewing_display_name)).to eq "Following"
+          expect(response.body).to_not match("<meta name=\"description\" content=\"")
         end
         context "with following" do
           let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject) }

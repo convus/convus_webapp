@@ -5,10 +5,12 @@ RSpec.describe base_url, type: :request do
   let(:user_subject) { FactoryBot.create(:user, username: "OTHer-name") }
 
   describe "show" do
+    let(:user_page_description) { "0 reviews and 0 kudos today .0 reviews and 0 kudos yesterday." }
     it "renders" do
       get "#{base_url}/#{user_subject.id}"
       expect(response.code).to eq "200"
       expect(response).to render_template("u/show")
+      expect(response.body).to match(/<meta name=.description. content=.#{user_page_description}/)
     end
     context "username" do
       it "renders" do
