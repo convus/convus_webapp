@@ -18,7 +18,7 @@ class ReviewsController < ApplicationController
     @per_page = params[:per_page] || 25
     @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
       .includes(:citation, :user).page(page).per(@per_page)
-    @page_title = "#{viewing_display_name} - reviews | Convus"
+    @page_title = "#{viewing_display_name} - reviews - Convus"
   end
 
   def new
@@ -38,7 +38,7 @@ class ReviewsController < ApplicationController
     if @review.save
       respond_to do |format|
         format.html do
-          flash.now[:success] = "Review added"
+          flash[:success] = "Review added"
           redirect_source = (@review.source == "web") ? nil : @review.source
           redirect_to new_review_path(source: redirect_source), status: :see_other
         end
@@ -47,7 +47,7 @@ class ReviewsController < ApplicationController
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.replace(@review, partial: "reviews/form", locals: {review: @review}) }
         format.html do
-          flash[:error] = "Review not created"
+          flash.now[:error] = "Review not created"
           render :new
         end
       end

@@ -59,4 +59,19 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "page_description" do
+    it "returns nil" do
+      expect(page_description).to be_nil
+    end
+    context "render_user_page_description?" do
+      let(:user) { FactoryBot.create(:user) }
+      let(:target) { "0 reviews and 0 kudos today (0 reviews and 0 kudos yesterday)" }
+      it "returns target" do
+        @user = user
+        allow_any_instance_of(ApplicationHelper).to receive(:render_user_page_description?) { true }
+        expect(page_description).to eq target
+      end
+    end
+  end
 end

@@ -5,25 +5,25 @@ class FollowingController < ApplicationController
   def add
     user_following = user_following_match.first_or_create
     if user_following.valid?
-      flash.now[:success] = "Following #{@user.username}"
+      flash[:success] = "Following #{@user.username}"
     elsif @user.blank?
-      flash.now[:error] = "Unable to find user: '#{params[:id]}'"
+      flash[:error] = "Unable to find user: '#{params[:id]}'"
     else
-      flash.now[:error] = "Unable to follow #{@user.username}, #{user_following.errors.full_messages.to_sentence}"
+      flash[:error] = "Unable to follow #{@user.username}, #{user_following.errors.full_messages.to_sentence}"
     end
     redirect_back(fallback_location: user_root_url, status: :see_other)
   end
 
   def destroy
     if @user.blank?
-      flash.now[:error] = "Unable to find user: #{params[:id]}"
+      flash[:error] = "Unable to find user: #{params[:id]}"
     else
       user_following = user_following_match.first
       if user_following.present?
         user_following.destroy
-        flash.now[:success] = "Stopped following #{@user.username}"
+        flash[:success] = "Stopped following #{@user.username}"
       else
-        flash.now[:notice] = "You weren't following #{@user.username}"
+        flash[:notice] = "You weren't following #{@user.username}"
       end
     end
     redirect_back(fallback_location: user_root_url, status: :see_other)

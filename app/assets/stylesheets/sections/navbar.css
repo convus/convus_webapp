@@ -8,7 +8,7 @@
   }
 }
 
-.main-nav-link {
+.main-nav-link, .main-nav-root-link {
   @apply text-bodytext no-underline;
   &:hover, &:active, &.active {
     @apply underline;

@@ -5,10 +5,12 @@ RSpec.describe base_url, type: :request do
   let(:user_subject) { FactoryBot.create(:user, username: "OTHer-name") }
 
   describe "show" do
+    let(:user_page_description) { "0 reviews and 0 kudos today .0 reviews and 0 kudos yesterday." }
     it "renders" do
       get "#{base_url}/#{user_subject.id}"
       expect(response.code).to eq "200"
       expect(response).to render_template("u/show")
+      expect(response.body).to match(/<meta name=.description. content=.#{user_page_description}/)
     end
     context "username" do
       it "renders" do
@@ -29,11 +31,21 @@ RSpec.describe base_url, type: :request do
   end
 
   describe "following" do
-    it "renders" do
+    it "redirects" do
+      expect(user_subject.following_public).to be_falsey
       get "#{base_url}/#{user_subject.id}/following"
-      expect(flash).to be_blank
-      expect(assigns(:user)&.id).to eq user_subject.id
-      expect(response).to render_template("u/following")
+      expect(flash[:notice]).to match(/following/i)
+      expect(response).to redirect_to(root_url)
+    end
+    context "following_public" do
+      let(:user_subject) { FactoryBot.create(:user, following_public: true) }
+      it "renders" do
+        expect(user_subject.following_public).to be_truthy
+        get "#{base_url}/#{user_subject.to_param}/following"
+        expect(flash).to be_blank
+        expect(assigns(:user)&.id).to eq user_subject.id
+        expect(response).to render_template("u/following")
+      end
     end
   end
 
@@ -54,11 +66,22 @@ RSpec.describe base_url, type: :request do
         expect(response).to render_template("u/show")
       end
     end
+
     describe "edit" do
       it "renders" do
         get "#{base_url}/#{current_user.to_param}/edit"
         expect(response.code).to eq "200"
         expect(response).to render_template("u/edit")
+      end
+    end
+
+    describe "following" do
+      it "renders" do
+        expect(current_user.following_public).to be_falsey
+        get "#{base_url}/#{current_user.to_param}/following"
+        expect(flash).to be_blank
+        expect(assigns(:user)&.id).to eq current_user.id
+        expect(response).to render_template("u/following")
       end
     end
 

@@ -5,7 +5,7 @@
       <h2>Safari</h2>
       <%= image_tag "safari_logo.svg", alt: "Safari logo", class: "block mx-auto w-1/2 mt-4" %>
     <% end %>
-    <p class="text-sm">
+    <p class="text-sm text-center">
       <span class="block mt-4">On iOS, after downloading the extension, enable it in Settings > Safari > Extensions.</span>
       <span class="block mt-2">
         Access the extension by tapping on <%= image_tag("screenshots/ios-aa-searchbar.png", class: "inline-block w-4") %> the left side of the search field, then <%= link_to "tapping the extension", image_path("screenshots/ios-select-extension.png"), target: "_blank"%>
@@ -17,6 +17,9 @@
       <h2>Chrome</h2>
       <%= image_tag "chrome_logo.svg", alt: "Chrome logo", class: "block mx-auto w-1/2 mt-4" %>
     <% end %>
+    <p class="text-sm text-center">
+      <span class="block mt-4">Also the extension for <%= link_to "Arc", "https://arc.net/" %></span>
+    </p>
   </div>
   <div class="col w-full max-w-xs mt-10">
     <%= link_to "https://addons.mozilla.org/en-US/firefox/addon/convus/", class: "block text-center" do %>

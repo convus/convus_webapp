@@ -7,6 +7,10 @@ class UController < ApplicationController
   end
 
   def following
+    if @user.following_private && @user != current_user
+      flash[:notice] = "Who user is following is private"
+      redirect_back(fallback_location: user_root_url, status: :see_other)
+    end
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
     @user_followings = @user.user_followings.reorder("user_followings.#{sort_column} #{sort_direction}")
