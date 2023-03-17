@@ -17,6 +17,7 @@
         <th>
           <small><%= sortable "email", skip_sortable: skip_sortable %></small>
         </th>
+        <th>Reviews</th>
         <th>Roles</th>
       </tr>
     </thead>
@@ -36,6 +37,7 @@
           <td>
             <small><%= user.email %></small>
           </td>
+          <td><%= admin_number_display(user.reviews.count) %></td>
           <td>
             <% unless user.normal_user? %>
               <%= user.role %>

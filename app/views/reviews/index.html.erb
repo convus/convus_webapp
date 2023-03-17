@@ -5,7 +5,7 @@
     <h2>User's reviews are private</h2>
   <% end %>
 <% elsif @viewing_display_name == "Following" %>
-  <h1 class="mt-4 mb-4">Reviews by people you follow</h1>
+  <h1 class="mt-4 mb-4">Reviews by people you <%= link_to "follow", following_u_path(id: current_user.to_param) %></h1>
 <% end %>
 <% if @can_view_reviews %>
   <% if @reviews.total_count == 0 %>

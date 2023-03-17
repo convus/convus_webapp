@@ -67,6 +67,10 @@ class User < ApplicationRecord
     !reviews_public
   end
 
+  def following_private
+    !following_public
+  end
+
   # Need to pass in the timezone here ;)
   def total_kudos_today(timezone = nil)
     kudos_events.created_today(timezone).sum(:total_kudos)
