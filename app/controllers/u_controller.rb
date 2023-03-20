@@ -47,6 +47,7 @@ class UController < ApplicationController
 
   def find_user!
     @user = User.friendly_find!(params[:id])
+    @viewing_current_user = current_user == @user
   end
 
   def searched_user_followings(user_followings)
@@ -72,7 +73,6 @@ class UController < ApplicationController
   end
 
   def redirect_unless_approved!
-    @viewing_current_user = current_user == @user
     return true if @user.account_public || @viewing_current_user
     if current_user.blank?
       flash[:notice] = "User's account is only visible to their followers"

@@ -1,5 +1,8 @@
+<% search_params_present = (params.keys - %w[user controller action]).any? %>
 <% if @viewing_single_user %>
-  <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true} %>
+  <% unless search_params_present %>
+    <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true, only_render_name: search_params_present} %>
+  <% end %>
   <h1 class="mb-8">Reviews by <%= user_subject.username %></h1>
   <% if @reviews_private %>
     <h2>User's reviews are private</h2>
@@ -16,10 +19,13 @@
       <h4 class="standard-top-offset"><%= user_subject.username %> has no reviews</h4>
     <% end %>
   <% else %>
-    <%= render partial: "/shared/period_select", locals: {total_count: @reviews.total_count} %>
-    <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user, render_user: !@viewing_single_user} %>
+    <%#= render partial: "/shared/period_select", locals: {total_count: @reviews.total_count} %>
     <div class="row">
       <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review"} %>
+    </div>
+    <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user, render_user: !@viewing_single_user} %>
+    <div class="row">
+      <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review", skip_total: true} %>
     </div>
   <% end %>
 <% end %>

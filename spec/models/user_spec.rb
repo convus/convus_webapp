@@ -103,9 +103,11 @@ RSpec.describe User, type: :model do
       expect(user.following?(following)).to be_truthy
       expect(user.following?(following.id)).to be_truthy
       expect(user.following_approved?(following.id)).to be_truthy
+      expect(user.following_approved?(nil)).to be_falsey
+      expect(following.followers_approved.pluck(:id)).to eq([user.id])
     end
     context "private account" do
-      let(:following) { FactoryBot.create(:user, account_private: true) }
+      let(:following) { FactoryBot.create(:user_private) }
       let(:review) { FactoryBot.create(:review, user: following) }
       it "is falsey for following_approved" do
         expect(user.following?(user)).to be_falsey
@@ -113,6 +115,10 @@ RSpec.describe User, type: :model do
         expect(user.following?(following)).to be_truthy
         expect(user.following?(following.id)).to be_truthy
         expect(user.following_approved?(following.id)).to be_falsey
+        expect(user.followings.pluck(:id)).to eq([following.id])
+        expect(user.followings_approved.pluck(:id)).to eq([])
+        expect(user.following_approved?(nil)).to be_falsey
+        expect(following.followers_approved.pluck(:id)).to eq([])
 
         expect(review).to be_valid
         expect(user.following_reviews_visible.pluck(:id)).to eq([])
@@ -121,6 +127,7 @@ RSpec.describe User, type: :model do
         user.reload
         expect(user.following_approved?(following.id)).to be_truthy
         expect(user.following_reviews_visible.pluck(:id)).to eq([review.id])
+        expect(following.followers_approved.pluck(:id)).to eq([user.id])
       end
       context "approved" do
         it "is truthy for following_approved" do
@@ -130,6 +137,8 @@ RSpec.describe User, type: :model do
           user.reload
           expect(user.following_approved?(following)).to be_truthy
           expect(user.following_reviews_visible.pluck(:id)).to eq([review.id])
+          expect(user.followings.pluck(:id)).to eq([following.id])
+          expect(user.followings_approved.pluck(:id)).to eq([following.id])
         end
       end
     end

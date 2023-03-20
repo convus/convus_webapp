@@ -1,5 +1,5 @@
 <h1 class="mt-4 mb-4">Admin users</h1>
-<%= render partial: "/shared/period_select", locals: {total_count: @users.total_count} %>
+<%#= render partial: "/shared/period_select", locals: {total_count: @users.total_count} %>
 <% skip_sortable ||= false %>
 <div class="full-screen-table">
   <table class="table table-sm">
@@ -21,6 +21,7 @@
         <th>
           <small title="Account Private?">P<span class="hidden md:inline">rivate</span></small>
         </th>
+        <th><small>Followers</small></th>
         <th>Roles</th>
       </tr>
     </thead>
@@ -43,6 +44,9 @@
           <td><%= admin_number_display(user.reviews.count) %></td>
           <td class="table-cell-check">
             <%= check_mark if user.account_private %>
+          </td>
+          <td>
+            <%= link_to admin_number_display(user.followers_approved.count), followers_u_path(id: user.to_param) %>
           </td>
           <td>
             <% unless user.normal_user? %>

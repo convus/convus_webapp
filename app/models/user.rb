@@ -9,8 +9,12 @@ class User < ApplicationRecord
   has_many :kudos_events
   has_many :user_followings, dependent: :destroy
   has_many :followings, through: :user_followings, source: :following
+  has_many :user_followings_approved, -> { approved }, class_name: "UserFollowing"
+  has_many :followings_approved, through: :user_followings_approved, source: :following
   has_many :user_followers, class_name: "UserFollowing", foreign_key: :following_id, dependent: :destroy
   has_many :followers, through: :user_followers, source: :user
+  has_many :user_followers_approved, -> { approved }, class_name: "UserFollowing", foreign_key: :following_id, dependent: :destroy
+  has_many :followers_approved, through: :user_followers_approved, source: :user
 
   enum role: ROLE_ENUM
 
@@ -87,11 +91,11 @@ class User < ApplicationRecord
     kudos_events.created_yesterday(timezone).sum(:total_kudos)
   end
 
-  def following?(user_or_id)
+  def following?(user_or_id = nil)
     following(user_or_id).limit(1).present?
   end
 
-  def following_approved?(user_or_id)
+  def following_approved?(user_or_id = nil)
     following(user_or_id).approved.limit(1).present?
   end
 
@@ -111,7 +115,8 @@ class User < ApplicationRecord
 
   private
 
-  def following(user_or_id)
+  def following(user_or_id = nil)
+    return UserFollowing.none if user_or_id.blank?
     f_id = user_or_id.is_a?(User) ? user_or_id.id : user_or_id
     user_followings.where(following_id: f_id)
   end
