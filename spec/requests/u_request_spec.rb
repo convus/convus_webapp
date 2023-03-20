@@ -96,7 +96,8 @@ RSpec.describe base_url, type: :request do
     end
 
     describe "following" do
-      let(:user_following_approved) { FactoryBot.create(:user_following, user: user_subject, approved: true) }
+      let(:current_user) { FactoryBot.create(:user_private) }
+      let(:user_following_approved) { FactoryBot.create(:user_following, user: user_subject, following: FactoryBot.create(:user_private), approved: true) }
       it "renders" do
         expect(user_subject.reload.account_public).to be_truthy
         expect(user_following_approved).to be_valid
@@ -108,7 +109,6 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:user_followings).pluck(:id)).to match_array([user_following_approved.id])
       end
       context "current_user" do
-        let(:current_user) { FactoryBot.create(:user_private) }
         let(:user_subject) { current_user }
         let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_private) }
         it "renders" do
@@ -137,9 +137,13 @@ RSpec.describe base_url, type: :request do
           get "#{base_url}/#{user_subject.id}/following"
           expect(flash[:notice]).to match(/account/i)
           expect(response).to redirect_to(root_url)
+        end
+        it "redirects with unapproved user_following" do
+          expect(user_following_approved).to be_valid
+          expect(user_following_approved.approved).to be_truthy
           expect(user_following).to be_valid
           expect(user_following.approved).to be_falsey
-          expect(UserFollowing.pluck(:id)).to eq([user_following.id])
+          expect(user_subject.reload.following_approved?(current_user)).to be_falsey
           expect(user_subject.following_approved?(current_user)).to be_falsey
           get "#{base_url}/#{user_subject.id}/following"
           expect(flash[:notice]).to match(/account/i)
@@ -149,10 +153,11 @@ RSpec.describe base_url, type: :request do
           let(:approved) { true }
           let!(:user_following_unapproved) { FactoryBot.create(:user_following, user: user_subject, following: FactoryBot.create(:user_private)) }
           it "renders" do
+            expect(user_subject.reload.account_private).to be_truthy
             expect(user_following_approved).to be_valid
             expect(user_following_approved.approved).to be_truthy
-            expect(user_subject.account_private).to be_truthy
             expect(user_following).to be_valid
+            expect(user_following.approved).to be_truthy
             expect(user_subject.reload.following_approved?(current_user)).to be_truthy
             expect(user_following_unapproved.approved).to be_falsey
             get "#{base_url}/#{user_subject.to_param}/following"
@@ -164,6 +169,85 @@ RSpec.describe base_url, type: :request do
             get "#{base_url}/#{user_subject.to_param}/following?search_approved=unapproved"
             expect(response).to render_template("u/following")
             expect(assigns(:user_followings).pluck(:id)).to match_array([user_following.id, user_following_approved.id])
+          end
+        end
+      end
+    end
+
+    describe "followers" do
+      let(:current_user) { FactoryBot.create(:user_private) }
+      let(:user_follower_approved) { FactoryBot.create(:user_following, following: user_subject, user: FactoryBot.create(:user_private), approved: true) }
+      it "renders" do
+        expect(user_subject.reload.account_public).to be_truthy
+        expect(user_follower_approved).to be_valid
+        expect(user_subject.user_followers.approved.pluck(:id)).to eq([user_follower_approved.id])
+        get "#{base_url}/#{user_subject.to_param}/followers"
+        expect(flash).to be_blank
+        expect(assigns(:user)&.id).to eq user_subject.id
+        expect(response).to render_template("u/followers")
+        expect(assigns(:user_followings).pluck(:id)).to match_array([user_follower_approved.id])
+      end
+      context "current_user" do
+        let(:user_subject) { current_user }
+        let!(:user_follower) { FactoryBot.create(:user_following, following: current_user, user: user_private) }
+        it "renders" do
+          expect(current_user.account_private).to be_truthy
+          expect(user_follower_approved).to be_valid
+          expect(user_follower.approved).to be_falsey
+          get "#{base_url}/#{user_subject.to_param}/followers"
+          expect(flash).to be_blank
+          expect(assigns(:user)&.id).to eq current_user.id
+          expect(response).to render_template("u/followers")
+          expect(assigns(:user_followings).pluck(:id)).to match_array([user_follower.id, user_follower_approved.id])
+          get "#{base_url}/#{current_user.to_param}/followers?search_approved=approved"
+          expect(response).to render_template("u/followers")
+          expect(assigns(:user_followings).pluck(:id)).to match_array([user_follower_approved.id])
+          get "#{base_url}/#{current_user.to_param}/followers?search_approved=unapproved"
+          expect(response).to render_template("u/followers")
+          expect(assigns(:user_followings).pluck(:id)).to match_array([user_follower.id])
+        end
+      end
+      context "account_private" do
+        let(:user_subject) { user_private }
+        let(:user_follower) { FactoryBot.create(:user_following, following: user_subject, user: current_user, approved: approved) }
+        let(:approved) { false }
+        it "redirects" do
+          expect(user_subject.reload.account_private).to be_truthy
+          get "#{base_url}/#{user_subject.id}/followers"
+          expect(flash[:notice]).to match(/account/i)
+          expect(response).to redirect_to(root_url)
+        end
+        it "redirects with unapproved user_following" do
+          expect(user_follower_approved).to be_valid
+          expect(user_follower_approved.approved).to be_truthy
+          expect(user_follower).to be_valid
+          expect(user_follower.approved).to be_falsey
+          expect(current_user.reload.following_approved?(user_subject)).to be_falsey
+          expect(current_user.following_approved?(user_subject)).to be_falsey
+          get "#{base_url}/#{user_subject.id}/followers"
+          expect(flash[:notice]).to match(/account/i)
+          expect(response).to redirect_to(root_url)
+        end
+        context "user_following approved" do
+          let(:approved) { true }
+          let!(:user_following_unapproved) { FactoryBot.create(:user_following, user: user_subject, following: FactoryBot.create(:user_private)) }
+          it "renders" do
+            expect(user_subject.reload.account_private).to be_truthy
+            expect(user_follower_approved).to be_valid
+            expect(user_follower_approved.approved).to be_truthy
+            expect(user_follower).to be_valid
+            expect(user_follower.approved).to be_truthy
+            expect(current_user.reload.following_approved?(user_subject)).to be_truthy
+            expect(user_following_unapproved.approved).to be_falsey
+            get "#{base_url}/#{user_subject.to_param}/followers"
+            expect(flash).to be_blank
+            expect(assigns(:user)&.id).to eq user_subject.id
+            expect(response).to render_template("u/followers")
+            expect(assigns(:user_followings).pluck(:id)).to match_array([user_follower.id, user_follower_approved.id])
+            # And it doesn't show unapproved
+            get "#{base_url}/#{user_subject.to_param}/followers?search_approved=unapproved"
+            expect(response).to render_template("u/followers")
+            expect(assigns(:user_followings).pluck(:id)).to match_array([user_follower.id, user_follower_approved.id])
           end
         end
       end

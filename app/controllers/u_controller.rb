@@ -78,7 +78,11 @@ class UController < ApplicationController
       flash[:notice] = "User's account is only visible to their followers"
       return redirect_to_signup_unless_user_present!
     end
-    return true if @user.following_approved?(current_user)
+    if action_name == "following"
+      return true if @user.following_approved?(current_user)
+    else
+      return true if current_user.following_approved?(@user)
+    end
     flash[:notice] = "User's account is only visible to their followers"
     redirect_back(fallback_location: user_root_url, status: :see_other)
   end
