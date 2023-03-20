@@ -22,6 +22,7 @@ class FollowingController < ApplicationController
     else
       flash[:error] = "Unable to approve follower: #{@user.username}, #{user_following.errors.full_messages.to_sentence}"
     end
+    redirect_back(fallback_location: user_root_url, status: :see_other)
   end
 
   def unapprove
@@ -32,6 +33,7 @@ class FollowingController < ApplicationController
     else
       flash[:error] = "Unable to un-approve follower: #{@user.username}, #{user_following.errors.full_messages.to_sentence}"
     end
+    redirect_back(fallback_location: user_root_url, status: :see_other)
   end
 
   def destroy
