@@ -58,7 +58,7 @@ class FollowingController < ApplicationController
   end
 
   def user_follower
-    UserFollowing.where(user_id: @user&.id, following_id: current_user.id)
+    UserFollowing.where(user_id: @user&.id, following_id: current_user.id).first
   end
 
   def find_user

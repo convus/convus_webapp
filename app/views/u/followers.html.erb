@@ -4,7 +4,6 @@
     <%= render partial: "followers_table", locals: {user_followings: @user_followings.unapproved} %>
   </div>
 <% end %>
-
 <h1 class="mb-4">
   <% if @viewing_current_user %>
     Your followers
@@ -12,5 +11,4 @@
     <%= link_to @user.username, reviews_path(user: @user) %> followers
   <% end %>
 </h1>
-
 <%= render partial: "followers_table", locals: {user_followings: @user_followings.approved} %>
