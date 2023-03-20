@@ -18,9 +18,10 @@ class User < ApplicationRecord
   validates_with UsernameValidator
 
   before_validation :set_calculated_attributes
-  after_commit :update_associations
+  after_commit :update_followers
 
-  scope :reviews_public, -> { where(reviews_public: true) }
+  scope :account_private, -> { where(account_private: true) }
+  scope :account_public, -> { where(account_private: false) }
 
   def self.friendly_find(str)
     return nil if str.blank?
@@ -55,20 +56,25 @@ class User < ApplicationRecord
     developer?
   end
 
-  def following_reviews_public
-    Review.where(user_id: user_followings.reviews_public.pluck(:following_id))
+  def following_reviews_visible
+    Review.where(user_id: user_followings.reviews_visible.pluck(:following_id))
   end
 
   def to_param
     username_slug
   end
 
-  def reviews_private
-    !reviews_public
+  # account_private
+  def account_public
+    !account_private
   end
 
-  def following_private
-    !following_public
+  def reviews_public
+    account_public
+  end
+
+  def reviews_private
+    !reviews_public
   end
 
   # Need to pass in the timezone here ;)
@@ -82,8 +88,11 @@ class User < ApplicationRecord
   end
 
   def following?(user_or_id)
-    f_id = user_or_id.is_a?(User) ? user_or_id.id : user_or_id
-    user_followings.where(following_id: f_id).limit(1).present?
+    following(user_or_id).limit(1).present?
+  end
+
+  def following_approved?(user_or_id)
+    following(user_or_id).approved.limit(1).present?
   end
 
   def set_calculated_attributes
@@ -95,12 +104,17 @@ class User < ApplicationRecord
     self.total_kudos ||= 0
   end
 
-  def update_associations
-    user_followers.where.not(reviews_public: reviews_public)
-      .each { |f| f.update(updated_at: Time.current) }
+  def update_followers
+    return true if account_private
+    user_followers.unapproved.each { |f| f.update(updated_at: Time.current) }
   end
 
   private
+
+  def following(user_or_id)
+    f_id = user_or_id.is_a?(User) ? user_or_id.id : user_or_id
+    user_followings.where(following_id: f_id)
+  end
 
   def new_api_token?
     api_token.blank? || encrypted_password_changed?

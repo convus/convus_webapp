@@ -36,18 +36,6 @@ RSpec.describe UserFollowing, type: :model do
     end
   end
 
-  describe "reviews_public" do
-    let!(:review) { FactoryBot.create(:review, user: following) }
-    it "matches user" do
-      expect(following.reviews_public).to be_falsey
-      expect(user_following.reviews_public).to be_falsey
-      expect(user.following_reviews_public.pluck(:id)).to eq([])
-      following.update(reviews_public: true)
-      expect(user_following.reload.reviews_public).to be_truthy
-      expect(user.following_reviews_public.pluck(:id)).to eq([review.id])
-    end
-  end
-
   describe "delete" do
     let!(:review) { FactoryBot.create(:review, user: following) }
     before { expect(UserFollowing.pluck(:id)).to eq([user_following.id]) }

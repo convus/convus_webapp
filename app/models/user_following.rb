@@ -7,9 +7,17 @@ class UserFollowing < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
-  scope :reviews_public, -> { where(reviews_public: true) }
+  scope :approved, -> { where(approved: true) }
+  scope :unapproved, -> { where(approved: false) }
+  scope :reviews_visible, -> { where(approved: true) } # Currently, simple, but may become more complicated later
+
+  def unapproved
+    !approved
+  end
 
   def set_calculated_attributes
-    self.reviews_public = following&.reviews_public
+    if unapproved && following.account_public
+      self.approved = true
+    end
   end
 end

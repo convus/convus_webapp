@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_16_223415) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_20_170314) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -82,9 +82,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_16_223415) do
   create_table "user_followings", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "following_id"
-    t.boolean "reviews_public", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "approved", default: false
     t.index ["following_id"], name: "index_user_followings_on_following_id"
     t.index ["user_id"], name: "index_user_followings_on_user_id"
   end
@@ -107,9 +107,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_16_223415) do
     t.text "api_token"
     t.text "about"
     t.string "username_slug"
-    t.boolean "reviews_public", default: false
     t.integer "total_kudos"
-    t.boolean "following_public", default: false
+    t.boolean "account_private", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

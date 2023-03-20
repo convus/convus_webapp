@@ -94,14 +94,44 @@ RSpec.describe User, type: :model do
   end
 
   describe "following?" do
-    let(:user_following) { FactoryBot.create(:user_following) }
+    let(:user_following) { FactoryBot.create(:user_following, following: following) }
     let(:user) { user_following.user }
-    let(:following) { user_following.following }
+    let(:following) { FactoryBot.create(:user) }
     it "is truthy" do
       expect(user.following?(user)).to be_falsey
       expect(user.following?(user.id)).to be_falsey
       expect(user.following?(following)).to be_truthy
       expect(user.following?(following.id)).to be_truthy
+      expect(user.following_approved?(following.id)).to be_truthy
+    end
+    context "private account" do
+      let(:following) { FactoryBot.create(:user, account_private: true) }
+      let(:review) { FactoryBot.create(:review, user: following) }
+      it "is falsey for following_approved" do
+        expect(user.following?(user)).to be_falsey
+        expect(user.following?(user.id)).to be_falsey
+        expect(user.following?(following)).to be_truthy
+        expect(user.following?(following.id)).to be_truthy
+        expect(user.following_approved?(following.id)).to be_falsey
+
+        expect(review).to be_valid
+        expect(user.following_reviews_visible.pluck(:id)).to eq([])
+
+        following.update(account_private: false)
+        user.reload
+        expect(user.following_approved?(following.id)).to be_truthy
+        expect(user.following_reviews_visible.pluck(:id)).to eq([review.id])
+      end
+      context "approved" do
+        it "is truthy for following_approved" do
+          expect(user_following.approved).to be_falsey
+          expect(review).to be_valid
+          user_following.update(approved: true)
+          user.reload
+          expect(user.following_approved?(following)).to be_truthy
+          expect(user.following_reviews_visible.pluck(:id)).to eq([review.id])
+        end
+      end
     end
   end
 end

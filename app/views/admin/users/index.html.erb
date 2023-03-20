@@ -19,10 +19,7 @@
         </th>
         <th>Reviews</th>
         <th>
-          <small title="Following public?">F<span class="hidden md:inline">ollowing</span></small>
-        </th>
-        <th>
-          <small title="Reviews public?">R<span class="hidden md:inline">eviews</span></small>
+          <small title="Account Private?">P<span class="hidden md:inline">rivate</span></small>
         </th>
         <th>Roles</th>
       </tr>
@@ -45,10 +42,7 @@
           </td>
           <td><%= admin_number_display(user.reviews.count) %></td>
           <td class="table-cell-check">
-            <%= check_mark if user.following_public %>
-          </td>
-          <td class="table-cell-check">
-            <%= check_mark if user.reviews_public %>
+            <%= check_mark if user.account_private %>
           </td>
           <td>
             <% unless user.normal_user? %>
