@@ -4,10 +4,17 @@ Rails.application.routes.draw do
   devise_for :users
 
   resources :u, only: %i[show edit update] do
-    member { get :following }
+    member do
+      get :following
+      get :followers
+    end
   end
-  resources :following, only: %i[destroy] do
-    member { get :add } # Use get instead of create so it can store redirect
+  resources :followings, only: %i[destroy] do
+    member do
+      get :follow # Use get instead of create so it can store redirect
+      post :approve
+      post :unapprove
+    end
   end
 
   root "landing#index"

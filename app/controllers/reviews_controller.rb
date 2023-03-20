@@ -122,7 +122,7 @@ class ReviewsController < ApplicationController
 
   def user_reviews
     if params[:user] == "following"
-      current_user&.following_reviews_public || Review.none
+      current_user&.following_reviews_visible || Review.none
     else
       @can_view_reviews ? user_subject.reviews : Review.none
     end

@@ -11,23 +11,12 @@
     <%= f.label :about %>
     <%= f.text_area :about, class: "form-control" %>
   </div>
-  <div class="row sm:grid-cols-2">
-    <div class="col">
-      <div class="form-row ">
-        <%= f.label :reviews_public, class: "form-control-check" do %>
-          <%= f.check_box :reviews_public %>
-          Reviews are publicly visible
-        <% end %>
-      </div>
-    </div>
-    <div class="col">
-      <div class="form-row ">
-        <%= f.label :following_public, class: "form-control-check" do %>
-          <%= f.check_box :following_public %>
-          Who you follow is publicly visible
-        <% end %>
-      </div>
-    </div>
+  <div class="form-row ">
+    <%= f.label :account_private, class: "form-control-check" do %>
+      <%= f.check_box :account_private %>
+      Account is are publicly visible
+      <small>if <em>not</em> checked, only followers can see your account and reviews, and followers must be approved</small>
+    <% end %>
   </div>
   <div class="form-row-btn">
     <%= f.submit "Update", class: "btn btn-success" %>

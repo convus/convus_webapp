@@ -1,8 +1,8 @@
 <h1 class="mb-4">
   <% if @viewing_current_user %>
-    Users You follow
+    Your followers
   <% else %>
-    Users <%= link_to @user.username, u_path(@user) %> follows
+    <%= link_to @user.username, u_path(@user) %> followers
   <% end %>
 </h1>
 <% skip_sortable = true %>
@@ -24,18 +24,18 @@
     </thead>
     <tbody>
       <% @user_followings.each do |user_following| %>
-        <% following = user_following.following %>
+        <% follower = user_following.user %>
         <tr>
           <td>
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= user_following.id %></code><% end %>
             <small class="convertTime"><%= l(user_following.created_at, format: :convert_time) %></small>
           </td>
           <td>
-            <%= link_to following&.username, u_path(following) %>
+            <%= link_to follower&.username, u_path(follower) %>
           </td>
           <% if update_links %>
             <td>
-              <%= link_to "stop following", following_path(following.to_param), data: {turbo_method: :delete} %>
+              <%#= link_to "stop following", following_path(following.to_param), data: {turbo_method: :delete} %>
             </td>
           <% end %>
         </tr>
