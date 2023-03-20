@@ -102,10 +102,12 @@ class ReviewsController < ApplicationController
 
   def viewable_reviews
     @viewing_single_user = !multi_user_searches.include?(params[:user])
+    @viewing_current_user = @viewing_single_user && user_subject == current_user
 
     if @viewing_single_user
       @reviews_private = user_subject.reviews_private
-      @can_view_reviews = user_subject.reviews_public || user_subject == current_user
+      @can_view_reviews = user_subject.account_public || @viewing_current_user ||
+        user_subject.following_approved?(current_user)
     else
       @can_view_reviews = true
     end
@@ -122,7 +124,7 @@ class ReviewsController < ApplicationController
 
   def user_reviews
     if params[:user] == "following"
-      current_user&.following_reviews_public || Review.none
+      current_user&.following_reviews_visible || Review.none
     else
       @can_view_reviews ? user_subject.reviews : Review.none
     end

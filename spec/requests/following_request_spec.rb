@@ -82,5 +82,27 @@ RSpec.describe base_url, type: :request do
         end
       end
     end
+
+    describe "approve" do
+      let(:user_following) { FactoryBot.create(:user_following, user: user_subject, following: current_user) }
+      let(:current_user) { FactoryBot.create(:user_private) }
+      it "approves" do
+        expect(user_following.reload.approved).to be_falsey
+        post "#{base_url}/#{user_subject.id}/approve"
+        expect(flash[:success]).to be_present
+        expect(user_following.reload.approved).to be_truthy
+      end
+    end
+
+    describe "unapprove" do
+      let(:user_following) { FactoryBot.create(:user_following, user: user_subject, following: current_user, approved: true) }
+      let(:current_user) { FactoryBot.create(:user_private) }
+      it "approves" do
+        expect(user_following.reload.approved).to be_truthy
+        post "#{base_url}/#{user_subject.id}/unapprove"
+        expect(flash[:success]).to be_present
+        expect(user_following.reload.approved).to be_falsey
+      end
+    end
   end
 end

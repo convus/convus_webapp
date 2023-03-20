@@ -1,12 +1,5 @@
-<h1 class="mb-4">
-  <% if @viewing_current_user %>
-    Users You follow
-  <% else %>
-    Users <%= link_to @user.username, reviews_path(user: @user) %> follows
-  <% end %>
-</h1>
 <% skip_sortable = true %>
-<% update_links = @viewing_current_user %>
+<% update_links = @viewing_current_user && current_user.account_private %>
 <div class="full-screen-table">
   <table class="table table-sm">
     <thead class="sortable">
@@ -23,19 +16,23 @@
       </tr>
     </thead>
     <tbody>
-      <% @user_followings.each do |user_following| %>
-        <% following = user_following.following %>
+      <% user_followings.each do |user_following| %>
+        <% follower = user_following.user %>
         <tr>
           <td>
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= user_following.id %></code><% end %>
             <small class="convertTime"><%= l(user_following.created_at, format: :convert_time) %></small>
           </td>
           <td>
-            <%= link_to following&.username, reviews_path(user: following) %>
+            <%= link_to follower&.username, reviews_path(user: follower) %>
           </td>
           <% if update_links %>
-            <td>
-              <%= link_to "stop following", following_path(following.to_param), data: {turbo_method: :delete} %>
+            <td class="text-right">
+              <% if user_following.approved %>
+                <%= link_to "un-approve", unapprove_following_path(follower.to_param), data: {turbo_method: :post}, class: "less-strong" %>
+              <% else %>
+                <%= link_to "approve", approve_following_path(follower.to_param), data: {turbo_method: :post} %>
+              <% end %>
             </td>
           <% end %>
         </tr>

@@ -18,8 +18,8 @@ RSpec.describe base_url, type: :request do
       timezone: "America/Bogota"
     }
   end
-  let(:user_subject) { FactoryBot.create(:user, username: "cO0l-name", reviews_public: reviews_public) }
-  let(:reviews_public) { false }
+  let(:user_subject) { FactoryBot.create(:user, username: "cO0l-name", account_private: account_private) }
+  let(:account_private) { true }
   let(:review) { FactoryBot.create(:review, user: user_subject) }
 
   describe "new" do
@@ -53,6 +53,7 @@ RSpec.describe base_url, type: :request do
       end
     end
     context "with private user" do
+      let(:account_private) { true }
       it "renders" do
         expect(user_subject.reviews_public).to be_falsey
         expect(user_subject.username_slug).to eq "co0l-name"
@@ -65,8 +66,8 @@ RSpec.describe base_url, type: :request do
         expect(response.body).to match("<meta name=\"description\" content=\"")
       end
     end
-    context "with reviews_public user" do
-      let(:reviews_public) { true }
+    context "with account_public user" do
+      let(:account_private) { false }
       it "renders" do
         expect(user_subject.reviews_public).to be_truthy
         get "#{base_url}?user=#{user_subject.username}"
@@ -92,6 +93,7 @@ RSpec.describe base_url, type: :request do
 
   context "current_user present" do
     include_context :logged_in_as_user
+    let(:current_user) { FactoryBot.create(:user_private) }
     describe "index" do
       before { expect(review && user_subject).to be_present }
       it "redirects" do
@@ -100,7 +102,7 @@ RSpec.describe base_url, type: :request do
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
       it "renders a private user" do
-        expect(current_user.reviews_private).to be_truthy
+        expect(user_subject.account_private).to be_truthy
         get "#{base_url}?user=#{user_subject.id}"
         expect(response.code).to eq "200"
         expect(response).to render_template("reviews/index")
@@ -135,23 +137,30 @@ RSpec.describe base_url, type: :request do
           expect(response.body).to_not match("<meta name=\"description\" content=\"")
         end
         context "with following" do
-          let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject) }
+          let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject, approved: approved) }
+          let(:approved) { false }
           before { expect(review).to be_present }
-          it "renders" do
+          it "renders with no reviews" do
+            expect(user_following.reload.approved).to be_falsey
             expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
+            expect(current_user.followings_approved.pluck(:id)).to eq([])
             get "#{base_url}?user=following"
             expect(response.code).to eq "200"
             expect(response).to render_template("reviews/index")
+            expect(assigns(:viewing_single_user)).to be_falsey
             expect(assigns(:can_view_reviews)).to be_truthy
             expect(assigns(:reviews).pluck(:id)).to eq([])
           end
-          context "public" do
-            let(:reviews_public) { true }
-            it "renders" do
+          context "approved" do
+            let(:approved) { true }
+            it "renders review" do
+              expect(user_following.reload.approved).to be_truthy
               expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
+              expect(current_user.followings_approved.pluck(:id)).to eq([user_subject.id])
               get "#{base_url}?user=following"
               expect(response.code).to eq "200"
               expect(response).to render_template("reviews/index")
+              expect(assigns(:viewing_single_user)).to be_falsey
               expect(assigns(:can_view_reviews)).to be_truthy
               expect(assigns(:reviews).pluck(:id)).to eq([review.id])
             end
