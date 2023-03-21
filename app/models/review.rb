@@ -68,6 +68,14 @@ class Review < ApplicationRecord
     errors.add(:submitted_url, "'#{submitted_url}' is not valid")
   end
 
+  def account_public?
+    user.present? && user.account_public
+  end
+
+  def account_private?
+    !account_public?
+  end
+
   def associate_citation
     self.citation_title = nil if citation_title.blank?
     self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)

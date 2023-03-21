@@ -40,10 +40,22 @@ RSpec.describe base_url, type: :request do
 
   context "index" do
     before { expect(review).to be_present }
-    it "raises" do
-      expect {
-        get base_url
-      }.to raise_error(ActiveRecord::RecordNotFound)
+    it "renders" do
+      get base_url
+      expect(response.code).to eq "200"
+      expect(assigns(:user_subject)&.id).to be_blank
+      expect(assigns(:viewing_display_name)).to eq "recent"
+      expect(response).to render_template("reviews/index")
+      get "#{base_url}?user=receNT"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("reviews/index")
+    end
+    context "no user found" do
+      it "raises" do
+        expect {
+          get "#{base_url}?user=adsfsd8asdf8"
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
     end
     context "following" do
       it "sends to sign in" do
@@ -132,7 +144,7 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:can_view_reviews)).to be_truthy
           expect(assigns(:reviews).pluck(:id)).to eq([])
           expect(assigns(:viewing_single_user)).to be_falsey
-          expect(assigns(:viewing_display_name)).to eq "Following"
+          expect(assigns(:viewing_display_name)).to eq "following"
           # Obviously, we do eventually want to have a description here too - but for now, skipping
           expect(response.body).to_not match("<meta name=\"description\" content=\"")
         end

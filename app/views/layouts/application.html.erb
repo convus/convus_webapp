@@ -28,7 +28,7 @@
           <span class="">Convus</span>
         <% end %>
         <% reviews_active = controller_name == "reviews" && params[:user] == "following" %>
-        <%= link_to "reviews", reviews_path(user: "following"), class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
+        <%= link_to "reviews", reviews_path, class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
         <% if current_user.present? %>
           <% user_active = controller_name == "reviews" && user_subject&.id == current_user.id %>
           <%= link_to current_user.username, reviews_path(user: current_user.to_param), class: "main-nav-link ml-auto #{user_active ? 'active' : ''}" %>

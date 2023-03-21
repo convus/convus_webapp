@@ -2,8 +2,10 @@ require "rails_helper"
 
 RSpec.describe Review, type: :model do
   describe "topics" do
+    let(:review) { Review.new }
     it "is empty" do
-      expect(Review.new.topics).to eq([])
+      expect(review.topics).to eq([])
+      expect(review.account_public?).to be_falsey
     end
     context "multiple topics" do
       let(:review) { Review.new(topics_text: "something\nother\n\nthings\n") }

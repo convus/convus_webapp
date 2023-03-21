@@ -7,12 +7,14 @@
   <% if @reviews_private %>
     <h2>User's reviews are private</h2>
   <% end %>
-<% elsif @viewing_display_name == "Following" %>
+<% elsif viewing_display_name == "following" %>
   <h1 class="mt-4 mb-4">Reviews by people you <%= link_to "follow", following_u_path(id: current_user.to_param) %></h1>
+<% else %>
+  <h1 class="mt-4 mb-4">Recent reviews</h1>
 <% end %>
 <% if @can_view_reviews %>
   <% if @reviews.total_count == 0 %>
-    <% if viewing_display_name == "Following" %>
+    <% if viewing_display_name == "following" %>
       <h4 class="standard-top-offset">No one you follow has visible reviews</h4>
       <p class="mt-4">Try following more people</p>
     <% else %>
@@ -23,7 +25,7 @@
     <div class="row">
       <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review"} %>
     </div>
-    <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user, render_user: !@viewing_single_user} %>
+    <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: @viewing_display_name == "recent"} %>
     <div class="row">
       <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review", skip_total: true} %>
     </div>

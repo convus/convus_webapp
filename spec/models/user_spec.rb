@@ -121,6 +121,7 @@ RSpec.describe User, type: :model do
         expect(following.followers_approved.pluck(:id)).to eq([])
 
         expect(review).to be_valid
+        expect(review.account_public?).to be_falsey
         expect(user.following_reviews_visible.pluck(:id)).to eq([])
 
         following.update(account_private: false)
@@ -128,6 +129,7 @@ RSpec.describe User, type: :model do
         expect(user.following_approved?(following.id)).to be_truthy
         expect(user.following_reviews_visible.pluck(:id)).to eq([review.id])
         expect(following.followers_approved.pluck(:id)).to eq([user.id])
+        expect(review.account_private?).to be_falsey
       end
       context "approved" do
         it "is truthy for following_approved" do
