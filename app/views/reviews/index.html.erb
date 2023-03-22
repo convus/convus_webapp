@@ -3,10 +3,20 @@
   <% unless search_params_present %>
     <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true, only_render_name: search_params_present} %>
   <% end %>
-  <h1 class="mb-8">Reviews by <%= user_subject.username %></h1>
-  <% if @reviews_private %>
-    <h2>User's reviews are private</h2>
-  <% end %>
+  <div class="mb-8">
+    <h1>Reviews by <%= user_subject.username %></h1>
+    <% if @reviews_private %>
+      <h2 class="mt-4">
+        Reviews are private
+        <% if @can_view_reviews %>
+          <small class="less-strong">
+            (they're visible because
+            <% if @viewing_current_user %>it's your account<% else %>you follow them<% end %>)
+          </small>
+        <% end %>
+      </h2>
+    <% end %>
+  </div>
 <% elsif viewing_display_name == "following" %>
   <h1 class="mt-4 mb-4">Reviews by people you <%= link_to "follow", following_u_path(id: current_user.to_param) %></h1>
 <% else %>

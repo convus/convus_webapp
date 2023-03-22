@@ -1,5 +1,5 @@
 <% render_second_hr ||= false %>
-<% show_links = @viewing_current_user || user.account_public || user.following_approved?(current_user) %>
+<% show_links = @viewing_current_user || user.account_public || user.follower_approved?(current_user) %>
 <div class="mb-4">
   <% if @viewing_current_user %>
     <div>
@@ -34,7 +34,14 @@
   <p class="mt-2">
     <strong class="inline-block mr-1">Followers</strong>
     <% if show_links %>
-      <%= link_to number_with_delimiter(user.followers_approved.count), followers_u_path(id: user.to_param) %>
+      <%= link_to followers_u_path(id: user.to_param) do %>
+        <%= number_with_delimiter(user.followers_approved.count) %>
+        <% if @viewing_current_user && user.user_followers.unapproved.any? %>
+          <em class="less-strong">
+            - <%= number_with_delimiter(user.user_followers.unapproved.count) %> waiting on approval
+          </em>
+        <% end %>
+      <% end %>
     <% else %>
       <%= number_with_delimiter(user.followers_approved.count) %>
     <% end %>

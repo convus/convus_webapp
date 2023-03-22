@@ -124,6 +124,41 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:viewing_single_user)).to be_truthy
         expect(assigns(:viewing_display_name)).to eq user_subject.username
       end
+      context "following" do
+        let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject, approved: approved) }
+        let(:approved) { false }
+        it "doesn't render reviews" do
+          expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
+          expect(current_user.followings_approved.pluck(:id)).to eq([])
+          expect(user_subject.follower_approved?(current_user)).to be_falsey
+          expect(user_subject.account_private).to be_truthy
+          get "#{base_url}?user=#{user_subject.id}"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("reviews/index")
+          expect(assigns(:reviews_private)).to be_truthy
+          expect(assigns(:can_view_reviews)).to be_falsey
+          expect(assigns(:reviews).pluck(:id)).to eq([])
+          expect(assigns(:viewing_single_user)).to be_truthy
+          expect(assigns(:viewing_display_name)).to eq user_subject.username
+        end
+        context "approved" do
+          let(:approved) { true }
+          it "renders reviews" do
+            expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
+            expect(current_user.followings_approved.pluck(:id)).to eq([user_subject.id])
+            expect(user_subject.follower_approved?(current_user)).to be_truthy
+            expect(user_subject.account_private).to be_truthy
+            get "#{base_url}?user=#{user_subject.id}"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("reviews/index")
+            expect(assigns(:reviews_private)).to be_truthy
+            expect(assigns(:can_view_reviews)).to be_truthy
+            expect(assigns(:reviews).pluck(:id)).to eq([review.id])
+            expect(assigns(:viewing_single_user)).to be_truthy
+            expect(assigns(:viewing_display_name)).to eq user_subject.username
+          end
+        end
+      end
       context "current_user is user_subject" do
         let(:current_user) { user_subject }
         it "shows reviews" do

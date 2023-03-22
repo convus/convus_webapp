@@ -110,7 +110,7 @@ class ReviewsController < ApplicationController
       @viewing_current_user = user_subject == current_user
       @reviews_private = user_subject.reviews_private
       @can_view_reviews = user_subject.account_public || @viewing_current_user ||
-        user_subject.following_approved?(current_user)
+        user_subject.follower_approved?(current_user)
     end
     searched_reviews
   end
