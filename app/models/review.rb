@@ -46,10 +46,16 @@ class Review < ApplicationRecord
     true # TODO: hide if this was automatically collected?
   end
 
+  # Temporary method to make it easier to delete dupes
   def duplicate?
     duplicate_reviews = Review.where(citation_id: citation_id).where(user_id: user_id)
       .where.not(id: id)
-    duplicate_reviews.any?
+    return false if duplicate_reviews.none?
+    non_default = duplicate_reviews.select { |r| !r.default_attrs? }
+    return true if default_attrs? && non_default.any?
+    return true if non_default.any? { |r| r.id > id }
+    return false if !default_attrs?
+    duplicate_reviews.any? { |r| r.id > id }
   end
 
   def default_attrs?
