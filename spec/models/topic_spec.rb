@@ -20,12 +20,30 @@ RSpec.describe Topic, type: :model do
     end
     context "with citation_topic" do
       let(:citation_topic) { FactoryBot.create(:citation_topic, topic: topic) }
+      let(:review) { FactoryBot.create(:review, submitted_url: citation_topic.citation.url) }
+      let(:review_topic) { FactoryBot.create(:review_topic, review: review, topic: topic) }
       it "is not orphaned" do
         expect(citation_topic).to be_valid
-        expect(topic.send(:calculated_orphaned?)).to be_falsey
+        expect(topic.send(:calculated_orphaned?)).to be_truthy
         expect(topic.orphaned).to be_truthy
         topic.update(updated_at: Time.current)
+        expect(topic.reload.orphaned).to be_truthy
+        expect(citation_topic.orphaned).to be_truthy
+        # With review_topic nothing is orphaned
+        expect(review_topic.citation&.id).to eq citation_topic.citation_id
+        expect(topic.send(:calculated_orphaned?)).to be_falsey
+        expect(citation_topic.send(:calculated_orphaned?)).to be_falsey
+        topic.update(updated_at: Time.current)
+        citation_topic.update(updated_at: Time.current)
         expect(topic.reload.orphaned).to be_falsey
+        expect(citation_topic.orphaned).to be_falsey
+      end
+    end
+    context "numbers only" do
+      let(:topic) { FactoryBot.build(:topic, name: "111") }
+      it "is invalid" do
+        expect(topic).to be_invalid
+        expect(topic.errors.full_messages).to eq(["Name can't be only numbers"])
       end
     end
   end
@@ -49,6 +67,17 @@ RSpec.describe Topic, type: :model do
         expect(topic_dupe.name).to_not eq topic.name
         expect(topic_dupe.errors.full_messages).to eq(["Name has already been taken"])
       end
+    end
+  end
+
+  describe "find_or_create_for" do
+    let!(:topic) { FactoryBot.create(:topic, name: "First topic we have") }
+    it "finds the existing" do
+      expect(Topic.count).to eq 1
+      expect(Topic.find_or_create_for_name("first topic we have ")&.id).to eq topic.id
+      expect(Topic.find_or_create_for_name("\nFIRST topic we HAVE ")&.id).to eq topic.id
+      expect(Topic.find_or_create_for_name("New first topic")&.id).to_not eq topic.id
+      expect(Topic.count).to eq 2
     end
   end
 end

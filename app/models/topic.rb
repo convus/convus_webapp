@@ -9,6 +9,10 @@ class Topic < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
+  scope :name_ordered, -> { order(arel_table["name"].lower) }
+  scope :active, -> { where(orphaned: false) }
+  scope :orphaned, -> { where(orphaned: true) }
+
   def self.friendly_find(str)
     return nil if str.blank?
     if str.is_a?(Integer) || str.match?(/\A\d+\z/)
@@ -27,6 +31,14 @@ class Topic < ApplicationRecord
     find_by_slug(Slugifyer.slugify(str))
   end
 
+  def self.find_or_create_for_name(name)
+    friendly_find(name) || create(name: name)
+  end
+
+  def active
+    !orphaned
+  end
+
   def set_calculated_attributes
     self.orphaned = calculated_orphaned?
     self.name = name&.strip
@@ -34,6 +46,9 @@ class Topic < ApplicationRecord
   end
 
   def slug_uniq_if_name_uniq
+    if slug.match?(/\A\d+\z/)
+      errors.add(:name, "can't be only numbers")
+    end
     name_errors = errors.messages[:name]
     # Validating uniqueness of name_slug here because:
     # - we don't want to say "name_slug"
@@ -47,6 +62,6 @@ class Topic < ApplicationRecord
   private
 
   def calculated_orphaned?
-    review_topics.none? && citation_topics.none?
+    review_topics.none?
   end
 end

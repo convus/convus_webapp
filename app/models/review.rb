@@ -22,17 +22,19 @@ class Review < ApplicationRecord
   has_many :events, as: :target
   has_many :kudos_events, through: :events
   has_many :review_topics
+  has_many :topics, through: :review_topics
 
   validates_presence_of :user_id
-  validates_uniqueness_of :citation_id
+  validates_uniqueness_of :citation_id, scope: [:user_id]
   validate :not_error_url
 
   before_validation :set_calculated_attributes
   before_save :associate_citation
 
   after_commit :perform_review_created_event_job, only: :create
+  after_commit :reconcile_review_topics
 
-  attr_accessor :skip_review_created_event
+  attr_accessor :skip_review_created_event, :skip_topics_job
 
   def self.quality_humanized(str)
     return nil if str.blank?
@@ -72,7 +74,8 @@ class Review < ApplicationRecord
       error_quotes.blank?
   end
 
-  def topics
+  # HACK! reconcilliation makes the topics match, skip loading
+  def topic_names
     return [] unless topics_text.present?
     topics_text.strip.split("\n").reject(&:blank?)
   end
@@ -118,5 +121,10 @@ class Review < ApplicationRecord
   def perform_review_created_event_job
     return if !persisted? || skip_review_created_event
     ReviewCreatedEventJob.perform_async(id)
+  end
+
+  def reconcile_review_topics
+    return if !persisted? || skip_topics_job
+    ReconcileReviewTopicsJob.perform_async(id)
   end
 end

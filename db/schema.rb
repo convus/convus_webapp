@@ -17,6 +17,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_202406) do
   create_table "citation_topics", force: :cascade do |t|
     t.bigint "citation_id"
     t.bigint "topic_id"
+    t.boolean "orphaned", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["citation_id"], name: "index_citation_topics_on_citation_id"

@@ -4,14 +4,14 @@ RSpec.describe Review, type: :model do
   describe "topics" do
     let(:review) { Review.new }
     it "is empty" do
-      expect(review.topics).to eq([])
+      expect(review.topic_names).to eq([])
       expect(review.account_public?).to be_falsey
       expect(review.default_attrs?).to be_truthy
     end
     context "multiple topics" do
       let(:review) { Review.new(topics_text: "something\nother\n\nthings\n") }
       it "is the things" do
-        expect(review.topics).to eq(["something", "other", "things"])
+        expect(review.topic_names).to eq(["something", "other", "things"])
       end
     end
   end
