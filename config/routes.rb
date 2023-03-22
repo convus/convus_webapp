@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   get "/browser_extensions", to: "landing#browser_extensions"
   get "/browser_extension", to: redirect("browser_extensions")
 
-  resources :reviews
+  resources :reviews, except: [:show]
 
   namespace :api, defaults: {format: "json"} do
     namespace :v1 do

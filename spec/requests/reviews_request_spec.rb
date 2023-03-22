@@ -40,10 +40,22 @@ RSpec.describe base_url, type: :request do
 
   context "index" do
     before { expect(review).to be_present }
-    it "raises" do
-      expect {
-        get base_url
-      }.to raise_error(ActiveRecord::RecordNotFound)
+    it "renders" do
+      get base_url
+      expect(response.code).to eq "200"
+      expect(assigns(:user_subject)&.id).to be_blank
+      expect(assigns(:viewing_display_name)).to eq "recent"
+      expect(response).to render_template("reviews/index")
+      get "#{base_url}?user=receNT"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("reviews/index")
+    end
+    context "no user found" do
+      it "raises" do
+        expect {
+          get "#{base_url}?user=adsfsd8asdf8"
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
     end
     context "following" do
       it "sends to sign in" do
@@ -112,6 +124,41 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:viewing_single_user)).to be_truthy
         expect(assigns(:viewing_display_name)).to eq user_subject.username
       end
+      context "following" do
+        let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject, approved: approved) }
+        let(:approved) { false }
+        it "doesn't render reviews" do
+          expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
+          expect(current_user.followings_approved.pluck(:id)).to eq([])
+          expect(user_subject.follower_approved?(current_user)).to be_falsey
+          expect(user_subject.account_private).to be_truthy
+          get "#{base_url}?user=#{user_subject.id}"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("reviews/index")
+          expect(assigns(:reviews_private)).to be_truthy
+          expect(assigns(:can_view_reviews)).to be_falsey
+          expect(assigns(:reviews).pluck(:id)).to eq([])
+          expect(assigns(:viewing_single_user)).to be_truthy
+          expect(assigns(:viewing_display_name)).to eq user_subject.username
+        end
+        context "approved" do
+          let(:approved) { true }
+          it "renders reviews" do
+            expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
+            expect(current_user.followings_approved.pluck(:id)).to eq([user_subject.id])
+            expect(user_subject.follower_approved?(current_user)).to be_truthy
+            expect(user_subject.account_private).to be_truthy
+            get "#{base_url}?user=#{user_subject.id}"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("reviews/index")
+            expect(assigns(:reviews_private)).to be_truthy
+            expect(assigns(:can_view_reviews)).to be_truthy
+            expect(assigns(:reviews).pluck(:id)).to eq([review.id])
+            expect(assigns(:viewing_single_user)).to be_truthy
+            expect(assigns(:viewing_display_name)).to eq user_subject.username
+          end
+        end
+      end
       context "current_user is user_subject" do
         let(:current_user) { user_subject }
         it "shows reviews" do
@@ -132,7 +179,7 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:can_view_reviews)).to be_truthy
           expect(assigns(:reviews).pluck(:id)).to eq([])
           expect(assigns(:viewing_single_user)).to be_falsey
-          expect(assigns(:viewing_display_name)).to eq "Following"
+          expect(assigns(:viewing_display_name)).to eq "following"
           # Obviously, we do eventually want to have a description here too - but for now, skipping
           expect(response.body).to_not match("<meta name=\"description\" content=\"")
         end
@@ -141,9 +188,10 @@ RSpec.describe base_url, type: :request do
           let(:approved) { false }
           before { expect(review).to be_present }
           it "renders with no reviews" do
-            expect(user_following.reload.approved).to be_falsey
             expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
             expect(current_user.followings_approved.pluck(:id)).to eq([])
+            expect(user_subject.follower_approved?(current_user)).to be_falsey
+            expect(current_user.following_reviews_visible.pluck(:id)).to eq([])
             get "#{base_url}?user=following"
             expect(response.code).to eq "200"
             expect(response).to render_template("reviews/index")
@@ -154,9 +202,10 @@ RSpec.describe base_url, type: :request do
           context "approved" do
             let(:approved) { true }
             it "renders review" do
-              expect(user_following.reload.approved).to be_truthy
               expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
               expect(current_user.followings_approved.pluck(:id)).to eq([user_subject.id])
+              expect(user_subject.follower_approved?(current_user)).to be_truthy
+              expect(current_user.following_reviews_visible.pluck(:id)).to eq([review.id])
               get "#{base_url}?user=following"
               expect(response.code).to eq "200"
               expect(response).to render_template("reviews/index")

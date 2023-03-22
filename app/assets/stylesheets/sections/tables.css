@@ -23,6 +23,12 @@
     margin: 0.5rem 0 0.5rem;
   }
 
+  &.table-bordered {
+    & tr, & td {
+      @apply border-x;
+    }
+  }
+
   &.table-sm {
     & th, td {
       @apply py-1 px-2
@@ -30,12 +36,18 @@
   }
 }
 
+
+.full-screen-table-auto-width table {
+  @apply lg:mx-auto;
+  width: auto;
+}
+
 .full-screen-table-overflown {
-  @apply overflow-x-scroll -mx-container-pad;
+  @apply overflow-x-scroll -mx-container-pad px-0;
 }
 
 .full-screen-table {
-  @apply px-container-pad max-lg:-mx-container-pad px-0;
+  @apply px-container-pad max-lg:-mx-container-pad px-0 lg:px-container-pad;
 }
 
 .sortable .sortable-link {

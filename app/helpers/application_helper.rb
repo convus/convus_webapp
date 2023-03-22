@@ -63,7 +63,12 @@ module ApplicationHelper
     if review.display_name == "missing url"
       content_tag(:span, "missing url", class: "less-strong")
     else
-      link_to(review.display_name, review.citation_url)
+      display_name = review.display_name
+      if display_name.length < 100
+        link_to(display_name, review.citation_url, class: "break-words")
+      else
+        link_to(display_name.truncate(100), review.citation_url, title: display_name, class: "break-words")
+      end
     end
   end
 

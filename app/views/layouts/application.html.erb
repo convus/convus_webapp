@@ -21,14 +21,14 @@
   </head>
   <body>
     <% if render_navbar? %>
-      <nav class="full-width-padded-container flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4">
+      <nav class="large-width-padded-container flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4">
         <% root_active = controller_name == "landing" && action_name == "index" %>
         <%= link_to user_root_url, class: "main-nav-root-link #{root_active ? 'active' : ''}" do %>
           <%= image_tag("icon.png", alt: "Convus Logo") %>
           <span class="">Convus</span>
         <% end %>
-        <% reviews_active = controller_name == "reviews" && params[:user] == "following" %>
-        <%= link_to "reviews", reviews_path(user: "following"), class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
+        <% reviews_active = controller_name == "reviews" && viewing_display_name == "recent" %>
+        <%= link_to "reviews", reviews_path, class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
         <% if current_user.present? %>
           <% user_active = controller_name == "reviews" && user_subject&.id == current_user.id %>
           <%= link_to current_user.username, reviews_path(user: current_user.to_param), class: "main-nav-link ml-auto #{user_active ? 'active' : ''}" %>
@@ -40,7 +40,7 @@
       </div>
     </nav>
   <% end %>
-  <div class="<%= content_for(:main_wrapper_class) || 'full-width-padded-container' %>">
+  <div class="<%= content_for(:main_wrapper_class) || 'large-width-padded-container' %>">
     <%= render "shared/flash_messages" %>
     <%= yield %>
   </div>

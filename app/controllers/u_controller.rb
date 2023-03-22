@@ -80,7 +80,7 @@ class UController < ApplicationController
     end
     if action_name == "following"
       return true if @user.following_approved?(current_user)
-    elsif current_user.following_approved?(@user)
+    elsif @user.follower_approved?(current_user)
       return true
     end
     flash[:notice] = "User's account is only visible to their followers"

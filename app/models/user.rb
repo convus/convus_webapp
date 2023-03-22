@@ -99,6 +99,10 @@ class User < ApplicationRecord
     following(user_or_id).approved.limit(1).present?
   end
 
+  def follower_approved?(user_or_id = nil)
+    follower(user_or_id).approved.limit(1).present?
+  end
+
   def set_calculated_attributes
     self.role ||= "normal_user"
     self.about = nil if about.blank?
@@ -106,10 +110,12 @@ class User < ApplicationRecord
     self.username = username&.strip
     self.username_slug = Slugifyer.slugify(username)
     self.total_kudos ||= 0
+    @should_update_followers = account_private_changed?
   end
 
   def update_followers
-    return true if account_private
+    return true unless @should_update_followers
+    # Inefficient, but solves the problem
     user_followers.unapproved.each { |f| f.update(updated_at: Time.current) }
   end
 
@@ -119,6 +125,12 @@ class User < ApplicationRecord
     return UserFollowing.none if user_or_id.blank?
     f_id = user_or_id.is_a?(User) ? user_or_id.id : user_or_id
     user_followings.where(following_id: f_id)
+  end
+
+  def follower(user_or_id = nil)
+    return UserFollowing.none if user_or_id.blank?
+    f_id = user_or_id.is_a?(User) ? user_or_id.id : user_or_id
+    user_followers.where(user_id: f_id)
   end
 
   def new_api_token?

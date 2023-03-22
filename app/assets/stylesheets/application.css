@@ -48,12 +48,11 @@ h4 { @apply font-bold; }
 /* landing root styles */
 
 .landing-list-screenshots {
-  @apply flex;
+  @apply flex mt-3 justify-around;
   & a {
     @apply flex;
     max-width: 100px;
     border: 1px solid #ccc;
   }
-  & img { cursor: pointer;
-  }
+  & img { cursor: pointer; }
 }

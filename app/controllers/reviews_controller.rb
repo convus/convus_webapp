@@ -6,13 +6,13 @@ class ReviewsController < ApplicationController
   helper_method :viewing_display_name
 
   def index
-    if params[:user] == "following"
+    if viewing_display_name == "following"
       if current_user.blank?
         redirect_to_signup_unless_user_present!
         return
       end
     elsif user_subject.blank?
-      raise ActiveRecord::RecordNotFound
+
     end
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
@@ -97,34 +97,37 @@ class ReviewsController < ApplicationController
   end
 
   def multi_user_searches
-    ["following"]
+    %w[recent following]
   end
 
   def viewable_reviews
-    @viewing_single_user = !multi_user_searches.include?(params[:user])
-    @viewing_current_user = @viewing_single_user && user_subject == current_user
-
-    if @viewing_single_user
+    if params[:user].blank? || multi_user_searches.include?(params[:user].downcase)
+      @viewing_single_user = false
+      @can_view_reviews = true
+    else
+      raise ActiveRecord::RecordNotFound if user_subject.blank?
+      @viewing_single_user = true
+      @viewing_current_user = user_subject == current_user
       @reviews_private = user_subject.reviews_private
       @can_view_reviews = user_subject.account_public || @viewing_current_user ||
-        user_subject.following_approved?(current_user)
-    else
-      @can_view_reviews = true
+        user_subject.follower_approved?(current_user)
     end
     searched_reviews
   end
 
   def viewing_display_name
-    @viewing_display_name ||= if @viewing_single_user
+    @viewing_display_name ||= if user_subject.present?
       user_subject.username
     else
-      params[:user]&.titleize
+      (params[:user] || multi_user_searches.first).downcase
     end
   end
 
   def user_reviews
-    if params[:user] == "following"
+    if viewing_display_name == "following"
       current_user&.following_reviews_visible || Review.none
+    elsif viewing_display_name == "recent"
+      Review
     else
       @can_view_reviews ? user_subject.reviews : Review.none
     end
