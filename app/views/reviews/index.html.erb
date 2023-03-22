@@ -3,7 +3,7 @@
   <% unless search_params_present %>
     <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true, only_render_name: search_params_present} %>
   <% end %>
-  <div class="mb-8">
+  <div class="mb-6">
     <h1>Reviews by <%= user_subject.username %></h1>
     <% if @reviews_private %>
       <h2 class="mt-4">

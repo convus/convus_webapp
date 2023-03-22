@@ -30,6 +30,12 @@
   This pagination stuff is gross
 
 */
+
+/* Pagination container and rows match our rows and container */
+.pagination-container { margin: 0 0 1.5rem 0 !important; }
+.col-md-5, .col-md-7 { @apply px-container-pad; }
+
+/* Pagination link styling */
 .pagination-container .page-item {
   @apply inline-flex text-bodytext leading-5 items-center justify-center;
 }
@@ -37,6 +43,7 @@
 .pagination-container .page-item a {
   @apply py-1 px-3 no-underline border border-gray-500 bg-gray-100 rounded-lg disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
 }
+
 .pagination-container .page-item a:hover, .pagination-container .page-item.active a, .pagination-container .page-item a:active {
     @apply bg-gray-200 border-gray-600;
 }
