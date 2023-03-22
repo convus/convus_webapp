@@ -27,7 +27,7 @@
           <%= image_tag("icon.png", alt: "Convus Logo") %>
           <span class="">Convus</span>
         <% end %>
-        <% reviews_active = controller_name == "reviews" && params[:user] == "following" %>
+        <% reviews_active = controller_name == "reviews" && viewing_display_name == "recent" %>
         <%= link_to "reviews", reviews_path, class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
         <% if current_user.present? %>
           <% user_active = controller_name == "reviews" && user_subject&.id == current_user.id %>

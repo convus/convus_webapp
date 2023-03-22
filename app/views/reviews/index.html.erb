@@ -10,7 +10,10 @@
 <% elsif viewing_display_name == "following" %>
   <h1 class="mt-4 mb-4">Reviews by people you <%= link_to "follow", following_u_path(id: current_user.to_param) %></h1>
 <% else %>
-  <h1 class="mt-4 mb-4">Recent reviews</h1>
+  <h1 class="mt-4 mb-4">
+    Recent reviews
+  </h1>
+  <p class="less-strong mb-4"><em>See reviews by <%= link_to "people you're following", reviews_path(user: "following") %></em></p>
 <% end %>
 <% if @can_view_reviews %>
   <% if @reviews.total_count == 0 %>
