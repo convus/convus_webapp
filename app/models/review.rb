@@ -24,6 +24,7 @@ class Review < ApplicationRecord
   has_many :review_topics
 
   validates_presence_of :user_id
+  validates_uniqueness_of :citation_id
   validate :not_error_url
 
   before_validation :set_calculated_attributes
@@ -40,6 +41,13 @@ class Review < ApplicationRecord
     else
       str.to_s.gsub("quality_", "")
     end
+  end
+
+  def self.find_or_build_for(attrs)
+    citation = Citation.find_or_create_for_url(attrs[:submitted_url], attrs[:citation_title])
+    review = where(user_id: attrs[:user_id], citation_id: citation.id).first || Review.new
+    review.attributes = attrs
+    review
   end
 
   def edit_title?

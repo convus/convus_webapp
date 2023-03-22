@@ -4,9 +4,7 @@ module API
       before_action :ensure_current_user!
 
       def create
-        review = Review.new(permitted_params)
-        review.user = current_user
-        review.skip_review_created_event = true
+        review = Review.find_or_build_for(permitted_params.merge(skip_review_created_event: true))
         if review.save
           ReviewCreatedEventJob.new.perform(review.id, review)
           share_msg = ShareFormatter.share_user(current_user.reload, review.timezone)
@@ -21,6 +19,7 @@ module API
           .permit(:agreement, :changed_my_opinion, :citation_title, :did_not_understand,
             :error_quotes, :learned_something, :quality, :significant_factual_error,
             :source, :submitted_url, :timezone, :topics_text)
+          .merge(user_id: current_user.id)
       end
     end
   end

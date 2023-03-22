@@ -80,7 +80,7 @@ RSpec.describe base_url, type: :request do
             submitted_url: "http://example.com",
             agreement: "neutral",
             quality: "quality_med",
-            citation_title: "new title",
+            citation_title: "OG title",
             changed_my_opinion: "0",
             significant_factual_error: "0",
             error_quotes: "",
@@ -111,7 +111,15 @@ RSpec.describe base_url, type: :request do
           expect(review.citation).to be_present
           citation = review.citation
           expect(citation.url).to eq "http://example.com"
-          expect(citation.title).to eq "new title"
+          expect(citation.title).to eq "OG title"
+          # posting again updates
+          post base_url, params: review_params.merge(citation_title: "new title").to_json, headers: json_headers.merge(
+            "HTTP_ORIGIN" => "*",
+            "Authorization" => "Bearer #{current_user.api_token}"
+          )
+          expect(Review.count).to eq 1
+          review.reload
+          expect(review.citation_title).to eq "new title"
         end
       end
     end
