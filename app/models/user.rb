@@ -30,7 +30,7 @@ class User < ApplicationRecord
   def self.friendly_find(str)
     return nil if str.blank?
     if str.is_a?(Integer) || str.match?(/\A\d+\z/)
-      where(id: str).first
+      find_by_id(str)
     else
       friendly_find_username(str)
     end

@@ -6,6 +6,7 @@ RSpec.describe Review, type: :model do
     it "is empty" do
       expect(review.topics).to eq([])
       expect(review.account_public?).to be_falsey
+      expect(review.default_attrs?).to be_truthy
     end
     context "multiple topics" do
       let(:review) { Review.new(topics_text: "something\nother\n\nthings\n") }

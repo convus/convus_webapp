@@ -21,6 +21,7 @@ class Review < ApplicationRecord
 
   has_many :events, as: :target
   has_many :kudos_events, through: :events
+  has_many :review_topics
 
   validates_presence_of :user_id
   validate :not_error_url
@@ -43,6 +44,18 @@ class Review < ApplicationRecord
 
   def edit_title?
     true # TODO: hide if this was automatically collected?
+  end
+
+  def duplicate?
+    duplicate_reviews = Review.where(citation_id: citation_id).where(user_id: user_id)
+      .where.not(id: id)
+    duplicate_reviews.any?
+  end
+
+  def default_attrs?
+    quality_med? && neutral? && topics_text.blank? && !changed_my_opinion &&
+      !learned_something && !did_not_understand && !significant_factual_error &&
+      error_quotes.blank?
   end
 
   def topics
@@ -84,6 +97,8 @@ class Review < ApplicationRecord
   def set_calculated_attributes
     self.timezone = nil if timezone.blank?
     self.created_date ||= self.class.date_in_timezone(created_at, timezone)
+    self.topics_text = nil if topics_text.blank?
+    self.error_quotes = nil if error_quotes.blank?
   end
 
   def perform_review_created_event_job

@@ -1,4 +1,7 @@
 class Citation < ApplicationRecord
+  has_many :reviews
+  has_many :review_topics, through: :reviews
+
   validates_presence_of :url
 
   before_validation :set_calculated_attributes
