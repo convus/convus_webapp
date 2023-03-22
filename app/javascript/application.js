@@ -7,12 +7,12 @@ import 'flowbite/dist/flowbite.turbo.js'
 import { TimeParser, PeriodSelector, Pagination } from 'tranzito_utils_js'
 
 const enableFullscreenTableOverflow = () => {
-  const pageWidth = window.innerWidth;
+  const pageWidth = window.innerWidth
   document.querySelectorAll('.full-screen-table table').forEach(el => {
-    const tableWidth = el.offsetWidth;
+    const tableWidth = el.offsetWidth
     if (tableWidth > pageWidth) {
-      console.log("overflown")
-      el.closest(".full-screen-table").classList.add("full-screen-table-overflown")
+      console.log('overflown')
+      el.closest('.full-screen-table').classList.add('full-screen-table-overflown')
     }
   })
 }
@@ -33,5 +33,5 @@ document.addEventListener('turbo:load', () => {
     BrowserExtensionScript()
   }
 
-  enableFullscreenTableOverflow();
+  enableFullscreenTableOverflow()
 })
