@@ -3,7 +3,7 @@
 <% edit_reviews ||= false %>
 <% render_user ||= false %>
 <% hide_private_users ||= false %>
-<div class="full-screen-table">
+<div class="full-screen-table full-screen-table-auto-width">
   <table class="table table-sm break-words">
     <thead class="sortable">
       <tr>
@@ -19,22 +19,22 @@
           Link
         </th>
         <!-- <th class="hidden md:table-cell">Topics</th> -->
-        <th>
+        <th class="break-normal text-center border-r">
           <span title="Agreement">A<span class="hidden md:inline">greement</span></span>
         </th>
-        <th>
+        <th class="break-normal text-center border-r">
           <span title="Quality">Q<span class="hidden md:inline">uality</span></span>
         </th>
-        <th>
-          <span title="Learned something?">L<span class="hidden md:inline">earned something?</span></span>
+        <th class="break-normal text-center border-r">
+          <span title="Learned something?">L<span class="hidden md:inline">earned <br>something?</span></span>
         </th>
-        <th>
-          <span title="Changed opinion?">C<span class="hidden md:inline">hanged opinion?</span></span>
+        <th class="break-normal text-center border-r">
+          <span title="Changed opinion?">C<span class="hidden md:inline">hanged <br>opinion?</span></span>
         </th>
-        <th>
-          <span title="Didn't understand?">D<span class="hidden md:inline">idn't understand?</span></span>
+        <th class="break-normal text-center border-r">
+          <span title="Didn't understand?">D<span class="hidden md:inline">idn't <br>understand?</span></span>
         </th>
-        <th>
+        <th class="break-normal text-center border-r">
           <span title="Error?">E<span class="hidden md:inline">rror?</span></span>
         </th>
       </tr>
@@ -78,19 +78,19 @@
           <!-- <td class="hidden md:table-cell">
             <%= review.topics.join(", ") %>
           </td> -->
-          <td>
+          <td class="text-center border-r">
             <%= agreement_display(review.agreement) %>
           </td>
-          <td>
+          <td class="text-center border-r">
             <%= quality_display(review.quality) %>
           </td>
-          <td class="table-cell-check">
+          <td class="table-cell-check border-r">
             <%= check_mark if review.learned_something? %>
           </td>
-          <td class="table-cell-check">
+          <td class="table-cell-check border-r">
             <%= check_mark if review.changed_my_opinion? %>
           </td>
-          <td class="table-cell-check">
+          <td class="table-cell-check border-r">
             <%= check_mark if review.significant_factual_error? %>
           </td>
         </tr>

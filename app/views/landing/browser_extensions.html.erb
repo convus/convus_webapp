@@ -1,6 +1,6 @@
 <h1 class="standard-top-offset">Browser extensions</h1>
-<h2 class="my-4">Easily submit reviews of websites</h2>
-<div class="row sm:grid-cols-3 mt-10 justify-items-center">
+<h2 class="my-4">Easily submit reviews of websites:</h2>
+<div class="row sm:grid-cols-3 justify-items-center">
   <div class="col w-full max-w-xs mt-10">
     <%= link_to "https://apps.apple.com/us/app/convus/id6446099805", class: "block text-center" do %>
       <h2>Safari</h2>
@@ -29,18 +29,18 @@
     <% end %>
   </div>
 </div>
-<div class="mt-8">
-  <h3 class="mb-2">How to use the browser extension:</h3>
-  <ol class="list-decimal mt-3 mb-6 pl-5">
-    <li class="mb-3">Read something on the internet</li>
-    <li class="mb-3">
+<div class="mt-10">
+  <h2 class="pt-10 mb-2">How to use the browser extension:</h2>
+  <ol class="row grid-cols-2 md:grid-cols-3 mt-4 justify-items-center list-decimal mt-3 mb-6 px-container-pag">
+    <li class="col mb-3">Read something on the internet</li>
+    <li class="col mb-3">
       Open the Convus browser extension
       <div class="landing-list-screenshots">
         <%= link_to image_tag("screenshots/ios-open-extension.png"), image_path("screenshots/ios-open-extension.png") %>
         <%= link_to image_tag("screenshots/ios-click-extension.png"), image_path("screenshots/ios-click-extension.png"), class: "ml-3" %>
       </div>
     </li>
-    <li class="mb-3">
+    <li class="col mb-3">
       Check the boxes to review
       <div class="landing-list-screenshots">
         <%= link_to image_tag("screenshots/ios-extension-review.png"), image_path("screenshots/ios-extension-review.png") %>
