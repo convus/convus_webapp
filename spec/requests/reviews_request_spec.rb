@@ -188,9 +188,10 @@ RSpec.describe base_url, type: :request do
           let(:approved) { false }
           before { expect(review).to be_present }
           it "renders with no reviews" do
-            expect(user_following.reload.approved).to be_falsey
             expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
             expect(current_user.followings_approved.pluck(:id)).to eq([])
+            expect(user_subject.follower_approved?(current_user)).to be_falsey
+            expect(current_user.following_reviews_visible.pluck(:id)).to eq([])
             get "#{base_url}?user=following"
             expect(response.code).to eq "200"
             expect(response).to render_template("reviews/index")
@@ -201,9 +202,10 @@ RSpec.describe base_url, type: :request do
           context "approved" do
             let(:approved) { true }
             it "renders review" do
-              expect(user_following.reload.approved).to be_truthy
               expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
               expect(current_user.followings_approved.pluck(:id)).to eq([user_subject.id])
+              expect(user_subject.follower_approved?(current_user)).to be_truthy
+              expect(current_user.following_reviews_visible.pluck(:id)).to eq([review.id])
               get "#{base_url}?user=following"
               expect(response.code).to eq "200"
               expect(response).to render_template("reviews/index")

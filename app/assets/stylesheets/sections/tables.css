@@ -31,11 +31,11 @@
 }
 
 .full-screen-table-overflown {
-  @apply overflow-x-scroll -mx-container-pad;
+  @apply overflow-x-scroll -mx-container-pad px-0;
 }
 
 .full-screen-table {
-  @apply px-container-pad max-lg:-mx-container-pad px-0;
+  @apply px-container-pad max-lg:-mx-container-pad px-0 lg:px-container-pad;
 }
 
 .sortable .sortable-link {

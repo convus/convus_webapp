@@ -3,12 +3,12 @@
   @apply mx-auto py-2 w-full;
 }
 
-.full-width-container {
+.large-width-container {
   @apply max-w-main-content;
 }
 
-.full-width-padded-container {
-  @apply padded-container full-width-container max-lg:px-container-pad;
+.large-width-padded-container {
+  @apply padded-container large-width-container max-lg:px-container-pad;
 }
 
 .small-width-container {

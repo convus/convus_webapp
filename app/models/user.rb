@@ -110,10 +110,12 @@ class User < ApplicationRecord
     self.username = username&.strip
     self.username_slug = Slugifyer.slugify(username)
     self.total_kudos ||= 0
+    @should_update_followers = account_private_changed?
   end
 
   def update_followers
-    return true if account_private
+    return true unless @should_update_followers
+    # Inefficient, but solves the problem
     user_followers.unapproved.each { |f| f.update(updated_at: Time.current) }
   end
 

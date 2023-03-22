@@ -52,6 +52,16 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(review_display_name(Review.new)).to eq target
     end
     context "with review" do
+      let(:target) { "<a title=\"#{citation.pretty_url}\" href=\"#{review.submitted_url}\">texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as...</a>" }
+      let(:citation) { review.citation }
+      let(:review) { FactoryBot.create(:review, submitted_url: "https://www.texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as%20sent%20(02539672xD2C78)%20(002).pdf") }
+      it "returns target" do
+        expect(citation).to be_valid
+        expect(citation.title).to be_blank
+        expect(review_display_name(review)).to eq target
+      end
+    end
+    context "with review with title" do
       let(:target) { "<a href=\"https://example.com\">Somewhere</a>" }
       let(:review) { Review.new(submitted_url: "https://example.com", citation_title: "Somewhere") }
       it "returns target" do

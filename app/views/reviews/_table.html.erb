@@ -4,7 +4,7 @@
 <% render_user ||= false %>
 <% hide_private_users ||= false %>
 <div class="full-screen-table">
-  <table class="table table-sm">
+  <table class="table table-sm break-words">
     <thead class="sortable">
       <tr>
         <th>
@@ -58,7 +58,7 @@
                 <% end %>
               </small>
             <% end %>
-            <span class="block md:hidden mt-1"><%= review_display_name(review) %></span>
+            <span class="block md:hidden mt-1 max-w-md"><%= review_display_name(review) %></span>
             <!-- <span class="block md:hidden text-sm"><%= review.topics.join(", ") %></span> -->
           </td>
           <% if render_user %>
@@ -72,7 +72,7 @@
               </small>
             </td>
           <% end %>
-          <td class="hidden md:table-cell">
+          <td class="hidden md:table-cell max-w-lg lg:max-w-xl">
             <%= review_display_name(review) %>
           </td>
           <!-- <td class="hidden md:table-cell">
