@@ -1,5 +1,10 @@
 require "rails_helper"
 
 RSpec.describe ReviewTopic, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe "factory" do
+    let(:review_topic) { FactoryBot.create(:review_topic) }
+    it "is valid" do
+      expect(review_topic).to be_valid
+    end
+  end
 end
