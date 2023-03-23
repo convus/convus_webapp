@@ -1,10 +1,9 @@
 class ReconcileReviewTopicsJob < ApplicationJob
   # Enable passing in object, it's run inline sometimes
-  def perform(id = nil)
+  def perform(id = nil, review = nil)
     review ||= Review.find_by_id(id)
     return if review.blank?
-    topics_text = (review.topics_text || "").split("\n").reject(&:blank?)
-    topics = topics_text.map { |t| Topic.find_or_create_for_name(t) }
+    topics = review.topic_names.map { |t| Topic.find_or_create_for_name(t) }
     topic_ids = topics.map(&:id)
     review.review_topics.where.not(topic_id: topic_ids).destroy_all
     (topic_ids - review.review_topics.pluck(:topic_id)).each do |i|

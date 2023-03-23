@@ -28,6 +28,12 @@ class Admin::TopicInvestigationsController < Admin::BaseController
   end
 
   def update
+    if @topic_investigation.update(permitted_params)
+      flash[:success] = "Investigation updated"
+      redirect_to admin_topic_investigations_path, status: :see_other
+    else
+      render :edit, status: :see_other
+    end
   end
 
   def destroy

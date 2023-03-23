@@ -15,6 +15,7 @@ class User < ApplicationRecord
   has_many :followers, through: :user_followers, source: :user
   has_many :user_followers_approved, -> { approved }, class_name: "UserFollowing", foreign_key: :following_id, dependent: :destroy
   has_many :followers_approved, through: :user_followers_approved, source: :user
+  has_many :topic_investigation_votes
 
   enum role: ROLE_ENUM
 

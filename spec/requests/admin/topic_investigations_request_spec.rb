@@ -64,7 +64,6 @@ RSpec.describe base_url, type: :request do
 
     describe "create" do
       it "creates" do
-        pp form_formatted(start_at)
         expect {
           post base_url, params: {topic_investigation: valid_params}
         }.to change(TopicInvestigation, :count).by 1
@@ -88,7 +87,14 @@ RSpec.describe base_url, type: :request do
     end
 
     describe "update" do
-      it "updates"
+      it "updates" do
+        expect(topic_investigation).to be_valid
+        expect(topic_investigation.status).to eq "pending"
+        patch "#{base_url}/#{topic_investigation.id}", params: {topic_investigation: valid_params}
+        expect(flash[:success]).to be_present
+        expect(topic_investigation.reload.topic_name).to eq "Example topic"
+        expect(topic_investigation.status).to eq "active"
+      end
     end
 
     describe "destroy" do

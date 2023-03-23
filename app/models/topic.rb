@@ -4,6 +4,7 @@ class Topic < ApplicationRecord
   has_many :citation_topics
   has_many :citations, through: :citation_topics
   has_many :topic_investigations
+  has_many :topic_investigation_votes, through: :topic_investigations
 
   validates_uniqueness_of :name, case_sensitive: false
   validate :slug_uniq_if_name_uniq

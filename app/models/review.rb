@@ -78,7 +78,7 @@ class Review < ApplicationRecord
       error_quotes.blank?
   end
 
-  # HACK! reconcilliation makes the topics match, skip loading
+  # reconcilliation makes the topics match, skip loading
   def topic_names
     return [] unless topics_text.present?
     topics_text.strip.split("\n").reject(&:blank?)
@@ -108,6 +108,16 @@ class Review < ApplicationRecord
 
   def account_private?
     !account_public?
+  end
+
+  def default_score
+    if quality_high?
+      1000
+    elsif quality_low?
+      -1000
+    else
+      0
+    end
   end
 
   def associate_citation
