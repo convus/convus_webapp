@@ -15,7 +15,7 @@ RSpec.describe TopicInvestigationVote, type: :model do
   end
 
   describe "skip_calculated_listing_order" do
-    let(:topic_investigation_vote) { FactoryBot.create(:topic_investigation_vote, listing_order: 5, skip_calculated_listing_order: true)}
+    let(:topic_investigation_vote) { FactoryBot.create(:topic_investigation_vote, listing_order: 5, skip_calculated_listing_order: true) }
     it "assigns without calculate" do
       expect(topic_investigation_vote.reload.listing_order).to eq 5
     end
