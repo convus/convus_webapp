@@ -16,7 +16,7 @@ RSpec.describe base_url, type: :request do
 
   def form_formatted(time)
     return "" if time.blank?
-    time.strftime('%Y-%m-%dT%H:%M')
+    time.strftime("%Y-%m-%dT%H:%M")
   end
 
   describe "index" do

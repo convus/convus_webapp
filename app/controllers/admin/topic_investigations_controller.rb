@@ -20,7 +20,7 @@ class Admin::TopicInvestigationsController < Admin::BaseController
       flash[:success] = "Investigation created"
       redirect_to admin_topic_investigations_path, status: :see_other
     else
-      render :new
+      render :new, status: :see_other
     end
   end
 

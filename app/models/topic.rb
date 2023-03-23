@@ -41,14 +41,18 @@ class Topic < ApplicationRecord
     arr.map { |s| friendly_find(s) }.compact
   end
 
-  def active
+  def active?
     !orphaned
   end
 
   def set_calculated_attributes
     self.orphaned = calculated_orphaned?
     self.name = name&.strip
+    old_slug = slug
     self.slug = Slugifyer.slugify(name)
+    if old_slug.present? && old_slug != slug
+      self.previous_slug = old_slug
+    end
   end
 
   def slug_uniq_if_name_uniq
@@ -66,7 +70,7 @@ class Topic < ApplicationRecord
   end
 
   def update_associations
-    topic_investigations.each { |ti| ti.update(updated_at: Time.current)}
+    topic_investigations.each { |ti| ti.update(updated_at: Time.current) }
   end
 
   private

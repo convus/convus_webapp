@@ -93,4 +93,22 @@ RSpec.describe Topic, type: :model do
       # expect(Review.matching_topics([topic_id])).to eq([review.id])
     end
   end
+
+  describe "previous_slug" do
+    let(:topic) { FactoryBot.create(:topic, name: "Dog Life") }
+    it "doesn't set previous_slug" do
+      expect(topic.reload.slug).to eq "dog-life"
+      expect(topic.previous_slug).to be_nil
+      topic.update(name: "DOG life")
+      expect(topic.reload.slug).to eq "dog-life"
+      expect(topic.previous_slug).to be_nil
+    end
+    context "slug changes" do
+      it "sets previous_slug" do
+        topic.update(name: "DOG lyfe")
+        expect(topic.reload.slug).to eq "dog-lyfe"
+        expect(topic.previous_slug).to eq "dog-life"
+      end
+    end
+  end
 end

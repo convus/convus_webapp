@@ -39,7 +39,7 @@ RSpec.describe base_url, type: :request do
 
     describe "edit" do
       it "renders" do
-        get "#{base_url}/#{topic.id}"
+        get "#{base_url}/#{topic.id}/edit"
         expect(response.code).to eq "200"
         expect(response).to render_template("admin/topics/edit")
       end
@@ -48,9 +48,11 @@ RSpec.describe base_url, type: :request do
     describe "update" do
       let(:valid_params) { {name: "new name"} }
       it "updates" do
-        patch "#{base_url}/#{topic.id}", params: { topic: valid_params}
+        og_name = topic.name
+        patch "#{base_url}/#{topic.id}", params: {topic: valid_params}
         expect(flash[:success]).to be_present
         expect(topic.reload.name).to eq "new name"
+        expect(topic.previous_name).to eq og_name
       end
     end
   end
