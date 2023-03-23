@@ -78,6 +78,12 @@ RSpec.describe ReconcileReviewTopicsJob, type: :job do
         expect(topic_investigation_vote.review_id).to eq review.id
         expect(topic_investigation_vote.topic.id).to eq topic.id
         expect(topic_investigation_vote.listing_order).to eq 1
+        review.update(topics_text: "not the same topic")
+        instance.perform(review.id)
+        review.reload
+        expect(review.topics.count).to eq 1
+        expect(review.topic_names).to eq(["not the same topic"])
+        expect(TopicInvestigationVote.pluck(:id)).to eq([])
       end
       context "inactive" do
         let(:topic_investigation) { FactoryBot.create(:topic_investigation, topic: topic) }
@@ -88,6 +94,11 @@ RSpec.describe ReconcileReviewTopicsJob, type: :job do
           instance.perform(review.id)
           expect(TopicInvestigationVote.count).to eq 0
           expect(review.reload.topics.pluck(:id)).to eq([topic.id])
+          topic_investigation_vote = FactoryBot.create(:topic_investigation_vote, topic: topic, review: review)
+          tiv_id = topic_investigation_vote.id
+          instance.perform(review.id)
+          expect(TopicInvestigationVote.pluck(:id)).to eq([tiv_id])
+          expect(topic_investigation.topic_investigation_votes.pluck(:id)).to eq([tiv_id])
         end
       end
     end
