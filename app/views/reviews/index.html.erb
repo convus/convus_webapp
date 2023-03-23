@@ -5,7 +5,7 @@
     <% unless search_params_present %>
       <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true, only_render_name: search_params_present} %>
     <% end %>
-    <div class="mb-6">
+    <div class="mb-4">
       <h1>Reviews by <%= user_subject.username %></h1>
       <% if @reviews_private %>
         <h2 class="mt-4">
@@ -39,7 +39,7 @@
   <% else %>
     <div class="large-width-padded-container">
       <% if viewing_display_name == "recent" %>
-        <p class="less-strong mb-2"><em>See reviews by <%= link_to "people you're following", reviews_path(user: "following") %></em></p>
+        <p class="less-strong mb-4"><em>See reviews by <%= link_to "people you're following", reviews_path(user: "following") %></em></p>
       <% end %>
       <%= render partial: "/shared/current_header", locals: {viewing: "Reviews", collection: @reviews} %>
     </div>
