@@ -22,37 +22,49 @@
   <body>
     <% if render_navbar? %>
       <nav class="large-width-padded-container flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4">
-        <% root_active = controller_name == "landing" && action_name == "index" %>
-        <%= link_to user_root_url, class: "main-nav-root-link #{root_active ? 'active' : ''}" do %>
-          <%= image_tag("icon.png", alt: "Convus Logo") %>
-          <span class="">Convus</span>
-        <% end %>
-        <% reviews_active = controller_name == "reviews" && viewing_display_name == "recent" %>
-        <%= link_to "reviews", reviews_path, class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
-        <% if current_user.present? %>
-          <% user_active = controller_name == "reviews" && user_subject&.id == current_user.id %>
-          <%= link_to current_user.username, reviews_path(user: current_user.to_param), class: "main-nav-link ml-auto #{user_active ? 'active' : ''}" %>
-          <span class="ml-1 mr-1 text-gray-400">|</span>
-          <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "main-nav-link"  %>
+        <% if in_admin? %>
+          <%= link_to admin_root_url, class: "main-nav-root-link" do %>
+            <%= image_tag("icon.png", alt: "Convus Logo") %>
+            <span class="">admin</span>
+          <% end %>
+          <%= active_link "users", admin_users_path, class: "main-nav-root-link ml-2" %>
+          <%= active_link "topics", admin_topics_path, class: "main-nav-root-link ml-2" %>
+          <%= link_to "exit admin", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
-          <%= link_to "login", new_user_session_path, class: "main-nav-link ml-auto" %>
+          <% root_active = controller_name == "landing" && action_name == "index" %>
+          <%= link_to user_root_url, class: "main-nav-root-link #{root_active ? 'active' : ''}" do %>
+            <%= image_tag("icon.png", alt: "Convus Logo") %>
+            <span class="">Convus</span>
+          <% end %>
+          <% reviews_active = controller_name == "reviews" && viewing_display_name == "recent" %>
+          <%= link_to "reviews", reviews_path, class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
+          <% if current_user&.admin? %>
+            <%= active_link "admin", admin_root_path, class: "main-nav-link ml-3 less-strong" %>
+          <% end %>
+          <% if current_user.present? %>
+            <% user_active = controller_name == "reviews" && user_subject&.id == current_user.id %>
+            <%= link_to current_user.username, reviews_path(user: current_user.to_param), class: "main-nav-link ml-auto #{user_active ? 'active' : ''}" %>
+            <span class="ml-1 mr-1 text-gray-400">|</span>
+            <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "main-nav-link"  %>
+          <% else %>
+            <%= link_to "login", new_user_session_path, class: "main-nav-link ml-auto" %>
+          <% end %>
         <% end %>
-      </div>
-    </nav>
-  <% end %>
-  <div class="<%= content_for(:main_wrapper_class) || 'large-width-padded-container' %>">
-    <%= render "shared/flash_messages" %>
-    <%= yield %>
-  </div>
-  <% if !Rails.env.development? %>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z16M1CGWN8"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      </nav>
+    <% end %>
+    <div class="<%= content_for(:main_wrapper_class) || 'large-width-padded-container' %>">
+      <%= render "shared/flash_messages" %>
+      <%= yield %>
+    </div>
+    <% if !Rails.env.development? %>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z16M1CGWN8"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-      gtag('config', 'G-Z16M1CGWN8');
-    </script>
-  <% end %>
-</body>
+        gtag('config', 'G-Z16M1CGWN8');
+      </script>
+    <% end %>
+  </body>
 </html>

@@ -68,10 +68,59 @@ RSpec.describe base_url, type: :request do
         review = Review.last
         expect(review.user_id).to eq current_user.id
         expect_attrs_to_match_hash(review, review_params)
+        expect(review.default_attrs?).to be_falsey
         expect(review.citation).to be_present
         citation = review.citation
         expect(citation.url).to eq "http://example.com"
         expect(citation.title).to eq "something"
+      end
+      context "default_attrs" do
+        let(:review_params) do
+          {
+            submitted_url: "http://example.com",
+            agreement: "neutral",
+            quality: "quality_med",
+            citation_title: "OG title",
+            changed_my_opinion: "0",
+            significant_factual_error: "0",
+            error_quotes: "",
+            topics_text: "",
+            source: "chrome_extension",
+            learned_something: "0",
+            did_not_understand: "0",
+            timezone: "Europe/Kyiv"
+          }
+        end
+        it "returns 200" do
+          expect(Review.count).to eq 0
+          # NOTE: no review key
+          post base_url, params: review_params.to_json, headers: json_headers.merge(
+            "HTTP_ORIGIN" => "*",
+            "Authorization" => "Bearer #{current_user.api_token}"
+          )
+          expect(response.code).to eq "200"
+
+          expect_hashes_to_match(json_result, target_response)
+          expect(response.headers["access-control-allow-origin"]).to eq("*")
+          expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
+          expect(Review.count).to eq 1
+          review = Review.last
+          expect(review.user_id).to eq current_user.id
+          expect_attrs_to_match_hash(review, review_params)
+          expect(review.default_attrs?).to be_truthy
+          expect(review.citation).to be_present
+          citation = review.citation
+          expect(citation.url).to eq "http://example.com"
+          expect(citation.title).to eq "OG title"
+          # posting again updates
+          post base_url, params: review_params.merge(citation_title: "new title").to_json, headers: json_headers.merge(
+            "HTTP_ORIGIN" => "*",
+            "Authorization" => "Bearer #{current_user.api_token}"
+          )
+          expect(Review.count).to eq 1
+          review.reload
+          expect(review.citation_title).to eq "new title"
+        end
       end
     end
     context "with invalid user in params" do

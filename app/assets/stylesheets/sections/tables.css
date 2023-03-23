@@ -47,7 +47,7 @@
 }
 
 .full-screen-table {
-  @apply px-container-pad max-lg:-mx-container-pad px-0 lg:px-container-pad;
+  @apply px-container-pad max-lg:-mx-container-pad px-0; /* lg:px-container-pad;*/
 }
 
 .sortable .sortable-link {

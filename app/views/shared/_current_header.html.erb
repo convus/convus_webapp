@@ -1,0 +1,18 @@
+<%# NOTE: when you add new search_ params here, also add it to hidden_search_fields %>
+<% viewing ||= controller_name.humanize %>
+<% current_header_keys = %w[search_topics] %>
+<% header_present ||= (current_header_keys & params.keys).any? %>
+<% if header_present %>
+  <div>
+    <% if current_topics.present? %>
+      <p class="mb-2">
+        <%= viewing %> for
+        <strong><%= current_topics.map(&:name).to_sentence %></strong>
+        <small class="less-strong">
+          <%= viewing %> for
+          <%= link_to "all topics", url_for(sortable_search_params.merge(search_topics: nil)) %>
+        </small>
+      </p>
+    <% end %>
+  </div>
+<% end %>

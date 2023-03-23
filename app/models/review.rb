@@ -21,16 +21,20 @@ class Review < ApplicationRecord
 
   has_many :events, as: :target
   has_many :kudos_events, through: :events
+  has_many :review_topics
+  has_many :topics, through: :review_topics
 
   validates_presence_of :user_id
+  validates_uniqueness_of :citation_id, scope: [:user_id]
   validate :not_error_url
 
   before_validation :set_calculated_attributes
   before_save :associate_citation
 
   after_commit :perform_review_created_event_job, only: :create
+  after_commit :reconcile_review_topics
 
-  attr_accessor :skip_review_created_event
+  attr_accessor :skip_review_created_event, :skip_topics_job
 
   def self.quality_humanized(str)
     return nil if str.blank?
@@ -41,11 +45,41 @@ class Review < ApplicationRecord
     end
   end
 
+  def self.find_or_build_for(attrs)
+    citation = Citation.find_or_create_for_url(attrs[:submitted_url], attrs[:citation_title])
+    review = where(user_id: attrs[:user_id], citation_id: citation.id).first || Review.new
+    review.attributes = attrs
+    review
+  end
+
+  def self.matching_topics(topic_ids)
+    joins(:review_topics).where(review_topics: {topic_id: Array(topic_ids)})
+  end
+
   def edit_title?
     true # TODO: hide if this was automatically collected?
   end
 
-  def topics
+  # Temporary method to make it easier to delete dupes
+  def duplicate?
+    duplicate_reviews = Review.where(citation_id: citation_id).where(user_id: user_id)
+      .where.not(id: id)
+    return false if duplicate_reviews.none?
+    non_default = duplicate_reviews.select { |r| !r.default_attrs? }
+    return true if default_attrs? && non_default.any?
+    return true if non_default.any? { |r| r.id > id }
+    return false if !default_attrs?
+    duplicate_reviews.any? { |r| r.id > id }
+  end
+
+  def default_attrs?
+    quality_med? && neutral? && topics_text.blank? && !changed_my_opinion &&
+      !learned_something && !did_not_understand && !significant_factual_error &&
+      error_quotes.blank?
+  end
+
+  # HACK! reconcilliation makes the topics match, skip loading
+  def topic_names
     return [] unless topics_text.present?
     topics_text.strip.split("\n").reject(&:blank?)
   end
@@ -84,10 +118,17 @@ class Review < ApplicationRecord
   def set_calculated_attributes
     self.timezone = nil if timezone.blank?
     self.created_date ||= self.class.date_in_timezone(created_at, timezone)
+    self.topics_text = nil if topics_text.blank?
+    self.error_quotes = nil if error_quotes.blank?
   end
 
   def perform_review_created_event_job
     return if !persisted? || skip_review_created_event
     ReviewCreatedEventJob.perform_async(id)
+  end
+
+  def reconcile_review_topics
+    return if !persisted? || skip_topics_job
+    ReconcileReviewTopicsJob.perform_async(id)
   end
 end

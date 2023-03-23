@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+TranzitoUtils::DEFAULT[:application_display_name] = "Convus"
+
 # For TranzitoUtils::SetPeriod
 # You can update the time for earliest period for SetPeriod concern
 # TranzitoUtils::DEFAULT[:earliest_period_time] = Time.at(1637388000)

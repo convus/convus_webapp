@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_20_170314) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_22_202406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "citation_topics", force: :cascade do |t|
+    t.bigint "citation_id"
+    t.bigint "topic_id"
+    t.boolean "orphaned", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["citation_id"], name: "index_citation_topics_on_citation_id"
+    t.index ["topic_id"], name: "index_citation_topics_on_topic_id"
+  end
 
   create_table "citations", force: :cascade do |t|
     t.text "url"
@@ -57,6 +67,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_170314) do
     t.index ["user_id"], name: "index_kudos_events_on_user_id"
   end
 
+  create_table "review_topics", force: :cascade do |t|
+    t.bigint "review_id"
+    t.bigint "topic_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["review_id"], name: "index_review_topics_on_review_id"
+    t.index ["topic_id"], name: "index_review_topics_on_topic_id"
+  end
+
   create_table "reviews", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "citation_id"
@@ -77,6 +96,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_170314) do
     t.boolean "did_not_understand", default: false
     t.index ["citation_id"], name: "index_reviews_on_citation_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
+  create_table "topics", force: :cascade do |t|
+    t.string "name"
+    t.string "slug"
+    t.boolean "orphaned", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "user_followings", force: :cascade do |t|
