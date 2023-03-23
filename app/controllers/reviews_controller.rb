@@ -6,19 +6,18 @@ class ReviewsController < ApplicationController
   helper_method :viewing_display_name
 
   def index
-    if viewing_display_name == "following"
-      if current_user.blank?
-        redirect_to_signup_unless_user_present!
-        return
-      end
-    elsif user_subject.blank?
-
+    if viewing_display_name == "following" && current_user.blank?
+      redirect_to_signup_unless_user_present!
+      return
     end
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
     @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
       .includes(:citation, :user).page(page).per(@per_page)
-    @page_title = "#{viewing_display_name} - reviews - Convus"
+    if params[:search_assign_topic].present?
+      @assign_topic = Topic.friendly_find(params[:search_assign_topic])
+    end
+    @page_title = "#{viewing_display_name.titleize} - Convus"
   end
 
   def new
@@ -64,6 +63,34 @@ class ReviewsController < ApplicationController
     else
       render :edit
     end
+  end
+
+  def add_topic
+    included_review_ids = params[:included_reviews].split(",").map(&:to_i)
+    @assign_topic = Topic.friendly_find(params[:search_assign_topic])
+    if @assign_topic.blank?
+      flash[:error] = "Unable to find topic: '#{params[:search_assign_topic]}'"
+    else
+      reviews_updated = 0
+      included_reviews = current_user.reviews.where(id: included_review_ids)
+      reviews_with_topic = ReviewTopic.where(topic_id: @assign_topic.id, review_id: included_reviews)
+      # These are the reviews to add topic to
+      included_reviews.where(id: review_ids_selected - reviews_with_topic.pluck(:review_id)).each do |review|
+        reviews_updated += 1
+        review.add_topic(@assign_topic)
+      end
+      reviews_with_topic.where.not(review_id: review_ids_selected).each do |review_topic|
+        reviews_updated += 1
+        review_topic.review.remove_topic(@assign_topic)
+      end
+      # included_reviews
+      if reviews_updated > 0
+        flash[:success] = "Added #{@assign}"
+      else
+        flash[:notice] = "No reviews were updated"
+      end
+    end
+    redirect_back(fallback_location: reviews_path(user: current_user), status: :see_other)
   end
 
   def destroy
@@ -148,5 +175,12 @@ class ReviewsController < ApplicationController
       flash[:error] = "Unable to find that review"
       redirect_to(user_root_url) && return
     end
+  end
+
+  def review_ids_selected
+    params.keys.map do |k|
+      next unless k.match?(/review_id_\d/)
+      k.gsub("review_id_", "")
+    end.compact.map(&:to_i)
   end
 end

@@ -35,7 +35,7 @@ RSpec.describe ReconcileReviewTopicsJob, type: :job do
       expect(review.topics.pluck(:id)).to eq([])
     end
     context "multiple topics" do
-      let(:topics_text) { "Third Topic\nFirst topic\n\n Second topic" }
+      let(:topics_text) { "Third Topic\nFirst topic\n\n Second topic\nFirst topic" }
       it "creates them all and orders alphabetically" do
         expect(Topic.count).to eq 0
         expect(review).to be_valid

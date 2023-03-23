@@ -19,4 +19,8 @@
 
 .flash-alerts {
   @apply w-full mb-4 -mt-3;
+  /* Constraining the max size to prevent full page alerts when there is no container (e.g. reviews#index) */
+  & .alert {
+    @apply max-w-lg mx-auto;
+  }
 }

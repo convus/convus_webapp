@@ -54,7 +54,7 @@
       </nav>
     <% end %>
     <div class="<%= content_for(:main_wrapper_class) || 'large-width-padded-container' %>">
-      <%= render "shared/flash_messages" %>
+      <%= render partial: "shared/flash_messages" %>
       <%= yield %>
     </div>
     <% if !Rails.env.development? %>

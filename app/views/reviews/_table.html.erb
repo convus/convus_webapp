@@ -3,10 +3,12 @@
 <% edit_reviews ||= false %>
 <% render_user ||= false %>
 <% hide_private_users ||= false %>
+<% render_assign_topic ||= false %>
 <div class="full-screen-table full-screen-table-auto-width">
   <table class="table table-sm break-words">
     <thead class="sortable">
       <tr>
+        <% if render_assign_topic %><th><%= check_mark %></th><% end %>
         <th>
           <%= sortable "created_at", "Reviewed At", skip_sortable: skip_sortable %>
         </th>
@@ -46,6 +48,9 @@
       <% @reviews.each do |review| %>
         <% private_user = render_user && hide_private_users && review.account_private? %>
         <tr>
+          <% if render_assign_topic %>
+            <td><%= check_box_tag "review_id_#{review.id}", true, review.has_topic?(@assign_topic) %></td>
+          <% end %>
           <td>
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= review.id %></code><% end %>
             <small class="convertTime"><%= l(review.created_at, format: :convert_time) %></small>

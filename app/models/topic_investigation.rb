@@ -15,6 +15,11 @@ class TopicInvestigation < ApplicationRecord
 
   attr_accessor :timezone
 
+  # Make it so that there is a single investigation, for convenience
+  def self.primary
+    active.first || pending.first
+  end
+
   def start_at_in_zone=(val)
     self.start_at = TranzitoUtils::TimeParser.parse(val, timezone)
   end

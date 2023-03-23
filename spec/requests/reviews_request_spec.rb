@@ -161,6 +161,7 @@ RSpec.describe base_url, type: :request do
       end
       context "current_user is user_subject" do
         let(:current_user) { user_subject }
+        let!(:topic) { FactoryBot.create(:topic) }
         it "shows reviews" do
           expect(user_subject.reload.reviews_public).to be_falsey
           get "#{base_url}?user=cO0l-name"
@@ -169,6 +170,12 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:reviews_private)).to be_truthy
           expect(assigns(:can_view_reviews)).to be_truthy
           expect(assigns(:reviews)&.pluck(:id)).to eq([review.id])
+          expect(assigns(:assign_topic)).to be_nil
+
+          get "#{base_url}?user=cO0l-name&search_assign_topic=#{topic.slug}"
+          expect(assigns(:current_user)&.id).to eq user_subject.id
+          expect(response).to render_template("reviews/index")
+          expect(assigns(:assign_topic)&.id).to eq topic.id
         end
       end
       context "following" do
@@ -394,6 +401,34 @@ RSpec.describe base_url, type: :request do
           }.to raise_error(/csrf/i)
           expect(review.reload.submitted_url).to_not eq full_params[:submitted_url]
         end
+      end
+    end
+
+    describe "add_topic" do
+      let!(:topic) { FactoryBot.create(:topic) }
+      let!(:review1) { FactoryBot.create(:review, user: current_user) }
+      let!(:review2) { FactoryBot.create(:review_with_topic, user: current_user, topics_text: topic.name) }
+      let!(:review3) { FactoryBot.create(:review_with_topic, user: current_user, topics_text: topic.name) }
+      let!(:review_other) { FactoryBot.create(:review) }
+      it "adds the topic" do
+        expect(ReviewTopic.count).to eq 2
+        expect(review2.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(review3.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(review_other.user_id).to_not eq current_user.id
+        Sidekiq::Worker.clear_all
+        post "#{base_url}/add_topic", params: {
+          included_reviews: "#{review1.id},#{review2.id},#{review3.id}",
+          "review_id_#{review1.id}" => "1",
+          "review_id_#{review2.id}" => true,
+          search_assign_topic: topic.name
+        }
+        expect(flash[:success]).to be_present
+        expect(ReconcileReviewTopicsJob.jobs.count).to be > 1
+        ReconcileReviewTopicsJob.drain
+        expect(ReviewTopic.count).to eq 2
+        expect(review1.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(review2.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(review3.reload.topics.pluck(:id)).to eq([])
       end
     end
 

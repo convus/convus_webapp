@@ -63,6 +63,27 @@ RSpec.describe Review, type: :model do
     end
   end
 
+  describe "add_topic" do
+    let(:review) { FactoryBot.create(:review) }
+    it "adds" do
+      review.add_topic("new topic")
+      expect(review.reload.topics_text).to eq "new topic"
+      review.add_topic("new topic")
+      expect(review.reload.topics_text).to eq "new topic\nnew topic"
+      expect(ReconcileReviewTopicsJob.jobs.count).to be > 0
+      ReconcileReviewTopicsJob.new.perform(review.id)
+      expect(review.reload.topics_text).to eq "new topic"
+    end
+  end
+
+  describe "remove_topic" do
+    let(:review)  { FactoryBot.create(:review, topics_text: "one topic\nsecond topic\npone topic") }
+    it "removes" do
+      review.remove_topic("one TOPIC")
+      expect(review.reload.topics_text).to eq "second topic\npone topic"
+    end
+  end
+
   describe "display_name" do
     let(:review) { Review.new }
     it "is missing url" do

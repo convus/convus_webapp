@@ -79,7 +79,32 @@ class Review < ApplicationRecord
       error_quotes.blank?
   end
 
-  # reconcilliation makes the topics match, skip loading
+  # HACK HACK HACK - improve
+  def has_topic?(topic_or_id)
+    return false if topics_text.blank?
+    if topic_or_id.is_a?(Topic)
+      topics_text.match?(topic_or_id.name)
+    else
+      topics.where(id: topic_or_id).limit(1).pluck(:id).present?
+    end
+  end
+
+  def add_topic(val)
+    t_name = val.is_a?(Topic) ? val.name : val
+    self.update(topics_text: (topic_names + [t_name]).join("\n"))
+  end
+
+  def remove_topic(val)
+    target_slug = if val.is_a?(Topic)
+      val.slug
+    else
+      Slugifyer.slugify(val)
+    end
+    new_topics = topic_names.reject { |t| Slugifyer.slugify(t) == target_slug }
+    self.update(topics_text: new_topics.join("\n"))
+  end
+
+  # reconciliation makes the topics match, skip loading
   def topic_names
     return [] unless topics_text.present?
     topics_text.strip.split("\n").reject(&:blank?)
@@ -115,7 +140,7 @@ class Review < ApplicationRecord
     if quality_high?
       1000
     elsif quality_low?
-      # -1000
+      -1000
     else
       0
     end
