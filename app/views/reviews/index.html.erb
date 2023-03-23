@@ -22,10 +22,9 @@
   <% elsif viewing_display_name == "following" %>
     <h1 class="mt-4 mb-4">Reviews by people you <%= link_to "follow", following_u_path(id: current_user.to_param) %></h1>
   <% else %>
-    <h1 class="mt-4 mb-4">
+    <h1 class="mt-4">
       Recent reviews
     </h1>
-    <p class="less-strong mb-4"><em>See reviews by <%= link_to "people you're following", reviews_path(user: "following") %></em></p>
   <% end %>
 </div>
 <% if @can_view_reviews %>
@@ -39,8 +38,12 @@
     </div>
   <% else %>
     <div class="large-width-padded-container">
+      <% if viewing_display_name == "recent" %>
+        <p class="less-strong mb-2"><em>See reviews by <%= link_to "people you're following", reviews_path(user: "following") %></em></p>
+      <% end %>
+      <%= render partial: "/shared/current_header", locals: {viewing: "Reviews"} %>
       <%#= render partial: "/shared/period_select", locals: {total_count: @reviews.total_count} %>
-      <div class="row">
+      <div class="row mt-4">
         <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review"} %>
       </div>
     </div>

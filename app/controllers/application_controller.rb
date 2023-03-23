@@ -12,7 +12,8 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :enable_rack_profiler
 
-  helper_method :display_dev_info?, :user_subject, :user_root_url, :controller_namespace
+  helper_method :display_dev_info?, :user_subject, :user_root_url, :controller_namespace,
+    :current_topics
 
   def append_info_to_payload(payload)
     super

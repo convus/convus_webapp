@@ -51,3 +51,5 @@
 .pagination-container .pagination-flex.justify-content-md-end {
   @apply min-w-full md:min-w-0 md:ml-auto;
 }
+
+.pagination-container .pagination-number { margin-top: 0.75rem; }
