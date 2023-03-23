@@ -77,7 +77,7 @@ RSpec.describe Review, type: :model do
   end
 
   describe "remove_topic" do
-    let(:review)  { FactoryBot.create(:review, topics_text: "one topic\nsecond topic\npone topic") }
+    let(:review) { FactoryBot.create(:review, topics_text: "one topic\nsecond topic\npone topic") }
     it "removes" do
       review.remove_topic("one TOPIC")
       expect(review.reload.topics_text).to eq "second topic\npone topic"

@@ -91,7 +91,7 @@ class Review < ApplicationRecord
 
   def add_topic(val)
     t_name = val.is_a?(Topic) ? val.name : val
-    self.update(topics_text: (topic_names + [t_name]).join("\n"))
+    update(topics_text: (topic_names + [t_name]).join("\n"))
   end
 
   def remove_topic(val)
@@ -101,7 +101,7 @@ class Review < ApplicationRecord
       Slugifyer.slugify(val)
     end
     new_topics = topic_names.reject { |t| Slugifyer.slugify(t) == target_slug }
-    self.update(topics_text: new_topics.join("\n"))
+    update(topics_text: new_topics.join("\n"))
   end
 
   # reconciliation makes the topics match, skip loading

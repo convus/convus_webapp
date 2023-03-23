@@ -8,7 +8,9 @@
   <table class="table table-sm break-words">
     <thead class="sortable">
       <tr>
-        <% if render_assign_topic %><th><%= check_mark %></th><% end %>
+        <% if render_assign_topic %>
+          <th><%= check_mark %></th>
+        <% end %>
         <th>
           <%= sortable "created_at", "Reviewed At", skip_sortable: skip_sortable %>
         </th>

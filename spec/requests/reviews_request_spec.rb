@@ -417,10 +417,10 @@ RSpec.describe base_url, type: :request do
         expect(review_other.user_id).to_not eq current_user.id
         Sidekiq::Worker.clear_all
         post "#{base_url}/add_topic", params: {
-          included_reviews: "#{review1.id},#{review2.id},#{review3.id}",
+          :included_reviews => "#{review1.id},#{review2.id},#{review3.id}",
           "review_id_#{review1.id}" => "1",
           "review_id_#{review2.id}" => true,
-          search_assign_topic: topic.name
+          :search_assign_topic => topic.name
         }
         expect(flash[:success]).to be_present
         expect(ReconcileReviewTopicsJob.jobs.count).to be > 1
