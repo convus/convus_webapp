@@ -5,6 +5,7 @@ class CreateTopicInvestigations < ActiveRecord::Migration[7.0]
       t.datetime :start_at
       t.datetime :end_at
       t.integer :status
+      t.string :topic_name
 
       t.timestamps
     end

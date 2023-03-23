@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_22_202406) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_23_003419) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -96,6 +96,31 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_202406) do
     t.boolean "did_not_understand", default: false
     t.index ["citation_id"], name: "index_reviews_on_citation_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
+  create_table "topic_investigation_votes", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "topic_investigation_id"
+    t.bigint "review_id"
+    t.boolean "manual_rank", default: false
+    t.integer "listing_order"
+    t.boolean "recommended", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["review_id"], name: "index_topic_investigation_votes_on_review_id"
+    t.index ["topic_investigation_id"], name: "index_topic_investigation_votes_on_topic_investigation_id"
+    t.index ["user_id"], name: "index_topic_investigation_votes_on_user_id"
+  end
+
+  create_table "topic_investigations", force: :cascade do |t|
+    t.bigint "topic_id"
+    t.datetime "start_at"
+    t.datetime "end_at"
+    t.integer "status"
+    t.string "topic_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["topic_id"], name: "index_topic_investigations_on_topic_id"
   end
 
   create_table "topics", force: :cascade do |t|

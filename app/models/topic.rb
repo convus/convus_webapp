@@ -3,11 +3,13 @@ class Topic < ApplicationRecord
   has_many :reviews, through: :review_topics
   has_many :citation_topics
   has_many :citations, through: :citation_topics
+  has_many :topic_investigations
 
   validates_uniqueness_of :name, case_sensitive: false
   validate :slug_uniq_if_name_uniq
 
   before_validation :set_calculated_attributes
+  after_commit :update_associations
 
   scope :name_ordered, -> { order(arel_table["name"].lower) }
   scope :active, -> { where(orphaned: false) }
@@ -61,6 +63,10 @@ class Topic < ApplicationRecord
     topics = id.present? ? Topic.where.not(id: id) : Topic
     return true if topics.where(slug: slug).none?
     errors.add(:name, "has already been taken")
+  end
+
+  def update_associations
+    topic_investigations.each { |ti| ti.update(updated_at: Time.current)}
   end
 
   private

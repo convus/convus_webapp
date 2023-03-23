@@ -5,7 +5,7 @@ class Admin::TopicsController < Admin::BaseController
   def index
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
-    @topics = searched_topics.reorder("topics.#{sort_column} #{sort_direction}")
+    @topics = searched_topics.reorder(order_scope_query)
       .includes(:review_topics).page(page).per(@per_page)
   end
 
@@ -13,6 +13,16 @@ class Admin::TopicsController < Admin::BaseController
 
   def sortable_columns
     %w[created_at updated_at name]
+  end
+
+  def order_scope_query
+    if sort_column == "name"
+      # IDK, send is scary, add protection
+      raise "Invalid sort_direction" unless %w[asc desc].include?(sort_direction)
+      Topic.arel_table["name"].lower.send(sort_direction)
+    else
+      "topics.#{sort_column} #{sort_direction}"
+    end
   end
 
   def searched_topics

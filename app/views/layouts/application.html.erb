@@ -27,9 +27,10 @@
             <%= image_tag("icon.png", alt: "Convus Logo") %>
             <span class="">admin</span>
           <% end %>
-          <%= active_link "users", admin_users_path, class: "main-nav-root-link ml-2" %>
-          <%= active_link "topics", admin_topics_path, class: "main-nav-root-link ml-2" %>
-          <%= link_to "exit admin", user_root_url, class: "main-nav-link ml-auto less-strong" %>
+          <%= active_link "users", admin_users_path, class: "main-nav-root-link ml-2", match_controller: true %>
+          <%= active_link "topics", admin_topics_path, class: "main-nav-root-link ml-2", match_controller: true %>
+          <%= active_link "investigations", admin_topic_investigations_path, class: "main-nav-root-link ml-2", match_controller: true %>
+          <%= link_to "exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
           <% root_active = controller_name == "landing" && action_name == "index" %>
           <%= link_to user_root_url, class: "main-nav-root-link #{root_active ? 'active' : ''}" do %>
