@@ -16,6 +16,8 @@ class Topic < ApplicationRecord
   scope :active, -> { where(orphaned: false) }
   scope :orphaned, -> { where(orphaned: true) }
 
+  attr_accessor :skip_update_associations
+
   def self.friendly_find(str)
     return nil if str.blank?
     if str.is_a?(Integer) || str.match?(/\A\d+\z/)
@@ -35,8 +37,8 @@ class Topic < ApplicationRecord
     find_by_slug(slug) || find_by_previous_slug(slug)
   end
 
-  def self.find_or_create_for_name(name)
-    friendly_find(name) || create(name: name)
+  def self.find_or_create_for_name(name, attrs = {})
+    friendly_find(name) || create(attrs.merge(name: name))
   end
 
   def self.friendly_find_all(arr)
@@ -72,7 +74,12 @@ class Topic < ApplicationRecord
   end
 
   def update_associations
+    return true if skip_update_associations
     topic_investigations.each { |ti| ti.update(updated_at: Time.current) }
+    enqueue_review_reconcilliation
+  end
+
+  def enqueue_review_reconcilliation
     reviews.pluck(:id).each { |i| ReconcileReviewTopicsJob.perform_async(i) }
   end
 

@@ -23,6 +23,7 @@ class Review < ApplicationRecord
   has_many :kudos_events, through: :events
   has_many :review_topics
   has_many :topics, through: :review_topics
+  has_many :topic_investigation_votes
 
   validates_presence_of :user_id
   validates_uniqueness_of :citation_id, scope: [:user_id]
@@ -114,7 +115,7 @@ class Review < ApplicationRecord
     if quality_high?
       1000
     elsif quality_low?
-      -1000
+      # -1000
     else
       0
     end

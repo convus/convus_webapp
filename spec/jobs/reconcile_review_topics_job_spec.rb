@@ -63,5 +63,33 @@ RSpec.describe ReconcileReviewTopicsJob, type: :job do
         expect(review.reload.topics_text).to eq "2nd topic\nFirst topic\nThird topic"
       end
     end
+    context "topic_investigation" do
+      let(:topic) { FactoryBot.create(:topic, name: "SOME COOL TOPIC") }
+      let(:topic_investigation) { FactoryBot.create(:topic_investigation_active, topic: topic) }
+      it "creates for the topic_investigation" do
+        expect(topic_investigation.status).to eq "active"
+        expect(review.reload.topics.pluck(:id)).to eq([])
+        expect(TopicInvestigationVote.count).to eq 0
+        instance.perform(review.id)
+        expect(TopicInvestigationVote.count).to eq 1
+        expect(review.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(review.topic_investigation_votes.count).to eq 1
+        topic_investigation_vote = TopicInvestigationVote.last
+        expect(topic_investigation_vote.review_id).to eq review.id
+        expect(topic_investigation_vote.topic.id).to eq topic.id
+        expect(topic_investigation_vote.listing_order).to eq 1
+      end
+      context "inactive" do
+        let(:topic_investigation) { FactoryBot.create(:topic_investigation, topic: topic) }
+        it "doesn't create" do
+          expect(topic_investigation.status).to eq "pending"
+          expect(review.reload.topics.pluck(:id)).to eq([])
+          expect(TopicInvestigationVote.count).to eq 0
+          instance.perform(review.id)
+          expect(TopicInvestigationVote.count).to eq 0
+          expect(review.reload.topics.pluck(:id)).to eq([topic.id])
+        end
+      end
+    end
   end
 end

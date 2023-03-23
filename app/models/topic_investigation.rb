@@ -9,6 +9,7 @@ class TopicInvestigation < ApplicationRecord
   validates_presence_of :topic_name
 
   before_validation :set_calculated_attributes
+  after_commit :update_associations
 
   scope :name_ordered, -> { order(arel_table["topic_name"].lower) }
 
@@ -32,7 +33,8 @@ class TopicInvestigation < ApplicationRecord
 
   def set_calculated_attributes
     if topic_name_changed?
-      self.topic = Topic.find_or_create_for_name(topic_name)
+      # Skip update, trigger it manually after commit
+      self.topic = Topic.find_or_create_for_name(topic_name, {skip_update_associations: true})
     end
     self.topic_name = topic&.name if topic.present?
     # Reverse the times if they should be reversed
@@ -52,5 +54,10 @@ class TopicInvestigation < ApplicationRecord
     else
       "ended"
     end
+  end
+
+  def update_associations
+    return true if !persisted?
+    topic&.enqueue_review_reconcilliation
   end
 end

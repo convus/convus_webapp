@@ -2,9 +2,6 @@ class TopicInvestigationVote < ApplicationRecord
   belongs_to :topic_investigation
   belongs_to :user
   belongs_to :review
-  # t.boolean :manual_rank, default: false
-  # t.integer :listing_order
-  # t.boolean :recommended, default: false
 
   validates_presence_of :review_id
   validates_presence_of :topic_investigation_id
@@ -37,8 +34,8 @@ class TopicInvestigationVote < ApplicationRecord
 
   def set_calculated_attributes
     self.user ||= review&.user
-    unless skip_calculated_listing_order
-      self.listing_order = calculated_listing_order if auto_rank?
+    if !skip_calculated_listing_order && auto_rank?
+      self.listing_order = calculated_listing_order
     end
     self.recommended = listing_order > 0
   end

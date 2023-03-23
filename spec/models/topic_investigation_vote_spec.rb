@@ -52,22 +52,33 @@ RSpec.describe TopicInvestigationVote, type: :model do
         expect(topic_investigation_vote2.prev_topic_user_reviews.pluck(:id)).to eq([review.id])
         expect(topic_investigation_vote2.calculated_listing_order).to eq 2
       end
-      # describe "review is high quality" do
-      #   let(:review) { FactoryBot.create(:review_with_topic, topics_text: topic.name, quality: "quality_high") }
-      #   it "they are in different powers" do
-      #     expect(review.default_score).to eq 1000
-      #     expect(topic_investigation_vote).to be_valid
-      #     expect(topic_investigation_vote2).to be_valid
-      #     expect(topic_investigation_vote2.review.default_score).to eq 0
-      #     expect(user.reload.topic_investigation_votes.order(:id).pluck(:id)).to eq vote_ids
-      #     expect(topic.reload.topic_investigation_votes.order(:id).pluck(:id)).to eq vote_ids
-      #     expect(topic_investigation_vote.reload.topic_user_reviews.order(:id).pluck(:id)).to eq review_ids
-      #     expect(topic_investigation_vote.calculated_listing_order).to eq 1001
-      #     expect(topic_investigation_vote2.reload.topic_user_reviews.order(:id).pluck(:id)).to eq review_ids
-      #     expect(topic_investigation_vote2.prev_topic_user_reviews.pluck(:id)).to eq([])
-      #     expect(topic_investigation_vote2.calculated_listing_order).to eq 1
-      #   end
-      # end
+      describe "review is high quality" do
+        let(:review) { FactoryBot.create(:review_with_topic, topics_text: topic.name, quality: "quality_high") }
+        it "they are in different tranches" do
+          expect(review.default_score).to eq 1000
+          expect(topic_investigation_vote).to be_valid
+          expect(topic_investigation_vote2).to be_valid
+          expect(topic_investigation_vote2.review.default_score).to eq 0
+          expect(user.reload.topic_investigation_votes.order(:id).pluck(:id)).to eq vote_ids
+          expect(topic.reload.topic_investigation_votes.order(:id).pluck(:id)).to eq vote_ids
+          expect(topic_investigation_vote.reload.topic_user_reviews.order(:id).pluck(:id)).to eq review_ids
+          expect(topic_investigation_vote.calculated_listing_order).to eq 1001
+          expect(topic_investigation_vote2.reload.topic_user_reviews.order(:id).pluck(:id)).to eq review_ids
+          expect(topic_investigation_vote2.prev_topic_user_reviews.pluck(:id)).to eq([review.id])
+          expect(topic_investigation_vote2.calculated_listing_order).to eq 1
+        end
+      end
+      describe "review is low quality" do
+        let(:review) { FactoryBot.create(:review_with_topic, topics_text: topic.name, quality: "quality_low") }
+        it "they are in different tranches" do
+          expect(review.default_score).to eq(-1000)
+          expect(topic_investigation_vote).to be_valid
+          expect(topic_investigation_vote2).to be_valid
+          expect(topic_investigation_vote2.review.default_score).to eq 0
+          expect(topic_investigation_vote.calculated_listing_order).to eq(-999)
+          expect(topic_investigation_vote2.calculated_listing_order).to eq 1
+        end
+      end
     end
   end
 end

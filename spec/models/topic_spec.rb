@@ -71,8 +71,9 @@ RSpec.describe Topic, type: :model do
   end
 
   describe "find_or_create_for" do
-    let!(:topic) { FactoryBot.create(:topic, name: "First topic we have") }
+    let(:topic) { FactoryBot.create(:topic, name: "First topic we have") }
     it "finds the existing" do
+      expect(topic).to be_present
       expect(Topic.count).to eq 1
       expect(Topic.find_or_create_for_name("first topic we have ")&.id).to eq topic.id
       expect(Topic.find_or_create_for_name("\nFIRST topic we HAVE ")&.id).to eq topic.id
@@ -100,6 +101,27 @@ RSpec.describe Topic, type: :model do
           expect(Topic.find_or_create_for_name("\n1st TOPIC we HAVE ")&.id).to eq topic.id
           expect(Topic.find_or_create_for_name("\nFIRST topic we HAVE ")&.id).to eq topic2.id
           expect(Topic.find_or_create_for_name("New first topic")&.id).to_not eq topic.id
+        end
+      end
+    end
+    describe "skip_update_associations" do
+      let(:review) { FactoryBot.create(:review_with_topic, topics_text: topic.name) }
+      it "skips if passed" do
+        expect(review.topics.pluck(:id)).to eq([topic.id])
+        Sidekiq::Worker.clear_all
+        Topic.find_or_create_for_name("first topic we have")
+        expect(ReconcileReviewTopicsJob.jobs.count).to eq 0
+      end
+      context "new" do
+        it "updates" do
+          expect_any_instance_of(Topic).to receive(:enqueue_review_reconcilliation) { true }
+          Topic.find_or_create_for_name("first topic we have")
+        end
+      end
+      context "passed skip" do
+        it "updates" do
+          expect_any_instance_of(Topic).to_not receive(:enqueue_review_reconcilliation) { true }
+          Topic.find_or_create_for_name("first topic we have", {skip_update_associations: true})
         end
       end
     end

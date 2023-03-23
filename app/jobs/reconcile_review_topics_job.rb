@@ -11,6 +11,10 @@ class ReconcileReviewTopicsJob < ApplicationJob
     end
     topic_names = Topic.where(id: topic_ids).name_ordered.pluck(:name)
     review.update(skip_topics_job: true, topics_text: topic_names.join("\n"))
-    # If active topic_investigations, create votes
+    # Create votes, if any are missing
+    TopicInvestigation.active.where(topic_id: topics.pluck(:id)).pluck(:id).each do |ti_id|
+      TopicInvestigationVote.where(review_id: review.id, topic_investigation_id: ti_id)
+        .first_or_create
+    end
   end
 end
