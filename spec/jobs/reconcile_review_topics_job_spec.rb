@@ -35,7 +35,33 @@ RSpec.describe ReconcileReviewTopicsJob, type: :job do
       expect(review.topics.pluck(:id)).to eq([])
     end
     context "multiple topics" do
-      it "creates them all and orders alphabetically"
+      let(:topics_text) { "Third Topic\nFirst topic\n\n Second topic" }
+      it "creates them all and orders alphabetically" do
+        expect(Topic.count).to eq 0
+        expect(review).to be_valid
+        expect {
+          instance.perform(review.id)
+        }.to change(described_class.jobs, :count).by(0)
+
+        expect(review.reload.topics_text).to eq "First topic\nSecond topic\nThird Topic"
+        expect(Topic.count).to eq 3
+        # Update a topic without a slug change
+        topic = Topic.friendly_find("third topic")
+        expect {
+          topic.update(name: "Third topic")
+        }.to change(described_class.jobs, :count).by(1)
+        instance.perform(review.id)
+        expect(review.reload.topics_text).to eq "First topic\nSecond topic\nThird topic"
+        # And then update *with* a slug change
+        topic = Topic.friendly_find("second topic")
+        expect {
+          topic.update(name: "2nd topic")
+        }.to change(described_class.jobs, :count).by(1)
+        topic.reload
+        expect(topic.name).to eq "2nd topic"
+        instance.perform(review.id)
+        expect(review.reload.topics_text).to eq "2nd topic\nFirst topic\nThird topic"
+      end
     end
   end
 end

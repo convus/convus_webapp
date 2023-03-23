@@ -48,11 +48,11 @@ RSpec.describe base_url, type: :request do
     describe "update" do
       let(:valid_params) { {name: "new name"} }
       it "updates" do
-        og_name = topic.name
+        og_slug = topic.slug
         patch "#{base_url}/#{topic.id}", params: {topic: valid_params}
         expect(flash[:success]).to be_present
         expect(topic.reload.name).to eq "new name"
-        expect(topic.previous_name).to eq og_name
+        expect(topic.previous_slug).to eq og_slug
       end
     end
   end

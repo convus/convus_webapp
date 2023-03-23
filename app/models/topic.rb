@@ -30,7 +30,8 @@ class Topic < ApplicationRecord
 
   def self.friendly_find_slug(str = nil)
     return nil if str.blank?
-    find_by_slug(Slugifyer.slugify(str))
+    slug = Slugifyer.slugify(str)
+    find_by_slug(slug) || find_by_previous_slug(slug)
   end
 
   def self.find_or_create_for_name(name)
@@ -71,6 +72,7 @@ class Topic < ApplicationRecord
 
   def update_associations
     topic_investigations.each { |ti| ti.update(updated_at: Time.current) }
+    reviews.pluck(:id).each { |i| ReconcileReviewTopicsJob.perform_async(i) }
   end
 
   private

@@ -79,6 +79,30 @@ RSpec.describe Topic, type: :model do
       expect(Topic.find_or_create_for_name("New first topic")&.id).to_not eq topic.id
       expect(Topic.count).to eq 2
     end
+    context "with previous_slug" do
+      before { topic.update(name: "1st topic we have") }
+      it "uses previous_slug too" do
+        topic.update(name: "1st topic we have")
+        expect(topic.previous_slug).to eq "first-topic-we-have"
+        expect(Topic.count).to eq 1
+        expect(Topic.find_or_create_for_name("1st topic we have ")&.id).to eq topic.id
+        expect(Topic.find_or_create_for_name("\n1st TOPIC we HAVE ")&.id).to eq topic.id
+        expect(Topic.find_or_create_for_name("\nFIRST topic we HAVE ")&.id).to eq topic.id
+        expect(Topic.find_or_create_for_name("New first topic")&.id).to_not eq topic.id
+      end
+      context "new topic" do
+        let(:topic2) { FactoryBot.create(:topic, name: "First topic we have") }
+        it "matches the correct one" do
+          expect(topic.previous_slug).to eq "first-topic-we-have"
+          expect(topic2.slug).to eq "first-topic-we-have"
+          expect(Topic.count).to eq 2
+          expect(Topic.find_or_create_for_name("1st topic we have ")&.id).to eq topic.id
+          expect(Topic.find_or_create_for_name("\n1st TOPIC we HAVE ")&.id).to eq topic.id
+          expect(Topic.find_or_create_for_name("\nFIRST topic we HAVE ")&.id).to eq topic2.id
+          expect(Topic.find_or_create_for_name("New first topic")&.id).to_not eq topic.id
+        end
+      end
+    end
   end
 
   describe "matching_topics" do
@@ -108,6 +132,7 @@ RSpec.describe Topic, type: :model do
         topic.update(name: "DOG lyfe")
         expect(topic.reload.slug).to eq "dog-lyfe"
         expect(topic.previous_slug).to eq "dog-life"
+        expect(Topic.friendly_find("dog-life")&.id).to eq topic.id
       end
     end
   end
