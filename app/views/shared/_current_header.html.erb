@@ -1,7 +1,7 @@
 <%# NOTE: when you add new search_ params here, also add it to hidden_search_fields %>
 <% viewing ||= controller_name.humanize %>
-<% admin_header_keys = %w[search_topics] %>
-<% header_present ||= (admin_header_keys & params.keys).any? %>
+<% current_header_keys = %w[search_topics] %>
+<% header_present ||= (current_header_keys & params.keys).any? %>
 <% if header_present %>
   <div>
     <% if current_topics.present? %>
