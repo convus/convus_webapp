@@ -80,4 +80,17 @@ RSpec.describe Topic, type: :model do
       expect(Topic.count).to eq 2
     end
   end
+
+  describe "matching_topics" do
+    let!(:topic) { FactoryBot.create(:topic, name: "Warmth") }
+    let(:review) { FactoryBot.create(:review, topics_text: "warmth") }
+    let(:review2) { FactoryBot.create(:review, topics_text: "warmed") }
+    before { [review.id, review2.id].each { |i| ReconcileReviewTopicsJob.new.perform(i) } }
+    it "finds the things" do
+      expect(review.reload.topics.pluck(:id)).to eq([topic.id])
+      expect(review2.topics.count).to eq 1
+      expect(Review.matching_topics(topic.id).pluck(:id)).to eq([review.id])
+      # expect(Review.matching_topics([topic_id])).to eq([review.id])
+    end
+  end
 end

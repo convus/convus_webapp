@@ -9,7 +9,7 @@ RSpec.describe ReconcileReviewTopicsJob, type: :job do
   let(:citation) { review.citation }
 
   describe "#perform" do
-    before { Sidekiq::Worker.clear_all  }
+    before { Sidekiq::Worker.clear_all }
     it "creates the topics" do
       expect(Topic.count).to eq 0
       expect {
@@ -33,6 +33,9 @@ RSpec.describe ReconcileReviewTopicsJob, type: :job do
       }.to change(described_class.jobs, :count).by(0)
       expect(review.reload.topics_text).to be_nil
       expect(review.topics.pluck(:id)).to eq([])
+    end
+    context "multiple topics" do
+      it "creates them all and orders alphabetically"
     end
   end
 end

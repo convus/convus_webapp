@@ -8,7 +8,7 @@ RSpec.describe ReviewCreatedEventJob, type: :job do
   let(:review) { FactoryBot.create(:review, user: user) }
 
   describe "#perform" do
-    before { Sidekiq::Worker.clear_all  }
+    before { Sidekiq::Worker.clear_all }
 
     it "creates an event" do
       expect(user.reload.total_kudos).to eq 0

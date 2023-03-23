@@ -12,5 +12,6 @@ class ReconcileReviewTopicsJob < ApplicationJob
     end
     topic_names = Topic.where(id: topic_ids).name_ordered.pluck(:name)
     review.update(skip_topics_job: true, topics_text: topic_names.join("\n"))
+    # If active topic_investigations, create votes
   end
 end

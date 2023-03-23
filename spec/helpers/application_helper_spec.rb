@@ -84,4 +84,21 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "page_title" do
+    before do
+      allow(view).to receive(:controller_name) { controller_name }
+      allow(view).to receive(:action_name) { action_name }
+      # This method is defined in application controller, not sure how to stub right now
+      # allow(view).to receive(:controller_namespace) { controller_namespace }
+    end
+    let(:controller_namespace) { nil }
+    context "landing#about" do
+      let(:controller_name) { "landing" }
+      let(:action_name) { "about" }
+      it "is about" do
+        expect(page_title).to eq "Convus About"
+      end
+    end
+  end
 end

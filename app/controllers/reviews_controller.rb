@@ -123,18 +123,18 @@ class ReviewsController < ApplicationController
     end
   end
 
-  def user_reviews
-    if viewing_display_name == "following"
+  def searched_reviews
+    reviews = if viewing_display_name == "following"
       current_user&.following_reviews_visible || Review.none
     elsif viewing_display_name == "recent"
       Review
     else
       @can_view_reviews ? user_subject.reviews : Review.none
     end
-  end
 
-  def searched_reviews
-    reviews = user_reviews
+    if current_topics.present?
+      reviews = Review.matching_topics(current_topics)
+    end
 
     @time_range_column = "created_at"
     reviews.where(@time_range_column => @time_range)

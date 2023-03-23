@@ -1,16 +1,23 @@
 module ApplicationHelper
   include TranzitoUtils::Helpers
 
-  def page_title
-    @page_title || "Convus"
-  end
-
   def page_description
     return nil unless render_user_page_description?
     user = @user || user_subject
     return nil unless user.present?
     "#{user.reviews.created_today.count} reviews and #{user.total_kudos_today} kudos today " \
     "(#{user.reviews.created_yesterday.count} reviews and #{user.total_kudos_yesterday} kudos yesterday)"
+  end
+
+  def page_title
+    return @page_title if defined?(@page_title)
+    prefix = in_admin? ? "🧰" : "Convus"
+    return "#{prefix} #{@prefixed_page_title}" if @prefixed_page_title.present?
+    [
+      prefix,
+      default_action_name_title,
+      controller_title_for_action
+    ].compact.join(" ")
   end
 
   def render_user_page_description?
@@ -77,5 +84,23 @@ module ApplicationHelper
     base_url = Rails.env.production? ? "https://www.convus.org" : "http://localhost:3009"
     stylesheet_link_tag(stylesheet).gsub("href=\"", "href=\"#{base_url}")
       .html_safe
+  end
+
+  def default_action_name_title
+    if action_name == "show"
+      # Take up less space for admin
+      return in_admin? ? nil : "Display"
+    end
+    (action_name == "index") ? nil : action_name.titleize
+  end
+
+  def controller_title_for_action
+    return @controller_display_name if defined?(@controller_display_name)
+    # No need to include 'landing'
+    c_name = controller_name
+    return nil if c_name == "landing"
+    c_name = "users" if c_name == "u"
+    return c_name.titleize if %(index).include?(action_name)
+    c_name.singularize.titleize
   end
 end

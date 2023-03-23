@@ -52,6 +52,10 @@ class Review < ApplicationRecord
     review
   end
 
+  def self.matching_topics(topic_ids)
+    joins(:review_topics).where(review_topics: {topic_id: Array(topic_ids)})
+  end
+
   def edit_title?
     true # TODO: hide if this was automatically collected?
   end

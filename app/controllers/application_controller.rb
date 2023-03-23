@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :enable_rack_profiler
 
-  helper_method :display_dev_info?, :user_subject, :user_root_url
+  helper_method :display_dev_info?, :user_subject, :user_root_url, :controller_namespace
 
   def append_info_to_payload(payload)
     super
@@ -38,6 +38,15 @@ class ApplicationController < ActionController::Base
   def user_subject
     return @user_subject if defined?(@user_subject)
     @user_subject = User.friendly_find(params[:user])
+  end
+
+  def current_topics
+    return @current_topics if defined?(@searched_topics)
+    @current_topics = if params[:search_topics].blank?
+      nil
+    else
+      Topic.friendly_find_all(params[:search_topics].split("\n"))
+    end
   end
 
   def user_root_url
@@ -99,5 +108,9 @@ class ApplicationController < ActionController::Base
   def permitted_user_redirect_path(path = nil)
     return nil if path.blank? || path.start_with?("/")
     path
+  end
+
+  def controller_namespace
+    @controller_namespace ||= (self.class.module_parent.name != "Object") ? self.class.module_parent.name.downcase : nil
   end
 end

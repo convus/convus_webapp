@@ -35,6 +35,10 @@ class Topic < ApplicationRecord
     friendly_find(name) || create(name: name)
   end
 
+  def self.friendly_find_all(arr)
+    arr.map { |s| friendly_find(s) }.compact
+  end
+
   def active
     !orphaned
   end

@@ -1,0 +1,43 @@
+<h1 class="standard-top-offset mb-4">Admin topics</h1>
+<%= render partial: "/shared/period_select", locals: {total_count: @topics.total_count} %>
+<% skip_sortable ||= false %>
+<div class="full-screen-table">
+  <table class="table table-sm">
+    <thead class="sortable">
+      <tr>
+        <th>
+          <%= sortable "created_at", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          <small><%= sortable "updated_at", skip_sortable: skip_sortable %></small>
+        </th>
+        <th>
+          <%= sortable "name", skip_sortable: skip_sortable %>
+        </th>
+        <th>Reviews</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @topics.each do |topic| %>
+        <tr>
+          <td>
+            <% if display_dev_info? %><code class="only-dev-visible-small"><%= topic.id %></code><% end %>
+            <small class="convertTime"><%= l(topic.created_at, format: :convert_time) %></small>
+          </td>
+          <td>
+            <small class="convertTime"><%= l(topic.updated_at, format: :convert_time) %></small>
+          </td>
+          <td>
+            <%= topic&.name %>
+          </td>
+          <td>
+            <%= link_to admin_number_display(topic.review_topics.count), reviews_path(search_topics: topic.slug) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="row">
+  <%= render partial: "tranzito_utils/pagination", locals: {collection: @topics, name: "Topic"} %>
+</div>
