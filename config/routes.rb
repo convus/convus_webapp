@@ -36,7 +36,7 @@ Rails.application.routes.draw do
       resource :auth, only: [:create] do
         collection { get :status }
       end
-      resources :ratings, only: [:create]
+      resources :reviews, only: [:create]
 
       get "*a", to: "api_v1#not_found"
     end

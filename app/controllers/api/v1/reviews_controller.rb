@@ -1,6 +1,6 @@
 module API
   module V1
-    class ReviewController < APIV1Controller
+    class ReviewsController < APIV1Controller
       before_action :ensure_current_user!
 
       def create
@@ -8,7 +8,7 @@ module API
         if rating.save
           RatingCreatedEventJob.new.perform(rating.id, rating)
           share_msg = ShareFormatter.share_user(current_user.reload, rating.timezone)
-          render json: {message: "Rating added", share: share_msg}
+          render json: {message: "Review added", share: share_msg}
         else
           render(json: {message: rating.errors.full_messages}, status: 400)
         end

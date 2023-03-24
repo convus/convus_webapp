@@ -15,7 +15,6 @@ class InvestigationsController < ApplicationController
 
   private
 
-
   def find_topic_investigation
     @topic_investigation = TopicInvestigation.friendly_find(params[:id])
   end
