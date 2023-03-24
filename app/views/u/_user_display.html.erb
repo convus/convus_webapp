@@ -7,18 +7,18 @@
     </div>
     <hr class="mt-1 mb-6">
   <% end %>
-  <p class="mt-2">
+  <div class="mt-2">
     <strong class="inline-block mr-1">User</strong>
     <%= user.username %>
     <% unless @viewing_current_user %>
       <span class="mx-1">-</span>
       <% if current_user&.following?(user) %>
-        <%= link_to "stop following", following_path(user.to_param), data: {turbo_method: :delete} %>
+        <%= button_to "stop following", {controller: "following", action: "destroy", id: user.to_param}, method: :delete, class: "link" %>
       <% else %>
         <%= link_to "follow", add_following_path(user.to_param) %>
       <% end %>
     <% end %>
-  </p>
+  </div>
   <p class="mt-2">
     <strong class="inline-block mr-1">Signed up</strong>
     <span class="convertTime"><%= l(user.created_at, format: :convert_time) %></span>
