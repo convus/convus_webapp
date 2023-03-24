@@ -79,11 +79,15 @@ module ApplicationHelper
     end
   end
 
-  # TODO: solve in a better way...
-  def stylesheet_link_tag_url(stylesheet)
-    base_url = Rails.env.production? ? "https://www.convus.org" : "http://localhost:3009"
-    stylesheet_link_tag(stylesheet).gsub("href=\"", "href=\"#{base_url}")
-      .html_safe
+  def topic_review_display(topic_obj, klass = nil)
+    text = if topic_obj.is_a?(TopicReview)
+      topic_obj&.topic_name
+    elsif topic_obj.is_a?(Topic)
+      topic_obj.name
+    else
+      topic_obj
+    end
+    content_tag(:span, text, class: "font-bold #{klass}")
   end
 
   def default_action_name_title

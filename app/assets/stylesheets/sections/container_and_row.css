@@ -1,28 +1,28 @@
-.padded-container {
+.container-padded {
   /* Add a little padding to the bottom */
-  @apply mx-auto py-2 w-full;
+  @apply py-2 w-full;
 }
 
 .large-width-container {
-  @apply max-w-main-content;
+  @apply mx-auto max-w-main-content max-lg:px-container-pad;
 }
 
-.large-width-padded-container {
-  @apply padded-container large-width-container max-lg:px-container-pad;
+.large-width-container-padded {
+  @apply container-padded large-width-container;
 }
 
 .small-width-container {
-  @apply max-w-small-container mx-auto;
+  @apply mx-auto max-w-small-container;
 }
 
-.small-width-padded-container {
-  @apply padded-container max-w-small-container;
+.small-width-container-padded {
+  @apply container-padded max-w-small-container;
   /* might wanna use max-w-prose sometime - this is close*/
 }
 
 /* Have to manually update this to match `small-container + container-pad` because css is dumb */
 @media (max-width: 596px) {
-  .small-width-padded-container {
+  .small-width-container-padded {
     @apply px-container-pad;
   }
 }

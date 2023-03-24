@@ -64,6 +64,13 @@ RSpec.describe base_url, type: :request do
         expect(session[:user_return_to]).to eq "/ratings?user=following"
       end
     end
+    context "current_user" do
+      it "sends to sign in" do
+        get "#{base_url}?user=current_user"
+        expect(response).to redirect_to new_user_registration_path
+        expect(session[:user_return_to]).to eq "/ratings?user=current_user"
+      end
+    end
     context "with private user" do
       let(:account_private) { true }
       it "renders" do
@@ -118,11 +125,18 @@ RSpec.describe base_url, type: :request do
         get "#{base_url}?user=#{user_subject.id}"
         expect(response.code).to eq "200"
         expect(response).to render_template("ratings/index")
+        expect(assigns(:user_subject)&.id).to eq user_subject.id
         expect(assigns(:ratings_private)).to be_truthy
         expect(assigns(:can_view_ratings)).to be_falsey
         expect(assigns(:ratings).pluck(:id)).to eq([])
         expect(assigns(:viewing_single_user)).to be_truthy
         expect(assigns(:viewing_display_name)).to eq user_subject.username
+      end
+      it "renders current_user" do
+        get "#{base_url}?user=current_user"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("ratings/index")
+        expect(assigns(:user_subject)&.id).to eq current_user.id
       end
       context "following" do
         let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject, approved: approved) }
@@ -171,6 +185,10 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:can_view_ratings)).to be_truthy
           expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
           expect(assigns(:assign_topic)).to be_nil
+
+          get "#{base_url}?user=current_user"
+          expect(assigns(:user_subject)&.id).to eq current_user.id
+          expect(response).to render_template("ratings/index")
 
           get "#{base_url}?user=cO0l-name&search_assign_topic=#{topic.slug}"
           expect(assigns(:current_user)&.id).to eq user_subject.id

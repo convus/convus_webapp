@@ -1,4 +1,9 @@
 <h1 class="standard-top-offset mb-3">
-  Current review is of
-  <strong>DC STATEHOOD</strong>
+  Current review topic is
+  <% if @topic_review.present? %>
+    <%= topic_review_display(@topic_review) %>
+  <% else %>
+    <em>no topic! something is broken!</em>
+  <% end %>
 </h1>
+<p class="mb-2">Select <%= link_to "articles you've read", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> for this review</p>

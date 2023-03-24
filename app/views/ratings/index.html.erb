@@ -1,5 +1,5 @@
-<%= content_for :main_wrapper_class, "padded-container" %>
-<div class="large-width-padded-container">
+<%= content_for :main_wrapper_class, "container-padded" %>
+<div class="large-width-container">
   <% search_params_present = (params.keys - %w[user controller action]).any? %>
   <% if @viewing_single_user %>
     <% unless search_params_present %>
@@ -29,7 +29,7 @@
 </div>
 <% if @can_view_ratings %>
   <% if @ratings.total_count == 0 %>
-    <div class="large-width-padded-container">
+    <div class="large-width-container">
       <% if viewing_display_name == "following" %>
         <h4 class="standard-top-offset">No one you follow has visible ratings</h4>
       <% else %>
@@ -37,7 +37,7 @@
       <% end %>
     </div>
   <% else %>
-    <div class="large-width-padded-container">
+    <div class="large-width-container">
       <% if viewing_display_name == "recent" %>
         <p class="less-strong mb-4"><em>See ratings by <%= link_to "people you're following", ratings_path(user: "following") %></em></p>
       <% end %>
@@ -47,9 +47,9 @@
       <%# duplicating this whole thing is gross, but... HACK HACK HACK %>
       <%= form_tag add_topic_ratings_path(sortable_search_params), method: :post, class: "" do %>
         <%= hidden_field_tag :included_ratings, @ratings.pluck(:id).join(",") %>
-        <p class="mb-4 text-center">
+        <p class="large-width-container mb-3">
           <%= button_tag type: "submit", class: "btn btn-success" do %>
-            Mark checked ratings applicable to <em class="ml-1"><%= @assign_topic.name %></em>
+            Mark checked ratings applicable to <%= topic_review_display(@assign_topic, "ml-1") %>
           <% end %>
         </p>
         <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: @viewing_display_name == "recent", render_assign_topic: @assign_topic} %>
@@ -58,7 +58,7 @@
       <%# duplicating this whole thing is gross %>
       <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: @viewing_display_name == "recent"} %>
     <% end %>
-    <div class="large-width-padded-container">
+    <div class="large-width-container">
       <div class="row">
         <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating", skip_total: true} %>
       </div>

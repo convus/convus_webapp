@@ -1,6 +1,6 @@
 <%= turbo_frame_tag :new_rating, class: (@source == "web" ? "" : "no-layout") do %>
   <% if @source == "web" %>
-    <%= content_for :main_wrapper_class, "small-width-padded-container" %>
+    <%= content_for :main_wrapper_class, "small-width-container-padded" %>
     <h1 class="mb-3">Add Rating</h1>
     <%# manually override to display URL - hidden by default for styles with browser extension %>
     <style>

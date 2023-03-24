@@ -6,9 +6,11 @@ class RatingsController < ApplicationController
   helper_method :viewing_display_name
 
   def index
-    if viewing_display_name == "following" && current_user.blank?
-      redirect_to_signup_unless_user_present!
-      return
+    if current_user.blank?
+      if params[:user] == "current_user" || viewing_display_name == "following"
+        redirect_to_signup_unless_user_present!
+        return
+      end
     end
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
@@ -85,7 +87,7 @@ class RatingsController < ApplicationController
       end
       # included_ratings
       if ratings_updated > 0
-        flash[:success] = "Added #{@assign}"
+        flash[:success] = "Added to #{@assign_topic.name}"
       else
         flash[:notice] = "No ratings were updated"
       end

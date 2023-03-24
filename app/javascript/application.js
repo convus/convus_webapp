@@ -6,6 +6,8 @@ import BrowserExtensionScript from './scripts/browser_extension_script.js'
 import 'flowbite/dist/flowbite.turbo.js'
 import { TimeParser, PeriodSelector, Pagination } from 'tranzito_utils_js'
 
+import log from './scripts/log' // eslint-disable-line
+
 const enableFullscreenTableOverflow = () => {
   const pageWidth = window.innerWidth
   document.querySelectorAll('.full-screen-table table').forEach(el => {
@@ -15,6 +17,23 @@ const enableFullscreenTableOverflow = () => {
       el.closest('.full-screen-table').classList.add('full-screen-table-overflown')
     }
   })
+}
+
+const toggleChecks = (event) => {
+  const checked = event.target.checked
+  event.target.closest('.toggleChecksWrapper')
+    .querySelectorAll('.toggleableCheck').forEach(el => {
+      el.checked = checked
+    })
+}
+
+const enableToggleChecks = () => {
+  document.querySelectorAll('.toggleChecks')
+    .forEach(el => {
+      // hidden by default, since it needs js
+      el.classList.remove('hidden')
+      el.addEventListener('change', toggleChecks)
+    })
 }
 
 document.addEventListener('turbo:load', () => {
@@ -34,4 +53,5 @@ document.addEventListener('turbo:load', () => {
   }
 
   enableFullscreenTableOverflow()
+  enableToggleChecks()
 })
