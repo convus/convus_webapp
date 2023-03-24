@@ -29,5 +29,13 @@ RSpec.describe base_url, type: :request do
         expect(response).to render_template("reviews/index")
       end
     end
+
+    describe "show" do
+      it "renders" do
+        get base_url
+        expect(response.code).to eq "200"
+        expect(response).to render_template("reviews/index")
+      end
+    end
   end
 end
