@@ -1,6 +1,12 @@
-a {
+a, .link {
   @apply text-bodytext underline;
 }
+
+/* .link is used by button_to */
+.button_to {
+  @apply inline;
+}
+
 
 .link-primary {
   @apply text-primary no-underline;

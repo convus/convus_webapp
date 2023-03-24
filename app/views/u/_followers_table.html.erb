@@ -29,9 +29,9 @@
           <% if update_links %>
             <td class="text-right">
               <% if user_following.approved %>
-                <%= link_to "un-approve", unapprove_following_path(follower.to_param), data: {turbo_method: :post}, class: "less-strong" %>
+                <%= button_to "un-approve", {controller: "following", action: "unapprove", id: follower.to_param}, method: :post, class: "less-strong" %>
               <% else %>
-                <%= link_to "approve", approve_following_path(follower.to_param), data: {turbo_method: :post} %>
+                <%= button_to "approve", {controller: "following", action: "approve", id: follower.to_param}, method: :post, class: "link" %>
               <% end %>
             </td>
           <% end %>
