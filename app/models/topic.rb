@@ -5,8 +5,8 @@ class Topic < ApplicationRecord
   has_many :ratings, through: :rating_topics
   has_many :citation_topics
   has_many :citations, through: :citation_topics
-  has_many :topic_investigations
-  has_many :topic_investigation_votes, through: :topic_investigations
+  has_many :topic_reviews
+  has_many :topic_review_votes, through: :topic_reviews
 
   validates_uniqueness_of :name, case_sensitive: false
   validate :slug_uniq_if_name_uniq
@@ -70,7 +70,7 @@ class Topic < ApplicationRecord
 
   def update_associations
     return true if skip_update_associations
-    topic_investigations.each { |ti| ti.update(updated_at: Time.current) }
+    topic_reviews.each { |ti| ti.update(updated_at: Time.current) }
     enqueue_rating_reconcilliation
   end
 

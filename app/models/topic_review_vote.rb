@@ -1,11 +1,11 @@
-class TopicInvestigationVote < ApplicationRecord
-  belongs_to :topic_investigation
+class TopicReviewVote < ApplicationRecord
+  belongs_to :topic_review
   belongs_to :user
   belongs_to :rating
 
   validates_presence_of :rating_id
-  validates_presence_of :topic_investigation_id
-  validates_uniqueness_of :rating_id, scope: [:topic_investigation_id]
+  validates_presence_of :topic_review_id
+  validates_uniqueness_of :rating_id, scope: [:topic_review_id]
 
   before_validation :set_calculated_attributes
 
@@ -18,7 +18,7 @@ class TopicInvestigationVote < ApplicationRecord
   attr_accessor :skip_calculated_vote_score
 
   def topic
-    topic_investigation&.topic
+    topic_review&.topic
   end
 
   def topic_name
@@ -41,12 +41,12 @@ class TopicInvestigationVote < ApplicationRecord
     self.recommended = vote_score > 0
   end
 
-  def investigation_user_votes
-    TopicInvestigationVote.where(user_id: user_id, topic_investigation_id: topic_investigation_id)
+  def review_user_votes
+    TopicReviewVote.where(user_id: user_id, topic_review_id: topic_review_id)
   end
 
   def topic_user_ratings
-    Rating.where(id: investigation_user_votes.pluck(:rating_id)).order(:id)
+    Rating.where(id: review_user_votes.pluck(:rating_id)).order(:id)
   end
 
   def prev_topic_user_ratings

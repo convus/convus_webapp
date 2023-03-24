@@ -1,14 +1,14 @@
 require "rails_helper"
 
-base_url = "/investigations"
+base_url = "/reviews"
 RSpec.describe base_url, type: :request do
-  let!(:topic_investigation) { FactoryBot.create(:topic_investigation) }
+  let!(:topic_review) { FactoryBot.create(:topic_review) }
 
   describe "show" do
     it "redirects" do
-      get "#{base_url}/#{topic_investigation.slug}"
+      get "#{base_url}/#{topic_review.slug}"
       expect(response).to redirect_to new_user_registration_path
-      expect(session[:user_return_to]).to eq "#{base_url}/#{topic_investigation.slug}"
+      expect(session[:user_return_to]).to eq "#{base_url}/#{topic_review.slug}"
     end
   end
 
@@ -16,7 +16,7 @@ RSpec.describe base_url, type: :request do
     it "renders" do
       get base_url
       expect(response.code).to eq "200"
-      expect(response).to render_template("investigations/index")
+      expect(response).to render_template("reviews/index")
     end
   end
 
@@ -26,7 +26,7 @@ RSpec.describe base_url, type: :request do
       it "renders" do
         get base_url
         expect(response.code).to eq "200"
-        expect(response).to render_template("investigations/index")
+        expect(response).to render_template("reviews/index")
       end
     end
   end

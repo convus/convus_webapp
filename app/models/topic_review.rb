@@ -1,10 +1,10 @@
-class TopicInvestigation < ApplicationRecord
+class TopicReview < ApplicationRecord
   include FriendlyFindable
 
   STATUS_ENUM = {pending: 0, active: 1, ended: 2}.freeze
 
   belongs_to :topic
-  has_many :topic_investigation_votes
+  has_many :topic_review_votes
 
   enum status: STATUS_ENUM
 
@@ -17,7 +17,7 @@ class TopicInvestigation < ApplicationRecord
 
   attr_accessor :timezone
 
-  # Make it so that there is a single investigation, for MVP convenience
+  # Make it so that there is a single review, for MVP convenience
   def self.primary
     active.first || pending.first
   end

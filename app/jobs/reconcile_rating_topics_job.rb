@@ -14,15 +14,15 @@ class ReconcileRatingTopicsJob < ApplicationJob
 
     current_topic_ids = topics.pluck(:id)
     # Create votes, if any are missing
-    TopicInvestigation.active.where(topic_id: current_topic_ids).pluck(:id).each do |ti_id|
-      TopicInvestigationVote.where(rating_id: rating.id, topic_investigation_id: ti_id)
+    TopicReview.active.where(topic_id: current_topic_ids).pluck(:id).each do |ti_id|
+      TopicReviewVote.where(rating_id: rating.id, topic_review_id: ti_id)
         .first_or_create
     end
 
     # Delete any votes that no longer match a topic
-    topic_investigation_ids = TopicInvestigation.where(topic_id: current_topic_ids).pluck(:id)
-    TopicInvestigationVote.where(rating_id: rating.id).where.not(topic_investigation_id: topic_investigation_ids)
+    topic_review_ids = TopicReview.where(topic_id: current_topic_ids).pluck(:id)
+    TopicReviewVote.where(rating_id: rating.id).where.not(topic_review_id: topic_review_ids)
       .destroy_all
-    topic_investigation_ids
+    topic_review_ids
   end
 end

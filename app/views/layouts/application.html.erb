@@ -29,7 +29,7 @@
           <% end %>
           <%= active_link "users", admin_users_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= active_link "topics", admin_topics_path, class: "main-nav-link ml-2", match_controller: true %>
-          <%= active_link "investigations", admin_topic_investigations_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= active_link "reviews", admin_topic_reviews_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= link_to "exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
           <% root_active = controller_name == "landing" && action_name == "index" %>
@@ -39,7 +39,7 @@
           <% end %>
           <% ratings_active = controller_name == "ratings" && viewing_display_name == "recent" %>
           <%= link_to "ratings", ratings_path, class: "main-nav-link ml-3 #{ratings_active ? 'active' : ''}" %>
-          <%= active_link "investigations", investigations_path, class: "main-nav-link ml-2" %>
+          <%= active_link "reviews", reviews_path, class: "main-nav-link ml-2" %>
           <% if current_user&.admin? %>
             <%= active_link "admin", admin_root_path, class: "main-nav-link ml-3 less-strong" %>
           <% end %>

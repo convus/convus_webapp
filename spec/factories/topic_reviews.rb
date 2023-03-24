@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :topic_investigation do
+  factory :topic_review do
     topic { FactoryBot.create(:topic) }
 
     trait :active do
@@ -7,6 +7,6 @@ FactoryBot.define do
       end_at { Time.current + 2.days }
     end
 
-    factory :topic_investigation_active, traits: [:active]
+    factory :topic_review_active, traits: [:active]
   end
 end

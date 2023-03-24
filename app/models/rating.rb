@@ -23,7 +23,7 @@ class Rating < ApplicationRecord
   has_many :kudos_events, through: :events
   has_many :rating_topics
   has_many :topics, through: :rating_topics
-  has_many :topic_investigation_votes
+  has_many :topic_review_votes
 
   validates_presence_of :user_id
   validates_uniqueness_of :citation_id, scope: [:user_id]

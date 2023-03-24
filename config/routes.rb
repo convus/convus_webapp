@@ -29,7 +29,7 @@ Rails.application.routes.draw do
     collection { post :add_topic }
   end
 
-  resources :investigations, only: %i[index show update]
+  resources :reviews, only: %i[index show update]
 
   namespace :api, defaults: {format: "json"} do
     namespace :v1 do
@@ -46,7 +46,7 @@ Rails.application.routes.draw do
     root to: "users#index"
     resources :users, only: [:index]
     resources :topics, only: %i[index edit update show]
-    resources :topic_investigations, except: [:show]
+    resources :topic_reviews, except: [:show]
   end
 
   authenticate :user, lambda { |u| u.developer? } do

@@ -63,42 +63,42 @@ RSpec.describe ReconcileRatingTopicsJob, type: :job do
         expect(rating.reload.topics_text).to eq "2nd topic\nFirst topic\nThird topic"
       end
     end
-    context "topic_investigation" do
+    context "topic_review" do
       let(:topic) { FactoryBot.create(:topic, name: "SOME COOL TOPIC") }
-      let(:topic_investigation) { FactoryBot.create(:topic_investigation_active, topic: topic) }
-      it "creates for the topic_investigation" do
-        expect(topic_investigation.status).to eq "active"
+      let(:topic_review) { FactoryBot.create(:topic_review_active, topic: topic) }
+      it "creates for the topic_review" do
+        expect(topic_review.status).to eq "active"
         expect(rating.reload.topics.pluck(:id)).to eq([])
-        expect(TopicInvestigationVote.count).to eq 0
+        expect(TopicReviewVote.count).to eq 0
         instance.perform(rating.id)
-        expect(TopicInvestigationVote.count).to eq 1
+        expect(TopicReviewVote.count).to eq 1
         expect(rating.reload.topics.pluck(:id)).to eq([topic.id])
-        expect(rating.topic_investigation_votes.count).to eq 1
-        topic_investigation_vote = TopicInvestigationVote.last
-        expect(topic_investigation_vote.rating_id).to eq rating.id
-        expect(topic_investigation_vote.topic.id).to eq topic.id
-        expect(topic_investigation_vote.vote_score).to eq 1
+        expect(rating.topic_review_votes.count).to eq 1
+        topic_review_vote = TopicReviewVote.last
+        expect(topic_review_vote.rating_id).to eq rating.id
+        expect(topic_review_vote.topic.id).to eq topic.id
+        expect(topic_review_vote.vote_score).to eq 1
         rating.update(topics_text: "not the same topic")
         instance.perform(rating.id)
         rating.reload
         expect(rating.topics.count).to eq 1
         expect(rating.topic_names).to eq(["not the same topic"])
-        expect(TopicInvestigationVote.pluck(:id)).to eq([])
+        expect(TopicReviewVote.pluck(:id)).to eq([])
       end
       context "inactive" do
-        let(:topic_investigation) { FactoryBot.create(:topic_investigation, topic: topic) }
+        let(:topic_review) { FactoryBot.create(:topic_review, topic: topic) }
         it "doesn't create" do
-          expect(topic_investigation.status).to eq "pending"
+          expect(topic_review.status).to eq "pending"
           expect(rating.reload.topics.pluck(:id)).to eq([])
-          expect(TopicInvestigationVote.count).to eq 0
+          expect(TopicReviewVote.count).to eq 0
           instance.perform(rating.id)
-          expect(TopicInvestigationVote.count).to eq 0
+          expect(TopicReviewVote.count).to eq 0
           expect(rating.reload.topics.pluck(:id)).to eq([topic.id])
-          topic_investigation_vote = FactoryBot.create(:topic_investigation_vote, topic: topic, rating: rating)
-          tiv_id = topic_investigation_vote.id
+          topic_review_vote = FactoryBot.create(:topic_review_vote, topic: topic, rating: rating)
+          tiv_id = topic_review_vote.id
           instance.perform(rating.id)
-          expect(TopicInvestigationVote.pluck(:id)).to eq([tiv_id])
-          expect(topic_investigation.topic_investigation_votes.pluck(:id)).to eq([tiv_id])
+          expect(TopicReviewVote.pluck(:id)).to eq([tiv_id])
+          expect(topic_review.topic_review_votes.pluck(:id)).to eq([tiv_id])
         end
       end
     end

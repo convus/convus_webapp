@@ -98,21 +98,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
     t.index ["user_id"], name: "index_ratings_on_user_id"
   end
 
-  create_table "topic_investigation_votes", force: :cascade do |t|
+  create_table "topic_review_votes", force: :cascade do |t|
     t.bigint "user_id"
-    t.bigint "topic_investigation_id"
+    t.bigint "topic_review_id"
     t.bigint "rating_id"
     t.boolean "manual_rank", default: false
     t.integer "vote_score"
     t.boolean "recommended", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["rating_id"], name: "index_topic_investigation_votes_on_rating_id"
-    t.index ["topic_investigation_id"], name: "index_topic_investigation_votes_on_topic_investigation_id"
-    t.index ["user_id"], name: "index_topic_investigation_votes_on_user_id"
+    t.index ["rating_id"], name: "index_topic_review_votes_on_rating_id"
+    t.index ["topic_review_id"], name: "index_topic_review_votes_on_topic_review_id"
+    t.index ["user_id"], name: "index_topic_review_votes_on_user_id"
   end
 
-  create_table "topic_investigations", force: :cascade do |t|
+  create_table "topic_reviews", force: :cascade do |t|
     t.bigint "topic_id"
     t.datetime "start_at"
     t.datetime "end_at"
@@ -121,7 +121,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
     t.string "slug"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["topic_id"], name: "index_topic_investigations_on_topic_id"
+    t.index ["topic_id"], name: "index_topic_reviews_on_topic_id"
   end
 
   create_table "topics", force: :cascade do |t|
