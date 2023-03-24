@@ -6,7 +6,11 @@
       <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true, only_render_name: search_params_present} %>
     <% end %>
     <div class="mb-4">
-      <h1>Ratings by <%= user_subject.username %></h1>
+      <h1>
+        Ratings by <%= user_subject.username %>
+        <%# when there are search_params, add something to show that it's you %>
+        <% if search_params_present && @viewing_current_user %><small class="less-strong">(you)</small><% end %>
+      </h1>
       <% if @ratings_private %>
         <h2 class="mt-4">
           Ratings are private
