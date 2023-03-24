@@ -1,15 +1,24 @@
-<% ratings ||= ratings %>
+<% ratings ||= @ratings %>
 <% skip_sortable ||= false %>
 <% edit_ratings ||= false %>
 <% render_user ||= false %>
 <% hide_private_users ||= false %>
 <% render_assign_topic ||= false %>
-<div class="full-screen-table full-screen-table-auto-width toggleChecksWrapper">
+<% hide_header ||= false %>
+<% render_ranking ||= false %>
+<% ranking_modifier ||= 1 %>
+<% rendered_count = ratings.count %>
+<% table_classes = "full-screen-table full-screen-table-auto-width" %>
+<% table_classes += " toggleChecksWrapper" if render_assign_topic %>
+<% table_classes += " sortableRanking" if render_ranking %>
+<div class="<%= table_classes %>">
   <table class="table table-sm break-words">
-    <thead class="sortable">
+    <thead class="sortable <%= hide_header ? 'invisible' : '' %>">
       <tr>
         <% if render_assign_topic %>
           <th><input type="checkbox" class="less-strong toggleChecks hidden" value="true"></th>
+        <% elsif render_ranking %>
+          <th>Rank</th>
         <% end %>
         <th>
           <%= sortable "created_at", "Rated", skip_sortable: skip_sortable %>
@@ -47,11 +56,14 @@
       </tr>
     </thead>
     <tbody>
-      <% @ratings.each do |rating| %>
+      <% ratings.each_with_index do |rating, i| %>
         <% private_user = render_user && hide_private_users && rating.account_private? %>
         <tr>
           <% if render_assign_topic %>
             <td><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(@assign_topic), class: "toggleableCheck" %></td>
+          <% elsif render_ranking %>
+            <% rank = (i + 1) * ranking_modifier %>
+            <td class="rank-cell"><%= number_field_tag "rating_rank_#{rating.id}", rank, step: 1, min: 0, class: "form-control w-8" %></td>
           <% end %>
           <td>
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= rating.id %></code><% end %>

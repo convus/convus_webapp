@@ -7,6 +7,7 @@ class CreateTopicReviewVotes < ActiveRecord::Migration[7.0]
       t.boolean :manual_rank, default: false
       t.integer :vote_score
       t.boolean :recommended, default: false
+      t.datetime :rating_at
 
       t.timestamps
     end

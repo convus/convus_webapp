@@ -14,6 +14,7 @@ class TopicReviewVote < ApplicationRecord
   scope :recommended, -> { where(recommended: true) }
   scope :not_recommended, -> { where(recommended: false) }
   scope :vote_ordered, -> { order(vote_score: :desc) }
+  scope :rating_ordered, -> { order(:rating_at) }
 
   attr_accessor :skip_calculated_vote_score
 
@@ -38,6 +39,8 @@ class TopicReviewVote < ApplicationRecord
     if !skip_calculated_vote_score && auto_rank?
       self.vote_score = calculated_vote_score
     end
+    # It's possible that rating will use updated_at in the future
+    self.rating_at = rating&.created_at || Timc.current
     self.recommended = vote_score > 0
   end
 

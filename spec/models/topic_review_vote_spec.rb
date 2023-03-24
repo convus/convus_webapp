@@ -42,7 +42,8 @@ RSpec.describe TopicReviewVote, type: :model do
 
   describe "calculate_vote_score" do
     let(:topic) { FactoryBot.create(:topic) }
-    let(:rating) { FactoryBot.create(:rating_with_topic, topics_text: topic.name) }
+    let(:time) { Time.current - 2.days }
+    let(:rating) { FactoryBot.create(:rating_with_topic, topics_text: topic.name, created_at: time) }
     let(:topic_review_vote) { FactoryBot.create(:topic_review_vote, topic: topic, rating: rating) }
     let(:user) { rating.user }
     it "calculates" do
@@ -50,6 +51,9 @@ RSpec.describe TopicReviewVote, type: :model do
       expect(topic_review_vote.calculated_vote_score).to eq 1
       expect(topic_review_vote.vote_score).to eq 1
       expect(topic_review_vote.recommended).to be_truthy
+      expect(topic_review_vote.created_at).to be_within(1).of Time.current
+      expect(rating.created_at).to be_within(1).of time
+      expect(topic_review_vote.rating_at).to be_within(1).of time
     end
     describe "second rating" do
       let(:topic_review_vote2) { FactoryBot.create(:topic_review_vote, topic: topic, user: user) }

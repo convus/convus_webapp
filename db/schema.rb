@@ -105,6 +105,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
     t.boolean "manual_rank", default: false
     t.integer "vote_score"
     t.boolean "recommended", default: false
+    t.datetime "rating_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["rating_id"], name: "index_topic_review_votes_on_rating_id"

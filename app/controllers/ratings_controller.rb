@@ -13,7 +13,7 @@ class RatingsController < ApplicationController
       end
     end
     page = params[:page] || 1
-    @per_page = params[:per_page] || 25
+    @per_page = params[:per_page] || 50
     @ratings = viewable_ratings.reorder("ratings.#{sort_column} #{sort_direction}")
       .includes(:citation, :user).page(page).per(@per_page)
     if params[:search_assign_topic].present?

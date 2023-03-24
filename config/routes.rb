@@ -29,7 +29,7 @@ Rails.application.routes.draw do
     collection { post :add_topic }
   end
 
-  resources :reviews, only: %i[index show update]
+  resources :reviews, only: %i[index update]
 
   namespace :api, defaults: {format: "json"} do
     namespace :v1 do

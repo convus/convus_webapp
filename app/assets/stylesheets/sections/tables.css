@@ -53,3 +53,30 @@
 .sortable .sortable-link {
   @apply text-bodytext underline;
 }
+
+thead.invisible {
+  & tr, & th {
+    border-color: transparent;
+  }
+}
+
+.rank-cell {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  & input::-webkit-outer-spin-button,
+  & input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  & input[type=number] {
+    -moz-appearance: textfield;
+  }
+  & .form-control {
+    padding: 0;
+    line-height: 1;
+    text-align: center;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+}
