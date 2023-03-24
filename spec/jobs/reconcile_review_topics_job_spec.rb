@@ -77,7 +77,7 @@ RSpec.describe ReconcileReviewTopicsJob, type: :job do
         topic_investigation_vote = TopicInvestigationVote.last
         expect(topic_investigation_vote.review_id).to eq review.id
         expect(topic_investigation_vote.topic.id).to eq topic.id
-        expect(topic_investigation_vote.listing_order).to eq 1
+        expect(topic_investigation_vote.vote_score).to eq 1
         review.update(topics_text: "not the same topic")
         instance.perform(review.id)
         review.reload

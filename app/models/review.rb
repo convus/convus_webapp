@@ -136,7 +136,7 @@ class Review < ApplicationRecord
     !account_public?
   end
 
-  def default_score
+  def default_vote_score
     if quality_high?
       1000
     elsif quality_low?

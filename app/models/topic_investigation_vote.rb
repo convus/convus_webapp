@@ -13,8 +13,9 @@ class TopicInvestigationVote < ApplicationRecord
   scope :auto_rank, -> { where(manual_rank: false) }
   scope :recommended, -> { where(recommended: true) }
   scope :not_recommended, -> { where(recommended: false) }
+  scope :vote_ordered, -> { order(vote_score: :desc) }
 
-  attr_accessor :skip_calculated_listing_order
+  attr_accessor :skip_calculated_vote_score
 
   def topic
     topic_investigation&.topic
@@ -34,10 +35,10 @@ class TopicInvestigationVote < ApplicationRecord
 
   def set_calculated_attributes
     self.user ||= review&.user
-    if !skip_calculated_listing_order && auto_rank?
-      self.listing_order = calculated_listing_order
+    if !skip_calculated_vote_score && auto_rank?
+      self.vote_score = calculated_vote_score
     end
-    self.recommended = listing_order > 0
+    self.recommended = vote_score > 0
   end
 
   def investigation_user_votes
@@ -52,9 +53,9 @@ class TopicInvestigationVote < ApplicationRecord
     id.present? ? topic_user_reviews.where("id < ?", review_id) : topic_user_reviews
   end
 
-  def calculated_listing_order
-    dscore = review.default_score
-    prev_reviews_matching_score = prev_topic_user_reviews.select { |r| r.default_score == dscore }
+  def calculated_vote_score
+    dscore = review.default_vote_score
+    prev_reviews_matching_score = prev_topic_user_reviews.select { |r| r.default_vote_score == dscore }
     dscore + 1 + prev_reviews_matching_score.count
   end
 end

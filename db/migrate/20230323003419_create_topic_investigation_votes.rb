@@ -5,7 +5,7 @@ class CreateTopicInvestigationVotes < ActiveRecord::Migration[7.0]
       t.references :topic_investigation
       t.references :review
       t.boolean :manual_rank, default: false
-      t.integer :listing_order
+      t.integer :vote_score
       t.boolean :recommended, default: false
 
       t.timestamps

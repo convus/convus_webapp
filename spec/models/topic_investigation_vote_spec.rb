@@ -14,22 +14,41 @@ RSpec.describe TopicInvestigationVote, type: :model do
     end
   end
 
-  describe "skip_calculated_listing_order" do
-    let(:topic_investigation_vote) { FactoryBot.create(:topic_investigation_vote, listing_order: 5, skip_calculated_listing_order: true) }
+  describe "skip_calculated_vote_score" do
+    let(:topic_investigation_vote) { FactoryBot.create(:topic_investigation_vote, vote_score: 5, skip_calculated_vote_score: true) }
     it "assigns without calculate" do
-      expect(topic_investigation_vote.reload.listing_order).to eq 5
+      expect(topic_investigation_vote.reload.vote_score).to eq 5
     end
   end
 
-  describe "calculate_listing_order" do
+  describe "vote_ordered" do
+    let!(:tiv3) { FactoryBot.create(:topic_investigation_vote, vote_score: 1001, skip_calculated_vote_score: true) }
+    let(:topic_investigation) { tiv3.user }
+    let(:user) { tiv3.user }
+    let(:topic) { tiv3.topic }
+    let!(:tiv1) { FactoryBot.create(:topic_investigation_vote, vote_score: 1, user: user, topic: topic, skip_calculated_vote_score: true) }
+    let!(:tiv2) { FactoryBot.create(:topic_investigation_vote, vote_score: 2, user: user, topic: topic, skip_calculated_vote_score: true) }
+    let!(:tiv0) { FactoryBot.create(:topic_investigation_vote, vote_score: -5, user: user, topic: topic, skip_calculated_vote_score: true) }
+    let(:vote_ordered_ids) { [tiv3.id, tiv2.id, tiv1.id, tiv0.id] }
+    it "orders" do
+      # Verify all on same topic_investigation and same user
+      expect(topic_investigation.topic_investigation_votes.order(:id).pluck(:id)).to eq([tiv3.id, tiv1.id, tiv2.id, tiv0.id])
+      expect(user.topic_investigation_votes.order(:id).pluck(:id)).to eq([tiv3.id, tiv1.id, tiv2.id, tiv0.id])
+      expect(tiv3.reload.vote_score).to eq 1001
+      expect(user.topic_investigation_votes.vote_ordered.pluck(:id)).to eq vote_ordered_ids
+      expect(user.topic_investigation_votes.vote_ordered.recommended.pluck(:id)).to eq(vote_ordered_ids - [tiv0.id])
+    end
+  end
+
+  describe "calculate_vote_score" do
     let(:topic) { FactoryBot.create(:topic) }
     let(:review) { FactoryBot.create(:review_with_topic, topics_text: topic.name) }
     let(:topic_investigation_vote) { FactoryBot.create(:topic_investigation_vote, topic: topic, review: review) }
     let(:user) { review.user }
     it "calculates" do
-      expect(review.default_score).to eq 0
-      expect(topic_investigation_vote.calculated_listing_order).to eq 1
-      expect(topic_investigation_vote.listing_order).to eq 1
+      expect(review.default_vote_score).to eq 0
+      expect(topic_investigation_vote.calculated_vote_score).to eq 1
+      expect(topic_investigation_vote.vote_score).to eq 1
       expect(topic_investigation_vote.recommended).to be_truthy
     end
     describe "second review" do
@@ -46,37 +65,37 @@ RSpec.describe TopicInvestigationVote, type: :model do
         expect(topic_investigation_vote.reload.prev_topic_user_reviews.pluck(:id)).to eq([])
         expect(topic_investigation_vote.investigation_user_votes.order(:id).pluck(:id)).to eq vote_ids
         expect(topic_investigation_vote.topic_user_reviews.order(:id).pluck(:id)).to eq review_ids
-        expect(topic_investigation_vote.calculated_listing_order).to eq 1
+        expect(topic_investigation_vote.calculated_vote_score).to eq 1
         expect(topic_investigation_vote2.reload.topic_user_reviews.order(:id).pluck(:id)).to eq review_ids
         expect(topic_investigation_vote2.id).to be > topic_investigation_vote.id
         expect(topic_investigation_vote2.prev_topic_user_reviews.pluck(:id)).to eq([review.id])
-        expect(topic_investigation_vote2.calculated_listing_order).to eq 2
+        expect(topic_investigation_vote2.calculated_vote_score).to eq 2
       end
       describe "review is high quality" do
         let(:review) { FactoryBot.create(:review_with_topic, topics_text: topic.name, quality: "quality_high") }
         it "they are in different tranches" do
-          expect(review.default_score).to eq 1000
+          expect(review.default_vote_score).to eq 1000
           expect(topic_investigation_vote).to be_valid
           expect(topic_investigation_vote2).to be_valid
-          expect(topic_investigation_vote2.review.default_score).to eq 0
+          expect(topic_investigation_vote2.review.default_vote_score).to eq 0
           expect(user.reload.topic_investigation_votes.order(:id).pluck(:id)).to eq vote_ids
           expect(topic.reload.topic_investigation_votes.order(:id).pluck(:id)).to eq vote_ids
           expect(topic_investigation_vote.reload.topic_user_reviews.order(:id).pluck(:id)).to eq review_ids
-          expect(topic_investigation_vote.calculated_listing_order).to eq 1001
+          expect(topic_investigation_vote.calculated_vote_score).to eq 1001
           expect(topic_investigation_vote2.reload.topic_user_reviews.order(:id).pluck(:id)).to eq review_ids
           expect(topic_investigation_vote2.prev_topic_user_reviews.pluck(:id)).to eq([review.id])
-          expect(topic_investigation_vote2.calculated_listing_order).to eq 1
+          expect(topic_investigation_vote2.calculated_vote_score).to eq 1
         end
       end
       describe "review is low quality" do
         let(:review) { FactoryBot.create(:review_with_topic, topics_text: topic.name, quality: "quality_low") }
         it "they are in different tranches" do
-          expect(review.default_score).to eq(-1000)
+          expect(review.default_vote_score).to eq(-1000)
           expect(topic_investigation_vote).to be_valid
           expect(topic_investigation_vote2).to be_valid
-          expect(topic_investigation_vote2.review.default_score).to eq 0
-          expect(topic_investigation_vote.calculated_listing_order).to eq(-999)
-          expect(topic_investigation_vote2.calculated_listing_order).to eq 1
+          expect(topic_investigation_vote2.review.default_vote_score).to eq 0
+          expect(topic_investigation_vote.calculated_vote_score).to eq(-999)
+          expect(topic_investigation_vote2.calculated_vote_score).to eq 1
         end
       end
     end

@@ -139,4 +139,25 @@ RSpec.describe Review, type: :model do
       end
     end
   end
+
+  describe "default_vote_score" do
+    let(:review) { Review.new }
+    it "is 0" do
+      expect(review.default_attrs?).to be_truthy
+      expect(review.default_vote_score).to eq 0
+    end
+    context "high quality" do
+      let(:review) { Review.new(quality: :quality_high) }
+      it "is 1000" do
+        expect(review.default_attrs?).to be_falsey
+        expect(review.default_vote_score).to eq 1000
+      end
+    end
+    context "low quality" do
+      let(:review) { Review.new(quality: :quality_low) }
+      it "is -1000" do
+        expect(review.default_vote_score).to eq(-1000)
+      end
+    end
+  end
 end

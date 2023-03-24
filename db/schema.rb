@@ -103,7 +103,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
     t.bigint "topic_investigation_id"
     t.bigint "review_id"
     t.boolean "manual_rank", default: false
-    t.integer "listing_order"
+    t.integer "vote_score"
     t.boolean "recommended", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
