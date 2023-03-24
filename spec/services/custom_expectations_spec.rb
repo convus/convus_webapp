@@ -49,7 +49,7 @@ RSpec.describe "custom_expectations spec" do
   end
 
   describe "expect_attrs_to_match_hash" do
-    let(:obj) { Review.new(timezone: "", submitted_url: "https://example.com") }
+    let(:obj) { Rating.new(timezone: "", submitted_url: "https://example.com") }
     let(:hash) { {timezone: "America/party", submitted_url: "https://example.com"} }
 
     it "matches" do
@@ -60,7 +60,7 @@ RSpec.describe "custom_expectations spec" do
     end
 
     context "match_timezone" do
-      let(:obj) { Review.new(submitted_url: "http://example.com", learned_something: true, timezone: nil) }
+      let(:obj) { Rating.new(submitted_url: "http://example.com", learned_something: true, timezone: nil) }
       let(:hash) { {submitted_url: "http://example.com", learned_something: "true", timezone: "Europe/Kyiv"} }
       it "doesn't match if timezone is incorrect" do
         expect(obj.timezone).to_not eq hash[:timezone]

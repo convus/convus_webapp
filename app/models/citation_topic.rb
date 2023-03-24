@@ -24,6 +24,6 @@ class CitationTopic < ApplicationRecord
   private
 
   def calculated_orphaned?
-    citation.review_topics.where(topic_id: topic_id).limit(1).none?
+    citation.rating_topics.where(topic_id: topic_id).limit(1).none?
   end
 end

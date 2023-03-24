@@ -6,11 +6,11 @@
       <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true, only_render_name: search_params_present} %>
     <% end %>
     <div class="mb-4">
-      <h1>Reviews by <%= user_subject.username %></h1>
-      <% if @reviews_private %>
+      <h1>Ratings by <%= user_subject.username %></h1>
+      <% if @ratings_private %>
         <h2 class="mt-4">
-          Reviews are private
-          <% if @can_view_reviews %>
+          Ratings are private
+          <% if @can_view_ratings %>
             <small class="less-strong">
               (they're visible because
               <% if @viewing_current_user %>it's your account<% else %>you follow them<% end %>)
@@ -20,47 +20,47 @@
       <% end %>
     </div>
   <% elsif viewing_display_name == "following" %>
-    <h1 class="mt-4 mb-4">Reviews by people you <%= link_to "follow", following_u_path(id: current_user.to_param) %></h1>
+    <h1 class="mt-4 mb-4">Ratings by people you <%= link_to "follow", following_u_path(id: current_user.to_param) %></h1>
   <% else %>
     <h1 class="mt-4">
-      Recent reviews
+      Recent ratings
     </h1>
   <% end %>
 </div>
-<% if @can_view_reviews %>
-  <% if @reviews.total_count == 0 %>
+<% if @can_view_ratings %>
+  <% if @ratings.total_count == 0 %>
     <div class="large-width-padded-container">
       <% if viewing_display_name == "following" %>
-        <h4 class="standard-top-offset">No one you follow has visible reviews</h4>
+        <h4 class="standard-top-offset">No one you follow has visible ratings</h4>
       <% else %>
-        <h4 class="standard-top-offset"><%= user_subject.username %> has no reviews</h4>
+        <h4 class="standard-top-offset"><%= user_subject.username %> has no ratings</h4>
       <% end %>
     </div>
   <% else %>
     <div class="large-width-padded-container">
       <% if viewing_display_name == "recent" %>
-        <p class="less-strong mb-4"><em>See reviews by <%= link_to "people you're following", reviews_path(user: "following") %></em></p>
+        <p class="less-strong mb-4"><em>See ratings by <%= link_to "people you're following", ratings_path(user: "following") %></em></p>
       <% end %>
-      <%= render partial: "/shared/current_header", locals: {viewing: "Reviews", collection: @reviews} %>
+      <%= render partial: "/shared/current_header", locals: {viewing: "Ratings", collection: @ratings} %>
     </div>
     <% if @assign_topic.present? %>
       <%# duplicating this whole thing is gross, but... HACK HACK HACK %>
-      <%= form_tag add_topic_reviews_path(sortable_search_params), method: :post, class: "" do %>
-        <%= hidden_field_tag :included_reviews, @reviews.pluck(:id).join(",") %>
+      <%= form_tag add_topic_ratings_path(sortable_search_params), method: :post, class: "" do %>
+        <%= hidden_field_tag :included_ratings, @ratings.pluck(:id).join(",") %>
         <p class="mb-4 text-center">
           <%= button_tag type: "submit", class: "btn btn-success" do %>
-            Mark checked reviews applicable to <em class="ml-1"><%= @assign_topic.name %></em>
+            Mark checked ratings applicable to <em class="ml-1"><%= @assign_topic.name %></em>
           <% end %>
         </p>
-        <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: @viewing_display_name == "recent", render_assign_topic: @assign_topic} %>
+        <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: @viewing_display_name == "recent", render_assign_topic: @assign_topic} %>
       <% end %>
     <% else %>
       <%# duplicating this whole thing is gross %>
-      <%= render partial: "table", locals: {reviews: @reviews, edit_reviews: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: @viewing_display_name == "recent"} %>
+      <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: @viewing_display_name == "recent"} %>
     <% end %>
     <div class="large-width-padded-container">
       <div class="row">
-        <%= render partial: "tranzito_utils/pagination", locals: {collection: @reviews, name: "Review", skip_total: true} %>
+        <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating", skip_total: true} %>
       </div>
     </div>
   <% end %>

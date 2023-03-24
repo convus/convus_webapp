@@ -1,8 +1,8 @@
-class ReviewsController < ApplicationController
+class RatingsController < ApplicationController
   include TranzitoUtils::SortableTable
   before_action :set_period, only: %i[index]
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
-  before_action :find_and_authorize_review, only: %i[edit update destroy]
+  before_action :find_and_authorize_rating, only: %i[edit update destroy]
   helper_method :viewing_display_name
 
   def index
@@ -12,18 +12,18 @@ class ReviewsController < ApplicationController
     end
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
-    @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
+    @ratings = viewable_ratings.reorder("ratings.#{sort_column} #{sort_direction}")
       .includes(:citation, :user).page(page).per(@per_page)
     if params[:search_assign_topic].present?
       @assign_topic = Topic.friendly_find(params[:search_assign_topic])
     end
-    @page_title = "#{viewing_display_name.titleize} reviews - Convus"
+    @page_title = "#{viewing_display_name.titleize} ratings - Convus"
   end
 
   def new
     @source = params[:source].presence || "web"
     @no_layout = @source != "web"
-    @review ||= Review.new(source: @source)
+    @rating ||= Rating.new(source: @source)
     if @source == "web"
       redirect_to_signup_unless_user_present!
     elsif @source == "turbo_stream"
@@ -32,21 +32,21 @@ class ReviewsController < ApplicationController
   end
 
   def create
-    @review = Review.new(permitted_create_params)
-    @review.user = current_user
-    if @review.save
+    @rating = Rating.new(permitted_create_params)
+    @rating.user = current_user
+    if @rating.save
       respond_to do |format|
         format.html do
-          flash[:success] = "Review added"
-          redirect_source = (@review.source == "web") ? nil : @review.source
-          redirect_to new_review_path(source: redirect_source), status: :see_other
+          flash[:success] = "Rating added"
+          redirect_source = (@rating.source == "web") ? nil : @rating.source
+          redirect_to new_rating_path(source: redirect_source), status: :see_other
         end
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.replace(@review, partial: "reviews/form", locals: {review: @review}) }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace(@rating, partial: "ratings/form", locals: {rating: @rating}) }
         format.html do
-          flash.now[:error] = "Review not created"
+          flash.now[:error] = "Rating not created"
           render :new
         end
       end
@@ -57,60 +57,60 @@ class ReviewsController < ApplicationController
   end
 
   def update
-    if @review.update(permitted_params)
-      flash[:success] = "Review updated"
-      redirect_to new_review_path, status: :see_other
+    if @rating.update(permitted_params)
+      flash[:success] = "Rating updated"
+      redirect_to new_rating_path, status: :see_other
     else
       render :edit
     end
   end
 
   def add_topic
-    included_review_ids = params[:included_reviews].split(",").map(&:to_i)
+    included_rating_ids = params[:included_ratings].split(",").map(&:to_i)
     @assign_topic = Topic.friendly_find(params[:search_assign_topic])
     if @assign_topic.blank?
       flash[:error] = "Unable to find topic: '#{params[:search_assign_topic]}'"
     else
-      reviews_updated = 0
-      included_reviews = current_user.reviews.where(id: included_review_ids)
-      reviews_with_topic = ReviewTopic.where(topic_id: @assign_topic.id, review_id: included_reviews)
-      # These are the reviews to add topic to
-      included_reviews.where(id: review_ids_selected - reviews_with_topic.pluck(:review_id)).each do |review|
-        reviews_updated += 1
-        review.add_topic(@assign_topic)
+      ratings_updated = 0
+      included_ratings = current_user.ratings.where(id: included_rating_ids)
+      ratings_with_topic = RatingTopic.where(topic_id: @assign_topic.id, rating_id: included_ratings)
+      # These are the ratings to add topic to
+      included_ratings.where(id: rating_ids_selected - ratings_with_topic.pluck(:rating_id)).each do |rating|
+        ratings_updated += 1
+        rating.add_topic(@assign_topic)
       end
-      reviews_with_topic.where.not(review_id: review_ids_selected).each do |review_topic|
-        reviews_updated += 1
-        review_topic.review.remove_topic(@assign_topic)
+      ratings_with_topic.where.not(rating_id: rating_ids_selected).each do |rating_topic|
+        ratings_updated += 1
+        rating_topic.rating.remove_topic(@assign_topic)
       end
-      # included_reviews
-      if reviews_updated > 0
+      # included_ratings
+      if ratings_updated > 0
         flash[:success] = "Added #{@assign}"
       else
-        flash[:notice] = "No reviews were updated"
+        flash[:notice] = "No ratings were updated"
       end
     end
-    redirect_back(fallback_location: reviews_path(user: current_user), status: :see_other)
+    redirect_back(fallback_location: ratings_path(user: current_user), status: :see_other)
   end
 
   def destroy
-    if @review.destroy
-      flash[:success] = "Review deleted"
-      redirect_to reviews_path, status: :see_other
+    if @rating.destroy
+      flash[:success] = "Rating deleted"
+      redirect_to ratings_path, status: :see_other
     else
-      flash[:error] = "Unable to delete review!"
-      redirect_to edit_review_path(@review), status: :see_other
+      flash[:error] = "Unable to delete rating!"
+      redirect_to edit_rating_path(@rating), status: :see_other
     end
   end
 
   private
 
   def permitted_params
-    params.require(:review).permit(*permitted_attrs)
+    params.require(:rating).permit(*permitted_attrs)
   end
 
   def permitted_create_params
-    params.require(:review).permit(*(permitted_attrs + [:timezone]))
+    params.require(:rating).permit(*(permitted_attrs + [:timezone]))
   end
 
   def permitted_attrs
@@ -127,19 +127,19 @@ class ReviewsController < ApplicationController
     %w[recent following]
   end
 
-  def viewable_reviews
+  def viewable_ratings
     if params[:user].blank? || multi_user_searches.include?(params[:user].downcase)
       @viewing_single_user = false
-      @can_view_reviews = true
+      @can_view_ratings = true
     else
       raise ActiveRecord::RecordNotFound if user_subject.blank?
       @viewing_single_user = true
       @viewing_current_user = user_subject == current_user
-      @reviews_private = user_subject.reviews_private
-      @can_view_reviews = user_subject.account_public || @viewing_current_user ||
+      @ratings_private = user_subject.ratings_private
+      @can_view_ratings = user_subject.account_public || @viewing_current_user ||
         user_subject.follower_approved?(current_user)
     end
-    searched_reviews
+    searched_ratings
   end
 
   def viewing_display_name
@@ -150,37 +150,37 @@ class ReviewsController < ApplicationController
     end
   end
 
-  def searched_reviews
-    reviews = if viewing_display_name == "following"
-      current_user&.following_reviews_visible || Review.none
+  def searched_ratings
+    ratings = if viewing_display_name == "following"
+      current_user&.following_ratings_visible || Rating.none
     elsif viewing_display_name == "recent"
-      Review
+      Rating
     else
-      @can_view_reviews ? user_subject.reviews : Review.none
+      @can_view_ratings ? user_subject.ratings : Rating.none
     end
 
     if current_topics.present?
-      reviews = Review.matching_topics(current_topics)
+      ratings = Rating.matching_topics(current_topics)
     end
 
     @time_range_column = "created_at"
-    reviews.where(@time_range_column => @time_range)
+    ratings.where(@time_range_column => @time_range)
   end
 
-  def find_and_authorize_review
-    review = current_user.reviews.where(id: params[:id]).first
-    if review.present?
-      @review = review
+  def find_and_authorize_rating
+    rating = current_user.ratings.where(id: params[:id]).first
+    if rating.present?
+      @rating = rating
     else
-      flash[:error] = "Unable to find that review"
+      flash[:error] = "Unable to find that rating"
       redirect_to(user_root_url) && return
     end
   end
 
-  def review_ids_selected
+  def rating_ids_selected
     params.keys.map do |k|
-      next unless k.match?(/review_id_\d/)
-      k.gsub("review_id_", "")
+      next unless k.match?(/rating_id_\d/)
+      k.gsub("rating_id_", "")
     end.compact.map(&:to_i)
   end
 end

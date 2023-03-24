@@ -5,8 +5,8 @@ module ApplicationHelper
     return nil unless render_user_page_description?
     user = @user || user_subject
     return nil unless user.present?
-    "#{user.reviews.created_today.count} reviews and #{user.total_kudos_today} kudos today " \
-    "(#{user.reviews.created_yesterday.count} reviews and #{user.total_kudos_yesterday} kudos yesterday)"
+    "#{user.ratings.created_today.count} ratings and #{user.total_kudos_today} kudos today " \
+    "(#{user.ratings.created_yesterday.count} ratings and #{user.total_kudos_yesterday} kudos yesterday)"
   end
 
   def page_title
@@ -21,7 +21,7 @@ module ApplicationHelper
   end
 
   def render_user_page_description?
-    controller_name == "reviews" && action_name == "index" && user_subject.present? ||
+    controller_name == "ratings" && action_name == "index" && user_subject.present? ||
       controller_name == "u" && action_name == "show" && @user.present?
   end
 
@@ -55,7 +55,7 @@ module ApplicationHelper
 
   def quality_display(quality = nil)
     return nil if quality.blank?
-    str = Review.quality_humanized(quality)
+    str = Rating.quality_humanized(quality)
     if str == "medium"
       content_tag(:span, "-", class: "less-strong")
     else
@@ -66,15 +66,15 @@ module ApplicationHelper
     end
   end
 
-  def review_display_name(review)
-    if review.display_name == "missing url"
+  def rating_display_name(rating)
+    if rating.display_name == "missing url"
       content_tag(:span, "missing url", class: "less-strong")
     else
-      display_name = review.display_name
+      display_name = rating.display_name
       if display_name.length < 100
-        link_to(display_name, review.citation_url, class: "break-words")
+        link_to(display_name, rating.citation_url, class: "break-words")
       else
-        link_to(display_name.truncate(100), review.citation_url, title: display_name, class: "break-words")
+        link_to(display_name.truncate(100), rating.citation_url, title: display_name, class: "break-words")
       end
     end
   end

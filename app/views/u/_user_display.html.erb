@@ -55,18 +55,18 @@
     </span>
   </p>
   <p class="mt-2">
-    <strong class="inline-block mr-1">Reviews</strong>
+    <strong class="inline-block mr-1">Ratings</strong>
     <% if render_links %>
-      <%= link_to number_with_delimiter(user.reviews.count), reviews_path(user: user.to_param) %>
+      <%= link_to number_with_delimiter(user.ratings.count), ratings_path(user: user.to_param) %>
     <% else %>
-      <%= number_with_delimiter(user.reviews.count) %>
+      <%= number_with_delimiter(user.ratings.count) %>
     <% end %>
-    <% if user.reviews_private %>
+    <% if user.ratings_private %>
       <span class="less-strong">(private)</span>
     <% else %>
       <span class="ml-2 less-strong opacity-0">
-        (<%= number_with_delimiter(user.reviews.created_today.count) %> today  |
-        <%= number_with_delimiter(user.reviews.created_yesterday.count) %> yesterday)
+        (<%= number_with_delimiter(user.ratings.created_today.count) %> today  |
+        <%= number_with_delimiter(user.ratings.created_yesterday.count) %> yesterday)
       </span>
     <% end %>
   </p>

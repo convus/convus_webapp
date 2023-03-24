@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   get "/browser_extensions", to: "landing#browser_extensions"
   get "/browser_extension", to: redirect("browser_extensions")
 
-  resources :reviews, except: [:show] do
+  resources :ratings, except: [:show] do
     collection { post :add_topic }
   end
 
@@ -36,7 +36,7 @@ Rails.application.routes.draw do
       resource :auth, only: [:create] do
         collection { get :status }
       end
-      resources :reviews, only: [:create]
+      resources :ratings, only: [:create]
 
       get "*a", to: "api_v1#not_found"
     end

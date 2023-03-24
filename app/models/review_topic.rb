@@ -1,11 +1,11 @@
-class ReviewTopic < ApplicationRecord
-  belongs_to :review
+class RatingTopic < ApplicationRecord
+  belongs_to :rating
   belongs_to :topic
 
-  validates_uniqueness_of :topic_id, scope: [:review_id]
+  validates_uniqueness_of :topic_id, scope: [:rating_id]
 
   def citation
-    review&.citation
+    rating&.citation
   end
 
   def topic_name

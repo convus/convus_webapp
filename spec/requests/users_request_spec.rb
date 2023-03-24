@@ -62,7 +62,7 @@ RSpec.describe "user requests", type: :request do
       end
       context "with password" do
         it "updates" do
-          expect(current_user.reviews_public).to be_truthy
+          expect(current_user.ratings_public).to be_truthy
           patch "/users", params: {user: {
             current_password: "faketestpassword",
             password: "newpassword",

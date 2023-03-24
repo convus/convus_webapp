@@ -1,9 +1,9 @@
 <h1 class="standard-top-offset mb-4">Edit Topic</h1>
-<% review_count = @topic.review_topics.count %>
+<% rating_count = @topic.rating_topics.count %>
 <p class="mb-4">
-  <%= link_to reviews_path(search_topics: @topic.slug) do %>
-    <%= admin_number_display(review_count) %>
-    <%= "review".pluralize(review_count) %>
+  <%= link_to ratings_path(search_topics: @topic.slug) do %>
+    <%= admin_number_display(rating_count) %>
+    <%= "rating".pluralize(rating_count) %>
   <% end %>
 </p>
 <% topic ||= @topic %>
