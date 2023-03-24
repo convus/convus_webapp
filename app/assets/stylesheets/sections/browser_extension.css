@@ -1,12 +1,12 @@
 /* extension popup ID - make sure it matches the extension! */
-#body-popup, #new_review.no-layout {
+#body-popup, #new_rating.no-layout {
   @apply pt-2;
-  padding-left: 0.75rem; /* update review menu if changed */
-  padding-right: 0.75rem; /* update review menu if changed */
+  padding-left: 0.75rem; /* update rating menu if changed */
+  padding-right: 0.75rem; /* update rating menu if changed */
   min-width: 375px;
 }
 
-#review-menu-btn {
+#rating-menu-btn {
   @apply rounded-lg;
   &:hover, &:active, &.active, &:focus {
     @apply  opacity-100 focus:ring-2 bg-gray-200;
@@ -16,7 +16,7 @@
   }
 }
 
-#review-menu {
+#rating-menu {
   @apply mt-4;
   & hr {
     margin: 0 -0.75rem;
@@ -24,7 +24,7 @@
 }
 
 /* Special styles to mock up the extension for local testing */
-#new_review.no-layout {
+#new_rating.no-layout {
   max-width: 375px;
   margin: 0 auto;
   border: 1px solid #ccc;

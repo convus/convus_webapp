@@ -1,7 +1,7 @@
-<%= turbo_frame_tag :new_review, class: (@source == "web" ? "" : "no-layout") do %>
+<%= turbo_frame_tag :new_rating, class: (@source == "web" ? "" : "no-layout") do %>
   <% if @source == "web" %>
     <%= content_for :main_wrapper_class, "small-width-padded-container" %>
-    <h1 class="mb-3">Add Review</h1>
+    <h1 class="mb-3">Add Rating</h1>
     <%# manually override to display URL - hidden by default for styles with browser extension %>
     <style>
       #field-group-url {display: block; visibility: visible; opacity: 1;}
@@ -13,6 +13,6 @@
   <% if current_user.blank? %>
     <h4 class="pt-4 pb-2">Please <%= link_to "log in", new_user_session_url, target: "_blank" %></h4>
   <% else %>
-    <%= render partial: "form", locals: {review: @review, render_menu: @source != "web"} %>
+    <%= render partial: "form", locals: {rating: @rating, render_menu: @source != "web"} %>
   <% end %>
 <% end %>

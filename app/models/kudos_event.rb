@@ -9,12 +9,12 @@ class KudosEvent < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
-  def self.user_review_created_kinds
-    where(kudos_event_kind_id: KudosEventKind.user_review_created_kinds.pluck(:id))
+  def self.user_rating_created_kinds
+    where(kudos_event_kind_id: KudosEventKind.user_rating_created_kinds.pluck(:id))
   end
 
-  def user_review_created_kind?
-    kudos_event_kind.user_review_created_kind?
+  def user_rating_created_kind?
+    kudos_event_kind.user_rating_created_kind?
   end
 
   def kind_name
@@ -22,7 +22,7 @@ class KudosEvent < ApplicationRecord
   end
 
   def max_per_period
-    @max_per_period ||= KudosEventKind.user_review_general.max_per_period
+    @max_per_period ||= KudosEventKind.user_rating_general.max_per_period
   end
 
   def user_day_kudos
@@ -30,8 +30,8 @@ class KudosEvent < ApplicationRecord
   end
 
   def calculated_total_kudos
-    return potential_kudos unless user_review_created_kind?
-    day_kudos_event_ids = user_day_kudos.user_review_created_kinds
+    return potential_kudos unless user_rating_created_kind?
+    day_kudos_event_ids = user_day_kudos.user_rating_created_kinds
       .limit(max_per_period)
       .pluck(:id)
     if id.present?

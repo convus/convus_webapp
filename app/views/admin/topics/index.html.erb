@@ -15,7 +15,7 @@
           <%= sortable "name", skip_sortable: skip_sortable %>
         </th>
         <th><small>previously</small></th>
-        <th>Reviews</th>
+        <th>Ratings</th>
         <th>Active</th>
       </tr>
     </thead>
@@ -36,7 +36,7 @@
           <td>
             <small class="less-strong"><%= topic.previous_slug %></small>
             <td>
-              <%= link_to admin_number_display(topic.review_topics.count), reviews_path(search_topics: topic.slug) %>
+              <%= link_to admin_number_display(topic.rating_topics.count), ratings_path(search_topics: topic.slug) %>
             </td>
             <td class="table-cell-check">
               <%= check_mark if topic.active? %>

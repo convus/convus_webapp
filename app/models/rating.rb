@@ -1,4 +1,4 @@
-class Review < ApplicationRecord
+class Rating < ApplicationRecord
   include CreatedDateable
 
   AGREEMENT_ENUM = {
@@ -21,8 +21,8 @@ class Review < ApplicationRecord
 
   has_many :events, as: :target
   has_many :kudos_events, through: :events
-  has_many :review_topics
-  has_many :topics, through: :review_topics
+  has_many :rating_topics
+  has_many :topics, through: :rating_topics
   has_many :topic_investigation_votes
 
   validates_presence_of :user_id
@@ -32,10 +32,10 @@ class Review < ApplicationRecord
   before_validation :set_calculated_attributes
   before_save :associate_citation
 
-  after_commit :perform_review_created_event_job, only: :create
-  after_commit :reconcile_review_topics
+  after_commit :perform_rating_created_event_job, only: :create
+  after_commit :reconcile_rating_topics
 
-  attr_accessor :skip_review_created_event, :skip_topics_job
+  attr_accessor :skip_rating_created_event, :skip_topics_job
 
   def self.quality_humanized(str)
     return nil if str.blank?
@@ -48,13 +48,13 @@ class Review < ApplicationRecord
 
   def self.find_or_build_for(attrs)
     citation = Citation.find_or_create_for_url(attrs[:submitted_url], attrs[:citation_title])
-    review = where(user_id: attrs[:user_id], citation_id: citation.id).first || Review.new
-    review.attributes = attrs
-    review
+    rating = where(user_id: attrs[:user_id], citation_id: citation.id).first || Rating.new
+    rating.attributes = attrs
+    rating
   end
 
   def self.matching_topics(topic_ids)
-    joins(:review_topics).where(review_topics: {topic_id: Array(topic_ids)})
+    joins(:rating_topics).where(rating_topics: {topic_id: Array(topic_ids)})
   end
 
   def edit_title?
@@ -63,14 +63,14 @@ class Review < ApplicationRecord
 
   # Temporary method to make it easier to delete dupes
   def duplicate?
-    duplicate_reviews = Review.where(citation_id: citation_id).where(user_id: user_id)
+    duplicate_ratings = Rating.where(citation_id: citation_id).where(user_id: user_id)
       .where.not(id: id)
-    return false if duplicate_reviews.none?
-    non_default = duplicate_reviews.select { |r| !r.default_attrs? }
+    return false if duplicate_ratings.none?
+    non_default = duplicate_ratings.select { |r| !r.default_attrs? }
     return true if default_attrs? && non_default.any?
     return true if non_default.any? { |r| r.id > id }
     return false if !default_attrs?
-    duplicate_reviews.any? { |r| r.id > id }
+    duplicate_ratings.any? { |r| r.id > id }
   end
 
   def default_attrs?
@@ -122,7 +122,7 @@ class Review < ApplicationRecord
     citation&.url || submitted_url
   end
 
-  # Added to make testing review form errors easy
+  # Added to make testing rating form errors easy
   def not_error_url
     return true if submitted_url.downcase != "error"
     errors.add(:submitted_url, "'#{submitted_url}' is not valid")
@@ -158,13 +158,13 @@ class Review < ApplicationRecord
     self.error_quotes = nil if error_quotes.blank?
   end
 
-  def perform_review_created_event_job
-    return if !persisted? || skip_review_created_event
-    ReviewCreatedEventJob.perform_async(id)
+  def perform_rating_created_event_job
+    return if !persisted? || skip_rating_created_event
+    RatingCreatedEventJob.perform_async(id)
   end
 
-  def reconcile_review_topics
+  def reconcile_rating_topics
     return if !persisted? || skip_topics_job
-    ReconcileReviewTopicsJob.perform_async(id)
+    ReconcileRatingTopicsJob.perform_async(id)
   end
 end

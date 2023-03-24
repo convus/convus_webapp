@@ -1,5 +1,0 @@
-<h1 class="mb-3">Edit Review</h1>
-<%= render partial: "form", locals: {review: @review} %>
-<div class="mt-5 text-right">
-  <%= button_to "delete review", {controller: "reviews", action: "destroy", id: @review.id},method: :delete, data: {turbo_confirm: "Are you sure you want to remove this review?"}, class: "gray-link"  %>
-</div>

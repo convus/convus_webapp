@@ -67,16 +67,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
     t.index ["user_id"], name: "index_kudos_events_on_user_id"
   end
 
-  create_table "review_topics", force: :cascade do |t|
-    t.bigint "review_id"
+  create_table "rating_topics", force: :cascade do |t|
+    t.bigint "rating_id"
     t.bigint "topic_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["review_id"], name: "index_review_topics_on_review_id"
-    t.index ["topic_id"], name: "index_review_topics_on_topic_id"
+    t.index ["rating_id"], name: "index_rating_topics_on_rating_id"
+    t.index ["topic_id"], name: "index_rating_topics_on_topic_id"
   end
 
-  create_table "reviews", force: :cascade do |t|
+  create_table "ratings", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "citation_id"
     t.text "submitted_url"
@@ -94,20 +94,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
     t.date "created_date"
     t.boolean "learned_something", default: false
     t.boolean "did_not_understand", default: false
-    t.index ["citation_id"], name: "index_reviews_on_citation_id"
-    t.index ["user_id"], name: "index_reviews_on_user_id"
+    t.index ["citation_id"], name: "index_ratings_on_citation_id"
+    t.index ["user_id"], name: "index_ratings_on_user_id"
   end
 
   create_table "topic_investigation_votes", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "topic_investigation_id"
-    t.bigint "review_id"
+    t.bigint "rating_id"
     t.boolean "manual_rank", default: false
     t.integer "vote_score"
     t.boolean "recommended", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["review_id"], name: "index_topic_investigation_votes_on_review_id"
+    t.index ["rating_id"], name: "index_topic_investigation_votes_on_rating_id"
     t.index ["topic_investigation_id"], name: "index_topic_investigation_votes_on_topic_investigation_id"
     t.index ["user_id"], name: "index_topic_investigation_votes_on_user_id"
   end

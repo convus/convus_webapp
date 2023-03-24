@@ -29,7 +29,7 @@ document.addEventListener('turbo:load', () => {
   window.pagination = new Pagination()
   window.pagination.init()
 
-  if (document.getElementById('review-menu')) {
+  if (document.getElementById('rating-menu')) {
     BrowserExtensionScript()
   }
 

@@ -1,6 +1,6 @@
-<% reviews ||= reviews %>
+<% ratings ||= ratings %>
 <% skip_sortable ||= false %>
-<% edit_reviews ||= false %>
+<% edit_ratings ||= false %>
 <% render_user ||= false %>
 <% hide_private_users ||= false %>
 <% render_assign_topic ||= false %>
@@ -12,7 +12,7 @@
           <th><%= check_mark %></th>
         <% end %>
         <th>
-          <%= sortable "created_at", "Reviewed", skip_sortable: skip_sortable %>
+          <%= sortable "created_at", "Ratinged", skip_sortable: skip_sortable %>
         </th>
         <% if render_user %>
           <th class="hidden md:table-cell">
@@ -47,29 +47,29 @@
       </tr>
     </thead>
     <tbody>
-      <% @reviews.each do |review| %>
-        <% private_user = render_user && hide_private_users && review.account_private? %>
+      <% @ratings.each do |rating| %>
+        <% private_user = render_user && hide_private_users && rating.account_private? %>
         <tr>
           <% if render_assign_topic %>
-            <td><%= check_box_tag "review_id_#{review.id}", true, review.has_topic?(@assign_topic) %></td>
+            <td><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(@assign_topic) %></td>
           <% end %>
           <td>
-            <% if display_dev_info? %><code class="only-dev-visible-small"><%= review.id %></code><% end %>
-            <small class="convertTime"><%= l(review.created_at, format: :convert_time) %></small>
-            <% if edit_reviews %>
-              <small class="less-strong"><%= link_to "edit", edit_review_path(review) %></small>
+            <% if display_dev_info? %><code class="only-dev-visible-small"><%= rating.id %></code><% end %>
+            <small class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
+            <% if edit_ratings %>
+              <small class="less-strong"><%= link_to "edit", edit_rating_path(rating) %></small>
             <% end %>
             <% if render_user %>
               <small class="inline md:hidden less-strong">
                 <% if private_user %>
                   private
                 <% else %>
-                  <%= link_to review.user&.username, reviews_path(sortable_search_params.merge(user: review.user.username)) %>
+                  <%= link_to rating.user&.username, ratings_path(sortable_search_params.merge(user: rating.user.username)) %>
                 <% end %>
               </small>
             <% end %>
-            <span class="block md:hidden mt-1 max-w-md"><%= review_display_name(review) %></span>
-            <!-- <span class="block md:hidden text-sm"><%= review.topic_names.join(", ") %></span> -->
+            <span class="block md:hidden mt-1 max-w-md"><%= rating_display_name(rating) %></span>
+            <!-- <span class="block md:hidden text-sm"><%= rating.topic_names.join(", ") %></span> -->
           </td>
           <% if render_user %>
             <td class="hidden md:table-cell less-strong">
@@ -77,31 +77,31 @@
                 <% if private_user %>
                   private
                 <% else %>
-                  <%= link_to review.user&.username, reviews_path(sortable_search_params.merge(user: review.user.username)) %>
+                  <%= link_to rating.user&.username, ratings_path(sortable_search_params.merge(user: rating.user.username)) %>
                 <% end %>
               </small>
             </td>
           <% end %>
           <td class="hidden md:table-cell max-w-lg lg:max-w-2xl">
-            <%= review_display_name(review) %>
+            <%= rating_display_name(rating) %>
           </td>
           <!-- <td class="hidden md:table-cell">
-            <%= review.topic_names.join(", ") %>
+            <%= rating.topic_names.join(", ") %>
           </td> -->
           <td class="text-center border-r">
-            <%= agreement_display(review.agreement) %>
+            <%= agreement_display(rating.agreement) %>
           </td>
           <td class="text-center border-r">
-            <%= quality_display(review.quality) %>
+            <%= quality_display(rating.quality) %>
           </td>
           <td class="table-cell-check border-r">
-            <%= check_mark if review.learned_something? %>
+            <%= check_mark if rating.learned_something? %>
           </td>
           <td class="table-cell-check border-r">
-            <%= check_mark if review.changed_my_opinion? %>
+            <%= check_mark if rating.changed_my_opinion? %>
           </td>
           <td class="table-cell-check border-r">
-            <%= check_mark if review.significant_factual_error? %>
+            <%= check_mark if rating.significant_factual_error? %>
           </td>
         </tr>
       <% end %>

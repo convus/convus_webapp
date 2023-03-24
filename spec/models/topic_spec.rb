@@ -8,10 +8,10 @@ RSpec.describe Topic, type: :model do
       expect(topic.orphaned).to be_truthy
       expect(topic.send(:calculated_orphaned?)).to be_truthy
     end
-    context "with review_topic" do
-      let(:review_topic) { FactoryBot.create(:review_topic, topic: topic) }
+    context "with rating_topic" do
+      let(:rating_topic) { FactoryBot.create(:rating_topic, topic: topic) }
       it "is not orphaned" do
-        expect(review_topic).to be_valid
+        expect(rating_topic).to be_valid
         expect(topic.send(:calculated_orphaned?)).to be_falsey
         expect(topic.orphaned).to be_truthy
         topic.update(updated_at: Time.current)
@@ -20,8 +20,8 @@ RSpec.describe Topic, type: :model do
     end
     context "with citation_topic" do
       let(:citation_topic) { FactoryBot.create(:citation_topic, topic: topic) }
-      let(:review) { FactoryBot.create(:review, submitted_url: citation_topic.citation.url) }
-      let(:review_topic) { FactoryBot.create(:review_topic, review: review, topic: topic) }
+      let(:rating) { FactoryBot.create(:rating, submitted_url: citation_topic.citation.url) }
+      let(:rating_topic) { FactoryBot.create(:rating_topic, rating: rating, topic: topic) }
       it "is not orphaned" do
         expect(citation_topic).to be_valid
         expect(topic.send(:calculated_orphaned?)).to be_truthy
@@ -29,8 +29,8 @@ RSpec.describe Topic, type: :model do
         topic.update(updated_at: Time.current)
         expect(topic.reload.orphaned).to be_truthy
         expect(citation_topic.orphaned).to be_truthy
-        # With review_topic nothing is orphaned
-        expect(review_topic.citation&.id).to eq citation_topic.citation_id
+        # With rating_topic nothing is orphaned
+        expect(rating_topic.citation&.id).to eq citation_topic.citation_id
         expect(topic.send(:calculated_orphaned?)).to be_falsey
         expect(citation_topic.send(:calculated_orphaned?)).to be_falsey
         topic.update(updated_at: Time.current)
@@ -105,22 +105,22 @@ RSpec.describe Topic, type: :model do
       end
     end
     describe "skip_update_associations" do
-      let(:review) { FactoryBot.create(:review_with_topic, topics_text: topic.name) }
+      let(:rating) { FactoryBot.create(:rating_with_topic, topics_text: topic.name) }
       it "skips if passed" do
-        expect(review.topics.pluck(:id)).to eq([topic.id])
+        expect(rating.topics.pluck(:id)).to eq([topic.id])
         Sidekiq::Worker.clear_all
         Topic.find_or_create_for_name("first topic we have")
-        expect(ReconcileReviewTopicsJob.jobs.count).to eq 0
+        expect(ReconcileRatingTopicsJob.jobs.count).to eq 0
       end
       context "new" do
         it "updates" do
-          expect_any_instance_of(Topic).to receive(:enqueue_review_reconcilliation) { true }
+          expect_any_instance_of(Topic).to receive(:enqueue_rating_reconcilliation) { true }
           Topic.find_or_create_for_name("first topic we have")
         end
       end
       context "passed skip" do
         it "updates" do
-          expect_any_instance_of(Topic).to_not receive(:enqueue_review_reconcilliation) { true }
+          expect_any_instance_of(Topic).to_not receive(:enqueue_rating_reconcilliation) { true }
           Topic.find_or_create_for_name("first topic we have", {skip_update_associations: true})
         end
       end
@@ -129,14 +129,14 @@ RSpec.describe Topic, type: :model do
 
   describe "matching_topics" do
     let!(:topic) { FactoryBot.create(:topic, name: "Warmth") }
-    let(:review) { FactoryBot.create(:review, topics_text: "warmth") }
-    let(:review2) { FactoryBot.create(:review, topics_text: "warmed") }
-    before { [review.id, review2.id].each { |i| ReconcileReviewTopicsJob.new.perform(i) } }
+    let(:rating) { FactoryBot.create(:rating, topics_text: "warmth") }
+    let(:rating2) { FactoryBot.create(:rating, topics_text: "warmed") }
+    before { [rating.id, rating2.id].each { |i| ReconcileRatingTopicsJob.new.perform(i) } }
     it "finds the things" do
-      expect(review.reload.topics.pluck(:id)).to eq([topic.id])
-      expect(review2.topics.count).to eq 1
-      expect(Review.matching_topics(topic.id).pluck(:id)).to eq([review.id])
-      # expect(Review.matching_topics([topic_id])).to eq([review.id])
+      expect(rating.reload.topics.pluck(:id)).to eq([topic.id])
+      expect(rating2.topics.count).to eq 1
+      expect(Rating.matching_topics(topic.id).pluck(:id)).to eq([rating.id])
+      # expect(Rating.matching_topics([topic_id])).to eq([rating.id])
     end
   end
 

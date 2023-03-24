@@ -1,8 +1,8 @@
 class Topic < ApplicationRecord
   include FriendlyFindable
 
-  has_many :review_topics
-  has_many :reviews, through: :review_topics
+  has_many :rating_topics
+  has_many :ratings, through: :rating_topics
   has_many :citation_topics
   has_many :citations, through: :citation_topics
   has_many :topic_investigations
@@ -71,16 +71,16 @@ class Topic < ApplicationRecord
   def update_associations
     return true if skip_update_associations
     topic_investigations.each { |ti| ti.update(updated_at: Time.current) }
-    enqueue_review_reconcilliation
+    enqueue_rating_reconcilliation
   end
 
-  def enqueue_review_reconcilliation
-    reviews.pluck(:id).each { |i| ReconcileReviewTopicsJob.perform_async(i) }
+  def enqueue_rating_reconcilliation
+    ratings.pluck(:id).each { |i| ReconcileRatingTopicsJob.perform_async(i) }
   end
 
   private
 
   def calculated_orphaned?
-    review_topics.none?
+    rating_topics.none?
   end
 end

@@ -10,7 +10,7 @@
     <% if @user.account_private %>approved<% end %>
     followers
   <% else %>
-    <%= link_to @user.username, reviews_path(user: @user) %> followers
+    <%= link_to @user.username, ratings_path(user: @user) %> followers
   <% end %>
 </h1>
 <%= render partial: "followers_table", locals: {user_followings: @user_followings.approved} %>

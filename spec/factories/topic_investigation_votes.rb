@@ -9,6 +9,6 @@ FactoryBot.define do
       TopicInvestigation.find_by_topic_id(topic.id) ||
         FactoryBot.create(:topic_investigation, topic: topic)
     end
-    review { FactoryBot.create(:review_with_topic, topics_text: topic.name, user: user) }
+    rating { FactoryBot.create(:rating_with_topic, topics_text: topic.name, user: user) }
   end
 end

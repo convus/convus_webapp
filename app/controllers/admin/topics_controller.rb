@@ -7,7 +7,7 @@ class Admin::TopicsController < Admin::BaseController
     page = params[:page] || 1
     @per_page = params[:per_page] || 25
     @topics = searched_topics.reorder(order_scope_query)
-      .includes(:review_topics).page(page).per(@per_page)
+      .includes(:rating_topics).page(page).per(@per_page)
   end
 
   def show

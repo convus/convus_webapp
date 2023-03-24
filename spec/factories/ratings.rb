@@ -1,19 +1,19 @@
 FactoryBot.define do
-  factory :review do
+  factory :rating do
     sequence(:submitted_url) { |n| "https://example.com/submitted-article-#{n}" }
     user { FactoryBot.create(:user) }
 
     trait :with_topic do
-      topics_text { "A review topic" }
+      topics_text { "A rating topic" }
 
-      after(:create) do |review, _evaluator|
-        review.topic_names.each do |n|
+      after(:create) do |rating, _evaluator|
+        rating.topic_names.each do |n|
           topic = Topic.find_or_create_for_name(n)
-          ReviewTopic.create(review: review, topic: topic)
+          RatingTopic.create(rating: rating, topic: topic)
         end
       end
     end
 
-    factory :review_with_topic, traits: [:with_topic]
+    factory :rating_with_topic, traits: [:with_topic]
   end
 end

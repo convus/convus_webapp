@@ -6,7 +6,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :trackable,
     :recoverable, :rememberable, :validatable
 
-  has_many :reviews
+  has_many :ratings
   has_many :events
   has_many :kudos_events
   has_many :user_followings, dependent: :destroy
@@ -50,8 +50,8 @@ class User < ApplicationRecord
     developer?
   end
 
-  def following_reviews_visible
-    Review.where(user_id: user_followings.reviews_visible.pluck(:following_id))
+  def following_ratings_visible
+    Rating.where(user_id: user_followings.ratings_visible.pluck(:following_id))
   end
 
   def to_param
@@ -63,12 +63,12 @@ class User < ApplicationRecord
     !account_private
   end
 
-  def reviews_public
+  def ratings_public
     account_public
   end
 
-  def reviews_private
-    !reviews_public
+  def ratings_private
+    !ratings_public
   end
 
   # Need to pass in the timezone here ;)

@@ -1,6 +1,6 @@
 class Citation < ApplicationRecord
-  has_many :reviews
-  has_many :review_topics, through: :reviews
+  has_many :ratings
+  has_many :rating_topics, through: :ratings
 
   validates_presence_of :url
 

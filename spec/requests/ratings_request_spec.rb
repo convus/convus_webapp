@@ -1,6 +1,6 @@
 require "rails_helper"
 
-base_url = "/reviews"
+base_url = "/ratings"
 RSpec.describe base_url, type: :request do
   let(:full_params) do
     {
@@ -20,7 +20,7 @@ RSpec.describe base_url, type: :request do
   end
   let(:user_subject) { FactoryBot.create(:user, username: "cO0l-name", account_private: account_private) }
   let(:account_private) { true }
-  let(:review) { FactoryBot.create(:review, user: user_subject) }
+  let(:rating) { FactoryBot.create(:rating, user: user_subject) }
 
   describe "new" do
     it "redirects" do
@@ -32,23 +32,23 @@ RSpec.describe base_url, type: :request do
       it "renders without layout" do
         get "#{base_url}/new?source=chrome_extension"
         expect(response.code).to eq "200"
-        expect(response).to render_template("reviews/new")
+        expect(response).to render_template("ratings/new")
         expect(response).to render_template("layouts/application")
       end
     end
   end
 
   context "index" do
-    before { expect(review).to be_present }
+    before { expect(rating).to be_present }
     it "renders" do
       get base_url
       expect(response.code).to eq "200"
       expect(assigns(:user_subject)&.id).to be_blank
       expect(assigns(:viewing_display_name)).to eq "recent"
-      expect(response).to render_template("reviews/index")
+      expect(response).to render_template("ratings/index")
       get "#{base_url}?user=receNT"
       expect(response.code).to eq "200"
-      expect(response).to render_template("reviews/index")
+      expect(response).to render_template("ratings/index")
     end
     context "no user found" do
       it "raises" do
@@ -61,33 +61,33 @@ RSpec.describe base_url, type: :request do
       it "sends to sign in" do
         get "#{base_url}?user=following"
         expect(response).to redirect_to new_user_registration_path
-        expect(session[:user_return_to]).to eq "/reviews?user=following"
+        expect(session[:user_return_to]).to eq "/ratings?user=following"
       end
     end
     context "with private user" do
       let(:account_private) { true }
       it "renders" do
-        expect(user_subject.reviews_public).to be_falsey
+        expect(user_subject.ratings_public).to be_falsey
         expect(user_subject.username_slug).to eq "co0l-name"
         get "#{base_url}?user=cO0l-name"
         expect(assigns(:user_subject)&.id).to eq user_subject.id
-        expect(response).to render_template("reviews/index")
-        expect(assigns(:reviews_private)).to be_truthy
-        expect(assigns(:can_view_reviews)).to be_falsey
-        expect(assigns(:reviews)&.pluck(:id)).to eq([])
+        expect(response).to render_template("ratings/index")
+        expect(assigns(:ratings_private)).to be_truthy
+        expect(assigns(:can_view_ratings)).to be_falsey
+        expect(assigns(:ratings)&.pluck(:id)).to eq([])
         expect(response.body).to match("<meta name=\"description\" content=\"")
       end
     end
     context "with account_public user" do
       let(:account_private) { false }
       it "renders" do
-        expect(user_subject.reviews_public).to be_truthy
+        expect(user_subject.ratings_public).to be_truthy
         get "#{base_url}?user=#{user_subject.username}"
         expect(response.code).to eq "200"
-        expect(response).to render_template("reviews/index")
+        expect(response).to render_template("ratings/index")
         expect(assigns(:user_subject)&.id).to eq user_subject.id
-        expect(assigns(:can_view_reviews)).to be_truthy
-        expect(assigns(:reviews).pluck(:id)).to eq([review.id])
+        expect(assigns(:can_view_ratings)).to be_truthy
+        expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
         # username finding test
         get "#{base_url}?user=%20CO0l_namE"
         expect(response.code).to eq "200"
@@ -107,7 +107,7 @@ RSpec.describe base_url, type: :request do
     include_context :logged_in_as_user
     let(:current_user) { FactoryBot.create(:user_private) }
     describe "index" do
-      before { expect(review && user_subject).to be_present }
+      before { expect(rating && user_subject).to be_present }
       it "redirects" do
         expect {
           get "#{base_url}?user=fff"
@@ -117,43 +117,43 @@ RSpec.describe base_url, type: :request do
         expect(user_subject.account_private).to be_truthy
         get "#{base_url}?user=#{user_subject.id}"
         expect(response.code).to eq "200"
-        expect(response).to render_template("reviews/index")
-        expect(assigns(:reviews_private)).to be_truthy
-        expect(assigns(:can_view_reviews)).to be_falsey
-        expect(assigns(:reviews).pluck(:id)).to eq([])
+        expect(response).to render_template("ratings/index")
+        expect(assigns(:ratings_private)).to be_truthy
+        expect(assigns(:can_view_ratings)).to be_falsey
+        expect(assigns(:ratings).pluck(:id)).to eq([])
         expect(assigns(:viewing_single_user)).to be_truthy
         expect(assigns(:viewing_display_name)).to eq user_subject.username
       end
       context "following" do
         let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject, approved: approved) }
         let(:approved) { false }
-        it "doesn't render reviews" do
+        it "doesn't render ratings" do
           expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
           expect(current_user.followings_approved.pluck(:id)).to eq([])
           expect(user_subject.follower_approved?(current_user)).to be_falsey
           expect(user_subject.account_private).to be_truthy
           get "#{base_url}?user=#{user_subject.id}"
           expect(response.code).to eq "200"
-          expect(response).to render_template("reviews/index")
-          expect(assigns(:reviews_private)).to be_truthy
-          expect(assigns(:can_view_reviews)).to be_falsey
-          expect(assigns(:reviews).pluck(:id)).to eq([])
+          expect(response).to render_template("ratings/index")
+          expect(assigns(:ratings_private)).to be_truthy
+          expect(assigns(:can_view_ratings)).to be_falsey
+          expect(assigns(:ratings).pluck(:id)).to eq([])
           expect(assigns(:viewing_single_user)).to be_truthy
           expect(assigns(:viewing_display_name)).to eq user_subject.username
         end
         context "approved" do
           let(:approved) { true }
-          it "renders reviews" do
+          it "renders ratings" do
             expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
             expect(current_user.followings_approved.pluck(:id)).to eq([user_subject.id])
             expect(user_subject.follower_approved?(current_user)).to be_truthy
             expect(user_subject.account_private).to be_truthy
             get "#{base_url}?user=#{user_subject.id}"
             expect(response.code).to eq "200"
-            expect(response).to render_template("reviews/index")
-            expect(assigns(:reviews_private)).to be_truthy
-            expect(assigns(:can_view_reviews)).to be_truthy
-            expect(assigns(:reviews).pluck(:id)).to eq([review.id])
+            expect(response).to render_template("ratings/index")
+            expect(assigns(:ratings_private)).to be_truthy
+            expect(assigns(:can_view_ratings)).to be_truthy
+            expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
             expect(assigns(:viewing_single_user)).to be_truthy
             expect(assigns(:viewing_display_name)).to eq user_subject.username
           end
@@ -162,19 +162,19 @@ RSpec.describe base_url, type: :request do
       context "current_user is user_subject" do
         let(:current_user) { user_subject }
         let!(:topic) { FactoryBot.create(:topic) }
-        it "shows reviews" do
-          expect(user_subject.reload.reviews_public).to be_falsey
+        it "shows ratings" do
+          expect(user_subject.reload.ratings_public).to be_falsey
           get "#{base_url}?user=cO0l-name"
           expect(assigns(:current_user)&.id).to eq user_subject.id
-          expect(response).to render_template("reviews/index")
-          expect(assigns(:reviews_private)).to be_truthy
-          expect(assigns(:can_view_reviews)).to be_truthy
-          expect(assigns(:reviews)&.pluck(:id)).to eq([review.id])
+          expect(response).to render_template("ratings/index")
+          expect(assigns(:ratings_private)).to be_truthy
+          expect(assigns(:can_view_ratings)).to be_truthy
+          expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
           expect(assigns(:assign_topic)).to be_nil
 
           get "#{base_url}?user=cO0l-name&search_assign_topic=#{topic.slug}"
           expect(assigns(:current_user)&.id).to eq user_subject.id
-          expect(response).to render_template("reviews/index")
+          expect(response).to render_template("ratings/index")
           expect(assigns(:assign_topic)&.id).to eq topic.id
         end
       end
@@ -182,9 +182,9 @@ RSpec.describe base_url, type: :request do
         it "renders" do
           get "#{base_url}?user=following"
           expect(response.code).to eq "200"
-          expect(response).to render_template("reviews/index")
-          expect(assigns(:can_view_reviews)).to be_truthy
-          expect(assigns(:reviews).pluck(:id)).to eq([])
+          expect(response).to render_template("ratings/index")
+          expect(assigns(:can_view_ratings)).to be_truthy
+          expect(assigns(:ratings).pluck(:id)).to eq([])
           expect(assigns(:viewing_single_user)).to be_falsey
           expect(assigns(:viewing_display_name)).to eq "following"
           # Obviously, we do eventually want to have a description here too - but for now, skipping
@@ -193,32 +193,32 @@ RSpec.describe base_url, type: :request do
         context "with following" do
           let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_subject, approved: approved) }
           let(:approved) { false }
-          before { expect(review).to be_present }
-          it "renders with no reviews" do
+          before { expect(rating).to be_present }
+          it "renders with no ratings" do
             expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
             expect(current_user.followings_approved.pluck(:id)).to eq([])
             expect(user_subject.follower_approved?(current_user)).to be_falsey
-            expect(current_user.following_reviews_visible.pluck(:id)).to eq([])
+            expect(current_user.following_ratings_visible.pluck(:id)).to eq([])
             get "#{base_url}?user=following"
             expect(response.code).to eq "200"
-            expect(response).to render_template("reviews/index")
+            expect(response).to render_template("ratings/index")
             expect(assigns(:viewing_single_user)).to be_falsey
-            expect(assigns(:can_view_reviews)).to be_truthy
-            expect(assigns(:reviews).pluck(:id)).to eq([])
+            expect(assigns(:can_view_ratings)).to be_truthy
+            expect(assigns(:ratings).pluck(:id)).to eq([])
           end
           context "approved" do
             let(:approved) { true }
-            it "renders review" do
+            it "renders rating" do
               expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
               expect(current_user.followings_approved.pluck(:id)).to eq([user_subject.id])
               expect(user_subject.follower_approved?(current_user)).to be_truthy
-              expect(current_user.following_reviews_visible.pluck(:id)).to eq([review.id])
+              expect(current_user.following_ratings_visible.pluck(:id)).to eq([rating.id])
               get "#{base_url}?user=following"
               expect(response.code).to eq "200"
-              expect(response).to render_template("reviews/index")
+              expect(response).to render_template("ratings/index")
               expect(assigns(:viewing_single_user)).to be_falsey
-              expect(assigns(:can_view_reviews)).to be_truthy
-              expect(assigns(:reviews).pluck(:id)).to eq([review.id])
+              expect(assigns(:can_view_ratings)).to be_truthy
+              expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
             end
           end
         end
@@ -227,21 +227,21 @@ RSpec.describe base_url, type: :request do
 
     describe "new" do
       it "renders with layout" do
-        expect(current_user.reviews_public).to be_falsey
+        expect(current_user.ratings_public).to be_falsey
         get "#{base_url}/new"
         expect(response.code).to eq "200"
-        expect(response).to render_template("reviews/new")
+        expect(response).to render_template("ratings/new")
         expect(response).to render_template("layouts/application")
-        expect(assigns(:review).source).to eq "web"
+        expect(assigns(:rating).source).to eq "web"
         expect(assigns(:no_layout)).to be_falsey
       end
       context "source safari" do
         it "renders without layout" do
           get "#{base_url}/new?source=safari_extension", headers: {"HTTP_ORIGIN" => "*"}
           expect(response.code).to eq "200"
-          expect(response).to render_template("reviews/new")
+          expect(response).to render_template("ratings/new")
           expect(response).to render_template("layouts/application")
-          expect(assigns(:review).source).to eq "safari_extension"
+          expect(assigns(:rating).source).to eq "safari_extension"
           expect(assigns(:no_layout)).to be_truthy
           # It doesn't do CORS
           expect(response.headers["access-control-allow-origin"]).to be_blank
@@ -251,9 +251,9 @@ RSpec.describe base_url, type: :request do
         it "renders without layout" do
           get "#{base_url}/new?source=turbo_stream"
           expect(response.code).to eq "200"
-          expect(response).to render_template("reviews/new")
+          expect(response).to render_template("ratings/new")
           expect(response).to_not render_template("layouts/application")
-          expect(assigns(:review).source).to eq "turbo_stream"
+          expect(assigns(:rating).source).to eq "turbo_stream"
           expect(assigns(:no_layout)).to be_truthy
         end
       end
@@ -270,52 +270,52 @@ RSpec.describe base_url, type: :request do
       end
 
       it "creates with basic params" do
-        expect(Review.count).to eq 0
+        expect(Rating.count).to eq 0
         expect {
-          post base_url, params: {review: create_params}
-        }.to change(Review, :count).by 1
-        expect(response).to redirect_to(new_review_path)
+          post base_url, params: {rating: create_params}
+        }.to change(Rating, :count).by 1
+        expect(response).to redirect_to(new_rating_path)
         expect(flash[:success]).to be_present
-        review = Review.last
-        expect(review.user_id).to eq current_user.id
-        expect_attrs_to_match_hash(review, create_params)
-        expect(review.citation).to be_present
-        expect(review.timezone).to be_blank
-        expect(review.created_date).to eq Time.current.to_date
-        citation = review.citation
+        rating = Rating.last
+        expect(rating.user_id).to eq current_user.id
+        expect_attrs_to_match_hash(rating, create_params)
+        expect(rating.citation).to be_present
+        expect(rating.timezone).to be_blank
+        expect(rating.created_date).to eq Time.current.to_date
+        citation = rating.citation
         expect(citation.url).to eq "http://example.com"
         expect(citation.title).to be_blank
         expect(Event.count).to eq 0
         expect {
-          ReviewCreatedEventJob.drain
+          RatingCreatedEventJob.drain
         }.to change(Event, :count).by 1
-        event = review.events.last
-        expect(event.kind).to eq "review_created"
+        event = rating.events.last
+        expect(event.kind).to eq "rating_created"
       end
 
       context "turbo_stream" do
         it "creates, not turbo_stream" do
           expect {
-            post base_url, as: :turbo_stream, params: {review: create_params}
+            post base_url, as: :turbo_stream, params: {rating: create_params}
             expect(response.media_type).to_not eq Mime[:turbo_stream]
-          }.to change(Review, :count).by 1
-          expect(response).to redirect_to(new_review_path)
-          review = Review.last
-          expect_attrs_to_match_hash(review, create_params)
-          expect(review.citation).to be_present
-          citation = review.citation
+          }.to change(Rating, :count).by 1
+          expect(response).to redirect_to(new_rating_path)
+          rating = Rating.last
+          expect_attrs_to_match_hash(rating, create_params)
+          expect(rating.citation).to be_present
+          citation = rating.citation
           expect(citation.url).to eq "http://example.com"
           expect(citation.title).to be_blank
         end
         context "with error" do
           let(:error_params) { create_params.merge(submitted_url: "ERROR") }
           it "errors" do
-            expect(Review.count).to eq 0
+            expect(Rating.count).to eq 0
             expect {
-              post base_url, as: :turbo_stream, params: {review: error_params}
+              post base_url, as: :turbo_stream, params: {rating: error_params}
               expect(response.media_type).to eq Mime[:turbo_stream]
-            }.to change(Review, :count).by 0
-            expect_attrs_to_match_hash(assigns(:review), error_params)
+            }.to change(Rating, :count).by 0
+            expect_attrs_to_match_hash(assigns(:rating), error_params)
           end
         end
       end
@@ -323,30 +323,30 @@ RSpec.describe base_url, type: :request do
       context "no csrf" do
         include_context :test_csrf_token
         it "succeeds" do
-          expect(Review.count).to eq 0
+          expect(Rating.count).to eq 0
           expect {
-            post base_url, params: {review: create_params}, as: :turbo_stream
+            post base_url, params: {rating: create_params}, as: :turbo_stream
           }.to raise_error(/csrf/i)
-          expect(Review.count).to eq 0
+          expect(Rating.count).to eq 0
         end
       end
 
       context "full params" do
         let(:create_params) { full_params }
         it "creates with full params" do
-          expect(Review.count).to eq 0
+          expect(Rating.count).to eq 0
 
           expect {
-            post base_url, params: {review: create_params.merge(user_id: 12111)}
-          }.to change(Review, :count).by 1
-          expect(response).to redirect_to(new_review_path(source: "chrome_extension"))
+            post base_url, params: {rating: create_params.merge(user_id: 12111)}
+          }.to change(Rating, :count).by 1
+          expect(response).to redirect_to(new_rating_path(source: "chrome_extension"))
           expect(flash[:success]).to be_present
-          review = Review.last
-          expect(review.user_id).to eq current_user.id
-          expect_attrs_to_match_hash(review, create_params, match_timezone: true)
-          expect(review.timezone).to be_present
-          expect(review.citation).to be_present
-          citation = review.citation
+          rating = Rating.last
+          expect(rating.user_id).to eq current_user.id
+          expect_attrs_to_match_hash(rating, create_params, match_timezone: true)
+          expect(rating.timezone).to be_present
+          expect(rating.citation).to be_present
+          citation = rating.citation
           expect(citation.url).to eq "http://example.com"
           expect(citation.title).to eq "something"
         end
@@ -354,17 +354,17 @@ RSpec.describe base_url, type: :request do
     end
 
     describe "edit" do
-      let(:review) { FactoryBot.create(:review, user: current_user) }
+      let(:rating) { FactoryBot.create(:rating, user: current_user) }
       it "renders" do
-        get "#{base_url}/#{review.to_param}/edit"
+        get "#{base_url}/#{rating.to_param}/edit"
         expect(response.code).to eq "200"
-        expect(response).to render_template("reviews/edit")
+        expect(response).to render_template("ratings/edit")
       end
       context "not user's" do
-        let(:review) { FactoryBot.create(:review) }
+        let(:rating) { FactoryBot.create(:rating) }
         it "redirects" do
-          expect(review.user_id).to_not eq current_user.id
-          get "#{base_url}/#{review.to_param}/edit"
+          expect(rating.user_id).to_not eq current_user.id
+          get "#{base_url}/#{rating.to_param}/edit"
           expect(response).to redirect_to root_path
           expect(flash[:error]).to be_present
         end
@@ -372,88 +372,88 @@ RSpec.describe base_url, type: :request do
     end
 
     describe "update" do
-      let(:review) { FactoryBot.create(:review, user: current_user) }
-      let(:citation) { review.citation }
+      let(:rating) { FactoryBot.create(:rating, user: current_user) }
+      let(:citation) { rating.citation }
       it "updates" do
         expect(citation).to be_valid
-        expect(review.reload.timezone).to be_blank
+        expect(rating.reload.timezone).to be_blank
         expect {
-          patch "#{base_url}/#{review.to_param}", params: {
-            review: full_params
+          patch "#{base_url}/#{rating.to_param}", params: {
+            rating: full_params
           }
-        }.to_not change(Review, :count)
+        }.to_not change(Rating, :count)
         expect(flash[:success]).to be_present
-        review.reload
-        expect_attrs_to_match_hash(review, full_params.except("timezone"))
-        expect(review.timezone).to be_blank
-        expect(review.citation_id).to_not eq citation.id
-        expect(review.citation.url).to eq "http://example.com"
-        expect(review.citation.title).to eq "something"
+        rating.reload
+        expect_attrs_to_match_hash(rating, full_params.except("timezone"))
+        expect(rating.timezone).to be_blank
+        expect(rating.citation_id).to_not eq citation.id
+        expect(rating.citation.url).to eq "http://example.com"
+        expect(rating.citation.title).to eq "something"
       end
       context "no csrf" do
         include_context :test_csrf_token
         it "fails" do
           expect(citation).to be_valid
           expect {
-            patch "#{base_url}/#{review.to_param}", params: {
-              review: full_params
+            patch "#{base_url}/#{rating.to_param}", params: {
+              rating: full_params
             }
           }.to raise_error(/csrf/i)
-          expect(review.reload.submitted_url).to_not eq full_params[:submitted_url]
+          expect(rating.reload.submitted_url).to_not eq full_params[:submitted_url]
         end
       end
     end
 
     describe "add_topic" do
       let!(:topic) { FactoryBot.create(:topic) }
-      let!(:review1) { FactoryBot.create(:review, user: current_user) }
-      let!(:review2) { FactoryBot.create(:review_with_topic, user: current_user, topics_text: topic.name) }
-      let!(:review3) { FactoryBot.create(:review_with_topic, user: current_user, topics_text: topic.name) }
-      let!(:review_other) { FactoryBot.create(:review) }
+      let!(:rating1) { FactoryBot.create(:rating, user: current_user) }
+      let!(:rating2) { FactoryBot.create(:rating_with_topic, user: current_user, topics_text: topic.name) }
+      let!(:rating3) { FactoryBot.create(:rating_with_topic, user: current_user, topics_text: topic.name) }
+      let!(:rating_other) { FactoryBot.create(:rating) }
       it "adds the topic" do
-        expect(ReviewTopic.count).to eq 2
-        expect(review2.reload.topics.pluck(:id)).to eq([topic.id])
-        expect(review3.reload.topics.pluck(:id)).to eq([topic.id])
-        expect(review_other.user_id).to_not eq current_user.id
+        expect(RatingTopic.count).to eq 2
+        expect(rating2.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(rating3.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(rating_other.user_id).to_not eq current_user.id
         Sidekiq::Worker.clear_all
         post "#{base_url}/add_topic", params: {
-          :included_reviews => "#{review1.id},#{review2.id},#{review3.id}",
-          "review_id_#{review1.id}" => "1",
-          "review_id_#{review2.id}" => true,
+          :included_ratings => "#{rating1.id},#{rating2.id},#{rating3.id}",
+          "rating_id_#{rating1.id}" => "1",
+          "rating_id_#{rating2.id}" => true,
           :search_assign_topic => topic.name
         }
         expect(flash[:success]).to be_present
-        expect(ReconcileReviewTopicsJob.jobs.count).to be > 1
-        ReconcileReviewTopicsJob.drain
-        expect(ReviewTopic.count).to eq 2
-        expect(review1.reload.topics.pluck(:id)).to eq([topic.id])
-        expect(review2.reload.topics.pluck(:id)).to eq([topic.id])
-        expect(review3.reload.topics.pluck(:id)).to eq([])
+        expect(ReconcileRatingTopicsJob.jobs.count).to be > 1
+        ReconcileRatingTopicsJob.drain
+        expect(RatingTopic.count).to eq 2
+        expect(rating1.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(rating2.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(rating3.reload.topics.pluck(:id)).to eq([])
       end
     end
 
     describe "delete" do
-      let(:review) { FactoryBot.create(:review, user: current_user) }
-      let(:citation) { review.citation }
+      let(:rating) { FactoryBot.create(:rating, user: current_user) }
+      let(:citation) { rating.citation }
       it "updates" do
-        expect(review.user_id).to eq current_user.id
+        expect(rating.user_id).to eq current_user.id
         expect(citation).to be_valid
         expect(Citation.count).to eq 1
         expect {
-          delete "#{base_url}/#{review.to_param}"
-        }.to change(Review, :count).by(-1)
+          delete "#{base_url}/#{rating.to_param}"
+        }.to change(Rating, :count).by(-1)
         expect(flash[:success]).to be_present
         expect(Citation.count).to eq 1
       end
       context "not users" do
-        let!(:review) { FactoryBot.create(:review) }
+        let!(:rating) { FactoryBot.create(:rating) }
         it "fails" do
-          expect(review.user_id).to_not eq current_user.id
-          expect(Review.count).to eq 1
+          expect(rating.user_id).to_not eq current_user.id
+          expect(Rating.count).to eq 1
           expect(Citation.count).to eq 1
-          delete "#{base_url}/#{review.to_param}"
+          delete "#{base_url}/#{rating.to_param}"
           expect(flash[:error]).to be_present
-          expect(Review.count).to eq 1
+          expect(Rating.count).to eq 1
           expect(Citation.count).to eq 1
         end
       end

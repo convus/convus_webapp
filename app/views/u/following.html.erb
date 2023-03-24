@@ -2,7 +2,7 @@
   <% if @viewing_current_user %>
     Users You follow
   <% else %>
-    Users <%= link_to @user.username, reviews_path(user: @user) %> follows
+    Users <%= link_to @user.username, ratings_path(user: @user) %> follows
   <% end %>
 </h1>
 <% skip_sortable = true %>
@@ -31,7 +31,7 @@
             <small class="convertTime"><%= l(user_following.created_at, format: :convert_time) %></small>
           </td>
           <td>
-            <%= link_to following&.username, reviews_path(user: following) %>
+            <%= link_to following&.username, ratings_path(user: following) %>
           </td>
           <% if update_links %>
             <td>

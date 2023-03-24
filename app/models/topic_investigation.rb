@@ -71,6 +71,6 @@ class TopicInvestigation < ApplicationRecord
 
   def update_associations
     return true if !persisted?
-    topic&.enqueue_review_reconcilliation
+    topic&.enqueue_rating_reconcilliation
   end
 end

@@ -54,7 +54,7 @@
             <% end %>
           </td>
           <td>
-            <%= link_to admin_number_display(topic_investigation.topic_investigation_votes.count), reviews_path(search_topics: topic_investigation.topic_name) %>
+            <%= link_to admin_number_display(topic_investigation.topic_investigation_votes.count), ratings_path(search_topics: topic_investigation.topic_name) %>
           </td>
         </tr>
       <% end %>

@@ -1,11 +1,11 @@
 class TopicInvestigationVote < ApplicationRecord
   belongs_to :topic_investigation
   belongs_to :user
-  belongs_to :review
+  belongs_to :rating
 
-  validates_presence_of :review_id
+  validates_presence_of :rating_id
   validates_presence_of :topic_investigation_id
-  validates_uniqueness_of :review_id, scope: [:topic_investigation_id]
+  validates_uniqueness_of :rating_id, scope: [:topic_investigation_id]
 
   before_validation :set_calculated_attributes
 
@@ -34,7 +34,7 @@ class TopicInvestigationVote < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.user ||= review&.user
+    self.user ||= rating&.user
     if !skip_calculated_vote_score && auto_rank?
       self.vote_score = calculated_vote_score
     end
@@ -45,17 +45,17 @@ class TopicInvestigationVote < ApplicationRecord
     TopicInvestigationVote.where(user_id: user_id, topic_investigation_id: topic_investigation_id)
   end
 
-  def topic_user_reviews
-    Review.where(id: investigation_user_votes.pluck(:review_id)).order(:id)
+  def topic_user_ratings
+    Rating.where(id: investigation_user_votes.pluck(:rating_id)).order(:id)
   end
 
-  def prev_topic_user_reviews
-    id.present? ? topic_user_reviews.where("id < ?", review_id) : topic_user_reviews
+  def prev_topic_user_ratings
+    id.present? ? topic_user_ratings.where("id < ?", rating_id) : topic_user_ratings
   end
 
   def calculated_vote_score
-    dscore = review.default_vote_score
-    prev_reviews_matching_score = prev_topic_user_reviews.select { |r| r.default_vote_score == dscore }
-    dscore + 1 + prev_reviews_matching_score.count
+    dscore = rating.default_vote_score
+    prev_ratings_matching_score = prev_topic_user_ratings.select { |r| r.default_vote_score == dscore }
+    dscore + 1 + prev_ratings_matching_score.count
   end
 end
