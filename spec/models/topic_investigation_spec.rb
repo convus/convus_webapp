@@ -78,4 +78,18 @@ RSpec.describe TopicInvestigation, type: :model do
       end
     end
   end
+
+  describe "friendly_find" do
+    # This friendly_find_slug is unique to make sure that it finds the most recent topic investigation
+    # In the future, may only return non-pending if there is an active or ended. Maybe update slugs of previous ones. IDK!
+    let(:topic) { FactoryBot.create(:topic, name: "What about them clouds") }
+    let!(:topic_investigation) { FactoryBot.create(:topic_investigation, topic: topic) }
+    let!(:topic_investigation2) { FactoryBot.create(:topic_investigation, topic: topic) }
+    it "finds the most recent" do
+      expect(topic_investigation2).to be_valid
+      expect(topic_investigation.id).to be < topic_investigation2.id
+      expect(TopicInvestigation.friendly_find(topic_investigation.id)&.id).to eq topic_investigation.id
+      expect(TopicInvestigation.friendly_find("What about them clouds")&.id).to eq topic_investigation2.id
+    end
+  end
 end

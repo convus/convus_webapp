@@ -29,6 +29,8 @@ Rails.application.routes.draw do
     collection { post :add_topic }
   end
 
+  resources :investigations, only: %i[index show update]
+
   namespace :api, defaults: {format: "json"} do
     namespace :v1 do
       resource :auth, only: [:create] do

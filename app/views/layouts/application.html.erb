@@ -23,22 +23,23 @@
     <% if render_navbar? %>
       <nav class="large-width-padded-container flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4">
         <% if in_admin? %>
-          <%= link_to admin_root_url, class: "main-nav-root-link" do %>
+          <%= link_to admin_root_url, class: "main-nav-link-root" do %>
             <%= image_tag("icon.png", alt: "Convus Logo") %>
             <span class="">admin</span>
           <% end %>
-          <%= active_link "users", admin_users_path, class: "main-nav-root-link ml-2", match_controller: true %>
-          <%= active_link "topics", admin_topics_path, class: "main-nav-root-link ml-2", match_controller: true %>
-          <%= active_link "investigations", admin_topic_investigations_path, class: "main-nav-root-link ml-2", match_controller: true %>
+          <%= active_link "users", admin_users_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= active_link "topics", admin_topics_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= active_link "investigations", admin_topic_investigations_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= link_to "exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
           <% root_active = controller_name == "landing" && action_name == "index" %>
-          <%= link_to user_root_url, class: "main-nav-root-link #{root_active ? 'active' : ''}" do %>
+          <%= link_to user_root_url, class: "main-nav-link-root #{root_active ? 'active' : ''}" do %>
             <%= image_tag("icon.png", alt: "Convus Logo") %>
             <span class="">Convus</span>
           <% end %>
           <% reviews_active = controller_name == "reviews" && viewing_display_name == "recent" %>
           <%= link_to "reviews", reviews_path, class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
+          <%= active_link "investigations", investigations_path, class: "main-nav-link ml-2" %>
           <% if current_user&.admin? %>
             <%= active_link "admin", admin_root_path, class: "main-nav-link ml-3 less-strong" %>
           <% end %>

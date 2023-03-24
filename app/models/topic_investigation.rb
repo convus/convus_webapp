@@ -1,4 +1,6 @@
 class TopicInvestigation < ApplicationRecord
+  include FriendlyFindable
+
   STATUS_ENUM = {pending: 0, active: 1, ended: 2}.freeze
 
   belongs_to :topic
@@ -15,9 +17,14 @@ class TopicInvestigation < ApplicationRecord
 
   attr_accessor :timezone
 
-  # Make it so that there is a single investigation, for convenience
+  # Make it so that there is a single investigation, for MVP convenience
   def self.primary
     active.first || pending.first
+  end
+
+  def self.friendly_find_slug(str = nil)
+    return nil if str.blank?
+    where(slug: Slugifyer.slugify(str)).order(id: :desc).limit(1).first
   end
 
   def start_at_in_zone=(val)
@@ -42,6 +49,7 @@ class TopicInvestigation < ApplicationRecord
       self.topic = Topic.find_or_create_for_name(topic_name, {skip_update_associations: true})
     end
     self.topic_name = topic&.name if topic.present?
+    self.slug = Slugifyer.slugify(topic_name)
     # Reverse the times if they should be reversed
     if start_at.present? && end_at.present? && end_at < start_at
       new_start = end_at

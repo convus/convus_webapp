@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include FriendlyFindable
+
   ROLE_ENUM = {normal_user: 0, developer: 1}.freeze
 
   devise :database_authenticatable, :registerable, :trackable,
@@ -28,20 +30,7 @@ class User < ApplicationRecord
   scope :account_private, -> { where(account_private: true) }
   scope :account_public, -> { where(account_private: false) }
 
-  def self.friendly_find(str)
-    return nil if str.blank?
-    if str.is_a?(Integer) || str.match?(/\A\d+\z/)
-      find_by_id(str)
-    else
-      friendly_find_username(str)
-    end
-  end
-
-  def self.friendly_find!(str)
-    friendly_find(str) || (raise ActiveRecord::RecordNotFound)
-  end
-
-  def self.friendly_find_username(str = nil)
+  def self.friendly_find_slug(str = nil)
     return nil if str.blank?
     find_by_username_slug(Slugifyer.slugify(str))
   end

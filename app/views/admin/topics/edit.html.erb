@@ -1,4 +1,11 @@
-<h1 class="standard-top-offset mb-2">Edit Topic</h1>
+<h1 class="standard-top-offset mb-4">Edit Topic</h1>
+<% review_count = @topic.review_topics.count %>
+<p class="mb-4">
+  <%= link_to reviews_path(search_topics: @topic.slug) do %>
+    <%= admin_number_display(review_count) %>
+    <%= "review".pluralize(review_count) %>
+  <% end %>
+</p>
 <% topic ||= @topic %>
 <% editing_topic = topic.id.present? %>
 <% form_url = editing_topic ? admin_topic_url(topic) : admin_topics_url %>

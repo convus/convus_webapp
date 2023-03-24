@@ -118,6 +118,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
     t.datetime "end_at"
     t.integer "status"
     t.string "topic_name"
+    t.string "slug"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["topic_id"], name: "index_topic_investigations_on_topic_id"

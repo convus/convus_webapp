@@ -1,4 +1,6 @@
 class Topic < ApplicationRecord
+  include FriendlyFindable
+
   has_many :review_topics
   has_many :reviews, through: :review_topics
   has_many :citation_topics
@@ -16,20 +18,9 @@ class Topic < ApplicationRecord
   scope :active, -> { where(orphaned: false) }
   scope :orphaned, -> { where(orphaned: true) }
 
+  to_param
+
   attr_accessor :skip_update_associations
-
-  def self.friendly_find(str)
-    return nil if str.blank?
-    if str.is_a?(Integer) || str.match?(/\A\d+\z/)
-      find_by_id(str)
-    else
-      friendly_find_slug(str)
-    end
-  end
-
-  def self.friendly_find!(str)
-    friendly_find(str) || (raise ActiveRecord::RecordNotFound)
-  end
 
   def self.friendly_find_slug(str = nil)
     return nil if str.blank?
@@ -43,6 +34,10 @@ class Topic < ApplicationRecord
 
   def self.friendly_find_all(arr)
     arr.map { |s| friendly_find(s) }.compact
+  end
+
+  def to_param
+    slug
   end
 
   def active?
