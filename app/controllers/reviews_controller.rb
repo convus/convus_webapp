@@ -18,6 +18,7 @@ class ReviewsController < ApplicationController
   end
 
   def update
+    pp params
   end
 
   private

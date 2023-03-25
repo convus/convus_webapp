@@ -87,7 +87,7 @@ class RatingsController < ApplicationController
       end
       # included_ratings
       if ratings_updated > 0
-        flash[:success] = "Added to #{@assign_topic.name}"
+        flash[:success] = "Added ratings to #{@assign_topic.name}"
       else
         flash[:notice] = "No ratings were updated"
       end

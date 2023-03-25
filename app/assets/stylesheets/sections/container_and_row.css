@@ -28,7 +28,7 @@
 }
 
 .standard-top-offset {
-  @apply mt-8;
+  @apply mt-4 sm:mt-10;
 }
 
 turbo-frame {

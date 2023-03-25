@@ -41,7 +41,7 @@ RSpec.describe TopicReviewVote, type: :model do
       expect(user.topic_review_votes.vote_ordered.constructive.pluck(:id)).to eq(vote_ordered_ids - [tiv3.id, tiv0.id])
       expect(user.topic_review_votes.vote_ordered.not_recommended.pluck(:id)).to eq([tiv0.id])
       expect(user.topic_review_votes.vote_ordered.recommended.pluck(:id)).to eq(vote_ordered_ids - [tiv0.id])
-      expect(user.topic_review_votes.not_recommended.ratings.map(&:id)).to eq([tiv0.rating_id])
+      expect(user.topic_review_votes.not_recommended.ratings.pluck(:id)).to eq([tiv0.rating_id])
     end
   end
 

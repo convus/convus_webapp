@@ -25,9 +25,9 @@ class TopicReviewVote < ApplicationRecord
     %w[constructive required].freeze
   end
 
-  # HACK, I'm sure there is a better way
+  # HACK, I think there is a better way?
   def self.ratings
-    all.map(&:rating).compact
+    Rating.where(id: pluck(:rating_id))
   end
 
   def topic

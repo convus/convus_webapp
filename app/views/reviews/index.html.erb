@@ -1,1 +1,10 @@
-<%= render partial: "/reviews/header" %>
+<div class="large-width-container standard-top-offset">
+  <h1 class="mb-4">
+    Current topic in review is
+    <% if @topic_review.present? %>
+      <%= topic_review_display(@topic_review) %>
+    <% else %>
+      <em>no topic! something is broken!</em>
+    <% end %>
+  </h1>
+</div>
