@@ -8,12 +8,12 @@
 <% render_ranking ||= false %>
 <% ranking_modifier ||= 1 %>
 <% rendered_count = ratings.count %>
-<% table_classes = "full-screen-table full-screen-table-auto-width" %>
+<% table_classes = "table table-sm break-words" %>
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
-<% table_classes += " sortableRanking" if render_ranking %>
-<div class="<%= table_classes %>">
-  <table class="table table-sm break-words">
-    <thead class="sortable <%= hide_header ? 'invisible' : '' %>">
+<% table_classes += " hide_header" if hide_header %>
+<div class="full-screen-table full-screen-table-auto-width">
+  <table class="<%= table_classes %>">
+    <thead class="sortable">
       <tr>
         <% if render_assign_topic %>
           <th><input type="checkbox" class="less-strong toggleChecks hidden" value="true"></th>
@@ -63,7 +63,7 @@
             <td><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(@assign_topic), class: "toggleableCheck" %></td>
           <% elsif render_ranking %>
             <% rank = (i + 1) * ranking_modifier %>
-            <td class="rank-cell"><%= number_field_tag "rating_rank_#{rating.id}", rank, step: 1, min: 0, class: "form-control w-8" %></td>
+            <td class="rank-cell"><%= number_field_tag "rating_rank_#{rating.id}", rank, step: 1, min: 0, class: "form-control w-8 border-slate-900 p-0 text-center leading-none" %></td>
           <% end %>
           <td>
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= rating.id %></code><% end %>
@@ -94,7 +94,7 @@
               </small>
             </td>
           <% end %>
-          <td class="hidden md:table-cell max-w-lg lg:max-w-2xl">
+          <td class="hidden md:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth">
             <%= rating_display_name(rating) %>
           </td>
           <!-- <td class="hidden md:table-cell">

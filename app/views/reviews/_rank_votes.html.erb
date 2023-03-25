@@ -1,9 +1,10 @@
 <% topic_review ||= @topic_review %>
 <% topic_review_votes ||= @topic_review_votes %>
+<%#= form_tag add_topic_ratings_path(sortable_search_params), method: :post, class: "" do %>
 <div class="whoop" data-controller="sortable-ratings">
   <% ratings = topic_review_votes.map(&:rating).compact %>
   <%= render partial: "/ratings/table", locals: {ratings: topic_review_votes.recommended.map(&:rating).compact, skip_sortable: true, hide_header: false, render_ranking: true} %>
-  <div class="large-width-container mt-6">
+  <div class="large-width-container mt-8">
     <h3>
       Articles you wouldn't recommend
       <small class="less-strong">negative rank</small>

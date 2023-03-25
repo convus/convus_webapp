@@ -10,7 +10,7 @@
 
   </h1>
   <% if @topic_review.present? %>
-    <p class="mt-6">Select <%= link_to "articles you've read", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> for this review.</p>
+    <p class="mt-6">Select <%= link_to "articles you've rated", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> for this review.</p>
   <% end %>
 </div>
 <% if @topic_review.present? && current_user.present? && @topic_review_votes.present? %>
