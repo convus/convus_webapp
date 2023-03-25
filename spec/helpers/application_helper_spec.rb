@@ -82,15 +82,58 @@ RSpec.describe ApplicationHelper, type: :helper do
     before do
       allow(view).to receive(:controller_name) { controller_name }
       allow(view).to receive(:action_name) { action_name }
-      # This method is defined in application controller, not sure how to stub right now
-      # allow(view).to receive(:controller_namespace) { controller_namespace }
     end
     let(:controller_namespace) { nil }
     context "landing#about" do
       let(:controller_name) { "landing" }
       let(:action_name) { "about" }
       it "is about" do
-        expect(page_title).to eq "Convus About"
+        expect(page_title).to eq "About — Convus"
+      end
+      context "assigned: page_title" do
+        it "uses" do
+          @page_title = "Special page"
+          expect(page_title).to eq "Special page"
+        end
+      end
+      context "assigned: page_title_prefix" do
+        it "uses" do
+          @page_title_prefix = "Special page"
+          expect(page_title).to eq "Special page — Convus"
+        end
+      end
+      context "assigned: action_display_name" do
+        it "uses" do
+          @action_display_name = "Special page"
+          expect(page_title).to eq "Special page — Convus"
+        end
+      end
+      context "assigned: controller_display_name" do
+        it "uses" do
+          @controller_display_name = "Special page"
+          expect(page_title).to eq "About - Special page — Convus"
+        end
+      end
+    end
+    context "u" do
+      let(:controller_name) { "u" }
+      let(:action_name) { "edit" }
+      it "is users" do
+        expect(page_title).to eq "Edit - Account — Convus"
+      end
+      context "following" do
+        let(:action_name) { "following" }
+        it "is following" do
+          expect(page_title).to eq "Following - Account — Convus"
+        end
+      end
+    end
+    context "admin#topics#index" do
+      let(:controller_namespace) { "admin" }
+      let(:controller_name) { "topics" }
+      let(:action_name) { "index" }
+      it "is about" do
+        expect(page_title).to eq "🧰 Topics"
       end
     end
   end

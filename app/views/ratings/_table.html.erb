@@ -6,11 +6,13 @@
 <% render_assign_topic ||= false %>
 <% hide_header ||= false %>
 <% render_ranking ||= false %>
-<% ranking_modifier ||= 1 %>
+<% negative_ranking ||= false %>
 <% rendered_count = ratings.count %>
+
 <% table_classes = "table table-sm break-words" %>
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
 <% table_classes += " hide_header" if hide_header %>
+
 <div class="full-screen-table full-screen-table-auto-width">
   <table class="<%= table_classes %>">
     <thead class="sortable">
@@ -18,7 +20,8 @@
         <% if render_assign_topic %>
           <th><input type="checkbox" class="less-strong toggleChecks hidden" value="true"></th>
         <% elsif render_ranking %>
-          <th>Rank</th>
+          <% ratings_count = ratings.count %>
+          <th>Order</th>
         <% end %>
         <th>
           <%= sortable "created_at", "Rated", skip_sortable: skip_sortable %>
@@ -62,7 +65,7 @@
           <% if render_assign_topic %>
             <td><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(@assign_topic), class: "toggleableCheck" %></td>
           <% elsif render_ranking %>
-            <% rank = (i + 1) * ranking_modifier %>
+            <% rank = negative_ranking ? (-i - 1) : (ratings_count - i) %>
             <td class="rank-cell"><%= number_field_tag "rating_rank_#{rating.id}", rank, step: 1, min: 0, class: "form-control w-8 border-slate-900 p-0 text-center leading-none" %></td>
           <% end %>
           <td>

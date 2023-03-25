@@ -52,13 +52,13 @@
       <%= form_tag add_topic_ratings_path(sortable_search_params), method: :post, class: "" do %>
         <%= hidden_field_tag :included_ratings, @ratings.pluck(:id).join(",") %>
         <p class="large-width-container mb-3">
-          <%= button_tag type: "submit", class: "btn btn-success" do %>
+          <%= button_tag type: "submit", class: "btn" do %>
             Mark checked ratings applicable to <%= topic_review_display(@assign_topic, "ml-1") %>
           <% end %>
         </p>
         <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: @viewing_display_name == "recent", render_assign_topic: @assign_topic} %>
         <p class="large-width-container mt-2 mb-3">
-          <%= button_tag type: "submit", class: "btn btn-success" do %>
+          <%= button_tag type: "submit", class: "btn" do %>
             Mark checked ratings applicable to <%= topic_review_display(@assign_topic, "ml-1") %>
           <% end %>
         </p>

@@ -19,7 +19,7 @@ class RatingsController < ApplicationController
     if params[:search_assign_topic].present?
       @assign_topic = Topic.friendly_find(params[:search_assign_topic])
     end
-    @page_title = "#{viewing_display_name.titleize} ratings - Convus"
+    @action_display_name = viewing_display_name.titleize
   end
 
   def new

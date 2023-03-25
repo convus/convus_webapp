@@ -11,12 +11,13 @@ module ApplicationHelper
 
   def page_title
     return @page_title if defined?(@page_title)
-    prefix = in_admin? ? "🧰" : "Convus"
-    return "#{prefix} #{@prefixed_page_title}" if @prefixed_page_title.present?
+    suffix = in_admin? ? nil : "— Convus"
+    return "#{@page_title_prefix} #{suffix}" if @page_title_prefix.present?
+    prefix = in_admin? ? "🧰" : nil
     [
       prefix,
-      default_action_name_title,
-      controller_title_for_action
+      [action_display_name, controller_display_name].compact.join(" - "),
+      suffix
     ].compact.join(" ")
   end
 
@@ -90,7 +91,8 @@ module ApplicationHelper
     content_tag(:span, text, class: "font-bold #{klass}")
   end
 
-  def default_action_name_title
+  def action_display_name
+    return @action_display_name if defined?(@action_display_name)
     if action_name == "show"
       # Take up less space for admin
       return in_admin? ? nil : "Display"
@@ -98,12 +100,12 @@ module ApplicationHelper
     (action_name == "index") ? nil : action_name.titleize
   end
 
-  def controller_title_for_action
+  def controller_display_name
     return @controller_display_name if defined?(@controller_display_name)
     # No need to include 'landing'
     c_name = controller_name
     return nil if c_name == "landing"
-    c_name = "users" if c_name == "u"
+    c_name = "account" if c_name == "u"
     return c_name.titleize if %(index).include?(action_name)
     c_name.singularize.titleize
   end

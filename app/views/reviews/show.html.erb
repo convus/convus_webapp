@@ -1,0 +1,31 @@
+<%= content_for :main_wrapper_class, "container-padded" %>
+<%= render partial: "/reviews/header" %>
+<% if current_user.present? && @topic_review_votes.present? %>
+  <% topic_review ||= @topic_review %>
+  <% topic_review_votes ||= @topic_review_votes %>
+  <%= form_tag review_path(topic_review.slug), method: :patch, class: "" do %>
+    <div class="large-width-container mt-8">
+      <hr>
+      <h2 class="mt-6">
+        Order the best articles on <%= topic_review_display(@topic_review) %>
+        <small class="less-strong block sm:inline">higher number is better</small>
+      </h2>
+      <p class="mb-3">
+        <%= button_tag "Update order", type: "submit", class: "btn mt-2" %>
+      </p>
+    </div>
+    <div id="ratingsTableWrap" data-controller="sortable-ratings">
+      <% ratings = topic_review_votes.map(&:rating).compact %>
+      <%= render partial: "/ratings/table", locals: {ratings: topic_review_votes.recommended.map(&:rating).compact, skip_sortable: true, render_ranking: true} %>
+      <div class="large-width-container mt-8">
+        <h3>
+          Articles you wouldn't recommend
+        </h3>
+      </div>
+      <%= render partial: "/ratings/table", locals: {ratings: topic_review_votes.not_recommended.map(&:rating).compact, skip_sortable: true, hide_header: true, render_ranking: true, negative_ranking: true} %>
+    </div>
+    <p class="large-width-container mt-4">
+      <%= button_tag "Update order", type: "submit", class: "btn" %>
+    </p>
+  <% end %>
+<% end %>

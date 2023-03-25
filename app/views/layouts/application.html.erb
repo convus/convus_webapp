@@ -39,7 +39,7 @@
           <% end %>
           <% ratings_active = controller_name == "ratings" && viewing_display_name == "recent" %>
           <%= link_to "ratings", ratings_path, class: "main-nav-link ml-3 #{ratings_active ? 'active' : ''}" %>
-          <%= active_link "reviews", reviews_path, class: "main-nav-link ml-2" %>
+          <%= active_link "topics", reviews_path, class: "main-nav-link ml-2" %>
           <% if current_user&.admin? %>
             <%= active_link "admin", admin_root_path, class: "main-nav-link ml-3 less-strong" %>
           <% end %>
