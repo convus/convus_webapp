@@ -39,14 +39,14 @@ module.exports = {
         extend: {
           spacing: {
             'container-pad': '0.5rem',
-            'rWidth': '42rem' // width of max-w-2xl. For review-width - the width of the review table cell. Hacky :/
+            rWidth: '42rem' // width of max-w-2xl. For review-width - the width of the review table cell. Hacky :/
           },
           fontFamily: {
             serif: ['Iowan Old Style', 'Apple Garamond', 'Baskerville', 'Times New Roman', 'Droid Serif', 'Times', 'Source Serif Pro', 'serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol']
           },
           maxWidth: {
             'main-content': '1024px',
-            'small-container': '580px', // ~ prose width (65ch)
+            'small-container': '580px' // ~ prose width (65ch)
           }
         }
       },

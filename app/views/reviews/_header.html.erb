@@ -1,12 +1,11 @@
 <div class="large-width-container standard-top-offset">
-<h1 class="mb-4">
+  <h1 class="mb-4">
     Current review topic is
     <% if @topic_review.present? %>
       <%= topic_review_display(@topic_review) %>
     <% else %>
       <em>no topic! something is broken!</em>
     <% end %>
-
   </h1>
   <% if @topic_review.present? %>
     <p class="mt-6">Select <%= link_to "articles you've rated", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> for this review.</p>

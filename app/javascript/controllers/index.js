@@ -2,7 +2,7 @@
 // Run that command whenever you add a new controller or create them with
 // ./bin/rails generate stimulus controllerName
 
-import { application } from "./application"
+import { application } from './application'
 
-import SortableRatingsController from "./sortable_ratings_controller"
-application.register("sortable-ratings", SortableRatingsController)
+import SortableRatingsController from './sortable_ratings_controller'
+application.register('sortable-ratings', SortableRatingsController)

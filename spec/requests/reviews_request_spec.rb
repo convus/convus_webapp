@@ -40,7 +40,7 @@ RSpec.describe base_url, type: :request do
     end
 
     describe "show" do
-      before { expect([topic_review_vote.id, topic_review_vote_offtopic.id].count).to eq 2 }
+      before { expect([topic_review_vote.id, topic_review_vote_offtopic.id].size).to eq 2 }
       it "renders" do
         expect(current_user.reload.topic_review_votes.pluck(:id)).to eq([topic_review_vote.id, topic_review_vote_offtopic.id])
         get "#{base_url}/#{topic_review.id}"
