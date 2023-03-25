@@ -53,7 +53,9 @@
   @apply text-bodytext underline;
 }
 
-/* Review ranking table */
+/*
+  Review ranking table
+*/
 .table.hide_header {
   & thead {
     @apply invisible;

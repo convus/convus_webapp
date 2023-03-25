@@ -6,7 +6,7 @@ RSpec.describe TopicReviewVote, type: :model do
     it "is valid" do
       expect(topic_review_vote).to be_valid
       expect(topic_review_vote.user).to be_present
-      expect(topic_review_vote.manual_rank).to be_falsey
+      expect(topic_review_vote.manual_score).to be_falsey
       expect(topic_review_vote.topic_name).to eq topic_review_vote.topic_review.topic_name
       expect(topic_review_vote.rating.topics_text).to match(topic_review_vote.topic_name)
       # Because we don't automatically run the ReconcileRatingTopicsJob
@@ -35,8 +35,13 @@ RSpec.describe TopicReviewVote, type: :model do
       expect(topic_review.topic_review_votes.order(:id).pluck(:id)).to eq([tiv3.id, tiv1.id, tiv2.id, tiv0.id])
       expect(user.topic_review_votes.order(:id).pluck(:id)).to eq([tiv3.id, tiv1.id, tiv2.id, tiv0.id])
       expect(tiv3.reload.vote_score).to eq 1001
+      expect(tiv3.recommended?).to be_truthy
       expect(user.topic_review_votes.vote_ordered.pluck(:id)).to eq vote_ordered_ids
+      expect(user.topic_review_votes.vote_ordered.required.pluck(:id)).to eq([tiv3.id])
+      expect(user.topic_review_votes.vote_ordered.constructive.pluck(:id)).to eq(vote_ordered_ids - [tiv3.id, tiv0.id])
+      expect(user.topic_review_votes.vote_ordered.not_recommended.pluck(:id)).to eq([tiv0.id])
       expect(user.topic_review_votes.vote_ordered.recommended.pluck(:id)).to eq(vote_ordered_ids - [tiv0.id])
+      expect(user.topic_review_votes.not_recommended.ratings.map(&:id)).to eq([tiv0.rating_id])
     end
   end
 
@@ -50,7 +55,8 @@ RSpec.describe TopicReviewVote, type: :model do
       expect(rating.default_vote_score).to eq 0
       expect(topic_review_vote.calculated_vote_score).to eq 1
       expect(topic_review_vote.vote_score).to eq 1
-      expect(topic_review_vote.recommended).to be_truthy
+      expect(topic_review_vote.rank).to eq "constructive"
+      expect(topic_review_vote.recommended?).to be_truthy
       expect(topic_review_vote.created_at).to be_within(1).of Time.current
       expect(rating.created_at).to be_within(1).of time
       expect(topic_review_vote.rating_at).to be_within(1).of time

@@ -102,9 +102,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
     t.bigint "user_id"
     t.bigint "topic_review_id"
     t.bigint "rating_id"
-    t.boolean "manual_rank", default: false
+    t.boolean "manual_score", default: false
     t.integer "vote_score"
-    t.boolean "recommended", default: false
+    t.integer "rank"
     t.datetime "rating_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

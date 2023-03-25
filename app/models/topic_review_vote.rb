@@ -1,7 +1,11 @@
 class TopicReviewVote < ApplicationRecord
+  RANK_ENUM = {not_recommended: 0, constructive: 1, required: 2}.freeze
+
   belongs_to :topic_review
   belongs_to :user
   belongs_to :rating
+
+  enum rank: RANK_ENUM
 
   validates_presence_of :rating_id
   validates_presence_of :topic_review_id
@@ -9,14 +13,22 @@ class TopicReviewVote < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
-  scope :manual_rank, -> { where(manual_rank: true) }
-  scope :auto_rank, -> { where(manual_rank: false) }
-  scope :recommended, -> { where(recommended: true) }
-  scope :not_recommended, -> { where(recommended: false) }
+  scope :manual_score, -> { where(manual_score: true) }
+  scope :auto_score, -> { where(manual_score: false) }
   scope :vote_ordered, -> { order(vote_score: :desc) }
   scope :rating_ordered, -> { order(:rating_at) }
+  scope :recommended, -> { where(rank: recommended_ranks) }
 
   attr_accessor :skip_calculated_vote_score
+
+  def self.recommended_ranks
+    %w[constructive required].freeze
+  end
+
+  # HACK, I'm sure there is a better way
+  def self.ratings
+    all.map(&:rating).compact
+  end
 
   def topic
     topic_review&.topic
@@ -26,22 +38,22 @@ class TopicReviewVote < ApplicationRecord
     topic&.name
   end
 
-  def auto_rank?
-    !manual_rank
+  def recommended?
+    self.class.recommended_ranks.include?(rank)
   end
 
-  def not_recommended?
-    !recommended
+  def auto_score?
+    !manual_score
   end
 
   def set_calculated_attributes
     self.user ||= rating&.user
-    if !skip_calculated_vote_score && auto_rank?
+    if !skip_calculated_vote_score && auto_score?
       self.vote_score = calculated_vote_score
     end
     # It's possible that rating will use updated_at in the future
     self.rating_at = rating&.created_at || Timc.current
-    self.recommended = vote_score > 0
+    self.rank = calculated_rank
   end
 
   def review_user_votes
@@ -60,5 +72,10 @@ class TopicReviewVote < ApplicationRecord
     dscore = rating.default_vote_score
     prev_ratings_matching_score = prev_topic_user_ratings.select { |r| r.default_vote_score == dscore }
     dscore + 1 + prev_ratings_matching_score.count
+  end
+
+  def calculated_rank
+    return "not_recommended" if vote_score < 0
+    (vote_score > Rating::VOTE_QUALITY_OFFSET) ? "required" : "constructive"
   end
 end
