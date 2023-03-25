@@ -82,8 +82,10 @@ class TopicReviewVote < ApplicationRecord
     if dscore < 0
       ratings_matching_count = topic_user_ratings
         .count { |r| r.default_vote_score == dscore }
-      # pp "#{dscore} - #{ratings_matching_count} #{prev_ratings_matching_count}"
-      dscore - (ratings_matching_count - prev_ratings_matching_count) #- 1
+      score_value = ratings_matching_count - prev_ratings_matching_count
+      # Leaving this pp around, because math is confusing and debugging is a pain
+      # pp "#{dscore} - #{ratings_matching_count} #{prev_ratings_matching_count} - #{score_value}"
+      dscore - ((score_value == 0) ? 1 : score_value)
     else
       dscore + 1 + prev_ratings_matching_count
     end

@@ -1,3 +1,6 @@
+# NOTE: For this scoring algorithm to function correctly, the total number of ratings someone has,
+# for a given topic_review, has to be less than .5 rank_offset (currently 500).
+# I don't know when/if that limit will be broken, but - that may cause problems
 class VoteScoreUpdater
   class << self
     def rank_offset
@@ -17,8 +20,22 @@ class VoteScoreUpdater
       default_hash = default_score_hash(topic_review_votes)
       # If it's the same as the default hash, remove any manual scoring
       normalized_hash = normalize_score_hash(rating_ranks)
-      if normalized_hash[:required] == default_hash[:required]
-        topic_review_votes.manual_score.each { |t| t.update(manual_score: false) }
+      default_hash.keys.each { |k| update_rank(k, default_hash[k], normalized_hash[k], topic_review_votes) }
+    end
+
+    private
+
+    def update_rank(rank, default_rank, normalized_rank, topic_review_votes)
+      # Remove any manual_score votes if it is default
+      if default_rank == normalized_rank
+        topic_review_votes.where(id: normalized_rank.keys).manual_score
+          .each { |v| v.update(manual_score: false) }
+      else
+        normalized_rank.each do |i_r|
+          # manual_scoring gets 0.5 the rank offset - so it comes significantly before
+          vote_score = i_r.last + rank_offset / 2
+          TopicReviewVote.find(i_r.first).update(manual_score: true, vote_score: vote_score)
+        end
       end
     end
 
@@ -50,7 +67,7 @@ class VoteScoreUpdater
     end
 
     def default_score_hash(votes)
-      not_recommended = votes.not_recommended.pluck(:id).reverse.each_with_index.map do |id, i|
+      not_recommended = votes.not_recommended.pluck(:id).each_with_index.map do |id, i|
         [id.to_s, (i + 1 + rank_offset) * -1]
       end.to_h
 
@@ -59,7 +76,7 @@ class VoteScoreUpdater
       end.to_h
 
       required = votes.required.pluck(:id).reverse.each_with_index.map do |id, i|
-        [id.to_s, i + rank_offset]
+        [id.to_s, i + 1 + rank_offset]
       end.to_h
 
       {required: required, constructive: constructive, not_recommended: not_recommended}

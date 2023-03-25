@@ -116,9 +116,11 @@ RSpec.describe TopicReviewVote, type: :model do
       let(:topic_review_vote3) { FactoryBot.create(:topic_review_vote, topic: topic, user: user, quality: :quality_low) }
       let(:vote_ids) { [topic_review_vote.id, topic_review_vote2.id, topic_review_vote3.id] }
       it "has expected scores" do
-        topic_review_vote.reload
+        expect(topic_review_vote.reload.vote_score).to eq(-1001)
         expect(topic_review_vote2.reload.calculated_vote_score).to eq(-1001)
+        expect(topic_review_vote2.vote_score).to eq(-1001)
         expect(topic_review_vote3.reload.calculated_vote_score).to eq(-1001)
+        expect(topic_review_vote3.vote_score).to eq(-1001)
         user_topic_votes = user.reload.topic_review_votes.where(topic_review_id: topic_review_vote.topic_review_id)
         expect(user_topic_votes.pluck(:id)).to eq vote_ids
         expect(topic_review_vote.reload.calculated_vote_score).to eq(-1003)
