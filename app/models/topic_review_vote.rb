@@ -1,7 +1,7 @@
 class TopicReviewVote < ApplicationRecord
   RANK_ENUM = {not_recommended: 0, constructive: 1, required: 2}.freeze
 
-  REQUIRED_OFFSET = 10
+  RENDERED_OFFSET = 10
 
   belongs_to :topic_review
   belongs_to :user
@@ -34,7 +34,7 @@ class TopicReviewVote < ApplicationRecord
 
   def self.vote_score_rank(score)
     return "not_recommended" if score < 0
-    (score > Rating::VOTE_QUALITY_OFFSET) ? "required" : "constructive"
+    (score > Rating::RANK_OFFSET) ? "required" : "constructive"
   end
 
   def topic

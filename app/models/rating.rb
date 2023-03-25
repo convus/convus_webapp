@@ -13,7 +13,7 @@ class Rating < ApplicationRecord
     quality_high: 2
   }.freeze
 
-  VOTE_QUALITY_OFFSET = 1000
+  RANK_OFFSET = 1000
 
   enum agreement: AGREEMENT_ENUM
   enum quality: QUALITY_ENUM
@@ -140,9 +140,9 @@ class Rating < ApplicationRecord
 
   def default_vote_score
     if quality_high?
-      VOTE_QUALITY_OFFSET
+      RANK_OFFSET
     elsif quality_low?
-      -VOTE_QUALITY_OFFSET
+      -RANK_OFFSET
     else
       0
     end
