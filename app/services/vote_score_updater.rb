@@ -1,7 +1,7 @@
 class VoteScoreUpdater
   class << self
     def rank_offset
-      TopicReviewVote::REQUIRED_OFFSET
+      Rating::RANK_OFFSET
     end
 
     def params_to_rating_ranks(passed_params)
@@ -17,10 +17,10 @@ class VoteScoreUpdater
       default_hash = default_score_hash(topic_review_votes)
       # If it's the same as the default hash, remove any manual scoring
       normalized_hash = normalize_score_hash(rating_ranks)
-      if normalized_hash == default_hash
+      if normalized_hash[:required] == default_hash[:required]
         topic_review_votes.manual_score.each { |t| t.update(manual_score: false) }
       else
-        pp normalized_hash, default_hash
+
       end
     end
 
@@ -33,37 +33,35 @@ class VoteScoreUpdater
       constructive = []
       recommended.each do |i_r|
         # If rank changes by 9+, assume it's an intentional switch to required
-        break if (prev_rank + rank_offset - 2) < i_r.last
+        break if (prev_rank + TopicReviewVote::RENDERED_OFFSET - 2) < i_r.last
         constructive << i_r
         prev_rank = i_r.last
       end
       # Set required (prior to re-ranking constructive)
       required = (recommended - constructive)
       not_recommended = not_recommended.each_with_index
-        .map { |i_r, i| [i_r.first, (i + 1) * -1] }.reverse.to_h
+        .map { |i_r, i| [i_r.first, (i + 1 + rank_offset) * -1] }.reverse.to_h
       # Make constructive ranks increment by 1
       constructive = constructive.each_with_index
         .map { |i_r, i| [i_r.first, i + 1] }.reverse.to_h
-      # Make required ranks increment by 1 plus rank_offset, from where constructive ended
-      offset = constructive.keys.count + 1 + rank_offset
+      # Make required ranks increment by 1 plus rank_offset
       required = required.each_with_index
-        .map { |i_r, i| [i_r.first, i + offset] }.reverse.to_h
+        .map { |i_r, i| [i_r.first, i + 1 + rank_offset] }.reverse.to_h
 
       {required: required, constructive: constructive, not_recommended: not_recommended}
     end
 
     def default_score_hash(votes)
       not_recommended = votes.not_recommended.pluck(:id).reverse.each_with_index.map do |id, i|
-        [id.to_s, (i + 1)* -1]
+        [id.to_s, (i + 1 + rank_offset)* -1]
       end.to_h
 
       constructive = votes.constructive.pluck(:id).reverse.each_with_index.map do |id, i|
         [id.to_s, i + 1]
       end.to_h
 
-      offset = constructive.keys.count + rank_offset
       required = votes.required.pluck(:id).reverse.each_with_index.map do |id, i|
-        [id.to_s, i + offset]
+        [id.to_s, i + rank_offset]
       end.to_h
 
       {required: required, constructive: constructive, not_recommended: not_recommended}

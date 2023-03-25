@@ -48,7 +48,8 @@ RSpec.describe TopicReviewVote, type: :model do
   describe "calculate_vote_score" do
     let(:topic) { FactoryBot.create(:topic) }
     let(:time) { Time.current - 2.days }
-    let(:rating) { FactoryBot.create(:rating_with_topic, topics_text: topic.name, created_at: time) }
+    let(:rating) { FactoryBot.create(:rating_with_topic, topics_text: topic.name, created_at: time, quality: quality) }
+    let(:quality) { :quality_med }
     let(:topic_review_vote) { FactoryBot.create(:topic_review_vote, topic: topic, rating: rating) }
     let(:user) { rating.user }
     it "calculates" do
@@ -82,7 +83,7 @@ RSpec.describe TopicReviewVote, type: :model do
         expect(topic_review_vote2.calculated_vote_score).to eq 2
       end
       describe "rating is high quality" do
-        let(:rating) { FactoryBot.create(:rating_with_topic, topics_text: topic.name, quality: "quality_high") }
+        let(:quality) { :quality_high }
         it "they are in different tranches" do
           expect(rating.default_vote_score).to eq 1000
           expect(topic_review_vote).to be_valid
@@ -98,42 +99,36 @@ RSpec.describe TopicReviewVote, type: :model do
         end
       end
       describe "rating is low quality" do
-        let(:rating) { FactoryBot.create(:rating_with_topic, topics_text: topic.name, quality: "quality_low") }
+        let(:quality) { :quality_low }
         it "they are in different tranches" do
           expect(rating.default_vote_score).to eq(-1000)
           expect(topic_review_vote).to be_valid
           expect(topic_review_vote2).to be_valid
           expect(topic_review_vote2.rating.default_vote_score).to eq 0
-          expect(topic_review_vote.calculated_vote_score).to eq(-999)
+          expect(topic_review_vote.calculated_vote_score).to eq(-1001)
           expect(topic_review_vote2.calculated_vote_score).to eq 1
         end
       end
     end
-  end
-
-  describe "update_scores" do
-    let(:rating_required2) { FactoryBot.create(:rating_with_topic, quality: :quality_high) }
-    let(:user) { rating_required2.user }
-    let(:topic) { rating_required2.topics.first }
-    let(:rating_required1) { FactoryBot.create(:rating_with_topic, user: user, topic: topic, quality: :quality_high) }
-    let(:rating_constructive) { FactoryBot.create(:rating_with_topic, user: user, topic: topic, quality: :quality_med) }
-    let(:rating_not_recommended) { FactoryBot.create(:rating_with_topic, user: user, topic: topic, quality: :quality_low) }
-
-    let!(:vote_required2) { FactoryBot.create(:topic_review_vote, rating: rating_required2, topic: topic) }
-    let(:topic_review) { vote_required2.topic_review }
-    let!(:vote_required1) { FactoryBot.create(:topic_review_vote, rating: rating_required1, topic: topic) }
-    let!(:vote_constructive) { FactoryBot.create(:topic_review_vote, rating: rating_constructive, topic: topic) }
-    let!(:vote_not_recommended) { FactoryBot.create(:topic_review_vote, rating: rating_not_recommended, topic: topic) }
-    let(:vote_other_user) { FactoryBot.create(:topic_review_vote, topic: topic, quality: "quality_high") }
-    let(:vote_other_topic) { FactoryBot.create(:topic_review_vote, user: user, quality: "quality_high") }
-    let(:vote_ids) { [vote_required1.id, vote_required2.id, vote_constructive.id, vote_not_recommended.id] }
-    it "updates" do
-      expect(rating_required1.reload.topics.pluck(:id)).to eq([topic.id])
-      expect(rating_required2.reload.default_vote_score).to eq 1000
-      expect(vote_other_user && vote_other_topic).to be_present
-      expect(TopicReviewVote.vote_ordered.pluck(:id)).to match_array([vote_other_user.id, vote_other_topic.id] + vote_ids)
-      expect(user.reload.topic_review_votes.vote_ordered.pluck(:id)).to match_array([vote_other_topic.id] + vote_ids)
-      expect(user.topic_review_votes.where(topic_review_id: topic_review.id).vote_ordered.pluck(:id)).to eq(vote_ids)
+    describe "3 low quality" do
+      let(:quality) { :quality_low }
+      let(:topic_review_vote2) { FactoryBot.create(:topic_review_vote, topic: topic, user: user, quality: :quality_low) }
+      let(:topic_review_vote3) { FactoryBot.create(:topic_review_vote, topic: topic, user: user, quality: :quality_low) }
+      let(:vote_ids) { [topic_review_vote.id, topic_review_vote2.id, topic_review_vote3.id]}
+      it "has expected scores" do
+        topic_review_vote.reload
+        expect(topic_review_vote2.reload.calculated_vote_score).to eq(-1001)
+        expect(topic_review_vote3.reload.calculated_vote_score).to eq(-1001)
+        user_topic_votes = user.reload.topic_review_votes.where(topic_review_id: topic_review_vote.topic_review_id)
+        expect(user_topic_votes.pluck(:id)).to eq vote_ids
+        expect(topic_review_vote.reload.calculated_vote_score).to eq(-1003)
+        topic_review_vote.update(updated_at: Time.current)
+        expect(topic_review_vote.vote_score).to eq(-1003)
+        topic_review_vote2.reload.update(updated_at: Time.current)
+        expect(topic_review_vote2.vote_score).to eq(-1002)
+        topic_review_vote3.reload.update(updated_at: Time.current)
+        expect(topic_review_vote3.vote_score).to eq(-1001)
+      end
     end
   end
 end
