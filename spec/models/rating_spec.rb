@@ -12,6 +12,14 @@ RSpec.describe Rating, type: :model do
       let(:rating) { Rating.new(topics_text: "something\nother\n\nthings\n") }
       it "is the things" do
         expect(rating.topic_names).to eq(["something", "other", "things"])
+        expect(rating.topics.count).to eq 0
+      end
+      context "with_topic" do
+        let(:rating) { FactoryBot.create(:rating_with_topic, topics_text: "something\nother\n\nthings\n\n")}
+        it "has the topics" do
+          expect(rating.reload.topic_names).to eq(["something", "other", "things"])
+          expect(rating.topics.count).to eq 3
+        end
       end
     end
   end

@@ -4,7 +4,10 @@ FactoryBot.define do
     user { FactoryBot.create(:user) }
 
     trait :with_topic do
-      topics_text { "A rating topic" }
+      transient do
+        topic { FactoryBot.create(:topic) }
+      end
+      topics_text { topic.name }
 
       after(:create) do |rating, _evaluator|
         rating.topic_names.each do |n|

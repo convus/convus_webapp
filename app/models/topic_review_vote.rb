@@ -1,6 +1,8 @@
 class TopicReviewVote < ApplicationRecord
   RANK_ENUM = {not_recommended: 0, constructive: 1, required: 2}.freeze
 
+  REQUIRED_OFFSET = 10
+
   belongs_to :topic_review
   belongs_to :user
   belongs_to :rating
@@ -30,6 +32,11 @@ class TopicReviewVote < ApplicationRecord
     Rating.where(id: pluck(:rating_id))
   end
 
+  def self.vote_score_rank(score)
+    return "not_recommended" if score < 0
+    (score > Rating::VOTE_QUALITY_OFFSET) ? "required" : "constructive"
+  end
+
   def topic
     topic_review&.topic
   end
@@ -53,7 +60,7 @@ class TopicReviewVote < ApplicationRecord
     end
     # It's possible that rating will use updated_at in the future
     self.rating_at = rating&.created_at || Timc.current
-    self.rank = calculated_rank
+    self.rank = self.class.vote_score_rank(vote_score)
   end
 
   def review_user_votes
@@ -72,10 +79,5 @@ class TopicReviewVote < ApplicationRecord
     dscore = rating.default_vote_score
     prev_ratings_matching_score = prev_topic_user_ratings.select { |r| r.default_vote_score == dscore }
     dscore + 1 + prev_ratings_matching_score.count
-  end
-
-  def calculated_rank
-    return "not_recommended" if vote_score < 0
-    (vote_score > Rating::VOTE_QUALITY_OFFSET) ? "required" : "constructive"
   end
 end

@@ -8,7 +8,7 @@
 
 <% render_ranking ||= false %>
 <% ranking_modifier ||= 0 %>
-<% rendered_count = render_ranking && ratings.count  %>
+<% ranking_count = render_ranking && ratings.count  %>
 
 <% table_classes = "table table-sm break-words" %>
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
@@ -65,9 +65,8 @@
           <% if render_assign_topic %>
             <td><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(@assign_topic), class: "toggleableCheck" %></td>
           <% elsif render_ranking %>
-            <%# rank = negative_ranking ? (-i - 1) : (rendered_count - i) %>
-            <% rank = rendered_count + ranking_modifier - i %>
-            <td class="rank-cell"><%= number_field_tag "rating_#{rating.id}_rank", rank, step: 1, class: "form-control w-8 border-slate-900 p-0 text-center leading-none" %></td>
+            <% rank = ranking_count + ranking_modifier - i %>
+            <td class="rank-cell"><%= number_field_tag "rank_rating_#{rating.id}", rank, step: 1, class: "form-control w-8 border-slate-900 p-0 text-center leading-none" %></td>
           <% end %>
           <td>
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= rating.id %></code><% end %>

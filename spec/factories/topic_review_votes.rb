@@ -3,12 +3,20 @@ FactoryBot.define do
     transient do
       topic { FactoryBot.create(:topic) }
       user { FactoryBot.create(:user) }
+      quality { "quality_med" }
     end
-    # Default to using existing topic_reviews
+
+    # Default to using existing topic_review
     topic_review do
       TopicReview.find_by_topic_id(topic.id) ||
         FactoryBot.create(:topic_review, topic: topic)
     end
-    rating { FactoryBot.create(:rating_with_topic, topics_text: topic.name, user: user) }
+
+    rating do
+      FactoryBot.create(:rating_with_topic,
+        topics_text: topic.name,
+        user: user,
+        quality: quality)
+    end
   end
 end
