@@ -5,22 +5,22 @@ RSpec.describe VoteScoreUpdater do
     rating_ranks = hash[:constructive]
     offset = Rating::RANK_OFFSET - TopicReviewVote::RENDERED_OFFSET - hash[:constructive].keys.count
     required = hash[:required].to_a.map { |i_r| [i_r[0], i_r[1] - offset] }.to_h
-    not_recommended = hash[:not_recommended].to_a.map { |i_r| [i_r[0], i_r[1] + 1000]}.to_h
+    not_recommended = hash[:not_recommended].to_a.map { |i_r| [i_r[0], i_r[1] + 1000] }.to_h
     rating_ranks.merge(not_recommended).merge(required)
   end
 
   describe "params_to_rating_ranks" do
     let(:phash) do
-      {"_method"=>"patch", "rank_rating_166"=>"17", "rank_rating_69"=>"6", "rank_rating_70"=>"5",
-        "rank_rating_131"=>"4", "rank_rating_169"=>"3", "rank_rating_175"=>"2", "rank_rating_173"=>"1",
-        "rank_rating_105"=>"-1", "rank_rating_198"=>"-2", "button"=>"", "controller"=>"reviews",
-        "action"=>"update", "id"=>"dc-statehood"}
+      {"_method" => "patch", "rank_rating_166" => "17", "rank_rating_69" => "6", "rank_rating_70" => "5",
+       "rank_rating_131" => "4", "rank_rating_169" => "3", "rank_rating_175" => "2", "rank_rating_173" => "1",
+       "rank_rating_105" => "-1", "rank_rating_198" => "-2", "button" => "", "controller" => "reviews",
+       "action" => "update", "id" => "dc-statehood"}
     end
     let(:passed_params) { ActionController::Parameters.new(phash) }
     let(:target) do
       {
-        "166"=> 17, "69"=> 6, "70"=> 5, "131"=> 4, "169"=> 3, "175"=> 2, "173"=> 1,
-        "105"=> -1, "198"=> -2
+        "166" => 17, "69" => 6, "70" => 5, "131" => 4, "169" => 3, "175" => 2, "173" => 1,
+        "105" => -1, "198" => -2
       }
     end
     it "returns score hash" do
@@ -31,31 +31,31 @@ RSpec.describe VoteScoreUpdater do
   describe "normalize_score_hash" do
     let(:normalized) do
       {
-        required: {"166"=> 1002, "69"=> 1001},
-        constructive: {"70"=> 3, "131"=> 2, "169"=> 1},
-        not_recommended: {"105"=> -1001, "198"=> -1002}
+        required: {"166" => 1002, "69" => 1001},
+        constructive: {"70" => 3, "131" => 2, "169" => 1},
+        not_recommended: {"105" => -1001, "198" => -1002}
       }
     end
     let(:rating_ranks) { score_hash_to_rating_ranks(normalized) }
 
     it "returns itself" do
-      target_rating_ranks = {"166"=> 15, "69"=> 14, "70"=> 3, "131"=> 2,
-        "169"=> 1, "105"=> -1, "198"=> -2}
+      target_rating_ranks = {"166" => 15, "69" => 14, "70" => 3, "131" => 2,
+                             "169" => 1, "105" => -1, "198" => -2}
       # Verify that the transformation works correctly
-      expect(score_hash_to_rating_ranks(normalized)).to eq  target_rating_ranks
+      expect(score_hash_to_rating_ranks(normalized)).to eq target_rating_ranks
       expect_hashes_to_match(described_class.normalize_score_hash(score_hash_to_rating_ranks(normalized)), normalized)
       expect_hashes_to_match(described_class.normalize_score_hash(rating_ranks), normalized)
       expect(described_class.normalize_score_hash(rating_ranks)).to eq normalized
     end
     context "required higher" do
-      let(:passed) { rating_ranks.merge("166"=> 19, "69"=> 17) }
+      let(:passed) { rating_ranks.merge("166" => 19, "69" => 17) }
       it "returns normalized" do
         expect_hashes_to_match(described_class.normalize_score_hash(passed), normalized)
         expect(described_class.normalize_score_hash(passed)).to eq normalized
       end
     end
     context "bigger variance" do
-      let(:passed) { rating_ranks.merge("166"=> 30, "69"=> 29, "105"=> 0, "198"=> -20) }
+      let(:passed) { rating_ranks.merge("166" => 30, "69" => 29, "105" => 0, "198" => -20) }
       it "returns normalized" do
         expect_hashes_to_match(described_class.normalize_score_hash(passed), normalized)
         expect(described_class.normalize_score_hash(passed)).to eq normalized
@@ -64,12 +64,12 @@ RSpec.describe VoteScoreUpdater do
     context "only required, no constructive" do
       let(:normalized) do
         {
-          required: {"166"=> 1005, "69"=> 1004, "70"=> 1003, "131"=> 1002, "169"=> 1001},
+          required: {"166" => 1005, "69" => 1004, "70" => 1003, "131" => 1002, "169" => 1001},
           constructive: {},
-          not_recommended: {"105"=> -1001, "198"=> -1002}
+          not_recommended: {"105" => -1001, "198" => -1002}
         }
       end
-      let(:passed) { rating_ranks.merge("166"=> 26, "69"=> 20, "169"=> 9, "198"=> -20) }
+      let(:passed) { rating_ranks.merge("166" => 26, "69" => 20, "169" => 9, "198" => -20) }
       it "returns normalized" do
         expect_hashes_to_match(described_class.normalize_score_hash(passed), normalized)
         expect(described_class.normalize_score_hash(passed)).to eq normalized

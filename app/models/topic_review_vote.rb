@@ -78,10 +78,10 @@ class TopicReviewVote < ApplicationRecord
   def calculated_vote_score
     dscore = rating.default_vote_score
     prev_ratings_matching_count = prev_topic_user_ratings
-      .select { |r| r.default_vote_score == dscore }.count
+      .count { |r| r.default_vote_score == dscore }
     if dscore < 0
       ratings_matching_count = topic_user_ratings
-        .select { |r| r.default_vote_score == dscore }.count
+        .count { |r| r.default_vote_score == dscore }
       # pp "#{dscore} - #{ratings_matching_count} #{prev_ratings_matching_count}"
       dscore - (ratings_matching_count - prev_ratings_matching_count) #- 1
     else

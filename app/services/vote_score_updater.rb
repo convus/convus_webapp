@@ -19,8 +19,6 @@ class VoteScoreUpdater
       normalized_hash = normalize_score_hash(rating_ranks)
       if normalized_hash[:required] == default_hash[:required]
         topic_review_votes.manual_score.each { |t| t.update(manual_score: false) }
-      else
-
       end
     end
 
@@ -53,7 +51,7 @@ class VoteScoreUpdater
 
     def default_score_hash(votes)
       not_recommended = votes.not_recommended.pluck(:id).reverse.each_with_index.map do |id, i|
-        [id.to_s, (i + 1 + rank_offset)* -1]
+        [id.to_s, (i + 1 + rank_offset) * -1]
       end.to_h
 
       constructive = votes.constructive.pluck(:id).reverse.each_with_index.map do |id, i|
