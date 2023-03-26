@@ -4,9 +4,13 @@
     Current topic in review is
     <%= topic_review_display(@topic_review) %>
   </h1>
+  <% if current_user.blank? || @topic_review_votes.blank? %>
+    <p>
+      Select <%= link_to "ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic, then rank them here.
+    </p>
+  <% end %>
 </div>
 
-<%= render partial: "/reviews/header" %>
 <% if current_user.present? && @topic_review_votes.present? %>
   <% topic_review ||= @topic_review %>
   <% topic_review_votes ||= @topic_review_votes %>
