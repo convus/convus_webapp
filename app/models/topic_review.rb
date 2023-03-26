@@ -19,7 +19,7 @@ class TopicReview < ApplicationRecord
 
   # Make it so that there is a single review, for MVP convenience
   def self.primary
-    active.first || pending.first
+    @primary ||= active.first || pending.first
   end
 
   def self.friendly_find_slug(str = nil)
