@@ -122,7 +122,7 @@ RSpec.describe TopicReviewVote, type: :model do
         expect(topic_review_vote3.reload.calculated_vote_score).to eq(-1001)
         expect(topic_review_vote3.vote_score).to eq(-1001)
         user_topic_votes = user.reload.topic_review_votes.where(topic_review_id: topic_review_vote.topic_review_id)
-        expect(user_topic_votes.pluck(:id)).to eq vote_ids
+        expect(user_topic_votes.vote_ordered.pluck(:id)).to eq vote_ids
         expect(topic_review_vote.reload.calculated_vote_score).to eq(-1003)
         topic_review_vote.update(updated_at: Time.current)
         expect(topic_review_vote.vote_score).to eq(-1003)
