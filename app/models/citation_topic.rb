@@ -9,7 +9,7 @@ class CitationTopic < ApplicationRecord
   scope :active, -> { where(orphaned: false) }
   scope :orphaned, -> { where(orphaned: true) }
 
-  def active
+  def active?
     !orphaned
   end
 
@@ -19,6 +19,11 @@ class CitationTopic < ApplicationRecord
 
   def set_calculated_attributes
     self.orphaned = calculated_orphaned?
+  end
+
+  def update_ophaned_status!
+    return unless orphaned? != calculated_orphaned?
+    update(updated_at: Time.current)
   end
 
   private

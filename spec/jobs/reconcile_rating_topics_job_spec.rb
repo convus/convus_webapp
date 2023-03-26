@@ -102,5 +102,59 @@ RSpec.describe ReconcileRatingTopicsJob, type: :job do
         end
       end
     end
+    context "citation has topics" do
+      let(:topics_text) { nil }
+      let(:rating2) { FactoryBot.create(:rating_with_topic, topics_text: "Existing topic", submitted_url: rating.submitted_url) }
+      let(:topic1) { rating2.topics.first }
+      let(:citation) { rating2.citation }
+      let(:citation_topic) { FactoryBot.create(:citation_topic, citation: citation, topic: topic1) }
+      let(:citation_topic2) { FactoryBot.create(:citation_topic, citation: citation) }
+      let(:topic2) { citation_topic2.topic }
+      it "assigns the active topic" do
+        expect(rating2.reload.topics.pluck(:id)).to eq([topic1.id])
+        expect(rating2.citation_id).to eq rating.citation_id
+        expect(citation_topic).to be_valid
+        expect(citation_topic.active?).to be_truthy
+        expect(citation_topic2).to be_valid
+        expect(citation_topic2.active?).to be_falsey
+        expect(citation.reload.topics.pluck(:id)).to match_array([topic1.id, topic2.id])
+        expect(citation.topics_active.pluck(:id)).to match_array([topic1.id])
+        expect(rating.reload.topics_text).to be_nil
+        expect(rating.topics.pluck(:id)).to eq([])
+        expect(instance.active_citation_topics(rating).pluck(:id)).to eq([topic1.id])
+        expect {
+          instance.perform(rating.id)
+        }.to change(described_class.jobs, :count).by(0)
+        # adds the active topics
+        expect(rating.reload.topics_text).to eq "Existing topic"
+        expect(rating.topics.pluck(:id)).to eq([topic1.id])
+      end
+      context "remove topic" do
+        it "lets you remove the topic" do
+          expect(rating2.reload.topics.pluck(:id)).to eq([topic1.id])
+          expect(rating2.citation_id).to eq rating.citation_id
+          expect(citation_topic).to be_valid
+          expect(citation_topic.active?).to be_truthy
+          expect(citation_topic2).to be_valid
+          expect(citation_topic2.active?).to be_falsey
+          expect(citation.reload.topics.pluck(:id)).to match_array([topic1.id, topic2.id])
+          expect(citation.topics_active.pluck(:id)).to match_array([topic1.id])
+          expect(rating.reload.topics_text).to be_nil
+          expect(rating.topics.pluck(:id)).to eq([])
+          expect(instance.active_citation_topics(rating2).pluck(:id)).to eq([])
+          expect {
+            rating2.update(topics_text: " ")
+          }.to change(described_class.jobs, :count).by 1
+          expect(rating2.reload.topics_text).to be_nil
+          expect {
+            instance.perform(rating2.id)
+          }.to change(described_class.jobs, :count).by(0)
+          # adds the active topics
+          expect(rating2.reload.topics_text).to be_nil
+          expect(rating2.topics.pluck(:id)).to eq([])
+          expect(citation.reload.topics_active.pluck(:id)).to eq([])
+        end
+      end
+    end
   end
 end
