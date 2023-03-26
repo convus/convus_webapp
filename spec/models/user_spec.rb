@@ -114,7 +114,7 @@ RSpec.describe User, type: :model do
     context "private account" do
       let(:approved) { false }
       let(:following) { FactoryBot.create(:user_private) }
-      let(:review) { FactoryBot.create(:review, user: following) }
+      let(:rating) { FactoryBot.create(:rating, user: following) }
       it "is falsey for following_approved" do
         expect(user.following?(user)).to be_falsey
         expect(user.following?(user.id)).to be_falsey
@@ -126,31 +126,31 @@ RSpec.describe User, type: :model do
         expect(user.following_approved?(nil)).to be_falsey
         expect(following.followers_approved.pluck(:id)).to eq([])
 
-        expect(review).to be_valid
-        expect(review.account_public?).to be_falsey
-        expect(user.following_reviews_visible.pluck(:id)).to eq([])
+        expect(rating).to be_valid
+        expect(rating.account_public?).to be_falsey
+        expect(user.following_ratings_visible.pluck(:id)).to eq([])
 
         following.update(account_private: false)
         user.reload
         expect(user.following_approved?(following.id)).to be_truthy
-        expect(user.following_reviews_visible.pluck(:id)).to eq([review.id])
+        expect(user.following_ratings_visible.pluck(:id)).to eq([rating.id])
         expect(following.followers_approved.pluck(:id)).to eq([user.id])
-        expect(review.account_private?).to be_falsey
+        expect(rating.account_private?).to be_falsey
       end
       context "approved" do
         let(:approved) { true }
         it "is truthy for following_approved" do
           expect(user_following.approved).to be_truthy
-          expect(review).to be_valid
+          expect(rating).to be_valid
           expect(user.following_approved?(following)).to be_truthy
           expect(following.follower_approved?(user)).to be_truthy
-          expect(user.following_reviews_visible.pluck(:id)).to eq([review.id])
+          expect(user.following_ratings_visible.pluck(:id)).to eq([rating.id])
           expect(user.followings.pluck(:id)).to eq([following.id])
           expect(user.followings_approved.pluck(:id)).to eq([following.id])
-          expect(user.following_reviews_visible.pluck(:id)).to eq([review.id])
+          expect(user.following_ratings_visible.pluck(:id)).to eq([rating.id])
 
           user_following.update(approved: false)
-          expect(user.following_reviews_visible.pluck(:id)).to eq([])
+          expect(user.following_ratings_visible.pluck(:id)).to eq([])
         end
       end
     end

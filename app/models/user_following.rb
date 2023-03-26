@@ -9,7 +9,7 @@ class UserFollowing < ApplicationRecord
 
   scope :approved, -> { where(approved: true) }
   scope :unapproved, -> { where(approved: false) }
-  scope :reviews_visible, -> { where(approved: true) } # Currently, simple, but may become more complicated later
+  scope :ratings_visible, -> { where(approved: true) } # Currently, simple, but may become more complicated later
 
   def unapproved
     !approved

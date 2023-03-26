@@ -16,8 +16,8 @@ const BrowserExtensionScript = () => {
 
   const toggleMenu = (e) => {
     e.preventDefault()
-    const menuBtn = document.getElementById('review-menu-btn')
-    const menu = document.getElementById('review-menu')
+    const menuBtn = document.getElementById('rating-menu-btn')
+    const menu = document.getElementById('rating-menu')
     if (menu.classList.contains('active')) {
       menu.classList.add('hidden')
       menu.classList.remove('active')
@@ -41,8 +41,8 @@ const BrowserExtensionScript = () => {
     }
   }
 
-  document.getElementById('review-menu-btn').addEventListener('click', toggleMenu)
-  document.querySelectorAll('#review-menu .form-control-check input').forEach(el => el.addEventListener('change', updateMenuCheck))
+  document.getElementById('rating-menu-btn').addEventListener('click', toggleMenu)
+  document.querySelectorAll('#rating-menu .form-control-check input').forEach(el => el.addEventListener('change', updateMenuCheck))
 }
 
 export default BrowserExtensionScript

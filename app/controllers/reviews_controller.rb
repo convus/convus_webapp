@@ -1,152 +1,38 @@
 class ReviewsController < ApplicationController
-  include TranzitoUtils::SortableTable
-  before_action :set_period, only: %i[index]
-  before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
-  before_action :find_and_authorize_review, only: %i[edit update destroy]
-  helper_method :viewing_display_name
+  before_action :redirect_to_signup_unless_user_present!, except: %i[index show]
+  before_action :find_topic_review, except: [:index]
+  before_action { @controller_display_name = "Topic Review" }
 
   def index
-    if viewing_display_name == "following"
-      if current_user.blank?
-        redirect_to_signup_unless_user_present!
-        return
-      end
-    elsif user_subject.blank?
-
+    @topic_review = TopicReview.primary
+    if @topic_review.present?
+      redirect_to review_path(@topic_review.slug)
+      return
     end
-    page = params[:page] || 1
-    @per_page = params[:per_page] || 25
-    @reviews = viewable_reviews.reorder("reviews.#{sort_column} #{sort_direction}")
-      .includes(:citation, :user).page(page).per(@per_page)
-    @page_title = "#{viewing_display_name} - reviews - Convus"
+    @action_display_name = "Topic reviews - Convus"
   end
 
-  def new
-    @source = params[:source].presence || "web"
-    @no_layout = @source != "web"
-    @review ||= Review.new(source: @source)
-    if @source == "web"
-      redirect_to_signup_unless_user_present!
-    elsif @source == "turbo_stream"
-      render layout: false
-    end
-  end
-
-  def create
-    @review = Review.new(permitted_create_params)
-    @review.user = current_user
-    if @review.save
-      respond_to do |format|
-        format.html do
-          flash[:success] = "Review added"
-          redirect_source = (@review.source == "web") ? nil : @review.source
-          redirect_to new_review_path(source: redirect_source), status: :see_other
-        end
-      end
-    else
-      respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.replace(@review, partial: "reviews/form", locals: {review: @review}) }
-        format.html do
-          flash.now[:error] = "Review not created"
-          render :new
-        end
-      end
-    end
-  end
-
-  def edit
+  def show
+    @topic_review_votes = user_topic_review_votes.vote_ordered
+    @action_display_name = @topic_review.topic_name
   end
 
   def update
-    if @review.update(permitted_params)
-      flash[:success] = "Review updated"
-      redirect_to new_review_path, status: :see_other
-    else
-      render :edit
-    end
-  end
-
-  def destroy
-    if @review.destroy
-      flash[:success] = "Review deleted"
-      redirect_to reviews_path, status: :see_other
-    else
-      flash[:error] = "Unable to delete review!"
-      redirect_to edit_review_path(@review), status: :see_other
-    end
+    flash[:success] = "Rankings updated"
+    vote_ranks = VoteScoreUpdater.params_to_vote_ranks(current_user, @topic_review, params)
+    VoteScoreUpdater.update_scores(current_user, @topic_review, vote_ranks)
+    redirect_back(fallback_location: review_path(@topic_review.slug, status: :see_other))
   end
 
   private
 
-  def permitted_params
-    params.require(:review).permit(*permitted_attrs)
+  def find_topic_review
+    @topic_review = TopicReview.friendly_find!(params[:id])
   end
 
-  def permitted_create_params
-    params.require(:review).permit(*(permitted_attrs + [:timezone]))
-  end
-
-  def permitted_attrs
-    %i[agreement changed_my_opinion citation_title did_not_understand
-      error_quotes learned_something quality significant_factual_error
-      source submitted_url topics_text]
-  end
-
-  def sortable_columns
-    %w[created_at] # TODO: Add agreement and quality
-  end
-
-  def multi_user_searches
-    %w[recent following]
-  end
-
-  def viewable_reviews
-    if params[:user].blank? || multi_user_searches.include?(params[:user].downcase)
-      @viewing_single_user = false
-      @can_view_reviews = true
-    else
-      raise ActiveRecord::RecordNotFound if user_subject.blank?
-      @viewing_single_user = true
-      @viewing_current_user = user_subject == current_user
-      @reviews_private = user_subject.reviews_private
-      @can_view_reviews = user_subject.account_public || @viewing_current_user ||
-        user_subject.follower_approved?(current_user)
-    end
-    searched_reviews
-  end
-
-  def viewing_display_name
-    @viewing_display_name ||= if user_subject.present?
-      user_subject.username
-    else
-      (params[:user] || multi_user_searches.first).downcase
-    end
-  end
-
-  def searched_reviews
-    reviews = if viewing_display_name == "following"
-      current_user&.following_reviews_visible || Review.none
-    elsif viewing_display_name == "recent"
-      Review
-    else
-      @can_view_reviews ? user_subject.reviews : Review.none
-    end
-
-    if current_topics.present?
-      reviews = Review.matching_topics(current_topics)
-    end
-
-    @time_range_column = "created_at"
-    reviews.where(@time_range_column => @time_range)
-  end
-
-  def find_and_authorize_review
-    review = current_user.reviews.where(id: params[:id]).first
-    if review.present?
-      @review = review
-    else
-      flash[:error] = "Unable to find that review"
-      redirect_to(user_root_url) && return
-    end
+  def user_topic_review_votes
+    return TopicReviewVote.none if current_user.blank?
+    current_user.topic_review_votes.where(topic_review_id: @topic_review.id)
+      .includes(:rating)
   end
 end

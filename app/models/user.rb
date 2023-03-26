@@ -1,10 +1,12 @@
 class User < ApplicationRecord
+  include FriendlyFindable
+
   ROLE_ENUM = {normal_user: 0, developer: 1}.freeze
 
   devise :database_authenticatable, :registerable, :trackable,
     :recoverable, :rememberable, :validatable
 
-  has_many :reviews
+  has_many :ratings
   has_many :events
   has_many :kudos_events
   has_many :user_followings, dependent: :destroy
@@ -15,6 +17,7 @@ class User < ApplicationRecord
   has_many :followers, through: :user_followers, source: :user
   has_many :user_followers_approved, -> { approved }, class_name: "UserFollowing", foreign_key: :following_id, dependent: :destroy
   has_many :followers_approved, through: :user_followers_approved, source: :user
+  has_many :topic_review_votes
 
   enum role: ROLE_ENUM
 
@@ -27,20 +30,7 @@ class User < ApplicationRecord
   scope :account_private, -> { where(account_private: true) }
   scope :account_public, -> { where(account_private: false) }
 
-  def self.friendly_find(str)
-    return nil if str.blank?
-    if str.is_a?(Integer) || str.match?(/\A\d+\z/)
-      find_by_id(str)
-    else
-      friendly_find_username(str)
-    end
-  end
-
-  def self.friendly_find!(str)
-    friendly_find(str) || (raise ActiveRecord::RecordNotFound)
-  end
-
-  def self.friendly_find_username(str = nil)
+  def self.friendly_find_slug(str = nil)
     return nil if str.blank?
     find_by_username_slug(Slugifyer.slugify(str))
   end
@@ -60,8 +50,8 @@ class User < ApplicationRecord
     developer?
   end
 
-  def following_reviews_visible
-    Review.where(user_id: user_followings.reviews_visible.pluck(:following_id))
+  def following_ratings_visible
+    Rating.where(user_id: user_followings.ratings_visible.pluck(:following_id))
   end
 
   def to_param
@@ -73,12 +63,12 @@ class User < ApplicationRecord
     !account_private
   end
 
-  def reviews_public
+  def ratings_public
     account_public
   end
 
-  def reviews_private
-    !reviews_public
+  def ratings_private
+    !ratings_public
   end
 
   # Need to pass in the timezone here ;)

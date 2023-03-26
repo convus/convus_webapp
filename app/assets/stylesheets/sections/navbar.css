@@ -1,4 +1,4 @@
-.main-nav-root-link {
+.main-nav-link-root {
   @apply flex items-center;
   & img {
     @apply h-6 mr-2 sm:h-6;
@@ -8,7 +8,7 @@
   }
 }
 
-.main-nav-link, .main-nav-root-link {
+.main-nav-link, .main-nav-link-root {
   @apply text-bodytext no-underline;
   &:hover, &:active, &.active {
     @apply underline;

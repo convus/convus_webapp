@@ -21,29 +21,31 @@
   </head>
   <body>
     <% if render_navbar? %>
-      <nav class="large-width-padded-container flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4">
+      <nav class="large-width-container-padded flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4">
         <% if in_admin? %>
-          <%= link_to admin_root_url, class: "main-nav-root-link" do %>
+          <%= link_to admin_root_url, class: "main-nav-link-root" do %>
             <%= image_tag("icon.png", alt: "Convus Logo") %>
             <span class="">admin</span>
           <% end %>
-          <%= active_link "users", admin_users_path, class: "main-nav-root-link ml-2" %>
-          <%= active_link "topics", admin_topics_path, class: "main-nav-root-link ml-2" %>
-          <%= link_to "exit admin", user_root_url, class: "main-nav-link ml-auto less-strong" %>
+          <%= active_link "users", admin_users_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= active_link "topics", admin_topics_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= active_link "reviews", admin_topic_reviews_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= link_to "exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
           <% root_active = controller_name == "landing" && action_name == "index" %>
-          <%= link_to user_root_url, class: "main-nav-root-link #{root_active ? 'active' : ''}" do %>
+          <%= link_to user_root_url, class: "main-nav-link-root #{root_active ? 'active' : ''}" do %>
             <%= image_tag("icon.png", alt: "Convus Logo") %>
             <span class="">Convus</span>
           <% end %>
-          <% reviews_active = controller_name == "reviews" && viewing_display_name == "recent" %>
-          <%= link_to "reviews", reviews_path, class: "main-nav-link ml-3 #{reviews_active ? 'active' : ''}" %>
+          <% ratings_active = controller_name == "ratings" && viewing_display_name == "recent" %>
+          <%= link_to "ratings", ratings_path, class: "main-nav-link ml-3 #{ratings_active ? 'active' : ''}" %>
+          <%= active_link "topics", reviews_path, class: "main-nav-link ml-2" %>
           <% if current_user&.admin? %>
             <%= active_link "admin", admin_root_path, class: "main-nav-link ml-3 less-strong" %>
           <% end %>
           <% if current_user.present? %>
-            <% user_active = controller_name == "reviews" && user_subject&.id == current_user.id %>
-            <%= link_to current_user.username, reviews_path(user: current_user.to_param), class: "main-nav-link ml-auto #{user_active ? 'active' : ''}" %>
+            <% user_active = controller_name == "ratings" && user_subject&.id == current_user.id %>
+            <%= link_to current_user.username, ratings_path(user: current_user.to_param), class: "main-nav-link ml-auto #{user_active ? 'active' : ''}" %>
             <span class="ml-1 mr-1 text-gray-400">|</span>
             <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "main-nav-link"  %>
           <% else %>
@@ -52,8 +54,8 @@
         <% end %>
       </nav>
     <% end %>
-    <div class="<%= content_for(:main_wrapper_class) || 'large-width-padded-container' %>">
-      <%= render "shared/flash_messages" %>
+    <div class="<%= content_for(:main_wrapper_class) || 'large-width-container-padded' %>">
+      <%= render partial: "shared/flash_messages" %>
       <%= yield %>
     </div>
     <% if !Rails.env.development? %>

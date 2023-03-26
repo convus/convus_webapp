@@ -1,6 +1,10 @@
 class Citation < ApplicationRecord
-  has_many :reviews
-  has_many :review_topics, through: :reviews
+  has_many :ratings
+  has_many :rating_topics, through: :ratings
+  has_many :citation_topics
+  has_many :topics, through: :citation_topics
+  has_many :active_citation_topics, -> { active }, class_name: "CitationTopic"
+  has_many :topics_active, through: :active_citation_topics, source: :topic
 
   validates_presence_of :url
 

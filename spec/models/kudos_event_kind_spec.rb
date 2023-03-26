@@ -8,17 +8,17 @@ RSpec.describe KudosEventKind, type: :model do
     end
   end
 
-  describe "user_review_created_kinds" do
+  describe "user_rating_created_kinds" do
     let!(:kudos_event_kind1) { FactoryBot.create(:kudos_event_kind) }
     let!(:kudos_event_kind2) { FactoryBot.create(:kudos_event_kind) }
-    let!(:kudos_event_kind_not) { FactoryBot.create(:kudos_event_kind, name: "Review not added") }
-    let!(:kudos_event_kind_not2) { FactoryBot.create(:kudos_event_kind, name: "Reviewed by another person") }
+    let!(:kudos_event_kind_not) { FactoryBot.create(:kudos_event_kind, name: "Rating not added") }
+    let!(:kudos_event_kind_not2) { FactoryBot.create(:kudos_event_kind, name: "Rated by another person") }
     it "is the ones expected" do
-      expect(KudosEventKind.user_review_created_kinds.pluck(:id)).to eq([kudos_event_kind1.id, kudos_event_kind2.id])
-      expect(kudos_event_kind1.user_review_created_kind?).to be_truthy
-      expect(kudos_event_kind2.user_review_created_kind?).to be_truthy
-      expect(kudos_event_kind_not.user_review_created_kind?).to be_falsey
-      expect(kudos_event_kind_not2.user_review_created_kind?).to be_falsey
+      expect(KudosEventKind.user_rating_created_kinds.pluck(:id)).to eq([kudos_event_kind1.id, kudos_event_kind2.id])
+      expect(kudos_event_kind1.user_rating_created_kind?).to be_truthy
+      expect(kudos_event_kind2.user_rating_created_kind?).to be_truthy
+      expect(kudos_event_kind_not.user_rating_created_kind?).to be_falsey
+      expect(kudos_event_kind_not2.user_rating_created_kind?).to be_falsey
     end
   end
 end

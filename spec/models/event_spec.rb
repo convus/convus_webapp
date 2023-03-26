@@ -10,21 +10,21 @@ RSpec.describe Event, type: :model do
   end
 
   describe "what is destroyed" do
-    let(:review) { FactoryBot.create(:review) }
-    let(:event) { FactoryBot.create(:event, target: review) }
-    let(:kudos_event) { FactoryBot.create(:kudos_event, review: review) }
-    let(:user) { review.user }
+    let(:rating) { FactoryBot.create(:rating) }
+    let(:event) { FactoryBot.create(:event, target: rating) }
+    let(:kudos_event) { FactoryBot.create(:kudos_event, rating: rating) }
+    let(:user) { rating.user }
     it "destroys only the kudos_event" do
       kudos_event.reload
       expect(KudosEventKind.count).to eq 1
       expect(KudosEvent.count).to eq 1
-      expect(Review.count).to eq 1
+      expect(Rating.count).to eq 1
       expect(Citation.count).to eq 1
       expect(User.count).to eq 1
       kudos_event.destroy
       expect(KudosEventKind.count).to eq 1
       expect(KudosEvent.count).to eq 0
-      expect(Review.count).to eq 1
+      expect(Rating.count).to eq 1
       expect(Citation.count).to eq 1
       expect(User.count).to eq 1
     end
@@ -34,29 +34,29 @@ RSpec.describe Event, type: :model do
     #     kudos_event.reload
     #     expect(KudosEventKind.count).to eq 1
     #     expect(KudosEvent.count).to eq 1
-    #     expect(Review.count).to eq 1
+    #     expect(Rating.count).to eq 1
     #     expect(Citation.count).to eq 1
     #     expect(User.count).to eq 1
     #     event.destroy
     #     expect(KudosEventKind.count).to eq 1
     #     expect(KudosEvent.count).to eq 0
-    #     expect(Review.count).to eq 0
+    #     expect(Rating.count).to eq 0
     #     expect(Citation.count).to eq 1
     #     expect(User.count).to eq 1
     #   end
     # end
-    context "review" do
-      it "destroys just the review" do
+    context "rating" do
+      it "destroys just the rating" do
         kudos_event.reload
         expect(KudosEventKind.count).to eq 1
         expect(KudosEvent.count).to eq 1
-        expect(Review.count).to eq 1
+        expect(Rating.count).to eq 1
         expect(Citation.count).to eq 1
         expect(User.count).to eq 1
-        review.destroy
+        rating.destroy
         expect(KudosEventKind.count).to eq 1
         expect(KudosEvent.count).to eq 1
-        expect(Review.count).to eq 0
+        expect(Rating.count).to eq 0
         expect(Citation.count).to eq 1
         expect(User.count).to eq 1
       end
@@ -66,13 +66,13 @@ RSpec.describe Event, type: :model do
         kudos_event.reload
         expect(KudosEventKind.count).to eq 1
         expect(KudosEvent.count).to eq 1
-        expect(Review.count).to eq 1
+        expect(Rating.count).to eq 1
         expect(Citation.count).to eq 1
         expect(User.count).to eq 1
         user.destroy
         expect(KudosEventKind.count).to eq 1
         expect(KudosEvent.count).to eq 1
-        expect(Review.count).to eq 1
+        expect(Rating.count).to eq 1
         expect(Citation.count).to eq 1
         expect(User.count).to eq 0
       end

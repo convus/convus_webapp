@@ -23,10 +23,10 @@ chdir APP_ROOT do
     puts "Testing lint (will not autofix)"
     system!("bundle exec standardrb --no-fix")
     system!("yarn standard")
-    system!("bundle exec htmlbeautifier --lint-only #{html_files}")
+    system!("bundle exec htmlbeautifier --keep-blank-lines 1 --lint-only #{html_files}")
   else
     system!("bundle exec standardrb --fix")
-    system!("bundle exec htmlbeautifier #{html_files}")
+    system!("bundle exec htmlbeautifier --keep-blank-lines 1 #{html_files}")
     system!("yarn lint")
   end
 end

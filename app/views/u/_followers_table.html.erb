@@ -24,7 +24,7 @@
             <small class="convertTime"><%= l(user_following.created_at, format: :convert_time) %></small>
           </td>
           <td>
-            <%= link_to follower&.username, reviews_path(user: follower) %>
+            <%= link_to follower&.username, ratings_path(user: follower) %>
           </td>
           <% if update_links %>
             <td class="text-right">

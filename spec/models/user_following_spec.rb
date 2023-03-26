@@ -37,7 +37,7 @@ RSpec.describe UserFollowing, type: :model do
   end
 
   describe "delete" do
-    let!(:review) { FactoryBot.create(:review, user: following) }
+    let!(:rating) { FactoryBot.create(:rating, user: following) }
     before { expect(UserFollowing.pluck(:id)).to eq([user_following.id]) }
     it "deletes when user deleted" do
       user.destroy

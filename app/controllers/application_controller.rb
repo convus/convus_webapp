@@ -38,7 +38,11 @@ class ApplicationController < ActionController::Base
 
   def user_subject
     return @user_subject if defined?(@user_subject)
-    @user_subject = User.friendly_find(params[:user])
+    @user_subject = if params[:user] == "current_user"
+      current_user
+    else
+      User.friendly_find(params[:user])
+    end
   end
 
   def current_topics

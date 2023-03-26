@@ -1,0 +1,63 @@
+<h1 class="standard-top-offset mb-2">Admin Topic reviews</h1>
+<p class="mb-4"><%= link_to "New review", new_admin_topic_review_path, class: "link-primary" %></p>
+<%= render partial: "/shared/current_header", locals: {collection: @topic_reviews, render_period_select: true} %>
+<% skip_sortable ||= false %>
+<div class="full-screen-table">
+  <table class="table table-sm">
+    <thead class="sortable">
+      <tr>
+        <th>
+          <%= sortable "created_at", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          <small><%= sortable "updated_at", skip_sortable: skip_sortable %></small>
+        </th>
+        <th>
+          <%= sortable "topic_name", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          Status
+        </th>
+        <th>
+          <%= sortable "start_at", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          <%= sortable "end_at", skip_sortable: skip_sortable %>
+        </th>
+        <th>Votes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @topic_reviews.each do |topic_review| %>
+        <tr>
+          <td>
+            <% if display_dev_info? %><code class="only-dev-visible-small"><%= topic_review.id %></code><% end %>
+            <%= link_to l(topic_review.created_at, format: :convert_time), edit_admin_topic_review_path(topic_review), class: "convertTime" %>
+          </td>
+          <td>
+            <small class="convertTime"><%= l(topic_review.updated_at, format: :convert_time) %></small>
+          </td>
+          <td>
+            <%= link_to topic_review.topic_name, edit_admin_topic_path(topic_review.topic_name) %>
+          </td>
+          <td>
+            <%= topic_review.status %>
+          </td>
+          <td>
+            <% if topic_review.start_at.present? %>
+              <span class="convertTime"><%= l(topic_review.start_at, format: :convert_time) %></span>
+            <% end %>
+          </td>
+          <td>
+            <% if topic_review.end_at.present? %>
+              <span class="convertTime"><%= l(topic_review.end_at, format: :convert_time) %></span>
+            <% end %>
+          </td>
+          <td>
+            <%= link_to admin_number_display(topic_review.topic_review_votes.count), ratings_path(search_topics: topic_review.topic_name) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

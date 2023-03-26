@@ -6,7 +6,7 @@ RSpec.describe base_url, type: :request do
   let(:user_private) { FactoryBot.create(:user_private) }
 
   describe "show" do
-    let(:user_page_description) { "0 reviews and 0 kudos today .0 reviews and 0 kudos yesterday." }
+    let(:user_page_description) { "0 ratings and 0 kudos today .0 ratings and 0 kudos yesterday." }
     it "renders" do
       get "#{base_url}/#{user_subject.id}"
       expect(response.code).to eq "200"
@@ -268,7 +268,7 @@ RSpec.describe base_url, type: :request do
       end
       context "unpermitted parameters" do
         it "doesn't updates" do
-          expect(current_user.reviews_public).to be_truthy
+          expect(current_user.ratings_public).to be_truthy
           patch "#{base_url}/#{current_user.id}", params: {user: {
             password: "newpassword",
             email: "new@example.com"

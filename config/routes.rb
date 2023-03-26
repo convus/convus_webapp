@@ -25,7 +25,11 @@ Rails.application.routes.draw do
   get "/browser_extensions", to: "landing#browser_extensions"
   get "/browser_extension", to: redirect("browser_extensions")
 
-  resources :reviews, except: [:show]
+  resources :ratings, except: [:show] do
+    collection { post :add_topic }
+  end
+
+  resources :reviews, only: %i[index show update]
 
   namespace :api, defaults: {format: "json"} do
     namespace :v1 do
@@ -41,7 +45,8 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "users#index"
     resources :users, only: [:index]
-    resources :topics, only: [:index]
+    resources :topics, only: %i[index edit update show]
+    resources :topic_reviews, except: [:show]
   end
 
   authenticate :user, lambda { |u| u.developer? } do

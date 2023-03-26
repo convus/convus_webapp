@@ -36,7 +36,6 @@
   }
 }
 
-
 .full-screen-table-auto-width table {
   @apply lg:mx-auto;
   width: auto;
@@ -52,4 +51,29 @@
 
 .sortable .sortable-link {
   @apply text-bodytext underline;
+}
+
+/*
+  Review ranking table
+*/
+.table.hide_header {
+  & thead {
+    @apply invisible;
+    & tr, & th {
+      @apply border-transparent py-0 leading-none;
+    }
+  }
+}
+
+.rank-cell {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  & input::-webkit-outer-spin-button,
+  & input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  & input[type=number] {
+    -moz-appearance: textfield;
+  }
 }
