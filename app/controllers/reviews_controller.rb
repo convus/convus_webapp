@@ -18,7 +18,10 @@ class ReviewsController < ApplicationController
   end
 
   def update
-    pp params
+    flash[:success] = "Rankings updated"
+    vote_ranks = VoteScoreUpdater.params_to_vote_ranks(current_user, @topic_review, params)
+    VoteScoreUpdater.update_scores(current_user, @topic_review, vote_ranks)
+    redirect_back(fallback_location: review_path(@topic_review.slug, status: :see_other))
   end
 
   private

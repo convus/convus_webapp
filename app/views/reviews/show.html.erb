@@ -24,7 +24,9 @@
       <% required_ratings = topic_review_votes.required.ratings %>
       <% constructive_ratings = topic_review_votes.constructive.ratings %>
       <% not_recommended_ratings = topic_review_votes.not_recommended.ratings %>
+      <% required_ratings = ["No required ratings - increase the rank of a recommended rating by #{TopicReviewVote::RENDERED_OFFSET} to move it into required"] if required_ratings.none? %>
       <%= render partial: "/ratings/table", locals: {ratings: required_ratings, skip_sortable: true, render_ranking: true, ranking_modifier: constructive_ratings.count + TopicReviewVote::RENDERED_OFFSET} %>
+
       <div class="large-width-container standard-top-offset">
         <h3>
           Articles you'd recommend, but that aren't required reading

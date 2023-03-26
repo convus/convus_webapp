@@ -7,23 +7,34 @@ class VoteScoreUpdater
       Rating::RANK_OFFSET
     end
 
+    # params come in as rating_id > rank, need to be transformed to vote_id > rank
+    def params_to_vote_ranks(user, topic_review, passed_params)
+      rating_to_vote_id = user.topic_review_votes.where(topic_review_id: topic_review.id)
+        .pluck(:rating_id, :id).map { |r| r.map(&:to_s) }.to_h
+      rating_ranks = params_to_rating_ranks(passed_params)
+      rating_ranks.keys.map do |rating_id|
+        vote_id = rating_to_vote_id[rating_id]
+        vote_id.present? ? [vote_id, rating_ranks[rating_id]] : nil
+      end.compact.to_h
+    end
+
+    def update_scores(user, topic_review, vote_ranks)
+      topic_review_votes = user.topic_review_votes.where(topic_review_id: topic_review.id).vote_ordered
+
+      default_hash = default_score_hash(topic_review_votes)
+      # If it's the same as the default hash, remove any manual scoring
+      normalized_hash = normalize_score_hash(vote_ranks)
+      default_hash.keys.each { |k| update_rank(k, default_hash[k], normalized_hash[k], topic_review_votes) }
+    end
+
+    private
+
     def params_to_rating_ranks(passed_params)
       passed_params.keys.map do |k|
         next unless k.match?(/rank_rating_\d/)
         [k.gsub("rank_rating_", ""), passed_params[k]&.to_i]
       end.compact.to_h
     end
-
-    def update_scores(user, topic_review, rating_ranks)
-      topic_review_votes = user.topic_review_votes.where(topic_review_id: topic_review.id).vote_ordered
-
-      default_hash = default_score_hash(topic_review_votes)
-      # If it's the same as the default hash, remove any manual scoring
-      normalized_hash = normalize_score_hash(rating_ranks)
-      default_hash.keys.each { |k| update_rank(k, default_hash[k], normalized_hash[k], topic_review_votes) }
-    end
-
-    private
 
     def update_rank(rank, default_rank, normalized_rank, topic_review_votes)
       # Remove any manual_score votes if it is default
@@ -39,9 +50,9 @@ class VoteScoreUpdater
       end
     end
 
-    def normalize_score_hash(rating_ranks)
+    def normalize_score_hash(vote_ranks)
       # Sort by the rank
-      score_array = rating_ranks.to_a.sort { |a, b| b.last <=> a.last }
+      score_array = vote_ranks.to_a.sort { |a, b| b.last <=> a.last }
       not_recommended = score_array.select { |i_r| i_r.last < 1 }
       recommended = (score_array - not_recommended).reverse
       prev_rank = 0

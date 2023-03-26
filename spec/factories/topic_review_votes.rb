@@ -13,8 +13,9 @@ FactoryBot.define do
     end
 
     rating do
+      # reference topic_review in case it was passed instead of topic
       FactoryBot.create(:rating_with_topic,
-        topics_text: topic.name,
+        topics_text: topic_review.topic_name,
         user: user,
         quality: quality)
     end
