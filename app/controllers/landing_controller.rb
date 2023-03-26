@@ -1,5 +1,6 @@
 class LandingController < ApplicationController
   def index
+    @page_title = "Convus"
   end
 
   def about
