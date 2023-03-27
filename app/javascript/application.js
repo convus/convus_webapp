@@ -8,8 +8,16 @@ import { TimeParser, PeriodSelector, Pagination } from 'tranzito_utils_js'
 
 import log from './scripts/log' // eslint-disable-line
 
+const toggleChecks = (event) => {
+  const checked = event.target.checked
+  event.target.closest('.toggleChecksWrapper')
+    .querySelectorAll('.toggleableCheck').forEach(el => {
+      el.checked = checked
+    })
+}
+
+const pageWidth = window.outerWidth
 const enableFullscreenTableOverflow = () => {
-  const pageWidth = window.innerWidth
   document.querySelectorAll('.full-screen-table table').forEach(el => {
     const tableWidth = el.offsetWidth
     if (tableWidth > pageWidth) {
@@ -19,17 +27,20 @@ const enableFullscreenTableOverflow = () => {
   })
 }
 
-const toggleChecks = (event) => {
-  const checked = event.target.checked
-  event.target.closest('.toggleChecksWrapper')
-    .querySelectorAll('.toggleableCheck').forEach(el => {
-      el.checked = checked
-    })
-}
-
 const enableToggleChecks = () => {
   document.querySelectorAll('.toggleChecks')
     .forEach(el => el.addEventListener('change', toggleChecks))
+}
+
+const setMaxWidths = () => {
+  log.debug(pageWidth)
+  if (pageWidth < 501) {
+    document.querySelectorAll('.maxWScreen')
+      .forEach(el => {
+        // 8px on either side of padding
+        el.style.maxWidth = `${pageWidth - 16}px`
+      })
+  }
 }
 
 document.addEventListener('turbo:load', () => {
@@ -48,8 +59,9 @@ document.addEventListener('turbo:load', () => {
     BrowserExtensionScript()
   }
 
-  enableFullscreenTableOverflow()
   enableToggleChecks()
+  enableFullscreenTableOverflow()
+  setMaxWidths()
 
   // When JS is enabled, some things should be hidden and some things should be shown
   document.querySelectorAll('.hiddenNoJs').forEach(el => el.classList.remove('hiddenNoJs'))

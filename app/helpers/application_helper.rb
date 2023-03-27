@@ -45,7 +45,7 @@ module ApplicationHelper
   def agreement_display(agreement = nil)
     return nil if agreement.blank?
     if agreement.to_s == "neutral"
-      return nil
+      nil
     else
       content_tag(:span, title: agreement.to_s&.titleize) do
         if agreement == "agree"
@@ -61,7 +61,7 @@ module ApplicationHelper
     return nil if quality.blank?
     str = Rating.quality_humanized(quality)
     if str == "medium"
-      return nil
+      nil
     else
       content_tag(:span,
         image_tag("quality_#{str}_icon.svg", class: "w-4 inline-block"),

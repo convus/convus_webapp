@@ -30,7 +30,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
     context "agree" do
-      let(:target) { "<span title=\"High Quality\">HQ</span>" }
+      let(:target) { "<span title=\"High Quality\"><img class=\"w-4 inline-block\" src=\"/images/quality_high_icon.svg\" /></span>" }
       it "returns -" do
         expect(quality_display(:quality_high)).to eq target
       end

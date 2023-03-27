@@ -72,7 +72,7 @@
           <%= check_box_tag :search_changed_opinion, true, params[:search_changed_opinion], class: "submitOnChange" %>
           Only "Changed my opinion" ratings
         <% end %> -->
-        <% if current_user.present? %>
+        <% if current_user.present? && !@viewing_current_user %>
           <%= label_tag :search_not_rated, class: "form-control-check" do %>
             <%= check_box_tag :search_not_rated, true, params[:search_not_rated], class: "submitOnChange" %>
             Only articles you haven't rated
