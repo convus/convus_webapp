@@ -92,7 +92,7 @@
                   <% if private_user %>
                     private
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(ratings_params.merge(user: rating.user.username)) %>
+                    <%= link_to rating.user&.username, ratings_path(ratings_params.merge("user" => rating.user.username)) %>
                   <% end %>
                 </small>
               <% end %>
@@ -114,7 +114,7 @@
                   <% if private_user %>
                     private
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(ratings_params.merge(user: rating.user.username)) %>
+                    <%= link_to rating.user&.username, ratings_path(ratings_params.merge("user" => rating.user.username)) %>
                   <% end %>
                 </small>
               </td>

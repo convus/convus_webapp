@@ -34,26 +34,26 @@
   <% end %>
 </div>
 <% if @can_view_ratings %>
-  <div class="large-width-container pt-2 px-4" data-controller="ratings-filter" id="ratingsFilter">
+  <div class="large-width-container pt-2 pl-4" data-controller="ratings-filter" id="ratingsFilter">
     <%= form_tag ratings_path, method: :get, id: "ratingsFilterForm" do %>
       <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true} %>
       <%= hidden_field_tag :user, params[:user] %>
       <%= hidden_field_tag :search_assign_topic, params[:search_assign_topic] %>
-      <div class="flex gap-3">
-        <%= label_tag :user_all, class: "form-control-radio flex-initial" do %>
+      <div class="flex flex-wrap">
+        <%= label_tag :user_all, class: "form-control-radio flex-initial ml-2 min-w-fit" do %>
           <%= radio_button_tag :user, "all", !@viewing_single_user && viewing_display_name != "following", class: "submitOnChange" %>
           All users
         <% end %>
-        <%= label_tag :user_current_user, class: "form-control-radio flex-initial" do %>
+        <%= label_tag :user_current_user, class: "form-control-radio flex-initial ml-2 min-w-fit" do %>
           <%= radio_button_tag :user, "current_user", @viewing_single_user, class: "submitOnChange" %>
           By you
         <% end %>
-        <%= label_tag :user_following, class: "form-control-radio flex-initial" do %>
+        <%= label_tag :user_following, class: "form-control-radio ml-2 min-w-fit" do %>
           <%= radio_button_tag :user, "following", viewing_display_name == "following", class: "submitOnChange" %>
           By people you follow
         <% end %>
         <% if @viewing_single_user && !@viewing_current_user %>
-          <%= label_tag "user_#{user_subject.username}", class: "form-control-radio flex-initial" do %>
+          <%= label_tag "user_#{user_subject.username}", class: "form-control-radio flex-initial ml-2 min-w-fit" do %>
             <%= radio_button_tag :user, user_subject.username, true, class: "submitOnChange" %>
             By <%= user_subject.username %>
           <% end %>

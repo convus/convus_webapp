@@ -63,7 +63,9 @@ module ApplicationHelper
     if str == "medium"
       return nil
     else
-      content_tag(:span, "#{str[0].titleize}Q", title: "#{str.titleize} Quality")
+      content_tag(:span,
+        image_tag("quality_#{str}_icon.svg", class: "w-4 inline-block"),
+        title: "#{str.titleize} Quality")
     end
   end
 
