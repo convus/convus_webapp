@@ -76,13 +76,8 @@
             Only "Changed my opinion" ratings
           <% end %>
         </div>
-        <!-- <div class="form-row">
-          <%= select_tag :filters, options_for_select(rating_filters_opts, params[:filters]), {prompt: "Filter ratings...", multiple: true, class: "form-control", id: "filters_select"} %>
-        </div> -->
         <%= submit_tag "Update ratings", class: "btn mt-2 hiddenOnJs" %>
-
       <% end %>
-
     </div>
     <div class="large-width-container">
       <%= render partial: "/shared/current_header", locals: {viewing: "Ratings", collection: @ratings} %>

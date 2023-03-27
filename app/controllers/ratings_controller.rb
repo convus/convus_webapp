@@ -3,7 +3,7 @@ class RatingsController < ApplicationController
   before_action :set_period, only: %i[index] # Actually, will want to set after assigning via
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
   before_action :find_and_authorize_rating, only: %i[edit update destroy]
-  helper_method :viewing_display_name, :filters_opts
+  helper_method :viewing_display_name
 
   def index
     if current_user.blank?
@@ -186,16 +186,5 @@ class RatingsController < ApplicationController
       next unless k.match?(/rating_id_\d/)
       k.gsub("rating_id_", "")
     end.compact.map(&:to_i)
-  end
-
-  def filters
-    params.permit!
-    return @filters if defined?(@filters)
-    options = params[:filters]
-
-    filters = {}
-    pp options
-    filters[:user] = filters.detect { |f| f.match?(/\Auser:/) }&.gsub("user:")
-    @filters = filters
   end
 end

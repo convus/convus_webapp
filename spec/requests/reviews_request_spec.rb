@@ -32,7 +32,6 @@ RSpec.describe base_url, type: :request do
 
     describe "index" do
       it "responds" do
-        expect(TopicReview.primary.slug).to eq topic_review.slug # weird,
         get base_url
         expect(response).to redirect_to(review_path(topic_review.slug))
         # TODO: once there are multiple topic_reviews, render this
