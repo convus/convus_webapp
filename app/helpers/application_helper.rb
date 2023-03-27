@@ -84,8 +84,15 @@ module ApplicationHelper
   def significant_factual_error_display(rating)
     return nil unless rating.significant_factual_error?
     content_tag(:span,
-      image_tag("learned_icon.svg", class: "w-4 inline-block"),
-      title: "Learned something")
+      image_tag("error_icon.svg", class: "w-4 inline-block"),
+      title: "Factual error")
+  end
+
+  def not_understood_display(rating)
+    return nil unless rating.not_understood?
+    content_tag(:span,
+      image_tag("not_understood_icon.svg", class: "w-4 inline-block"),
+      title: "Didn't understand")
   end
 
   def rating_display_name(rating)

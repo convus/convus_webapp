@@ -93,7 +93,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_27_225646) do
     t.string "timezone"
     t.date "created_date"
     t.boolean "learned_something", default: false
-    t.boolean "did_not_understand", default: false
+    t.boolean "not_understood", default: false
     t.index ["citation_id"], name: "index_ratings_on_citation_id"
     t.index ["user_id"], name: "index_ratings_on_user_id"
   end

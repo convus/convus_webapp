@@ -6,6 +6,7 @@ module API
       def create
         pparams = permitted_params
         pparams[:changed_opinion] = pparams.delete(:changed_my_opinion)
+        pparams[:not_understood] = pparams.delete(:did_not_understand)
         rating = Rating.find_or_build_for(pparams.merge(skip_rating_created_event: true))
         if rating.save
           RatingCreatedEventJob.new.perform(rating.id, rating)

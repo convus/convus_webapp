@@ -138,6 +138,9 @@
               <%= changed_opinion_display(rating) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
+              <%= not_understood_display(rating) %>
+            </td>
+            <td class="hidden md:table-cell text-center border-r">
               <%= significant_factual_error_display(rating) %>
             </td>
           <% end %>

@@ -41,6 +41,8 @@ class Rating < ApplicationRecord
 
   scope :learned_something, -> { where(learned_something: true) }
   scope :changed_opinion, -> { where(changed_opinion: true) }
+  scope :significant_factual_error, -> { where(significant_factual_error: true) }
+  scope :not_understood, -> { where(not_understood: true) }
 
   def self.quality_humanized(str)
     return nil if str.blank?
@@ -80,7 +82,7 @@ class Rating < ApplicationRecord
 
   def default_attrs?
     quality_med? && neutral? && topics_text.blank? && !changed_opinion &&
-      !learned_something && !did_not_understand && !significant_factual_error &&
+      !learned_something && !not_understood && !significant_factual_error &&
       error_quotes.blank?
   end
 
