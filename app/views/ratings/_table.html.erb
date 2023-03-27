@@ -14,6 +14,9 @@
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
 <% table_classes += " hide_header" if hide_header %>
 
+<%# HACK: sortable_search_params was warning unpermitted every time it's invoked - e.g. each row in the table %>
+<% ratings_params = sortable_search_params.as_json %>
+
 <div class="full-screen-table full-screen-table-auto-width">
   <table class="<%= table_classes %>">
     <thead class="sortable">
@@ -89,7 +92,7 @@
                   <% if private_user %>
                     private
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(sortable_search_params.merge(user: rating.user.username)) %>
+                    <%= link_to rating.user&.username, ratings_path(ratings_params.merge(user: rating.user.username)) %>
                   <% end %>
                 </small>
               <% end %>
@@ -102,7 +105,7 @@
                   <% if private_user %>
                     private
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(sortable_search_params.merge(user: rating.user.username)) %>
+                    <%= link_to rating.user&.username, ratings_path(ratings_params.merge(user: rating.user.username)) %>
                   <% end %>
                 </small>
               </td>
