@@ -17,7 +17,7 @@
 <%# HACK: sortable_search_params was warning unpermitted every time it's invoked - e.g. each row in the table %>
 <% ratings_params = sortable_search_params.as_json %>
 
-<div class="full-screen-table full-screen-table-auto-width">
+<div class="">
   <table class="<%= table_classes %>">
     <thead class="sortable">
       <tr>
@@ -38,25 +38,25 @@
           Link
         </th>
         <!-- <th class="hidden md:table-cell">Topics</th> -->
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Agreement">A<span class="hidden md:inline">greement</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Quality">Q<span class="hidden md:inline">uality</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Learned something?">L<span class="hidden md:inline">earned <br>
               something?</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Changed opinion?">C<span class="hidden md:inline">hanged <br>
               opinion?</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Didn't understand?">D<span class="hidden md:inline">idn't <br>
               understand?</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Error?">E<span class="hidden md:inline">rror?</span></span>
         </th>
       </tr>
@@ -96,7 +96,16 @@
                   <% end %>
                 </small>
               <% end %>
-              <span class="block md:hidden mt-1 max-w-md"><%= rating_display_name(rating) %></span>
+              <span class="block md:hidden mt-1 max-w-md">
+                <%= rating_display_name(rating) %>
+                <span class="ml-2">
+                  <%= agreement_display(rating.agreement) %>
+                  <%= quality_display(rating.quality) %>
+                  <%= learned_something_display(rating) %>
+                  <%= changed_my_opinion_display(rating) %>
+                  <%= significant_factual_error_display(rating) %>
+                </span>
+              </span>
               <!-- <span class="block md:hidden text-sm"><%= rating.topic_names.join(", ") %></span> -->
             </td>
             <% if render_user %>
@@ -116,20 +125,20 @@
             <!-- <td class="hidden md:table-cell">
               <%= rating.topic_names.join(", ") %>
             </td> -->
-            <td class="text-center border-r">
+            <td class="hidden md:table-cell text-center border-r">
               <%= agreement_display(rating.agreement) %>
             </td>
-            <td class="text-center border-r">
+            <td class="hidden md:table-cell text-center border-r">
               <%= quality_display(rating.quality) %>
             </td>
-            <td class="table-cell-check border-r">
-              <%= check_mark if rating.learned_something? %>
+            <td class="hidden md:table-cell text-center border-r">
+              <%= learned_something_display(rating) %>
             </td>
-            <td class="table-cell-check border-r">
-              <%= check_mark if rating.changed_my_opinion? %>
+            <td class="hidden md:table-cell text-center border-r">
+              <%= changed_my_opinion_display(rating) %>
             </td>
-            <td class="table-cell-check border-r">
-              <%= check_mark if rating.significant_factual_error? %>
+            <td class="hidden md:table-cell text-center border-r">
+              <%= significant_factual_error_display(rating) %>
             </td>
           <% end %>
         </tr>

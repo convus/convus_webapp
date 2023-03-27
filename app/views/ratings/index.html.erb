@@ -68,8 +68,8 @@
           <%= check_box_tag :search_learned_something, true, params[:search_learned_something], class: "submitOnChange" %>
           Only "Learned Something" ratings
         <% end %>
-        <!-- <%= label_tag :search_changed_opinion, class: "form-control-check" do %>
-          <%= check_box_tag :search_changed_opinion, true, params[:search_changed_opinion], class: "submitOnChange" %>
+        <!-- <%= label_tag :search_changed_my_opinion, class: "form-control-check" do %>
+          <%= check_box_tag :search_changed_my_opinion, true, params[:search_changed_my_opinion], class: "submitOnChange" %>
           Only "Changed my opinion" ratings
         <% end %> -->
         <% if current_user.present? %>

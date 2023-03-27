@@ -45,11 +45,14 @@ module ApplicationHelper
   def agreement_display(agreement = nil)
     return nil if agreement.blank?
     if agreement.to_s == "neutral"
-      content_tag(:span, "-", class: "less-strong")
+      return nil
     else
-      content_tag(:span, title: agreement) do
-        concat(agreement[0])
-        concat(content_tag(:span, agreement[1..], class: "hidden sm:inline"))
+      content_tag(:span, title: agreement.to_s&.titleize) do
+        if agreement == "agree"
+          image_tag("agree_icon.svg", class: "w-4 inline-block")
+        else
+          image_tag("disagree_icon.svg", class: "w-4 inline-block")
+        end
       end
     end
   end
@@ -58,13 +61,26 @@ module ApplicationHelper
     return nil if quality.blank?
     str = Rating.quality_humanized(quality)
     if str == "medium"
-      content_tag(:span, "-", class: "less-strong")
+      return nil
+      # content_tag(:span, "-", title: "#{str.titleize} quality", class: "less-strong")
     else
-      content_tag(:span, title: str) do
-        concat(str[0])
-        concat(content_tag(:span, str[1..], class: "hidden sm:inline"))
-      end
+      content_tag(:span, "#{str[0].titleize}Q", title: "#{str.titleize} Quality")
     end
+  end
+
+  def learned_something_display(rating)
+    return nil unless rating.learned_something?
+    check_mark
+  end
+
+  def changed_my_opinion_display(rating)
+    return nil unless rating.changed_my_opinion?
+    check_mark
+  end
+
+  def significant_factual_error_display(rating)
+    return nil unless rating.significant_factual_error?
+    check_mark
   end
 
   def rating_display_name(rating)

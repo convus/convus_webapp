@@ -8,13 +8,12 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(agreement_display("")).to be_nil
     end
     context "neutral" do
-      let(:target) { "<span class=\"less-strong\">-</span>" }
       it "returns -" do
-        expect(agreement_display(:neutral)).to eq target
+        expect(agreement_display(:neutral)).to be_blank
       end
     end
     context "agree" do
-      let(:target) { "<span title=\"agree\">a<span class=\"hidden sm:inline\">gree</span></span>" }
+      let(:target) { "<span title=\"Agree\"><img class=\"w-4 inline-block\" src=\"/images/disagree_icon.svg\" /></span>" }
       it "returns -" do
         expect(agreement_display(:agree)).to eq target
       end
@@ -26,13 +25,12 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(quality_display("")).to be_nil
     end
     context "neutral" do
-      let(:target) { "<span class=\"less-strong\">-</span>" }
       it "returns -" do
-        expect(quality_display("quality_med")).to eq target
+        expect(quality_display("quality_med")).to be_nil
       end
     end
     context "agree" do
-      let(:target) { "<span title=\"high\">h<span class=\"hidden sm:inline\">igh</span></span>" }
+      let(:target) { "<span title=\"High Quality\">HQ</span>" }
       it "returns -" do
         expect(quality_display(:quality_high)).to eq target
       end

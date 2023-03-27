@@ -171,7 +171,7 @@ class RatingsController < ApplicationController
     end
 
     ratings = ratings.quality_high if TranzitoUtils::Normalize.boolean(params[:search_quality_high])
-    ratings = ratings.changed_my_opinion if TranzitoUtils::Normalize.boolean(params[:search_changed_opinion])
+    ratings = ratings.changed_my_opinion if TranzitoUtils::Normalize.boolean(params[:search_my_changed_opinion])
 
     @time_range_column = "created_at"
     ratings.where(@time_range_column => @time_range)
