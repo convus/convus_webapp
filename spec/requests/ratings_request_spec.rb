@@ -8,7 +8,7 @@ RSpec.describe base_url, type: :request do
       agreement: "disagree",
       quality: "quality_high",
       citation_title: "something",
-      changed_my_opinion: "true",
+      changed_opinion: "true",
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
       topics_text: "A topic\n\nAnd another topic",

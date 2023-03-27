@@ -62,7 +62,6 @@ module ApplicationHelper
     str = Rating.quality_humanized(quality)
     if str == "medium"
       return nil
-      # content_tag(:span, "-", title: "#{str.titleize} quality", class: "less-strong")
     else
       content_tag(:span, "#{str[0].titleize}Q", title: "#{str.titleize} Quality")
     end
@@ -70,17 +69,23 @@ module ApplicationHelper
 
   def learned_something_display(rating)
     return nil unless rating.learned_something?
-    check_mark
+    content_tag(:span,
+      image_tag("learned_icon.svg", class: "w-4 inline-block"),
+      title: "Learned something")
   end
 
-  def changed_my_opinion_display(rating)
-    return nil unless rating.changed_my_opinion?
-    check_mark
+  def changed_opinion_display(rating)
+    return nil unless rating.changed_opinion?
+    content_tag(:span,
+      image_tag("changed_icon.svg", class: "w-4 inline-block"),
+      title: "Changed opinion")
   end
 
   def significant_factual_error_display(rating)
     return nil unless rating.significant_factual_error?
-    check_mark
+    content_tag(:span,
+      image_tag("learned_icon.svg", class: "w-4 inline-block"),
+      title: "Learned something")
   end
 
   def rating_display_name(rating)

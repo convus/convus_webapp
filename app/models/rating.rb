@@ -40,7 +40,7 @@ class Rating < ApplicationRecord
   attr_accessor :skip_rating_created_event, :skip_topics_job
 
   scope :learned_something, -> { where(learned_something: true) }
-  scope :changed_my_opinion, -> { where(changed_my_opinion: true) }
+  scope :changed_opinion, -> { where(changed_opinion: true) }
 
   def self.quality_humanized(str)
     return nil if str.blank?
@@ -79,7 +79,7 @@ class Rating < ApplicationRecord
   end
 
   def default_attrs?
-    quality_med? && neutral? && topics_text.blank? && !changed_my_opinion &&
+    quality_med? && neutral? && topics_text.blank? && !changed_opinion &&
       !learned_something && !did_not_understand && !significant_factual_error &&
       error_quotes.blank?
   end

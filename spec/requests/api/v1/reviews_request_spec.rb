@@ -41,7 +41,8 @@ RSpec.describe base_url, type: :request do
       expect(Rating.count).to eq 1
       rating = Rating.last
       expect(rating.user_id).to eq current_user.id
-      expect_attrs_to_match_hash(rating, review_params, match_timezone: true)
+      expect_attrs_to_match_hash(rating, review_params.except(:changed_my_opinion), match_timezone: true)
+      expect(rating.changed_opinion).to be_truthy
       expect(rating.timezone).to eq "Europe/Kyiv"
       expect(rating.created_date).to be_present
       expect(rating.citation).to be_present
@@ -67,7 +68,8 @@ RSpec.describe base_url, type: :request do
         expect(Rating.count).to eq 1
         rating = Rating.last
         expect(rating.user_id).to eq current_user.id
-        expect_attrs_to_match_hash(rating, review_params)
+        expect_attrs_to_match_hash(rating, review_params.except(:changed_my_opinion))
+        expect(rating.changed_opinion).to be_truthy
         expect(rating.default_attrs?).to be_falsey
         expect(rating.citation).to be_present
         citation = rating.citation
@@ -106,7 +108,8 @@ RSpec.describe base_url, type: :request do
           expect(Rating.count).to eq 1
           rating = Rating.last
           expect(rating.user_id).to eq current_user.id
-          expect_attrs_to_match_hash(rating, review_params)
+          expect_attrs_to_match_hash(rating, review_params.except(:changed_my_opinion))
+          expect(rating.changed_opinion).to be_falsey
           expect(rating.default_attrs?).to be_truthy
           expect(rating.citation).to be_present
           citation = rating.citation

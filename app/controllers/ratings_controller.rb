@@ -117,7 +117,7 @@ class RatingsController < ApplicationController
   end
 
   def permitted_attrs
-    %i[agreement changed_my_opinion citation_title did_not_understand
+    %i[agreement changed_opinion citation_title did_not_understand
       error_quotes learned_something quality significant_factual_error
       source submitted_url topics_text]
   end
@@ -171,7 +171,7 @@ class RatingsController < ApplicationController
     end
 
     ratings = ratings.quality_high if TranzitoUtils::Normalize.boolean(params[:search_quality_high])
-    ratings = ratings.changed_my_opinion if TranzitoUtils::Normalize.boolean(params[:search_my_changed_opinion])
+    ratings = ratings.changed_opinion if TranzitoUtils::Normalize.boolean(params[:search_my_changed_opinion])
 
     @time_range_column = "created_at"
     ratings.where(@time_range_column => @time_range)

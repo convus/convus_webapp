@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_27_225646) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -83,7 +83,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_185418) do
     t.text "citation_title"
     t.integer "agreement", default: 0
     t.integer "quality", default: 0
-    t.boolean "changed_my_opinion", default: false, null: false
+    t.boolean "changed_opinion", default: false, null: false
     t.boolean "significant_factual_error"
     t.text "error_quotes"
     t.text "topics_text"
