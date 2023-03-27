@@ -127,7 +127,7 @@ class RatingsController < ApplicationController
   end
 
   def multi_user_searches
-    %w[recent following]
+    %w[all recent following]
   end
 
   def viewable_ratings
@@ -147,8 +147,6 @@ class RatingsController < ApplicationController
 
   def viewing_display_name
     return @viewing_display_name if defined?(@viewing_display_name)
-    if filters[:user].present?
-    end
     @viewing_display_name ||= if user_subject.present?
       user_subject.username
     else
@@ -159,7 +157,7 @@ class RatingsController < ApplicationController
   def searched_ratings
     ratings = if viewing_display_name == "following"
       current_user&.following_ratings_visible || Rating.none
-    elsif viewing_display_name == "recent"
+    elsif %w[all recent].include?(viewing_display_name)
       Rating
     else
       @can_view_ratings ? user_subject.ratings : Rating.none

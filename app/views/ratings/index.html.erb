@@ -5,7 +5,7 @@
     <% unless search_params_present %>
       <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true, only_render_name: search_params_present} %>
     <% end %>
-    <div class="mb-4">
+    <div>
       <h1>
         Ratings by <%= user_subject.username %>
         <%# when there are search_params, add something to show that it's you %>
@@ -43,21 +43,48 @@
       <% end %>
     </div>
   <% else %>
-    <div class="large-width-container" data-controller="ratings-filter">
-      <%= form_tag ratings_path, method: :get do %>
+    <div class="large-width-container pt-2 px-4" data-controller="ratings-filter" id="ratingsFilter">
+      <%= form_tag ratings_path, method: :get, id: "ratingsFilterForm" do %>
         <%= render "/shared/hidden_search_fields" %>
         <%= hidden_field_tag :user, params[:user] %>
         <%= hidden_field_tag :search_assign_topic, params[:search_assign_topic] %>
-        <div class="form-row">
-          <%= select_tag :filters, options_for_select(rating_filters_opts, params[:filters]), {prompt: "Filter ratings...", multiple: true, class: "form-control", id: "filters_select"} %>
+        <div class="flex gap-3">
+          <%= label_tag :user_current_user, class: "form-control-radio flex-initial" do %>
+            <%= radio_button_tag :user, "current_user", @viewing_single_user, class: "submitOnChange" %>
+            By you
+          <% end %>
+          <%= label_tag :user_following, class: "form-control-radio flex-initial" do %>
+            <%= radio_button_tag :user, "following", viewing_display_name == "following", class: "submitOnChange" %>
+            By people you follow
+          <% end %>
+          <%= label_tag :user_all, class: "form-control-radio flex-initial" do %>
+            <%= radio_button_tag :user, "all", !@viewing_single_user && viewing_display_name != "following", class: "submitOnChange" %>
+            All users
+          <% end %>
         </div>
+        <div>
+          <%= label_tag :search_quality_high, class: "form-control-check" do %>
+            <%= check_box_tag :search_quality_high, true, params[:search_quality_high], class: "submitOnChange" %>
+            Only "High quality" ratings
+          <% end %>
+          <%= label_tag :search_learned_something, class: "form-control-check" do %>
+            <%= check_box_tag :search_learned_something, true, params[:search_learned_something], class: "submitOnChange" %>
+            Only "Learned Something" ratings
+          <% end %>
+          <%= label_tag :search_changed_opinion, class: "form-control-check" do %>
+            <%= check_box_tag :search_changed_opinion, true, params[:search_changed_opinion], class: "submitOnChange" %>
+            Only "Changed my opinion" ratings
+          <% end %>
+        </div>
+        <!-- <div class="form-row">
+          <%= select_tag :filters, options_for_select(rating_filters_opts, params[:filters]), {prompt: "Filter ratings...", multiple: true, class: "form-control", id: "filters_select"} %>
+        </div> -->
         <%= submit_tag "Update ratings", class: "btn mt-2 hiddenOnJs" %>
 
       <% end %>
 
-      <% if viewing_display_name == "recent" %>
-        <p class="less-strong mb-4"><em>See ratings by <%= link_to "people you're following", ratings_path(user: "following") %></em></p>
-      <% end %>
+    </div>
+    <div class="large-width-container">
       <%= render partial: "/shared/current_header", locals: {viewing: "Ratings", collection: @ratings} %>
     </div>
     <% if @assign_topic.present? %>
