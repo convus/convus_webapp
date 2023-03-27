@@ -1,15 +1,5 @@
-.main-nav-link-root {
-  @apply flex items-center;
-  & img {
-    @apply h-6 mr-2 sm:h-6;
-  }
-  & span {
-    @apply self-end text-lg font-semibold text-bodytext whitespace-nowrap;
-  }
-}
-
-.main-nav-link, .main-nav-link-root {
-  @apply text-bodytext no-underline;
+.main-nav-link {
+  @apply text-bodytext no-underline pb-2;
   &:hover, &:active, &.active {
     @apply underline;
   }

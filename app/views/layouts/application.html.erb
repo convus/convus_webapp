@@ -21,36 +21,34 @@
   </head>
   <body>
     <% if render_navbar? %>
-      <nav class="large-width-container-padded flex flex-wrap items-center justify-between mx-auto border-gray-200 border-b mb-4">
+      <nav class="large-width-container flex flex-wrap mx-auto border-gray-200 border-b mb-4 pt-2">
+        <% root_active = controller_name == "landing" && action_name == "index" %>
+        <%= link_to in_admin? ? admin_root_url : user_root_url, class: "main-nav-link flex items-center #{root_active ? 'active' : ''}" do %>
+          <%= image_tag("icon.png", alt: "Convus Logo", class: "h-6 sm:h-6") %>
+          <span class="hidden sm:inline-block ml-2 text-lg font-semibold -mt-0.5"><%= in_admin? ? "admin" : "Convus" %></span>
+        <% end %>
         <% if in_admin? %>
-          <%= link_to admin_root_url, class: "main-nav-link-root" do %>
-            <%= image_tag("icon.png", alt: "Convus Logo") %>
-            <span class="">admin</span>
-          <% end %>
           <%= active_link "users", admin_users_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= active_link "topics", admin_topics_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= active_link "reviews", admin_topic_reviews_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= link_to "exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
-          <% root_active = controller_name == "landing" && action_name == "index" %>
-          <%= link_to user_root_url, class: "main-nav-link-root #{root_active ? 'active' : ''}" do %>
-            <%= image_tag("icon.png", alt: "Convus Logo") %>
-            <span class="">Convus</span>
-          <% end %>
           <% ratings_active = controller_name == "ratings" && viewing_display_name == "recent" %>
-          <%= link_to "ratings", ratings_path, class: "main-nav-link ml-3 #{ratings_active ? 'active' : ''}" %>
+          <%= link_to "ratings", ratings_path, class: "main-nav-link ml-2 #{ratings_active ? 'active' : ''}" %>
           <%= active_link "topics", reviews_path, class: "main-nav-link ml-2" %>
           <% if current_user&.admin? %>
-            <%= active_link "admin", admin_root_path, class: "main-nav-link ml-3 less-strong" %>
+            <%= active_link "admin", admin_root_path, class: "main-nav-link ml-2 less-strong" %>
           <% end %>
-          <% if current_user.present? %>
-            <% user_active = controller_name == "ratings" && user_subject&.id == current_user.id %>
-            <%= link_to current_user.username, ratings_path(user: current_user.to_param), class: "main-nav-link ml-auto #{user_active ? 'active' : ''}" %>
-            <span class="ml-1 mr-1 text-gray-400">|</span>
-            <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "main-nav-link"  %>
-          <% else %>
-            <%= link_to "login", new_user_session_path, class: "main-nav-link ml-auto" %>
-          <% end %>
+          <span class="ml-auto block">
+            <% if current_user.present? %>
+              <% user_active = controller_name == "ratings" && user_subject&.id == current_user.id %>
+              <%= link_to current_user.username.truncate(40), ratings_path(user: current_user.to_param), title: current_user.username, class: "main-nav-link #{user_active ? 'active' : ''}" %>
+              <span class="text-gray-400">|</span>
+              <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "main-nav-link"  %>
+            <% else %>
+              <%= link_to "login", new_user_session_path, class: "main-nav-link" %>
+            <% end %>
+          </span>
         <% end %>
       </nav>
     <% end %>

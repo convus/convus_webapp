@@ -29,11 +29,7 @@ const toggleChecks = (event) => {
 
 const enableToggleChecks = () => {
   document.querySelectorAll('.toggleChecks')
-    .forEach(el => {
-      // hidden by default, since it needs js
-      el.classList.remove('hidden')
-      el.addEventListener('change', toggleChecks)
-    })
+    .forEach(el => el.addEventListener('change', toggleChecks))
 }
 
 document.addEventListener('turbo:load', () => {
@@ -54,4 +50,8 @@ document.addEventListener('turbo:load', () => {
 
   enableFullscreenTableOverflow()
   enableToggleChecks()
+
+  // When JS is enabled, some things should be hidden and some things should be shown
+  document.querySelectorAll('.hiddenNoJs').forEach(el => el.classList.remove('hiddenNoJs'))
+  document.querySelectorAll('.hiddenOnJs').forEach(el => el.classList.add('hidden'))
 })
