@@ -48,9 +48,11 @@ class ApplicationController < ActionController::Base
   def current_topics
     return @current_topics if defined?(@searched_topics)
     @current_topics = if params[:search_topics].blank?
-      nil
+      []
     else
-      Topic.friendly_find_all(params[:search_topics].split("\n"))
+      arr = params[:search_topics]
+      arr = arr.split("\n") unless arr.is_a?(Array)
+      Topic.friendly_find_all(arr)
     end
   end
 

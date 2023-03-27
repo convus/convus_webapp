@@ -8,4 +8,8 @@
 <%= hidden_field_tag :start_time, params[:start_time] %>
 <%# convus search keys %>
 <%= hidden_field_tag :user, params[:user] %>
-<%= hidden_field_tag :search_topics, params[:search_topics] %>
+<% skip_topics ||= false %>
+
+<% unless skip_topics %>
+  <%= hidden_field_tag :search_topics, params[:search_topics] %>
+<% end %>

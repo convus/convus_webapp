@@ -44,12 +44,8 @@ RSpec.describe base_url, type: :request do
       get base_url
       expect(response.code).to eq "200"
       expect(assigns(:user_subject)&.id).to be_blank
-      expect(assigns(:viewing_display_name)).to eq "recent"
+      expect(assigns(:viewing_display_name)).to eq "all"
       expect(response).to render_template("ratings/index")
-      get "#{base_url}?user=receNT"
-      expect(response.code).to eq "200"
-      expect(response).to render_template("ratings/index")
-      expect(assigns(:viewing_display_name)).to eq "recent"
       get "#{base_url}?user=all"
       expect(response.code).to eq "200"
       expect(response).to render_template("ratings/index")

@@ -33,7 +33,7 @@
           <%= active_link "reviews", admin_topic_reviews_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= link_to "exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
-          <% ratings_active = controller_name == "ratings" && viewing_display_name == "recent" %>
+          <% ratings_active = controller_name == "ratings" && viewing_display_name == "all" %>
           <%= link_to "ratings", ratings_path, class: "main-nav-link ml-2 #{ratings_active ? 'active' : ''}" %>
           <%= active_link "topics", reviews_path, class: "main-nav-link ml-2" %>
           <% if current_user&.admin? %>

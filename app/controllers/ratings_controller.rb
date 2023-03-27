@@ -127,7 +127,7 @@ class RatingsController < ApplicationController
   end
 
   def multi_user_searches
-    %w[all recent following]
+    %w[all following]
   end
 
   def viewable_ratings
@@ -157,15 +157,21 @@ class RatingsController < ApplicationController
   def searched_ratings
     ratings = if viewing_display_name == "following"
       current_user&.following_ratings_visible || Rating.none
-    elsif %w[all recent].include?(viewing_display_name)
-      Rating
+    elsif viewing_display_name == "all"
+      Rating.where.not(user_id: current_user&.id)
     else
       @can_view_ratings ? user_subject.ratings : Rating.none
     end
 
     if current_topics.present?
-      ratings = Rating.matching_topics(current_topics)
+      ratings = ratings.matching_topics(current_topics)
     end
+    if current_user.present? && TranzitoUtils::Normalize.boolean(params[:search_not_rated])
+      ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
+    end
+
+    ratings = ratings.quality_high if TranzitoUtils::Normalize.boolean(params[:search_quality_high])
+    ratings = ratings.changed_my_opinion if TranzitoUtils::Normalize.boolean(params[:search_changed_opinion])
 
     @time_range_column = "created_at"
     ratings.where(@time_range_column => @time_range)

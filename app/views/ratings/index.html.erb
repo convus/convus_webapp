@@ -28,84 +28,96 @@
       <%if viewing_display_name == "following" %>
         Ratings by people you <%= link_to "follow", following_u_path(id: current_user.to_param) %>
       <% else %>
-        Recent ratings
+        Ratings
       <% end %>
     </h1>
   <% end %>
 </div>
 <% if @can_view_ratings %>
-  <% if @ratings.total_count == 0 %>
-    <div class="large-width-container">
-      <% if viewing_display_name == "following" %>
-        <h4 class="standard-top-offset">No one you follow has visible ratings</h4>
-      <% else %>
-        <h4 class="standard-top-offset"><%= user_subject.username %> has no ratings</h4>
-      <% end %>
+  <div class="large-width-container pt-2 px-4" data-controller="ratings-filter" id="ratingsFilter">
+    <%= form_tag ratings_path, method: :get, id: "ratingsFilterForm" do %>
+      <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true} %>
+      <%= hidden_field_tag :user, params[:user] %>
+      <%= hidden_field_tag :search_assign_topic, params[:search_assign_topic] %>
+      <div class="flex gap-3">
+        <%= label_tag :user_all, class: "form-control-radio flex-initial" do %>
+          <%= radio_button_tag :user, "all", !@viewing_single_user && viewing_display_name != "following", class: "submitOnChange" %>
+          All users
+        <% end %>
+        <%= label_tag :user_current_user, class: "form-control-radio flex-initial" do %>
+          <%= radio_button_tag :user, "current_user", @viewing_single_user, class: "submitOnChange" %>
+          By you
+        <% end %>
+        <%= label_tag :user_following, class: "form-control-radio flex-initial" do %>
+          <%= radio_button_tag :user, "following", viewing_display_name == "following", class: "submitOnChange" %>
+          By people you follow
+        <% end %>
+        <% if @viewing_single_user && !@viewing_current_user %>
+          <%= label_tag "user_#{user_subject.username}", class: "form-control-radio flex-initial" do %>
+            <%= radio_button_tag :user, user_subject.username, true, class: "submitOnChange" %>
+            By <%= user_subject.username %>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="mt-2">
+        <%= label_tag :search_quality_high, class: "form-control-check" do %>
+          <%= check_box_tag :search_quality_high, true, params[:search_quality_high], class: "submitOnChange" %>
+          Only "High quality" ratings
+        <% end %>
+        <%= label_tag :search_learned_something, class: "form-control-check" do %>
+          <%= check_box_tag :search_learned_something, true, params[:search_learned_something], class: "submitOnChange" %>
+          Only "Learned Something" ratings
+        <% end %>
+        <!-- <%= label_tag :search_changed_opinion, class: "form-control-check" do %>
+          <%= check_box_tag :search_changed_opinion, true, params[:search_changed_opinion], class: "submitOnChange" %>
+          Only "Changed my opinion" ratings
+        <% end %> -->
+        <% if current_user.present? %>
+          <%= label_tag :search_not_rated, class: "form-control-check" do %>
+            <%= check_box_tag :search_not_rated, true, params[:search_not_rated], class: "submitOnChange" %>
+            Only articles you haven't rated
+          <% end %>
+        <% end %>
+        <% if primary_topic_review.present? %>
+          <label class="form-control-check"><%# TODO: make this a functioning label_tag %>
+            <%= check_box_tag "search_topics[]", primary_topic_review.slug, current_topics.first&.slug == primary_topic_review.slug, class: "submitOnChange" %>
+            Only articles about <%= topic_review_display(primary_topic_review) %>
+          </label>
+        <% end %>
+      </div>
+      <%= submit_tag "Update ratings", class: "btn mt-2 hiddenOnJs" %>
+    <% end %>
+  </div>
+  <div class="large-width-container mt-4">
+    <div class="row">
+      <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
     </div>
+  </div>
+  <% if @assign_topic.present? %>
+    <%# duplicating this whole thing is gross, but... HACK HACK HACK %>
+    <%= form_tag add_topic_ratings_path(sortable_search_params), method: :post, class: "" do %>
+      <%= hidden_field_tag :included_ratings, @ratings.pluck(:id).join(",") %>
+      <p class="large-width-container mb-3">
+        <%= button_tag type: "submit", class: "btn" do %>
+          Mark checked ratings applicable to <%= topic_review_display(@assign_topic, "ml-1") %>
+        <% end %>
+      </p>
+      <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: @viewing_current_user, render_user: !@viewing_single_user, hide_private_users: viewing_display_name == "all", render_assign_topic: @assign_topic} %>
+      <p class="large-width-container mt-2 mb-3">
+        <%= button_tag type: "submit", class: "btn" do %>
+          Mark checked ratings applicable to <%= topic_review_display(@assign_topic, "ml-1") %>
+        <% end %>
+      </p>
+    <% end %>
   <% else %>
-    <div class="large-width-container pt-2 px-4" data-controller="ratings-filter" id="ratingsFilter">
-      <%= form_tag ratings_path, method: :get, id: "ratingsFilterForm" do %>
-        <%= render "/shared/hidden_search_fields" %>
-        <%= hidden_field_tag :user, params[:user] %>
-        <%= hidden_field_tag :search_assign_topic, params[:search_assign_topic] %>
-        <div class="flex gap-3">
-          <%= label_tag :user_current_user, class: "form-control-radio flex-initial" do %>
-            <%= radio_button_tag :user, "current_user", @viewing_single_user, class: "submitOnChange" %>
-            By you
-          <% end %>
-          <%= label_tag :user_following, class: "form-control-radio flex-initial" do %>
-            <%= radio_button_tag :user, "following", viewing_display_name == "following", class: "submitOnChange" %>
-            By people you follow
-          <% end %>
-          <%= label_tag :user_all, class: "form-control-radio flex-initial" do %>
-            <%= radio_button_tag :user, "all", !@viewing_single_user && viewing_display_name != "following", class: "submitOnChange" %>
-            All users
-          <% end %>
-        </div>
-        <div>
-          <%= label_tag :search_quality_high, class: "form-control-check" do %>
-            <%= check_box_tag :search_quality_high, true, params[:search_quality_high], class: "submitOnChange" %>
-            Only "High quality" ratings
-          <% end %>
-          <%= label_tag :search_learned_something, class: "form-control-check" do %>
-            <%= check_box_tag :search_learned_something, true, params[:search_learned_something], class: "submitOnChange" %>
-            Only "Learned Something" ratings
-          <% end %>
-          <%= label_tag :search_changed_opinion, class: "form-control-check" do %>
-            <%= check_box_tag :search_changed_opinion, true, params[:search_changed_opinion], class: "submitOnChange" %>
-            Only "Changed my opinion" ratings
-          <% end %>
-        </div>
-        <%= submit_tag "Update ratings", class: "btn mt-2 hiddenOnJs" %>
-      <% end %>
-    </div>
-    <div class="large-width-container">
-      <%= render partial: "/shared/current_header", locals: {viewing: "Ratings", collection: @ratings} %>
-    </div>
-    <% if @assign_topic.present? %>
-      <%# duplicating this whole thing is gross, but... HACK HACK HACK %>
-      <%= form_tag add_topic_ratings_path(sortable_search_params), method: :post, class: "" do %>
-        <%= hidden_field_tag :included_ratings, @ratings.pluck(:id).join(",") %>
-        <p class="large-width-container mb-3">
-          <%= button_tag type: "submit", class: "btn" do %>
-            Mark checked ratings applicable to <%= topic_review_display(@assign_topic, "ml-1") %>
-          <% end %>
-        </p>
-        <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: viewing_display_name == "recent", render_assign_topic: @assign_topic} %>
-        <p class="large-width-container mt-2 mb-3">
-          <%= button_tag type: "submit", class: "btn" do %>
-            Mark checked ratings applicable to <%= topic_review_display(@assign_topic, "ml-1") %>
-          <% end %>
-        </p>
-      <% end %>
-    <% else %>
-      <%# duplicating this whole thing is gross %>
+    <%# duplicating this whole thing is gross %>
+    <% if @ratings.total_count > 0 %>
       <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: viewing_display_name == "recent"} %>
     <% end %>
-    <div class="large-width-container">
-      <div class="row">
-        <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating", skip_total: true} %>
-      </div>
-    </div>
   <% end %>
+  <div class="large-width-container">
+    <div class="row">
+      <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating", skip_total: true} %>
+    </div>
+  </div>
 <% end %>
