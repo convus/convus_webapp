@@ -49,6 +49,15 @@ RSpec.describe base_url, type: :request do
       get "#{base_url}?user=receNT"
       expect(response.code).to eq "200"
       expect(response).to render_template("ratings/index")
+      expect(assigns(:viewing_display_name)).to eq "recent"
+      get "#{base_url}?user=recent&filters=user:following"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("ratings/index")
+      expect(assigns(:filters)).to eq({user: "following"})
+      expect(assigns(:viewing_display_name)).to eq "following"
+      get "#{base_url}?user=recent&filters=user:current_user"
+      expect(response).to redirect_to new_user_registration_path
+      expect(session[:user_return_to]).to eq "#{base_url}?user=recent&filter=user:current_user"
     end
     context "no user found" do
       it "raises" do

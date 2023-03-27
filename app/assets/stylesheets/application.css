@@ -1,5 +1,6 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
+@import "tom-select/dist/css/tom-select.bootstrap4.css";
 
 @import "sections/container_and_row.css";
 @import "sections/links_and_buttons.css";

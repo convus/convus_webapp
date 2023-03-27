@@ -1,7 +1,7 @@
 <% render_second_hr ||= false %>
 <% render_links = @viewing_current_user || user.account_public || user.follower_approved?(current_user) %>
-<div class="mb-4">
-  <div class="mt-2">
+<div class="standard-top-offset mb-8">
+  <div><%# not p because button_to breaks it %>
     <strong class="inline-block mr-1">User</strong>
     <%= user.username %>
     <% if @viewing_current_user %>

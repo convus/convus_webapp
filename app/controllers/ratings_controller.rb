@@ -1,9 +1,9 @@
 class RatingsController < ApplicationController
   include TranzitoUtils::SortableTable
-  before_action :set_period, only: %i[index]
+  before_action :set_period, only: %i[index] # Actually, will want to set after assigning via
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
   before_action :find_and_authorize_rating, only: %i[edit update destroy]
-  helper_method :viewing_display_name
+  helper_method :viewing_display_name, :filters_opts
 
   def index
     if current_user.blank?
@@ -12,6 +12,7 @@ class RatingsController < ApplicationController
         return
       end
     end
+    params.permit!
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
     @ratings = viewable_ratings.reorder("ratings.#{sort_column} #{sort_direction}")
@@ -145,6 +146,9 @@ class RatingsController < ApplicationController
   end
 
   def viewing_display_name
+    return @viewing_display_name if defined?(@viewing_display_name)
+    if filters[:user].present?
+    end
     @viewing_display_name ||= if user_subject.present?
       user_subject.username
     else
@@ -184,5 +188,16 @@ class RatingsController < ApplicationController
       next unless k.match?(/rating_id_\d/)
       k.gsub("rating_id_", "")
     end.compact.map(&:to_i)
+  end
+
+  def filters
+    params.permit!
+    return @filters if defined?(@filters)
+    options = params[:filters]
+
+    filters = {}
+    pp options
+    filters[:user] = filters.detect { |f| f.match?(/\Auser:/) }&.gsub("user:")
+    @filters = filters
   end
 end

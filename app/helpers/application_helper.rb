@@ -109,4 +109,19 @@ module ApplicationHelper
     return c_name.titleize if %(index).include?(action_name)
     c_name.singularize.titleize
   end
+
+  def rating_filters_opts
+    filters = [
+      ["Ratings by users you follow", "user:following"],
+      ["Ratings by you", "user:current_user"],
+      ["Only articles you haven't read", "not_rated"],
+      ["Only \"high quality\" ratings", "quality_high"],
+      ["Only \"changed opinion\" ratings", "changed_opinion"],
+    ]
+    if primary_topic_review.present?
+      filters << ["Only on #{primary_topic_review.topic_name}", "topic:#{primary_topic_review.slug}"]
+    end
+    filters
+  end
+
 end
