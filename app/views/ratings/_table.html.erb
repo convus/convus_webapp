@@ -14,9 +14,6 @@
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
 <% table_classes += " hide_header" if hide_header %>
 
-<%# HACK: sortable_search_params was warning unpermitted every time it's invoked - e.g. each row in the table %>
-<% ratings_params = sortable_search_params.as_json %>
-
 <div class="">
   <table class="<%= table_classes %>">
     <thead class="sortable">
@@ -92,18 +89,18 @@
                   <% if private_user %>
                     private
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(ratings_params.merge("user" => rating.user.username)) %>
+                    <%= link_to rating.user&.username, ratings_path(sortable_params.merge(user: rating.user.username)) %>
                   <% end %>
                 </small>
               <% end %>
               <span class="block md:hidden mt-1 max-w-md maxWScreen">
                 <%= rating_display_name(rating) %>
                 <span class="ml-2">
-                  <%= agreement_display(rating.agreement) %>
-                  <%= quality_display(rating.quality) %>
-                  <%= learned_something_display(rating) %>
-                  <%= changed_opinion_display(rating) %>
-                  <%= significant_factual_error_display(rating) %>
+                  <%= agreement_display(rating.agreement, link: true) %>
+                  <%= quality_display(rating.quality, link: true) %>
+                  <%= learned_something_display(rating.learned_something?, link: true) %>
+                  <%= changed_opinion_display(rating.changed_opinion?, link: true) %>
+                  <%= significant_factual_error_display(rating.significant_factual_error?, link: true) %>
                 </span>
               </span>
               <!-- <span class="block md:hidden text-sm"><%= rating.topic_names.join(", ") %></span> -->
@@ -114,7 +111,7 @@
                   <% if private_user %>
                     private
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(ratings_params.merge("user" => rating.user.username)) %>
+                    <%= link_to rating.user&.username, ratings_path(sortable_params.merge(user: rating.user.username)) %>
                   <% end %>
                 </small>
               </td>
@@ -126,22 +123,22 @@
               <%= rating.topic_names.join(", ") %>
             </td> -->
             <td class="hidden md:table-cell text-center border-r">
-              <%= agreement_display(rating.agreement) %>
+              <%= agreement_display(rating.agreement, link: true) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= quality_display(rating.quality) %>
+              <%= quality_display(rating.quality, link: true) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= learned_something_display(rating) %>
+              <%= learned_something_display(rating.learned_something?, link: true) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= changed_opinion_display(rating) %>
+              <%= changed_opinion_display(rating.changed_opinion?, link: true) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= not_understood_display(rating) %>
+              <%= not_understood_display(rating.not_understood?, link: true) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= significant_factual_error_display(rating) %>
+              <%= significant_factual_error_display(rating.significant_factual_error?, link: true) %>
             </td>
           <% end %>
         </tr>

@@ -13,7 +13,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
     context "agree" do
-      let(:target) { "<span title=\"Agree\"><img class=\"w-4 inline-block\" src=\"/images/disagree_icon.svg\" /></span>" }
+      let(:target) { "<span title=\"Agree\"><img class=\"w-4 inline-block\" src=\"/images/agree_icon.svg\" /></span>" }
       it "returns -" do
         expect(agreement_display(:agree)).to eq target
       end

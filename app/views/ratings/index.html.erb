@@ -40,7 +40,7 @@
       <%= hidden_field_tag :user, params[:user] %>
       <%= hidden_field_tag :search_assign_topic, params[:search_assign_topic] %>
       <div class="flex flex-wrap">
-        <%= label_tag :user_all, class: "form-control-radio flex-initial ml-2 min-w-fit" do %>
+        <%= label_tag :user_all, class: "form-control-radio flex-initial min-w-fit" do %>
           <%= radio_button_tag :user, "all", !@viewing_single_user && viewing_display_name != "following", class: "submitOnChange" %>
           All users
         <% end %>
@@ -60,18 +60,57 @@
         <% end %>
       </div>
       <div class="mt-2">
-        <%= label_tag :search_quality_high, class: "form-control-check" do %>
-          <%= check_box_tag :search_quality_high, true, params[:search_quality_high], class: "submitOnChange" %>
-          Only "High quality" ratings
+        <% if @search_agreement == "disagree" %>
+          <%= label_tag :search_disagree, class: "form-control-check" do %>
+            <%= check_box_tag :search_disagree, true, params[:search_disagree], class: "submitOnChange" %>
+            Only ratings marked "Disagree"
+          <% end %>
         <% end %>
-        <%= label_tag :search_learned_something, class: "form-control-check" do %>
-          <%= check_box_tag :search_learned_something, true, params[:search_learned_something], class: "submitOnChange" %>
-          Only "Learned Something" ratings
+        <% if @search_agreement == "agree" %>
+          <%= label_tag :search_agree, class: "form-control-check" do %>
+            <%= check_box_tag :search_agree, true, params[:search_agree], class: "submitOnChange" %>
+            Only ratings marked "Agree"
+          <% end %>
         <% end %>
-        <!-- <%= label_tag :search_changed_opinion, class: "form-control-check" do %>
-          <%= check_box_tag :search_changed_opinion, true, params[:search_changed_opinion], class: "submitOnChange" %>
-          Only "Changed my opinion" ratings
-        <% end %> -->
+
+        <% if @search_quality == "low" %>
+          <%= label_tag :search_quality_low, class: "form-control-check" do %>
+            <%= check_box_tag :search_quality_low, true, params[:search_quality_low], class: "submitOnChange" %>
+            Only "Low quality" ratings
+          <% end %>
+        <% else %>
+          <%= label_tag :search_quality_high, class: "form-control-check" do %>
+            <%= check_box_tag :search_quality_high, true, params[:search_quality_high], class: "submitOnChange" %>
+            Only "High quality" ratings
+          <% end %>
+        <% end %>
+
+        <%# TODO: iterate through rendering these %>
+        <% if @search_learned_something %>
+          <%= label_tag :search_learned_something, class: "form-control-check" do %>
+            <%= check_box_tag :search_learned_something, true, params[:search_learned_something], class: "submitOnChange" %>
+            Only "Learned something" ratings
+          <% end %>
+        <% end %>
+        <% if @search_changed_opinion %>
+          <%= label_tag :search_changed_opinion, class: "form-control-check" do %>
+            <%= check_box_tag :search_changed_opinion, true, params[:search_changed_opinion], class: "submitOnChange" %>
+            Only "Changed opinion" ratings
+          <% end %>
+        <% end %>
+        <% if @search_significant_factual_error %>
+          <%= label_tag :search_significant_factual_error, class: "form-control-check" do %>
+            <%= check_box_tag :search_significant_factual_error, true, params[:search_significant_factual_error], class: "submitOnChange" %>
+            Only "Significant factual error" ratings
+          <% end %>
+        <% end %>
+        <% if @search_not_understood %>
+          <%= label_tag :search_not_understood, class: "form-control-check" do %>
+            <%= check_box_tag :search_not_understood, true, params[:search_not_understood], class: "submitOnChange" %>
+            Only "Not understood" ratings
+          <% end %>
+        <% end %>
+
         <% if current_user.present? && !@viewing_current_user %>
           <%= label_tag :search_not_rated, class: "form-control-check" do %>
             <%= check_box_tag :search_not_rated, true, params[:search_not_rated], class: "submitOnChange" %>
