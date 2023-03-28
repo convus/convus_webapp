@@ -16,6 +16,11 @@ const toggleChecks = (event) => {
     })
 }
 
+const enableToggleChecks = () => {
+  document.querySelectorAll('.toggleChecks')
+    .forEach(el => el.addEventListener('change', toggleChecks))
+}
+
 const pageWidth = window.outerWidth
 const enableFullscreenTableOverflow = () => {
   document.querySelectorAll('.full-screen-table table').forEach(el => {
@@ -27,13 +32,7 @@ const enableFullscreenTableOverflow = () => {
   })
 }
 
-const enableToggleChecks = () => {
-  document.querySelectorAll('.toggleChecks')
-    .forEach(el => el.addEventListener('change', toggleChecks))
-}
-
 const setMaxWidths = () => {
-  log.debug(pageWidth)
   if (pageWidth < 501) {
     document.querySelectorAll('.maxWScreen')
       .forEach(el => {
