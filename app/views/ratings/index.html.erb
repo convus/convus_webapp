@@ -39,15 +39,20 @@
       <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true} %>
       <%= hidden_field_tag :user, params[:user] %>
       <div class="flex flex-wrap">
-        <%= label_tag :user_all, class: "form-control-radio flex-initial min-w-fit" do %>
+        <%= label_tag :user_all, class: "form-control-radio flex-initial min-w-fit mr-2" do %>
           <%= radio_button_tag :user, "all", !@viewing_single_user && viewing_display_name != "following", class: "submitOnChange" %>
-          All users
+          By
+          <% if current_user.present? %>
+            other users
+          <% else %>
+            all users
+          <% end %>
         <% end %>
-        <%= label_tag :user_current_user, class: "form-control-radio flex-initial ml-2 min-w-fit" do %>
+        <%= label_tag :user_current_user, class: "form-control-radio flex-initial mr-2 min-w-fit" do %>
           <%= radio_button_tag :user, "current_user", @viewing_single_user, class: "submitOnChange" %>
           By you
         <% end %>
-        <%= label_tag :user_following, class: "form-control-radio ml-2 min-w-fit" do %>
+        <%= label_tag :user_following, class: "form-control-radio mr-2 min-w-fit" do %>
           <%= radio_button_tag :user, "following", viewing_display_name == "following", class: "submitOnChange" %>
           By people you follow
         <% end %>
