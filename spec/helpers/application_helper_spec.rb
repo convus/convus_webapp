@@ -40,7 +40,9 @@ RSpec.describe ApplicationHelper, type: :helper do
   describe "rating_display_name" do
     let(:target) { "<span class=\"less-strong\">missing url</span>" }
     it "returns target" do
-      expect(rating_display_name(Rating.new)).to eq target
+      rating = Rating.new
+      rating.display_name = rating.calculated_display_name
+      expect(rating_display_name(rating)).to eq target
     end
     context "with rating" do
       let(:target) { "<a title=\"#{citation.pretty_url}\" class=\"break-words\" href=\"#{rating.submitted_url}\">texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as...</a>" }
@@ -56,6 +58,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       let(:target) { "<a class=\"break-words\" href=\"https://example.com\">Somewhere</a>" }
       let(:rating) { Rating.new(submitted_url: "https://example.com", citation_title: "Somewhere") }
       it "returns target" do
+        rating.display_name = rating.calculated_display_name
         expect(rating_display_name(rating)).to eq target
       end
     end

@@ -10,6 +10,8 @@
 <% ranking_modifier ||= 0 %>
 <% ranking_count = render_ranking && ratings.count  %>
 
+<% filter_links ||= !render_ranking %>
+
 <% table_classes = "table table-sm break-words max-w-full" %>
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
 <% table_classes += " hide_header" if hide_header %>
@@ -32,7 +34,7 @@
           </th>
         <% end %>
         <th class="hidden md:table-cell">
-          Link
+          <%= sortable "display_name", "Article", skip_sortable: skip_sortable %>
         </th>
         <!-- <th class="hidden md:table-cell">Topics</th> -->
         <th class="hidden md:table-cell break-normal text-center border-r">
@@ -96,11 +98,11 @@
               <span class="block md:hidden mt-1 max-w-md maxWScreen">
                 <%= rating_display_name(rating) %>
                 <span class="ml-2">
-                  <%= agreement_display(rating.agreement, link: true) %>
-                  <%= quality_display(rating.quality, link: true) %>
-                  <%= learned_something_display(rating.learned_something?, link: true) %>
-                  <%= changed_opinion_display(rating.changed_opinion?, link: true) %>
-                  <%= significant_factual_error_display(rating.significant_factual_error?, link: true) %>
+                  <%= agreement_display(rating.agreement, link: filter_links) %>
+                  <%= quality_display(rating.quality, link: filter_links) %>
+                  <%= learned_something_display(rating.learned_something?, link: filter_links) %>
+                  <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
+                  <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
                 </span>
               </span>
               <!-- <span class="block md:hidden text-sm"><%= rating.topic_names.join(", ") %></span> -->
@@ -123,22 +125,22 @@
               <%= rating.topic_names.join(", ") %>
             </td> -->
             <td class="hidden md:table-cell text-center border-r">
-              <%= agreement_display(rating.agreement, link: true) %>
+              <%= agreement_display(rating.agreement, link: filter_links) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= quality_display(rating.quality, link: true) %>
+              <%= quality_display(rating.quality, link: filter_links) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= learned_something_display(rating.learned_something?, link: true) %>
+              <%= learned_something_display(rating.learned_something?, link: filter_links) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= changed_opinion_display(rating.changed_opinion?, link: true) %>
+              <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= not_understood_display(rating.not_understood?, link: true) %>
+              <%= not_understood_display(rating.not_understood?, link: filter_links) %>
             </td>
             <td class="hidden md:table-cell text-center border-r">
-              <%= significant_factual_error_display(rating.significant_factual_error?, link: true) %>
+              <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
             </td>
           <% end %>
         </tr>

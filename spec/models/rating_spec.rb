@@ -95,14 +95,14 @@ RSpec.describe Rating, type: :model do
   describe "display_name" do
     let(:rating) { Rating.new }
     it "is missing url" do
-      expect(rating.display_name).to eq "missing url"
+      expect(rating.calculated_display_name).to eq "missing url"
     end
     context "with submitted_url" do
       let(:rating) { FactoryBot.create(:rating, submitted_url: "https://en.wikipedia.org/wiki/Protocol_Buffers/") }
       it "pretty url, overridden by citation_title" do
-        expect(rating.display_name).to eq "en.wikipedia.org/wiki/Protocol_Buffers"
+        expect(rating.calculated_display_name).to eq "en.wikipedia.org/wiki/Protocol_Buffers"
         rating.citation_title = "party"
-        expect(rating.display_name).to eq "party"
+        expect(rating.calculated_display_name).to eq "party"
       end
     end
   end

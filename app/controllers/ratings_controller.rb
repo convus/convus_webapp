@@ -15,7 +15,7 @@ class RatingsController < ApplicationController
     params.permit!
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @ratings = viewable_ratings.reorder("ratings.#{sort_column} #{sort_direction}")
+    @ratings = viewable_ratings.reorder(order_scope_query)
       .includes(:citation, :user).page(page).per(@per_page)
     if params[:search_assign_topic].present?
       @assign_topic = Topic.friendly_find(params[:search_assign_topic])
@@ -123,7 +123,7 @@ class RatingsController < ApplicationController
   end
 
   def sortable_columns
-    %w[created_at] # TODO: Add agreement and quality
+    %w[created_at display_name]
   end
 
   def multi_user_searches
@@ -151,6 +151,16 @@ class RatingsController < ApplicationController
       user_subject.username
     else
       (params[:user] || multi_user_searches.first).downcase
+    end
+  end
+
+  def order_scope_query
+    if sort_column == "display_name"
+      # IDK, send is scary, add protection
+      raise "Invalid sort_direction" unless %w[asc desc].include?(sort_direction)
+      Rating.arel_table["display_name"].lower.send(sort_direction)
+    else
+      "ratings.#{sort_column} #{sort_direction}"
     end
   end
 
