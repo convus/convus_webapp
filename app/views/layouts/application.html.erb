@@ -28,14 +28,21 @@
           <span class="hidden sm:inline-block ml-2 text-lg font-semibold -mt-0.5"><%= in_admin? ? "admin" : "Convus" %></span>
         <% end %>
         <% if in_admin? %>
-          <%= active_link "users", admin_users_path, class: "main-nav-link ml-2", match_controller: true %>
-          <%= active_link "topics", admin_topics_path, class: "main-nav-link ml-2", match_controller: true %>
-          <%= active_link "reviews", admin_topic_reviews_path, class: "main-nav-link ml-2", match_controller: true %>
-          <%= link_to "exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
+          <%= active_link "Users", admin_users_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= active_link "Topics", admin_topics_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= active_link "Reviews", admin_topic_reviews_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= link_to "Exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
           <% ratings_active = controller_name == "ratings" && viewing_display_name == "all" %>
-          <%= link_to "ratings", ratings_path, class: "main-nav-link ml-2 #{ratings_active ? 'active' : ''}" %>
-          <%= active_link "topics", reviews_path, class: "main-nav-link ml-2" %>
+          <%= link_to "Ratings", ratings_path, class: "main-nav-link ml-2 #{ratings_active ? 'active' : ''}" %>
+          <% if primary_topic_review.present? %>
+            <% rank_active = controller_name == "reviews" && action_name == "show" && @topic_review&.id == primary_topic_review.id %>
+            <%= link_to review_path(primary_topic_review.slug), title: "Rank #{primary_topic_review.topic_name} articles", class: "main-nav-link ml-2 #{rank_active ? 'active' : ''}" do %>
+              Rank
+              <span class="hidden md:inline"><%= primary_topic_review.topic_name %> articles</span>
+            <% end %>
+          <% end %>
+          <%#= active_link "topics", reviews_path, class: "main-nav-link ml-2" %>
           <% if current_user&.admin? %>
             <%= active_link "admin", admin_root_path, class: "main-nav-link ml-2 less-strong" %>
           <% end %>
