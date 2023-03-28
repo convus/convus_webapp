@@ -12,7 +12,6 @@ class RatingsController < ApplicationController
         return
       end
     end
-    params.permit!
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
     @ratings = viewable_ratings.reorder(order_scope_query)
