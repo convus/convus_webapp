@@ -54,7 +54,7 @@ module ApplicationHelper
     elsif link
       # TODO: tests :/
       u_params = {"search_disagree" => false, "search_agree" => false}
-      u_params["search_#{agreement}"] = @search_agreement == agreement ? false : true
+      u_params["search_#{agreement}"] = !(@search_agreement == agreement)
       link_to(display_icon(agreement),
         url_for(sortable_params.merge(u_params)),
         title: agreement.to_s&.titleize)
