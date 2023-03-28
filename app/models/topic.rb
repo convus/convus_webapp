@@ -18,8 +18,6 @@ class Topic < ApplicationRecord
   scope :active, -> { where(orphaned: false) }
   scope :orphaned, -> { where(orphaned: true) }
 
-  to_param
-
   attr_accessor :skip_update_associations
 
   def self.friendly_find_slug(str = nil)
@@ -55,7 +53,9 @@ class Topic < ApplicationRecord
   end
 
   def slug_uniq_if_name_uniq
-    if slug.match?(/\A\d+\z/)
+    if slug.blank?
+      errors.add(:name, "can't be blank")
+    elsif slug.match?(/\A\d+\z/)
       errors.add(:name, "can't be only numbers")
     end
     name_errors = errors.messages[:name]

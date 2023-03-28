@@ -25,7 +25,7 @@ RSpec.describe base_url, type: :request do
   describe "new" do
     it "redirects" do
       get "#{base_url}/new"
-      expect(response).to redirect_to new_user_registration_path
+      expect(response).to redirect_to new_user_session_path
       expect(session[:user_return_to]).to eq "#{base_url}/new"
     end
     context "with source chrome" do
@@ -61,14 +61,14 @@ RSpec.describe base_url, type: :request do
     context "following" do
       it "sends to sign in" do
         get "#{base_url}?user=following"
-        expect(response).to redirect_to new_user_registration_path
+        expect(response).to redirect_to new_user_session_path
         expect(session[:user_return_to]).to eq "/ratings?user=following"
       end
     end
     context "current_user" do
       it "sends to sign in" do
         get "#{base_url}?user=current_user"
-        expect(response).to redirect_to new_user_registration_path
+        expect(response).to redirect_to new_user_session_path
         expect(session[:user_return_to]).to eq "/ratings?user=current_user"
       end
     end
@@ -185,24 +185,27 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:ratings_private)).to be_truthy
           expect(assigns(:can_view_ratings)).to be_truthy
           expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
-          expect(assigns(:assign_topic)).to be_nil
+          expect(assigns(:assign_topics)).to be_nil
 
           get "#{base_url}?user=current_user"
           expect(assigns(:user_subject)&.id).to eq current_user.id
           expect(response).to render_template("ratings/index")
+          expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
 
-          get "#{base_url}?user=cO0l-name&search_topics=#{topic.slug}&search_assign_topic=true"
+          get "#{base_url}?user=cO0l-name&search_assign_topic=#{topic.slug}"
           expect(assigns(:current_user)&.id).to eq user_subject.id
           expect(response).to render_template("ratings/index")
-          expect(assigns(:assign_topic)&.id).to eq topic.id
+          expect(assigns(:assign_topics)&.map(&:id)).to eq([topic.id])
           expect(TopicReview.primary&.id).to be_blank
+          expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
           # Also works without search_assign_topic, if it's the primary review topic
           topic_review = FactoryBot.create(:topic_review_active, topic: topic)
           expect(TopicReview.primary&.id).to eq topic_review.id
-          get "#{base_url}?user=cO0l-name&search_assign_topic=true"
+          get "#{base_url}?user=cO0l-name&search_assign_topic_primary=true"
           expect(assigns(:current_user)&.id).to eq user_subject.id
           expect(response).to render_template("ratings/index")
-          expect(assigns(:assign_topic)&.id).to eq topic.id
+          expect(assigns(:assign_topics)&.map(&:id)).to eq([topic.id])
+          expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
         end
       end
       context "following" do
@@ -437,17 +440,20 @@ RSpec.describe base_url, type: :request do
       let!(:rating2) { FactoryBot.create(:rating_with_topic, user: current_user, topics_text: topic.name) }
       let!(:rating3) { FactoryBot.create(:rating_with_topic, user: current_user, topics_text: topic.name) }
       let!(:rating_other) { FactoryBot.create(:rating) }
+      let!(:topic_review) { FactoryBot.create(:topic_review_active, topic: topic) }
+      let(:topic2) { FactoryBot.create(:topic) }
       it "adds the topic" do
         expect(RatingTopic.count).to eq 2
         expect(rating2.reload.topics.pluck(:id)).to eq([topic.id])
         expect(rating3.reload.topics.pluck(:id)).to eq([topic.id])
         expect(rating_other.user_id).to_not eq current_user.id
+        expect(TopicReview.primary&.id).to eq topic_review.id
         Sidekiq::Worker.clear_all
         post "#{base_url}/add_topic", params: {
           :included_ratings => "#{rating1.id},#{rating2.id},#{rating3.id}",
           "rating_id_#{rating1.id}" => "1",
           "rating_id_#{rating2.id}" => true,
-          :search_topics => topic.name
+          :search_assign_topic => topic.name
         }
         expect(flash[:success]).to be_present
         expect(ReconcileRatingTopicsJob.jobs.count).to be > 1
@@ -455,6 +461,31 @@ RSpec.describe base_url, type: :request do
         expect(RatingTopic.count).to eq 2
         expect(rating1.reload.topics.pluck(:id)).to eq([topic.id])
         expect(rating2.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(rating3.reload.topics.pluck(:id)).to eq([])
+        # Update via search_assign_topic_primary
+        post "#{base_url}/add_topic", params: {
+          :included_ratings => "#{rating1.id},#{rating2.id},#{rating3.id}",
+          "rating_id_#{rating3.id}" => "1",
+          :search_assign_topic_primary => "1"
+        }
+        expect(ReconcileRatingTopicsJob.jobs.count).to be > 1
+        ReconcileRatingTopicsJob.drain
+        expect(RatingTopic.count).to eq 1
+        expect(rating1.reload.topics.pluck(:id)).to eq([])
+        expect(rating2.reload.topics.pluck(:id)).to eq([])
+        expect(rating3.reload.topics.pluck(:id)).to eq([topic.id])
+        # Update using current_topic
+        post "#{base_url}/add_topic", params: {
+          :included_ratings => "#{rating1.id},#{rating2.id},#{rating3.id}",
+          "rating_id_#{rating1.id}" => "1",
+          :search_topics => "#{topic.slug}\n#{topic2.slug}"
+        }
+        expect(assigns(:assign_topics)&.map(&:id)).to match_array([topic.id, topic2.id])
+        expect(ReconcileRatingTopicsJob.jobs.count).to be > 1
+        ReconcileRatingTopicsJob.drain
+        expect(RatingTopic.count).to eq 2
+        expect(rating1.reload.topics.pluck(:id)).to eq([topic.id, topic2.id])
+        expect(rating2.reload.topics.pluck(:id)).to eq([])
         expect(rating3.reload.topics.pluck(:id)).to eq([])
       end
     end

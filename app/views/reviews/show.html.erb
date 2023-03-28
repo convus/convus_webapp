@@ -4,19 +4,25 @@
     The current topic in review is
     <%= topic_review_display(@topic_review) %>
   </h1>
-  <p class="mt-2 mb-4">
+  <p class="mt-4 mb-4">
     This review will end
     <span class="convertTime withPreposition"><%= l(@topic_review.end_at || Time.current + 1.week, format: :convert_time) %></span>.
   </p>
-  <% if current_user.blank? || @topic_review_votes.blank? %>
-    <p class="mt-2 mb-4">
-      Check out articles people have
-      <%= link_to "read on this topic", ratings_path(search_topics: @topic_review.slug) %>
-    </p>
-    <p>
-      After you have rated some, select <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic and rank them here.
-    </p>
-  <% end %>
+  <p class="mt-2 mb-4">
+    Want help finding articles on <%= @topic_review.topic_name %>? Check out articles other people have
+    <%= link_to "rated on this topic", ratings_path(search_topics: @topic_review.slug) %> to get started.
+  </p>
+
+  <p class="mb-4">
+    <% if current_user.blank? %>
+      After you have rated some articles, select
+    <% elsif @topic_review_votes.blank? %>
+      You haven't marked any ratings applicable to <%= @topic_review.topic_name %> yet. Select
+    <% else %>
+      Select
+    <% end %>
+     <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic and rank them on this page.
+  </p>
 </div>
 
 <% if current_user.present? && @topic_review_votes.present? %>
@@ -24,13 +30,9 @@
   <% topic_review_votes ||= @topic_review_votes %>
   <%= form_tag review_path(topic_review.slug), method: :patch, class: "" do %>
     <div class="large-width-container standard-top-offset">
-      <p>
-        Select <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic and rank them here.
-      </p>
       <h3 class="standard-top-offset mb-2">
         The <em>best</em> articles for learning about <%= topic_review_display(@topic_review) %>
       </h3>
-
     </div>
     <div id="ratingsTableWrap" data-controller="sortable-ratings">
       <% required_ratings = topic_review_votes.required.ratings %>

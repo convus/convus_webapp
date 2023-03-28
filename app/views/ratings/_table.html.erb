@@ -3,7 +3,9 @@
 <% edit_ratings ||= false %>
 <% render_user ||= false %>
 <% hide_private_users ||= false %>
+
 <% render_assign_topic ||= false %>
+<% assign_topic ||= @assign_topics&.first %>
 <% hide_header ||= false %>
 
 <% render_ranking ||= false %>
@@ -75,7 +77,7 @@
           <% else %>
             <% private_user = render_user && hide_private_users && rating.account_private? %>
             <% if render_assign_topic %>
-              <td><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(@assign_topic), class: "toggleableCheck" %></td>
+              <td><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(assign_topic), class: "toggleableCheck" %></td>
             <% elsif render_ranking %>
               <% rank = ranking_count + ranking_modifier - i %>
               <td class="rank-cell"><%= number_field_tag "rank_rating_#{rating.id}", rank, step: 1, class: "form-control w-8 border-slate-900 p-0 text-center leading-none" %></td>

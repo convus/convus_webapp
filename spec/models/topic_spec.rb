@@ -46,6 +46,13 @@ RSpec.describe Topic, type: :model do
         expect(topic.errors.full_messages).to eq(["Name can't be only numbers"])
       end
     end
+    context "blank name" do
+      let(:topic) { FactoryBot.build(:topic, name: " ") }
+      it "is invalid" do
+        expect(topic).to be_invalid
+        expect(topic.errors.full_messages).to eq(["Name can't be blank"])
+      end
+    end
   end
 
   describe "unique by name" do

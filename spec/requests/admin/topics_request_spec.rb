@@ -6,7 +6,7 @@ RSpec.describe base_url, type: :request do
   describe "index" do
     it "sets return to" do
       get base_url
-      expect(response).to redirect_to new_user_registration_path
+      expect(response).to redirect_to new_user_session_path
       expect(session[:user_return_to]).to eq "/admin/topics"
     end
 

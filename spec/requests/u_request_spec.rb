@@ -45,7 +45,7 @@ RSpec.describe base_url, type: :request do
         expect(user_subject.account_private).to be_truthy
         get "#{base_url}/#{user_subject.id}/following"
         expect(flash[:notice]).to match(/account/i)
-        expect(response).to redirect_to(new_user_registration_path)
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
   end
@@ -64,7 +64,7 @@ RSpec.describe base_url, type: :request do
         expect(user_subject.account_private).to be_truthy
         get "#{base_url}/#{user_subject.id}/followers"
         expect(flash[:notice]).to match(/account/i)
-        expect(response).to redirect_to(new_user_registration_path)
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
   end
@@ -73,7 +73,7 @@ RSpec.describe base_url, type: :request do
     it "redirects" do
       get "#{base_url}/#{user_subject.id}/edit"
       expect(session[:user_return_to]).to eq "#{base_url}/#{user_subject.id}/edit"
-      expect(response).to redirect_to("/users/sign_up")
+      expect(response).to redirect_to("/users/sign_in")
     end
   end
 

@@ -8,7 +8,7 @@ RSpec.describe base_url, type: :request do
     let(:target_return_to) { "/following/#{user_subject.username}/add" }
     it "sets return to" do
       get "#{base_url}/#{user_subject.username}/add"
-      expect(response).to redirect_to new_user_registration_path
+      expect(response).to redirect_to new_user_session_path
       expect(session[:user_return_to]).to eq target_return_to
     end
     context "after sign in" do
@@ -16,7 +16,7 @@ RSpec.describe base_url, type: :request do
       it "uses return to" do
         expect(user.followings.pluck(:id)).to eq([])
         get "#{base_url}/#{user_subject.username}/add"
-        expect(response).to redirect_to new_user_registration_path
+        expect(response).to redirect_to new_user_session_path
         expect(session[:user_return_to]).to eq target_return_to
 
         post "/users/sign_in", params: {user: {email: "something@example.com", password: "fake-password666"}}
