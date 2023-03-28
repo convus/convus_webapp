@@ -38,7 +38,6 @@
     <%= form_tag ratings_path, method: :get, id: "ratingsFilterForm" do %>
       <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true} %>
       <%= hidden_field_tag :user, params[:user] %>
-      <%= hidden_field_tag :search_assign_topic, params[:search_assign_topic] %>
       <div class="flex flex-wrap">
         <%= label_tag :user_all, class: "form-control-radio flex-initial min-w-fit" do %>
           <%= radio_button_tag :user, "all", !@viewing_single_user && viewing_display_name != "following", class: "submitOnChange" %>
@@ -119,9 +118,15 @@
         <% end %>
         <% if primary_topic_review.present? %>
           <label class="form-control-check"><%# TODO: make this a functioning label_tag %>
-            <%= check_box_tag "search_topics[]", primary_topic_review.slug, current_topics.first&.slug == primary_topic_review.slug, class: "submitOnChange" %>
+            <%= check_box_tag "search_topics[]", primary_topic_review.slug, @viewing_primary_topic, class: "submitOnChange" %>
             Only articles about <%= topic_review_display(primary_topic_review) %>
           </label>
+          <% if current_user.present? %>
+            <%= label_tag :search_assign_topic, class: "form-control-check" do %>
+              <%= check_box_tag :search_assign_topic, true, @assigning, class: "submitOnChange" %>
+              Choose which of your ratings are applicable to <%= primary_topic_review.topic_name %>
+            <% end %>
+          <% end %>
         <% end %>
       </div>
       <%= submit_tag "Update ratings", class: "btn mt-2 hiddenOnJs" %>
@@ -132,7 +137,7 @@
       <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
     </div>
   </div>
-  <% if @assign_topic.present? %>
+  <% if @assigning %>
     <%# duplicating this whole thing is gross, but... HACK HACK HACK %>
     <%= form_tag add_topic_ratings_path(sortable_search_params), method: :post, class: "" do %>
       <%= hidden_field_tag :included_ratings, @ratings.pluck(:id).join(",") %>
@@ -141,7 +146,7 @@
           Mark checked ratings applicable to <%= topic_review_display(@assign_topic, "ml-1") %>
         <% end %>
       </p>
-      <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: @viewing_current_user, render_user: !@viewing_single_user, hide_private_users: viewing_display_name == "all", render_assign_topic: @assign_topic} %>
+      <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: @viewing_current_user, render_user: !@viewing_single_user, hide_private_users: viewing_display_name == "all", render_assign_topic: @assigning} %>
       <p class="large-width-container mt-2 mb-3">
         <%= button_tag type: "submit", class: "btn" do %>
           Mark checked ratings applicable to <%= topic_review_display(@assign_topic, "ml-1") %>

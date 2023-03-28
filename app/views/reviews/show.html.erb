@@ -9,8 +9,12 @@
     <span class="convertTime withPreposition"><%= l(@topic_review.created_at, format: :convert_time) %></span>.
   </p>
   <% if current_user.blank? || @topic_review_votes.blank? %>
+    <p class="mt-2 mb-4">
+      Check out articles people have
+      <%= link_to "read on this topic", ratings_path(search_topics: @topic_review.slug) %>
+    </p>
     <p>
-      Select <%= link_to "ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic, then rank them here.
+      After you have rated some, select <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic and rank them here.
     </p>
   <% end %>
 </div>
@@ -21,7 +25,7 @@
   <%= form_tag review_path(topic_review.slug), method: :patch, class: "" do %>
     <div class="large-width-container standard-top-offset">
       <p>
-        Select <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic, then rank them here.
+        Select <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic and rank them here.
       </p>
       <h3 class="standard-top-offset mb-2">
         The <em>best</em> articles for learning about <%= topic_review_display(@topic_review) %>

@@ -16,8 +16,12 @@ class RatingsController < ApplicationController
     @per_page = params[:per_page] || 50
     @ratings = viewable_ratings.reorder(order_scope_query)
       .includes(:citation, :user).page(page).per(@per_page)
-    if params[:search_assign_topic].present?
-      @assign_topic = Topic.friendly_find(params[:search_assign_topic])
+
+    @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.id]
+    if TranzitoUtils::Normalize.boolean(params[:search_assign_topic])
+      @assigning = true
+      @assign_topic = @viewing_primary_topic ? primary_topic_review : current_topics.first
+      @assign_topic ||= primary_topic_review.topic
     end
     @action_display_name = viewing_display_name.titleize
   end
@@ -69,9 +73,9 @@ class RatingsController < ApplicationController
 
   def add_topic
     included_rating_ids = params[:included_ratings].split(",").map(&:to_i)
-    @assign_topic = Topic.friendly_find(params[:search_assign_topic])
+    @assign_topic = current_topics.first
     if @assign_topic.blank?
-      flash[:error] = "Unable to find topic: '#{params[:search_assign_topic]}'"
+      flash[:error] = "Unable to find topic: '#{params[:search_topics]}'"
     else
       ratings_updated = 0
       included_ratings = current_user.ratings.where(id: included_rating_ids)
