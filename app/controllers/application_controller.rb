@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   before_action :enable_rack_profiler
 
   helper_method :display_dev_info?, :user_subject, :user_root_url, :controller_namespace,
-    :current_topics
+    :current_topics, :primary_topic_review
 
   def append_info_to_payload(payload)
     super
@@ -48,10 +48,17 @@ class ApplicationController < ActionController::Base
   def current_topics
     return @current_topics if defined?(@searched_topics)
     @current_topics = if params[:search_topics].blank?
-      nil
+      []
     else
-      Topic.friendly_find_all(params[:search_topics].split("\n"))
+      arr = params[:search_topics]
+      arr = arr.split("\n") unless arr.is_a?(Array)
+      Topic.friendly_find_all(arr)
     end
+  end
+
+  def primary_topic_review
+    return @primary_topic_review if defined?(@primary_topic_review)
+    @primary_topic_review = TopicReview.primary
   end
 
   def user_root_url

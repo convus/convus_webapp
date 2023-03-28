@@ -1,6 +1,6 @@
 class RatingsController < ApplicationController
   include TranzitoUtils::SortableTable
-  before_action :set_period, only: %i[index]
+  before_action :set_period, only: %i[index] # Actually, will want to set after assigning via
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
   before_action :find_and_authorize_rating, only: %i[edit update destroy]
   helper_method :viewing_display_name
@@ -14,10 +14,14 @@ class RatingsController < ApplicationController
     end
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @ratings = viewable_ratings.reorder("ratings.#{sort_column} #{sort_direction}")
+    @ratings = viewable_ratings.reorder(order_scope_query)
       .includes(:citation, :user).page(page).per(@per_page)
-    if params[:search_assign_topic].present?
-      @assign_topic = Topic.friendly_find(params[:search_assign_topic])
+
+    @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.id]
+    if TranzitoUtils::Normalize.boolean(params[:search_assign_topic])
+      @assigning = true
+      @assign_topic = @viewing_primary_topic ? primary_topic_review : current_topics.first
+      @assign_topic ||= primary_topic_review.topic
     end
     @action_display_name = viewing_display_name.titleize
   end
@@ -61,7 +65,7 @@ class RatingsController < ApplicationController
   def update
     if @rating.update(permitted_params)
       flash[:success] = "Rating updated"
-      redirect_to new_rating_path, status: :see_other
+      redirect_back(fallback_location: ratings_path(user: current_user), status: :see_other)
     else
       render :edit
     end
@@ -69,9 +73,9 @@ class RatingsController < ApplicationController
 
   def add_topic
     included_rating_ids = params[:included_ratings].split(",").map(&:to_i)
-    @assign_topic = Topic.friendly_find(params[:search_assign_topic])
+    @assign_topic = current_topics.first
     if @assign_topic.blank?
-      flash[:error] = "Unable to find topic: '#{params[:search_assign_topic]}'"
+      flash[:error] = "Unable to find topic: '#{params[:search_topics]}'"
     else
       ratings_updated = 0
       included_ratings = current_user.ratings.where(id: included_rating_ids)
@@ -116,17 +120,17 @@ class RatingsController < ApplicationController
   end
 
   def permitted_attrs
-    %i[agreement changed_my_opinion citation_title did_not_understand
+    %i[agreement changed_opinion citation_title not_understood
       error_quotes learned_something quality significant_factual_error
       source submitted_url topics_text]
   end
 
   def sortable_columns
-    %w[created_at] # TODO: Add agreement and quality
+    %w[created_at display_name]
   end
 
   def multi_user_searches
-    %w[recent following]
+    %w[all following]
   end
 
   def viewable_ratings
@@ -145,6 +149,7 @@ class RatingsController < ApplicationController
   end
 
   def viewing_display_name
+    return @viewing_display_name if defined?(@viewing_display_name)
     @viewing_display_name ||= if user_subject.present?
       user_subject.username
     else
@@ -152,17 +157,65 @@ class RatingsController < ApplicationController
     end
   end
 
+  def order_scope_query
+    if sort_column == "display_name"
+      # IDK, send is scary, add protection
+      raise "Invalid sort_direction" unless %w[asc desc].include?(sort_direction)
+      Rating.arel_table["display_name"].lower.send(sort_direction)
+    else
+      "ratings.#{sort_column} #{sort_direction}"
+    end
+  end
+
   def searched_ratings
     ratings = if viewing_display_name == "following"
       current_user&.following_ratings_visible || Rating.none
-    elsif viewing_display_name == "recent"
-      Rating
+    elsif viewing_display_name == "all"
+      Rating.where.not(user_id: current_user&.id)
     else
       @can_view_ratings ? user_subject.ratings : Rating.none
     end
 
     if current_topics.present?
-      ratings = Rating.matching_topics(current_topics)
+      ratings = ratings.matching_topics(current_topics)
+    end
+    if current_user.present? && TranzitoUtils::Normalize.boolean(params[:search_not_rated])
+      ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
+    end
+
+    if TranzitoUtils::Normalize.boolean(params[:search_disagree])
+      @search_agreement = "disagree"
+      ratings = ratings.disagree
+    elsif TranzitoUtils::Normalize.boolean(params[:search_agree])
+      @search_agreement = "agree"
+      ratings = ratings.agree
+    end
+
+    if TranzitoUtils::Normalize.boolean(params[:search_quality_low])
+      @search_quality = "low"
+      ratings = ratings.quality_low
+    elsif TranzitoUtils::Normalize.boolean(params[:search_quality_high])
+      @search_quality = "high"
+      ratings = ratings.quality_high
+    end
+
+    if TranzitoUtils::Normalize.boolean(params[:search_learned_something])
+      @search_learned_something = true
+      ratings = ratings.learned_something
+    end
+    if TranzitoUtils::Normalize.boolean(params[:search_changed_opinion])
+      @search_changed_opinion = true
+      ratings = ratings.changed_opinion
+    end
+
+    if TranzitoUtils::Normalize.boolean(params[:search_significant_factual_error])
+      @search_significant_factual_error = true
+      ratings = ratings.significant_factual_error
+    end
+
+    if TranzitoUtils::Normalize.boolean(params[:search_not_understood])
+      @search_not_understood = true
+      ratings = ratings.not_understood
     end
 
     @time_range_column = "created_at"

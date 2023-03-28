@@ -33,7 +33,7 @@ class Topic < ApplicationRecord
   end
 
   def self.friendly_find_all(arr)
-    arr.map { |s| friendly_find(s) }.compact
+    arr.flatten.map { |s| friendly_find(s) }.compact
   end
 
   def to_param

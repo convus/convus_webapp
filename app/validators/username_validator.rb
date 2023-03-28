@@ -1,6 +1,6 @@
 class UsernameValidator < ActiveModel::Validator
   BAD_WORDS = (ENV["BAD_WORDS"] || "").downcase.split(/\s+/)
-  BLOCKED_WORDS = %w[following user current_user you u recent private]
+  BLOCKED_WORDS = %w[following user current_user you u recent private all]
 
   # This will get more complicated, but... for now, good enough
   def self.invalid?(str)

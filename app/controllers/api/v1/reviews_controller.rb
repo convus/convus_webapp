@@ -4,7 +4,10 @@ module API
       before_action :ensure_current_user!
 
       def create
-        rating = Rating.find_or_build_for(permitted_params.merge(skip_rating_created_event: true))
+        pparams = permitted_params
+        pparams[:changed_opinion] = pparams.delete(:changed_my_opinion)
+        pparams[:not_understood] = pparams.delete(:did_not_understand)
+        rating = Rating.find_or_build_for(pparams.merge(skip_rating_created_event: true))
         if rating.save
           RatingCreatedEventJob.new.perform(rating.id, rating)
           share_msg = ShareFormatter.share_user(current_user.reload, rating.timezone)

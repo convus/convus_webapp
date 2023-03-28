@@ -8,17 +8,6 @@ import { TimeParser, PeriodSelector, Pagination } from 'tranzito_utils_js'
 
 import log from './scripts/log' // eslint-disable-line
 
-const enableFullscreenTableOverflow = () => {
-  const pageWidth = window.innerWidth
-  document.querySelectorAll('.full-screen-table table').forEach(el => {
-    const tableWidth = el.offsetWidth
-    if (tableWidth > pageWidth) {
-      console.log('overflown')
-      el.closest('.full-screen-table').classList.add('full-screen-table-overflown')
-    }
-  })
-}
-
 const toggleChecks = (event) => {
   const checked = event.target.checked
   event.target.closest('.toggleChecksWrapper')
@@ -29,11 +18,28 @@ const toggleChecks = (event) => {
 
 const enableToggleChecks = () => {
   document.querySelectorAll('.toggleChecks')
-    .forEach(el => {
-      // hidden by default, since it needs js
-      el.classList.remove('hidden')
-      el.addEventListener('change', toggleChecks)
-    })
+    .forEach(el => el.addEventListener('change', toggleChecks))
+}
+
+const pageWidth = window.outerWidth
+const enableFullscreenTableOverflow = () => {
+  document.querySelectorAll('.full-screen-table table').forEach(el => {
+    const tableWidth = el.offsetWidth
+    if (tableWidth > pageWidth) {
+      console.log('overflown')
+      el.closest('.full-screen-table').classList.add('full-screen-table-overflown')
+    }
+  })
+}
+
+const setMaxWidths = () => {
+  if (pageWidth < 501) {
+    document.querySelectorAll('.maxWScreen')
+      .forEach(el => {
+        // 8px on either side of padding
+        el.style.maxWidth = `${pageWidth - 16}px`
+      })
+  }
 }
 
 document.addEventListener('turbo:load', () => {
@@ -52,6 +58,11 @@ document.addEventListener('turbo:load', () => {
     BrowserExtensionScript()
   }
 
-  enableFullscreenTableOverflow()
   enableToggleChecks()
+  enableFullscreenTableOverflow()
+  setMaxWidths()
+
+  // When JS is enabled, some things should be hidden and some things should be shown
+  document.querySelectorAll('.hiddenNoJs').forEach(el => el.classList.remove('hiddenNoJs'))
+  document.querySelectorAll('.hiddenOnJs').forEach(el => el.classList.add('hidden'))
 })

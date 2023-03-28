@@ -42,33 +42,83 @@ module ApplicationHelper
     !@no_layout
   end
 
-  def agreement_display(agreement = nil)
+  def sortable_params
+    # HACK: sortable_search_params was warning unpermitted every time it's invoked - e.g. each row in the table
+    @sortable_params ||= sortable_search_params.as_json.with_indifferent_access
+  end
+
+  def agreement_display(agreement = nil, link: false)
     return nil if agreement.blank?
     if agreement.to_s == "neutral"
-      content_tag(:span, "-", class: "less-strong")
+      nil
+    elsif link
+      link_to(display_icon(agreement),
+        url_for(sortable_params.merge("search_#{agreement}" => !params["search_#{agreement}"])),
+        title: agreement.to_s&.titleize)
     else
-      content_tag(:span, title: agreement) do
-        concat(agreement[0])
-        concat(content_tag(:span, agreement[1..], class: "hidden sm:inline"))
-      end
+      content_tag(:span, display_icon(agreement), title: agreement.to_s&.titleize)
     end
   end
 
-  def quality_display(quality = nil)
+  def quality_display(quality = nil, link: false)
     return nil if quality.blank?
     str = Rating.quality_humanized(quality)
-    if str == "medium"
-      content_tag(:span, "-", class: "less-strong")
+    return nil if str == "medium"
+    if link
+      link_to(display_icon("quality_#{str}"),
+        url_for(sortable_params.merge("search_quality_#{str}" => !params["search_quality_#{str}"])),
+        title: "#{str.titleize} Quality")
     else
-      content_tag(:span, title: str) do
-        concat(str[0])
-        concat(content_tag(:span, str[1..], class: "hidden sm:inline"))
-      end
+      content_tag(:span, display_icon("quality_#{str}"), title: "#{str.titleize} Quality")
+    end
+  end
+
+  def learned_something_display(learned_something, link: false)
+    return nil unless learned_something
+    if link
+      link_to(display_icon("learned"),
+        url_for(sortable_params.merge(search_learned_something: !@search_learned_something)),
+        title: "Learned something")
+    else
+      content_tag(:span, display_icon("learned"), title: "Learned something")
+    end
+  end
+
+  def changed_opinion_display(changed_opinion, link: false)
+    return nil unless changed_opinion
+    if link
+      link_to(display_icon("changed"),
+        url_for(sortable_params.merge(search_changed_opinion: !@search_changed_opinion)),
+        title: "Changed opinion")
+    else
+      content_tag(:span, display_icon("changed"), title: "Changed opinion")
+    end
+  end
+
+  def significant_factual_error_display(significant_factual_error, link: false)
+    return nil unless significant_factual_error
+    if link
+      link_to(display_icon("error"),
+        url_for(sortable_params.merge(search_significant_factual_error: !@search_significant_factual_error)),
+        title: "Factual error")
+    else
+      content_tag(:span, display_icon("error"), title: "Factual error")
+    end
+  end
+
+  def not_understood_display(not_understood, link: false)
+    return nil unless not_understood
+    if link
+      link_to(display_icon("error"),
+        url_for(sortable_params.merge(search_not_understood: !@search_not_understood)),
+        title: "Didn't understand")
+    else
+      content_tag(:span, display_icon("not_understood"), title: "Didn't understand")
     end
   end
 
   def rating_display_name(rating)
-    if rating.display_name == "missing url"
+    if rating.display_name.blank? || rating.display_name == "missing url"
       content_tag(:span, "missing url", class: "less-strong")
     else
       display_name = rating.display_name
@@ -108,5 +158,11 @@ module ApplicationHelper
     c_name = "account" if c_name == "u"
     return c_name.titleize if %(index).include?(action_name)
     c_name.singularize.titleize
+  end
+
+  private
+
+  def display_icon(str)
+    image_tag("#{str}_icon.svg", class: "w-4 inline-block")
   end
 end

@@ -4,7 +4,7 @@ class ReviewsController < ApplicationController
   before_action { @controller_display_name = "Topic Review" }
 
   def index
-    @topic_review = TopicReview.primary
+    @topic_review = primary_topic_review
     if @topic_review.present?
       redirect_to review_path(@topic_review.slug)
       return

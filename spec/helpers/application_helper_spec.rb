@@ -8,13 +8,12 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(agreement_display("")).to be_nil
     end
     context "neutral" do
-      let(:target) { "<span class=\"less-strong\">-</span>" }
       it "returns -" do
-        expect(agreement_display(:neutral)).to eq target
+        expect(agreement_display(:neutral)).to be_blank
       end
     end
     context "agree" do
-      let(:target) { "<span title=\"agree\">a<span class=\"hidden sm:inline\">gree</span></span>" }
+      let(:target) { "<span title=\"Agree\"><img class=\"w-4 inline-block\" src=\"/images/agree_icon.svg\" /></span>" }
       it "returns -" do
         expect(agreement_display(:agree)).to eq target
       end
@@ -26,13 +25,12 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(quality_display("")).to be_nil
     end
     context "neutral" do
-      let(:target) { "<span class=\"less-strong\">-</span>" }
       it "returns -" do
-        expect(quality_display("quality_med")).to eq target
+        expect(quality_display("quality_med")).to be_nil
       end
     end
     context "agree" do
-      let(:target) { "<span title=\"high\">h<span class=\"hidden sm:inline\">igh</span></span>" }
+      let(:target) { "<span title=\"High Quality\"><img class=\"w-4 inline-block\" src=\"/images/quality_high_icon.svg\" /></span>" }
       it "returns -" do
         expect(quality_display(:quality_high)).to eq target
       end
@@ -42,7 +40,9 @@ RSpec.describe ApplicationHelper, type: :helper do
   describe "rating_display_name" do
     let(:target) { "<span class=\"less-strong\">missing url</span>" }
     it "returns target" do
-      expect(rating_display_name(Rating.new)).to eq target
+      rating = Rating.new
+      rating.display_name = rating.calculated_display_name
+      expect(rating_display_name(rating)).to eq target
     end
     context "with rating" do
       let(:target) { "<a title=\"#{citation.pretty_url}\" class=\"break-words\" href=\"#{rating.submitted_url}\">texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as...</a>" }
@@ -58,6 +58,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       let(:target) { "<a class=\"break-words\" href=\"https://example.com\">Somewhere</a>" }
       let(:rating) { Rating.new(submitted_url: "https://example.com", citation_title: "Somewhere") }
       it "returns target" do
+        rating.display_name = rating.calculated_display_name
         expect(rating_display_name(rating)).to eq target
       end
     end

@@ -1,10 +1,18 @@
 <h2 class="standard-top-offset mb-4">Find the best articles about <span class="underline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</h2>
 <p class="mb-2">Convus is a place to find and share high quality writing and investigate the best articles on a given topic.</p>
 <p class="mb-2">Use it to learn about how other people think and where their opinions come from.</p>
-<p class="mt-6 mb-2"><strong>How it works:</strong></p>
+
+<% if primary_topic_review.present? %>
+  <h3 class="standard-top-offset mb-4">
+    The current topic in review is
+    <%= link_to topic_review_display(primary_topic_review), review_path(primary_topic_review.slug) %>
+  </h3>
+<% end %>
+
+<p class="standard-top-offset mb-2"><strong>How it works:</strong></p>
 <ol class="list-decimal mt-3 mb-6 pl-5">
   <li class="mb-3">A topic is chosen every few days</li>
   <li class="mb-3">Rate articles on the topic</li>
   <li class="mb-3">Vote on which articles on the topic are the best</li>
 </ol>
-<p class="mb-3">Rating articles is fast and doesn't require writing anything&mdash;install the <%= link_to "browser extension", browser_extensions_path %> and give it a try.</p>
+<p class="mb-3">Rating articles is fast&mdash;install the <%= link_to "browser extension", browser_extensions_path %> and give it a try.</p>

@@ -16,7 +16,7 @@
 }
 
 .small-width-container-padded {
-  @apply container-padded max-w-small-container;
+  @apply container-padded small-width-container;
   /* might wanna use max-w-prose sometime - this is close*/
 }
 
@@ -28,7 +28,7 @@
 }
 
 .standard-top-offset {
-  @apply mt-4 sm:mt-10;
+  @apply mt-10;
 }
 
 turbo-frame {

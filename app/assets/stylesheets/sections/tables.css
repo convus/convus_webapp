@@ -36,9 +36,11 @@
   }
 }
 
-.full-screen-table-auto-width table {
+.full-screen-table-auto-width {
+  & table {max-width: 100%;
   @apply lg:mx-auto;
-  width: auto;
+/*  width: auto;*/
+}
 }
 
 .full-screen-table-overflown {

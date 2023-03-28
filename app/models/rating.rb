@@ -39,6 +39,11 @@ class Rating < ApplicationRecord
 
   attr_accessor :skip_rating_created_event, :skip_topics_job
 
+  scope :learned_something, -> { where(learned_something: true) }
+  scope :changed_opinion, -> { where(changed_opinion: true) }
+  scope :significant_factual_error, -> { where(significant_factual_error: true) }
+  scope :not_understood, -> { where(not_understood: true) }
+
   def self.quality_humanized(str)
     return nil if str.blank?
     if str.to_sym == :quality_med
@@ -76,8 +81,8 @@ class Rating < ApplicationRecord
   end
 
   def default_attrs?
-    quality_med? && neutral? && topics_text.blank? && !changed_my_opinion &&
-      !learned_something && !did_not_understand && !significant_factual_error &&
+    quality_med? && neutral? && topics_text.blank? && !changed_opinion &&
+      !learned_something && !not_understood && !significant_factual_error &&
       error_quotes.blank?
   end
 
@@ -116,10 +121,6 @@ class Rating < ApplicationRecord
     self.class.quality_humanized(quality)
   end
 
-  def display_name
-    citation_title.presence || citation&.display_name || "missing url"
-  end
-
   def citation_url
     citation&.url || submitted_url
   end
@@ -151,6 +152,7 @@ class Rating < ApplicationRecord
   def associate_citation
     self.citation_title = nil if citation_title.blank?
     self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)
+    self.display_name = calculated_display_name
   end
 
   def set_calculated_attributes
@@ -168,5 +170,10 @@ class Rating < ApplicationRecord
   def reconcile_rating_topics
     return if !persisted? || skip_topics_job
     ReconcileRatingTopicsJob.perform_async(id)
+  end
+
+  # cached so we can order by it
+  def calculated_display_name
+    citation_title.presence || citation&.display_name || "missing url"
   end
 end

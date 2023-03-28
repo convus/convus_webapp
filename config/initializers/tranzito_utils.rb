@@ -8,7 +8,7 @@ TranzitoUtils::DEFAULT[:earliest_period_time] = Time.at(1672560000) # 2023-01-01
 
 # For TranzitoUtils::SortableHelper
 # You can add the more sortable search params for the sortable_search_params method in sortable_helper
-TranzitoUtils::DEFAULT[:additional_search_keys] = [:user]
+TranzitoUtils::DEFAULT[:additional_search_keys] = %i[user filters]
 
 # For TranzitoUtils::TimeParser service
 # You can update the earliest year and latest year for TimeParser service

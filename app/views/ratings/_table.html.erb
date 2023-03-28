@@ -10,16 +10,18 @@
 <% ranking_modifier ||= 0 %>
 <% ranking_count = render_ranking && ratings.count  %>
 
-<% table_classes = "table table-sm break-words" %>
+<% filter_links ||= !render_ranking %>
+
+<% table_classes = "table table-sm break-words max-w-full" %>
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
 <% table_classes += " hide_header" if hide_header %>
 
-<div class="full-screen-table full-screen-table-auto-width">
+<div class="">
   <table class="<%= table_classes %>">
     <thead class="sortable">
       <tr>
         <% if render_assign_topic %>
-          <th><input type="checkbox" class="less-strong toggleChecks hidden" value="true"></th>
+          <th><input type="checkbox" class="less-strong toggleChecks hiddenNoJs" value="true"></th>
         <% elsif render_ranking %>
           <th>Rank</th>
         <% end %>
@@ -32,28 +34,28 @@
           </th>
         <% end %>
         <th class="hidden md:table-cell">
-          Link
+          <%= sortable "display_name", "Article", skip_sortable: skip_sortable %>
         </th>
         <!-- <th class="hidden md:table-cell">Topics</th> -->
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Agreement">A<span class="hidden md:inline">greement</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Quality">Q<span class="hidden md:inline">uality</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Learned something?">L<span class="hidden md:inline">earned <br>
               something?</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Changed opinion?">C<span class="hidden md:inline">hanged <br>
               opinion?</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Didn't understand?">D<span class="hidden md:inline">idn't <br>
               understand?</span></span>
         </th>
-        <th class="break-normal text-center border-r">
+        <th class="hidden md:table-cell break-normal text-center border-r">
           <span title="Error?">E<span class="hidden md:inline">rror?</span></span>
         </th>
       </tr>
@@ -89,11 +91,20 @@
                   <% if private_user %>
                     private
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(sortable_search_params.merge(user: rating.user.username)) %>
+                    <%= link_to rating.user&.username, ratings_path(sortable_params.merge(user: rating.user.username)) %>
                   <% end %>
                 </small>
               <% end %>
-              <span class="block md:hidden mt-1 max-w-md"><%= rating_display_name(rating) %></span>
+              <span class="block md:hidden mt-1 max-w-md maxWScreen">
+                <%= rating_display_name(rating) %>
+                <span class="ml-2">
+                  <%= agreement_display(rating.agreement, link: filter_links) %>
+                  <%= quality_display(rating.quality, link: filter_links) %>
+                  <%= learned_something_display(rating.learned_something?, link: filter_links) %>
+                  <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
+                  <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
+                </span>
+              </span>
               <!-- <span class="block md:hidden text-sm"><%= rating.topic_names.join(", ") %></span> -->
             </td>
             <% if render_user %>
@@ -102,7 +113,7 @@
                   <% if private_user %>
                     private
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(sortable_search_params.merge(user: rating.user.username)) %>
+                    <%= link_to rating.user&.username, ratings_path(sortable_params.merge(user: rating.user.username)) %>
                   <% end %>
                 </small>
               </td>
@@ -113,20 +124,23 @@
             <!-- <td class="hidden md:table-cell">
               <%= rating.topic_names.join(", ") %>
             </td> -->
-            <td class="text-center border-r">
-              <%= agreement_display(rating.agreement) %>
+            <td class="hidden md:table-cell text-center border-r">
+              <%= agreement_display(rating.agreement, link: filter_links) %>
             </td>
-            <td class="text-center border-r">
-              <%= quality_display(rating.quality) %>
+            <td class="hidden md:table-cell text-center border-r">
+              <%= quality_display(rating.quality, link: filter_links) %>
             </td>
-            <td class="table-cell-check border-r">
-              <%= check_mark if rating.learned_something? %>
+            <td class="hidden md:table-cell text-center border-r">
+              <%= learned_something_display(rating.learned_something?, link: filter_links) %>
             </td>
-            <td class="table-cell-check border-r">
-              <%= check_mark if rating.changed_my_opinion? %>
+            <td class="hidden md:table-cell text-center border-r">
+              <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
             </td>
-            <td class="table-cell-check border-r">
-              <%= check_mark if rating.significant_factual_error? %>
+            <td class="hidden md:table-cell text-center border-r">
+              <%= not_understood_display(rating.not_understood?, link: filter_links) %>
+            </td>
+            <td class="hidden md:table-cell text-center border-r">
+              <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
             </td>
           <% end %>
         </tr>

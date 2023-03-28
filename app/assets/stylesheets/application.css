@@ -1,5 +1,6 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
+@import "tom-select/dist/css/tom-select.bootstrap4.css";
 
 @import "sections/container_and_row.css";
 @import "sections/links_and_buttons.css";
@@ -27,6 +28,8 @@ h1 { @apply text-2xl; }
 h2 { @apply text-xl; }
 h3 { @apply text-lg; }
 h4 { @apply font-bold; }
+
+.hiddenNoJs { @apply hidden; }
 
 .only-dev-visible, .only-dev-visible-small {
   border: 1px solid #9400d3;

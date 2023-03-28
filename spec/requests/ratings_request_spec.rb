@@ -8,13 +8,13 @@ RSpec.describe base_url, type: :request do
       agreement: "disagree",
       quality: "quality_high",
       citation_title: "something",
-      changed_my_opinion: "true",
+      changed_opinion: "true",
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
       topics_text: "A topic\n\nAnd another topic",
       source: "chrome_extension",
       learned_something: "1",
-      did_not_understand: "1",
+      not_understood: "1",
       timezone: "America/Bogota"
     }
   end
@@ -44,11 +44,12 @@ RSpec.describe base_url, type: :request do
       get base_url
       expect(response.code).to eq "200"
       expect(assigns(:user_subject)&.id).to be_blank
-      expect(assigns(:viewing_display_name)).to eq "recent"
+      expect(assigns(:viewing_display_name)).to eq "all"
       expect(response).to render_template("ratings/index")
-      get "#{base_url}?user=receNT"
+      get "#{base_url}?user=all"
       expect(response.code).to eq "200"
       expect(response).to render_template("ratings/index")
+      expect(assigns(:viewing_display_name)).to eq "all"
     end
     context "no user found" do
       it "raises" do
@@ -190,7 +191,15 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:user_subject)&.id).to eq current_user.id
           expect(response).to render_template("ratings/index")
 
-          get "#{base_url}?user=cO0l-name&search_assign_topic=#{topic.slug}"
+          get "#{base_url}?user=cO0l-name&search_topics=#{topic.slug}&search_assign_topic=true"
+          expect(assigns(:current_user)&.id).to eq user_subject.id
+          expect(response).to render_template("ratings/index")
+          expect(assigns(:assign_topic)&.id).to eq topic.id
+          expect(TopicReview.primary&.id).to be_blank
+          # Also works without search_assign_topic, if it's the primary review topic
+          topic_review = FactoryBot.create(:topic_review_active, topic: topic)
+          expect(TopicReview.primary&.id).to eq topic_review.id
+          get "#{base_url}?user=cO0l-name&search_assign_topic=true"
           expect(assigns(:current_user)&.id).to eq user_subject.id
           expect(response).to render_template("ratings/index")
           expect(assigns(:assign_topic)&.id).to eq topic.id
@@ -438,7 +447,7 @@ RSpec.describe base_url, type: :request do
           :included_ratings => "#{rating1.id},#{rating2.id},#{rating3.id}",
           "rating_id_#{rating1.id}" => "1",
           "rating_id_#{rating2.id}" => true,
-          :search_assign_topic => topic.name
+          :search_topics => topic.name
         }
         expect(flash[:success]).to be_present
         expect(ReconcileRatingTopicsJob.jobs.count).to be > 1

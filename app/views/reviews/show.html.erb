@@ -1,21 +1,33 @@
 <%= content_for :main_wrapper_class, "container-padded" %>
 <div class="large-width-container standard-top-offset">
-  <h1 class="mb-4">
-    Current topic in review is
+  <h1 class="">
+    The current topic in review is
     <%= topic_review_display(@topic_review) %>
   </h1>
+  <p class="mt-2 mb-4">
+    This review will end
+    <span class="convertTime withPreposition"><%= l(@topic_review.created_at, format: :convert_time) %></span>.
+  </p>
+  <% if current_user.blank? || @topic_review_votes.blank? %>
+    <p class="mt-2 mb-4">
+      Check out articles people have
+      <%= link_to "read on this topic", ratings_path(search_topics: @topic_review.slug) %>
+    </p>
+    <p>
+      After you have rated some, select <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic and rank them here.
+    </p>
+  <% end %>
 </div>
 
-<%= render partial: "/reviews/header" %>
 <% if current_user.present? && @topic_review_votes.present? %>
   <% topic_review ||= @topic_review %>
   <% topic_review_votes ||= @topic_review_votes %>
   <%= form_tag review_path(topic_review.slug), method: :patch, class: "" do %>
     <div class="large-width-container standard-top-offset">
       <p>
-        Select <%= link_to "ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic, then rank them here.
+        Select <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic and rank them here.
       </p>
-      <h3 class="standard-top-offset">
+      <h3 class="standard-top-offset mb-2">
         The <em>best</em> articles for learning about <%= topic_review_display(@topic_review) %>
       </h3>
 
@@ -27,13 +39,13 @@
       <% required_ratings = ["No required ratings - increase the rank of a recommended rating by #{TopicReviewVote::RENDERED_OFFSET} to move it into required"] if required_ratings.none? %>
       <%= render partial: "/ratings/table", locals: {ratings: required_ratings, skip_sortable: true, render_ranking: true, ranking_modifier: constructive_ratings.count + TopicReviewVote::RENDERED_OFFSET} %>
 
-      <div class="large-width-container standard-top-offset">
+      <div class="large-width-container standard-top-offset mb-2">
         <h3>
           Articles you'd recommend, but that aren't required reading
         </h3>
       </div>
       <%= render partial: "/ratings/table", locals: {ratings: constructive_ratings, skip_sortable: true, hide_header: true, render_ranking: true, ranking_modifier: 0} %>
-      <div class="large-width-container standard-top-offset">
+      <div class="large-width-container standard-top-offset mb-2">
         <h3>
           Articles you wouldn't recommend for learning about <%= topic_review_display(@topic_review) %>
         </h3>

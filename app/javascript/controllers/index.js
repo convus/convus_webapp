@@ -4,5 +4,8 @@
 
 import { application } from './application'
 
+import RatingsFilterController from './ratings_filter_controller'
+
 import SortableRatingsController from './sortable_ratings_controller'
+application.register('ratings-filter', RatingsFilterController)
 application.register('sortable-ratings', SortableRatingsController)
