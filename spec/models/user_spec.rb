@@ -138,7 +138,7 @@ RSpec.describe User, type: :model do
         expect(user.following_approved?(following.id)).to be_truthy
         expect(user.following_ratings_visible.pluck(:id)).to eq([rating.id])
         expect(following.followers_approved.pluck(:id)).to eq([user.id])
-        expect(rating.account_private?).to be_falsey
+        expect(rating.reload.account_private?).to be_falsey
       end
       context "approved" do
         let(:approved) { true }
