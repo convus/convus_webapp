@@ -4,4 +4,9 @@
     @apply underline;
   }
   &.active { cursor: default;  }
+
+  /* Align navbar Convus with other nav items */
+  & .-mt-navlign {
+    margin-top: -0.15rem;
+  }
 }
