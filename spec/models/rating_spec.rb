@@ -168,4 +168,21 @@ RSpec.describe Rating, type: :model do
       end
     end
   end
+
+  describe "normalize_search_string and search" do
+    let!(:rating1) { FactoryBot.create(:rating, citation_title: "A cool article about important things") }
+    let!(:rating2) { FactoryBot.create(:rating, citation_title: "Another article about other things") }
+    let!(:rating3) { FactoryBot.create(:rating, citation_title: nil, submitted_url: "https://example.com/cool-stuff") }
+    it "finds the rating" do
+      expect(Rating.normalize_search_string(" ")).to eq ""
+      expect(Rating.normalize_search_string(" S ")).to eq "S"
+      expect(Rating.normalize_search_string(" S B\nT\t")).to eq "S B T"
+      expect(Rating.display_name_search.pluck(:id)).to match_array([rating1.id, rating2.id, rating3.id])
+      expect(Rating.display_name_search(" ").pluck(:id)).to match_array([rating1.id, rating2.id, rating3.id])
+      expect(Rating.display_name_search("article").pluck(:id)).to match_array([rating1.id, rating2.id])
+      expect(Rating.display_name_search(" ARTIcle ").pluck(:id)).to match_array([rating1.id, rating2.id])
+      expect(Rating.display_name_search("Another  article ").pluck(:id)).to match_array([rating2.id])
+      expect(Rating.display_name_search("cool ").pluck(:id)).to match_array([rating1.id, rating3.id])
+    end
+  end
 end

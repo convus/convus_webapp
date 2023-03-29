@@ -64,6 +64,16 @@ class Rating < ApplicationRecord
     joins(:rating_topics).where(rating_topics: {topic_id: Array(topic_ids)})
   end
 
+  def self.normalize_search_string(str)
+    (str || "").strip.gsub(/\s+/, " ")
+  end
+
+  def self.display_name_search(str = nil)
+    str = normalize_search_string(str)
+    return all if str.blank?
+    where("display_name ILIKE ?", "%#{str}%")
+  end
+
   def edit_title?
     true # TODO: hide if this was automatically collected?
   end
