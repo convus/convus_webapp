@@ -1,5 +1,5 @@
 <% skip_sortable = true %>
-<% update_links = @viewing_current_user && current_user.account_private %>
+<% update_links = @viewing_current_user && current_user.account_private? %>
 <div class="full-screen-table">
   <table class="table table-sm">
     <thead class="sortable">

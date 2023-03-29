@@ -20,7 +20,7 @@ RSpec.describe base_url, type: :request do
   end
   let(:user_subject) { FactoryBot.create(:user, username: "cO0l-name", account_private: account_private) }
   let(:account_private) { true }
-  let(:rating) { FactoryBot.create(:rating, user: user_subject) }
+  let(:rating) { FactoryBot.create(:rating, user: user_subject, citation_title: "An interesting article title") }
 
   describe "new" do
     it "redirects" do
@@ -75,7 +75,7 @@ RSpec.describe base_url, type: :request do
     context "with private user" do
       let(:account_private) { true }
       it "renders" do
-        expect(user_subject.ratings_public).to be_falsey
+        expect(user_subject.ratings_public?).to be_falsey
         expect(user_subject.username_slug).to eq "co0l-name"
         get "#{base_url}?user=cO0l-name"
         expect(assigns(:user_subject)&.id).to eq user_subject.id
@@ -89,7 +89,7 @@ RSpec.describe base_url, type: :request do
     context "with account_public user" do
       let(:account_private) { false }
       it "renders" do
-        expect(user_subject.ratings_public).to be_truthy
+        expect(user_subject.ratings_public?).to be_truthy
         get "#{base_url}?user=#{user_subject.username}"
         expect(response.code).to eq "200"
         expect(response).to render_template("ratings/index")
@@ -122,7 +122,7 @@ RSpec.describe base_url, type: :request do
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
       it "renders a private user" do
-        expect(user_subject.account_private).to be_truthy
+        expect(user_subject.account_private?).to be_truthy
         get "#{base_url}?user=#{user_subject.id}"
         expect(response.code).to eq "200"
         expect(response).to render_template("ratings/index")
@@ -146,7 +146,7 @@ RSpec.describe base_url, type: :request do
           expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
           expect(current_user.followings_approved.pluck(:id)).to eq([])
           expect(user_subject.follower_approved?(current_user)).to be_falsey
-          expect(user_subject.account_private).to be_truthy
+          expect(user_subject.account_private?).to be_truthy
           get "#{base_url}?user=#{user_subject.id}"
           expect(response.code).to eq "200"
           expect(response).to render_template("ratings/index")
@@ -162,7 +162,7 @@ RSpec.describe base_url, type: :request do
             expect(current_user.reload.followings.pluck(:id)).to eq([user_subject.id])
             expect(current_user.followings_approved.pluck(:id)).to eq([user_subject.id])
             expect(user_subject.follower_approved?(current_user)).to be_truthy
-            expect(user_subject.account_private).to be_truthy
+            expect(user_subject.account_private?).to be_truthy
             get "#{base_url}?user=#{user_subject.id}"
             expect(response.code).to eq "200"
             expect(response).to render_template("ratings/index")
@@ -171,14 +171,22 @@ RSpec.describe base_url, type: :request do
             expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
             expect(assigns(:viewing_single_user)).to be_truthy
             expect(assigns(:viewing_display_name)).to eq user_subject.username
+            get "#{base_url}?query=INTeresting"
+            expect(response.code).to eq "200"
+            expect(assigns(:can_view_ratings)).to be_truthy
+            expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
+            expect(assigns(:viewing_single_user)).to be_falsey
+            expect(assigns(:viewing_display_name)).to eq "all"
           end
         end
       end
       context "current_user is user_subject" do
         let(:current_user) { user_subject }
-        let!(:topic) { FactoryBot.create(:topic) }
+        let(:topic) { FactoryBot.create(:topic) }
         it "shows ratings" do
-          expect(user_subject.reload.ratings_public).to be_falsey
+          expect(current_user.reload.id).to eq user_subject.reload.id
+          expect(topic).to be_present
+          expect(user_subject.reload.ratings_public?).to be_falsey
           get "#{base_url}?user=cO0l-name"
           expect(assigns(:current_user)&.id).to eq user_subject.id
           expect(response).to render_template("ratings/index")
@@ -206,6 +214,26 @@ RSpec.describe base_url, type: :request do
           expect(response).to render_template("ratings/index")
           expect(assigns(:assign_topics)&.map(&:id)).to eq([topic.id])
           expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
+        end
+        context "user all and other" do
+          it "renders" do
+            expect(Rating.where.not(user_id: current_user.id).pluck(:id)).to eq([])
+            get "#{base_url}?user=other_users"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("ratings/index")
+            expect(assigns(:viewing_display_name)).to eq "other users"
+            expect(assigns(:can_view_ratings)).to be_truthy
+            expect(assigns(:ratings).pluck(:id)).to eq([])
+            expect(assigns(:viewing_single_user)).to be_falsey
+            # All is slightly different
+            get "#{base_url}?user=all"
+            expect(response.code).to eq "200"
+            expect(response).to render_template("ratings/index")
+            expect(assigns(:viewing_display_name)).to eq "all"
+            expect(assigns(:can_view_ratings)).to be_truthy
+            expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
+            expect(assigns(:viewing_single_user)).to be_falsey
+          end
         end
       end
       context "following" do
@@ -257,7 +285,7 @@ RSpec.describe base_url, type: :request do
 
     describe "new" do
       it "renders with layout" do
-        expect(current_user.ratings_public).to be_falsey
+        expect(current_user.ratings_public?).to be_falsey
         get "#{base_url}/new"
         expect(response.code).to eq "200"
         expect(response).to render_template("ratings/new")

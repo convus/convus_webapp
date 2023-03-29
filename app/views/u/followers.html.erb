@@ -7,7 +7,7 @@
 <h1 class="mb-4">
   <% if @viewing_current_user %>
     Your
-    <% if @user.account_private %>approved<% end %>
+    <% if @user.account_private? %>approved<% end %>
     followers
   <% else %>
     <%= link_to @user.username, ratings_path(user: @user) %> followers

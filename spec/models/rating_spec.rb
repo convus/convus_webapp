@@ -4,6 +4,7 @@ RSpec.describe Rating, type: :model do
   describe "topics" do
     let(:rating) { Rating.new }
     it "is empty" do
+      rating.set_calculated_attributes
       expect(rating.topic_names).to eq([])
       expect(rating.account_public?).to be_falsey
       expect(rating.default_attrs?).to be_truthy
@@ -81,6 +82,18 @@ RSpec.describe Rating, type: :model do
       expect(ReconcileRatingTopicsJob.jobs.count).to be > 0
       ReconcileRatingTopicsJob.new.perform(rating.id)
       expect(rating.reload.topics_text).to eq "new topic"
+    end
+  end
+
+  describe "account_public" do
+    let(:rating) { FactoryBot.create(:rating) }
+    let(:user) { rating.user }
+    it "updates after user save" do
+      expect(user.reload.account_public?).to be_truthy
+      expect(rating.reload.account_public?).to be_truthy
+      user.update(account_private: true)
+      expect(user.reload.account_public?).to be_falsey
+      expect(rating.reload.account_public?).to be_falsey
     end
   end
 

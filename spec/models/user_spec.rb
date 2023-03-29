@@ -106,6 +106,8 @@ RSpec.describe User, type: :model do
       expect(user.following?(following.id)).to be_truthy
       expect(user.following_approved?(following.id)).to be_truthy
       expect(user.following_approved?(nil)).to be_falsey
+      expect(user.followings_approved.pluck(:id)).to eq([following.id])
+      expect(user.followings_approved_private.pluck(:id)).to eq([])
       expect(following.follower_approved?(user)).to be_truthy
       expect(following.follower_approved?(following)).to be_falsey
       expect(following.follower_approved?(nil)).to be_falsey
@@ -123,6 +125,7 @@ RSpec.describe User, type: :model do
         expect(user.following_approved?(following.id)).to be_falsey
         expect(user.followings.pluck(:id)).to eq([following.id])
         expect(user.followings_approved.pluck(:id)).to eq([])
+        expect(user.followings_approved_private.pluck(:id)).to eq([])
         expect(user.following_approved?(nil)).to be_falsey
         expect(following.followers_approved.pluck(:id)).to eq([])
 
@@ -147,6 +150,7 @@ RSpec.describe User, type: :model do
           expect(user.following_ratings_visible.pluck(:id)).to eq([rating.id])
           expect(user.followings.pluck(:id)).to eq([following.id])
           expect(user.followings_approved.pluck(:id)).to eq([following.id])
+          expect(user.followings_approved_private.pluck(:id)).to eq([following.id])
           expect(user.following_ratings_visible.pluck(:id)).to eq([rating.id])
 
           user_following.update(approved: false)

@@ -115,7 +115,7 @@ class RatingsController < ApplicationController
   end
 
   def multi_user_searches
-    %w[all following]
+    %w[all other_users following]
   end
 
   def viewable_ratings
@@ -126,8 +126,8 @@ class RatingsController < ApplicationController
       raise ActiveRecord::RecordNotFound if user_subject.blank?
       @viewing_single_user = true
       @viewing_current_user = user_subject == current_user
-      @ratings_private = user_subject.ratings_private
-      @can_view_ratings = user_subject.account_public || @viewing_current_user ||
+      @ratings_private = user_subject.ratings_private?
+      @can_view_ratings = user_subject.account_public? || @viewing_current_user ||
         user_subject.follower_approved?(current_user)
     end
     searched_ratings
@@ -138,7 +138,11 @@ class RatingsController < ApplicationController
     @viewing_display_name ||= if user_subject.present?
       user_subject.username
     else
-      (params[:user] || multi_user_searches.first).downcase
+      if multi_user_searches.include?(params[:user])
+        params[:user]
+      else
+        multi_user_searches.first
+      end.humanize.downcase
     end
   end
 
@@ -152,14 +156,20 @@ class RatingsController < ApplicationController
     end
   end
 
-  def searched_ratings
-    ratings = if viewing_display_name == "following"
+  def viewed_ratings
+    if viewing_display_name == "following"
       current_user&.following_ratings_visible || Rating.none
     elsif viewing_display_name == "all"
+      Rating
+    elsif viewing_display_name == "other users"
       Rating.where.not(user_id: current_user&.id)
     else
       @can_view_ratings ? user_subject.ratings : Rating.none
     end
+  end
+
+  def searched_ratings
+    ratings = viewed_ratings
 
     if current_topics.present?
       ratings = ratings.matching_topics(current_topics)
