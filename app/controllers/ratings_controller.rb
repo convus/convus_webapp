@@ -72,7 +72,7 @@ class RatingsController < ApplicationController
     if @assign_topics.blank?
       flash[:error] = "Unable to find topic: \"#{params[:search_topics] || " "}\""
     else
-      included_rating_ids = params[:included_ratings].split(",").map(&:to_i)
+      included_rating_ids = (params[:included_ratings] || "").split(",").map(&:to_i)
       included_ratings = current_user.ratings.where(id: included_rating_ids)
       ratings_updated = @assign_topics.map { |t| update_ratings_with_topic(t, included_ratings) }
       if ratings_updated.sum > 0
