@@ -43,12 +43,12 @@
           <%= radio_button_tag :user, "all", viewing_display_name == "all", class: "submitOnChange" %>
           All
         <% end %>
-        <%# if viewing_display_name == "other users" %>
-        <%= label_tag :user_other_users, class: "form-control-radio flex-initial min-w-fit mr-2" do %>
-          <%= radio_button_tag :user, "other_users", viewing_display_name == "other users", class: "submitOnChange" %>
-          By other users
+        <% if viewing_display_name == "other users" %>
+          <%= label_tag :user_other_users, class: "form-control-radio flex-initial min-w-fit mr-2" do %>
+            <%= radio_button_tag :user, "other_users", viewing_display_name == "other users", class: "submitOnChange" %>
+            By other users
+          <% end %>
         <% end %>
-        <%# end %>
         <%= label_tag :user_current_user, class: "form-control-radio flex-initial mr-2 min-w-fit" do %>
           <%= radio_button_tag :user, "current_user", @viewing_single_user, class: "submitOnChange" %>
           By you
