@@ -192,16 +192,16 @@ RSpec.describe base_url, type: :request do
           expect(response).to render_template("ratings/index")
           expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
 
-          get "#{base_url}?user=cO0l-name&search_assign_topic=#{topic.slug}"
+          get "#{base_url}?user=cO0l-name&search_assign_topics=#{topic.slug}"
           expect(assigns(:current_user)&.id).to eq user_subject.id
           expect(response).to render_template("ratings/index")
           expect(assigns(:assign_topics)&.map(&:id)).to eq([topic.id])
           expect(TopicReview.primary&.id).to be_blank
           expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
-          # Also works without search_assign_topic, if it's the primary review topic
+          # Also works without search_assign_topics, if it's the primary review topic
           topic_review = FactoryBot.create(:topic_review_active, topic: topic)
           expect(TopicReview.primary&.id).to eq topic_review.id
-          get "#{base_url}?user=cO0l-name&search_assign_topic_primary=true"
+          get "#{base_url}?user=cO0l-name&search_topic_assignment=true"
           expect(assigns(:current_user)&.id).to eq user_subject.id
           expect(response).to render_template("ratings/index")
           expect(assigns(:assign_topics)&.map(&:id)).to eq([topic.id])
@@ -453,7 +453,7 @@ RSpec.describe base_url, type: :request do
           :included_ratings => "#{rating1.id},#{rating2.id},#{rating3.id}",
           "rating_id_#{rating1.id}" => "1",
           "rating_id_#{rating2.id}" => true,
-          :search_assign_topic => topic.name
+          :search_assign_topics => topic.name
         }
         expect(flash[:success]).to be_present
         expect(ReconcileRatingTopicsJob.jobs.count).to be > 1
@@ -462,11 +462,11 @@ RSpec.describe base_url, type: :request do
         expect(rating1.reload.topics.pluck(:id)).to eq([topic.id])
         expect(rating2.reload.topics.pluck(:id)).to eq([topic.id])
         expect(rating3.reload.topics.pluck(:id)).to eq([])
-        # Update via search_assign_topic_primary
+        # Update via search_topic_assignment
         post "#{base_url}/add_topic", params: {
           :included_ratings => "#{rating1.id},#{rating2.id},#{rating3.id}",
           "rating_id_#{rating3.id}" => "1",
-          :search_assign_topic_primary => "1"
+          :search_topic_assignment => "1"
         }
         expect(ReconcileRatingTopicsJob.jobs.count).to be > 1
         ReconcileRatingTopicsJob.drain
@@ -478,7 +478,8 @@ RSpec.describe base_url, type: :request do
         post "#{base_url}/add_topic", params: {
           :included_ratings => "#{rating1.id},#{rating2.id},#{rating3.id}",
           "rating_id_#{rating1.id}" => "1",
-          :search_topics => "#{topic.slug}\n#{topic2.slug}"
+          :search_topics => "#{topic.slug}\n#{topic2.slug}",
+          :search_topic_assignment => true
         }
         expect(assigns(:assign_topics)&.map(&:id)).to match_array([topic.id, topic2.id])
         expect(ReconcileRatingTopicsJob.jobs.count).to be > 1

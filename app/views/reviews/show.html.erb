@@ -21,7 +21,7 @@
     <% else %>
       Select
     <% end %>
-    <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topic: @topic_review&.slug) %> that apply to this topic and rank them on this page.
+    <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topics: @topic_review&.slug) %> that apply to this topic and rank them on this page.
   </p>
 </div>
 

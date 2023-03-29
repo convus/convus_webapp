@@ -208,18 +208,16 @@ class RatingsController < ApplicationController
   end
 
   def set_rating_assigment_if_passed
-    if TranzitoUtils::Normalize.boolean(params[:search_assign_topic_primary])
-      return unless primary_topic_review.present?
+    if TranzitoUtils::Normalize.boolean(params[:search_topic_assignment])
+      topic = current_topics.any? ? current_topics : primary_topic_review&.topic
+      return unless topic.present?
       @assigning = true
-      @assign_topics = [primary_topic_review.topic]
-    elsif params[:search_assign_topic].present?
-      topic = Topic.friendly_find(params[:search_assign_topic])
+      @assign_topics = Array(topic)
+    elsif params[:search_assign_topics].present?
+      topic = Topic.friendly_find(params[:search_assign_topics])
       return unless topic.present?
       @assign_topics = [topic]
       @assigning = true
-    elsif current_topics.present?
-      @assigning = true
-      @assign_topics = current_topics
     end
   end
 
