@@ -129,7 +129,7 @@
           <% if @viewing_current_user %>
             <%= label_tag :search_topic_assignment, class: "form-control-check" do %>
               <%= check_box_tag :search_topic_assignment, true, @assigning, class: "submitOnChange" %>
-              Choose which of your ratings are applicable to <%= primary_topic_review.topic_name %>
+              Choose which of your ratings are applicable to <%= topic_review_display(primary_topic_review) %>
             <% end %>
           <% end %>
         <% end %>

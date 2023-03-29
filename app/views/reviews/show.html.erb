@@ -50,6 +50,7 @@
       <div class="large-width-container standard-top-offset mb-2">
         <h3>
           Articles you wouldn't recommend for learning about <%= topic_review_display(@topic_review) %>
+          <small class="less-strong">rank with negative number</small>
         </h3>
       </div>
       <%= render partial: "/ratings/table", locals: {ratings: not_recommended_ratings, skip_sortable: true, hide_header: true, render_ranking: true, ranking_modifier: -(not_recommended_ratings.count + 1)} %>
