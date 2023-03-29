@@ -138,4 +138,20 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "sortable_search_params" do
+    let(:params) { ActionController::Parameters.new(passed_params) }
+    let(:passed_params) { {user: "something", per_page: 12, other: "Thing"} }
+    it "returns as expected" do
+      expect_hashes_to_match(passed_params.except(:other), sortable_params)
+      # Verify indifferent access
+      expect(sortable_params[:user]).to eq "something"
+    end
+    context "with array parameters" do
+      let(:passed_params) { {search_topics: ["one", "another topic"], search_other: "example"} }
+      it "returns as expected" do
+        expect_hashes_to_match(passed_params, sortable_params)
+      end
+    end
+  end
 end

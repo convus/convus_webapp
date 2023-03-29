@@ -174,7 +174,7 @@ class RatingsController < ApplicationController
     if current_topics.present?
       ratings = ratings.matching_topics(current_topics)
     end
-    if current_user.present? && TranzitoUtils::Normalize.boolean(params[:search_not_rated])
+    if current_user.present? && TranzitoUtils::Normalize.boolean(params[:search_not_rated]) && !@viewing_current_user
       ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
     end
     ratings = ratings.display_name_search(params[:query]) if params[:query].present?

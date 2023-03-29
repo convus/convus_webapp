@@ -36,8 +36,7 @@
 <% if @can_view_ratings %>
   <div class="large-width-container pt-2 pl-4" data-controller="ratings-filter" id="ratingsFilter">
     <%= form_tag ratings_path, method: :get, id: "ratingsFilterForm" do %>
-      <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true} %>
-      <%= hidden_field_tag :user, params[:user] %>
+      <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true, skip_user: true} %>
       <div class="flex flex-wrap">
         <%= label_tag :user_all, class: "form-control-radio flex-initial min-w-fit mr-2" do %>
           <%= radio_button_tag :user, "all", viewing_display_name == "all", class: "submitOnChange" %>
@@ -116,7 +115,7 @@
           <% end %>
         <% end %>
 
-        <% if current_user.present? && !@viewing_current_user %>
+        <% if current_user.present? && !@viewing_current_user &&  %>
           <%= label_tag :search_not_rated, class: "form-control-check" do %>
             <%= check_box_tag :search_not_rated, true, params[:search_not_rated], class: "submitOnChange" %>
             Only articles you haven't rated
