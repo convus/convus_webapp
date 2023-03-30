@@ -28,7 +28,9 @@ class UrlCleaner
       return nil unless str.present?
       with_http(
         without_mobile_parameters(
-          without_utm(without_anchor(str))))
+          without_utm(without_anchor(str))
+        )
+      )
     end
 
     def without_utm(str)
