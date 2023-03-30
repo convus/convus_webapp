@@ -5,6 +5,7 @@ class Citation < ApplicationRecord
   has_many :topics, through: :citation_topics
   has_many :active_citation_topics, -> { active }, class_name: "CitationTopic"
   has_many :topics_active, through: :active_citation_topics, source: :topic
+  has_many :topic_review_citations
 
   validates_presence_of :url
 
@@ -44,7 +45,6 @@ class Citation < ApplicationRecord
   def self.normalized_url(str)
     s = UrlCleaner.normalized_url(str)
     return nil unless s.present?
-    s.start_with?(/http/i) ? s : "http://#{s}"
   end
 
   def self.url_to_components(str)

@@ -126,8 +126,8 @@ module ApplicationHelper
   end
 
   def citation_display(citation, citation_url: nil, display_name: nil)
-    display_name ||= citation.display_name
-    citation_url ||= citation.url
+    display_name ||= citation&.display_name || "missing"
+    citation_url ||= citation&.url
     if display_name.length < 100
       link_to(display_name, citation_url, class: "break-words")
     else
