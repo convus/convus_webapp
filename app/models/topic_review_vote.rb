@@ -44,6 +44,10 @@ class TopicReviewVote < ApplicationRecord
       .distinct.pluck(:username).compact
   end
 
+  def self.rank_humanized(str)
+    str&.gsub("_", " ")
+  end
+
   def username
     user&.username
   end
@@ -66,6 +70,10 @@ class TopicReviewVote < ApplicationRecord
 
   def auto_score?
     !manual_score
+  end
+
+  def rank_humanized
+    self.class.rank_humanized(rank)
   end
 
   def set_calculated_attributes

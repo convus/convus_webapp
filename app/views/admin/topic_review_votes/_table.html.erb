@@ -47,6 +47,7 @@
           <td><%= topic_review_vote.vote_score %></td>
           <td><%= check_mark if topic_review_vote.manual_score? %></td>
           <td>
+            <% if display_dev_info? %><code class="only-dev-visible-small ratingId"><%= rating.id %></code><% end %>
             <span class="convertTime"><%= l(rating.created_at, format: :convert_time) %></span>
           </td>
           <td>

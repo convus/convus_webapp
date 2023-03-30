@@ -11,6 +11,14 @@
 <div class="row">
   <%= render partial: "tranzito_utils/pagination", locals: {collection: @topic_review_citations, name: "Topic Review Citation"} %>
 </div>
+<p class="mb-4 -mt-4 less-strong ml-2">
+  <% TopicReviewCitation.ranks.keys.each do |rank| %>
+    <span class="inline-block mr-2">
+      <strong><%= admin_number_display(@topic_review_votes.where(rank: rank).count) %></strong>
+      <%= TopicReviewVote.rank_humanized(rank) %>
+    </span>
+  <% end %>
+</p>
 
 <%= render partial: "/admin/topic_review_citations/table", locals: {topic_review_citations: @topic_review_citations, skip_sortable: true} %>
 

@@ -24,7 +24,7 @@
           <td class="text-center">
             <%= link_to edit_admin_topic_review_citation_path(topic_review_citation) do %>
               <%= topic_review_citation.vote_score %> -
-              <small><%= topic_review_citation.rank %></small>
+              <small><%= topic_review_citation.rank_humanized %></small>
             <% end %>
           </td>
           <td class="table-cell-check">
