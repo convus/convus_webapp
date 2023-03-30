@@ -40,7 +40,7 @@ class TopicReviewCitation < ApplicationRecord
 
   def set_calculated_attributes
     if topic.present?
-      self.citation_topic ||= citation&.citation_topics.where(topic_id: topic&.id).first
+      self.citation_topic ||= citation&.citation_topics&.where(topic_id: topic&.id)&.first
     end
     self.display_name = citation.display_name if citation.present?
     self.vote_score = vote_score_manual || vote_score_calculated

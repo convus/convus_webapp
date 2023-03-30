@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe TopicReviewCitation, type: :model do
   describe "factory" do
@@ -6,7 +6,7 @@ RSpec.describe TopicReviewCitation, type: :model do
     it "is valid" do
       expect(topic_review_citation).to be_valid
       expect(topic_review_citation.reload.topic_review_votes.count).to eq 0
-      expect(topic_review_citation.vote_score).to eq -1000
+      expect(topic_review_citation.vote_score).to eq(-1000)
       expect(topic_review_citation.vote_score_manual).to be_nil
       expect(topic_review_citation.auto_score?).to be_truthy
     end

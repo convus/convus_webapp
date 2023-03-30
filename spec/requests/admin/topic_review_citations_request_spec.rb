@@ -47,7 +47,7 @@ RSpec.describe base_url, type: :request do
     describe "update" do
       it "updates" do
         expect(topic_review).to be_valid
-        expect(topic_review_citation.vote_score_calculated).to eq -1000
+        expect(topic_review_citation.vote_score_calculated).to eq(-1000)
         patch "#{base_url}/#{topic_review_citation.id}", params: {topic_review_citation: {
           vote_score_manual: 122
         }}
@@ -59,7 +59,7 @@ RSpec.describe base_url, type: :request do
           vote_score_manual: ""
         }}
         expect(flash[:success]).to be_present
-        expect(topic_review_citation.reload.vote_score).to eq -1000
+        expect(topic_review_citation.reload.vote_score).to eq(-1000)
         expect(topic_review_citation.rank).to eq "not_recommended"
       end
     end

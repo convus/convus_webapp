@@ -29,10 +29,9 @@
   </div>
 <% end %>
 
-
 <h2 class="standard-top-offset mb-2">
   <%= admin_number_display(@topic_review_votes.count) %>
   <%= "Rating".pluralize(@topic_review_votes.count) %>
 </h2>
 
-<%= render partial: "/admin/topic_reviews/votes_table", locals: {topic_review_votes: @topic_review_votes, skip_article: true} %>
+<%= render partial: "/admin/topic_review_votes/table", locals: {topic_review_votes: @topic_review_votes, skip_article: true} %>

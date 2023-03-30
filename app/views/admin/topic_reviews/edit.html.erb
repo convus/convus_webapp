@@ -22,4 +22,6 @@
   <% end %>
 </p>
 
-<%= render partial: "/admin/topic_reviews/votes_table", locals: {topic_review_votes: @topic_review_votes, skip_article: true} %>
+<%= render partial: "/admin/topic_review_votes/table", locals: {topic_review_votes: @topic_review_votes, skip_article: false} %>
+
+<div class="mb-4"></div>
