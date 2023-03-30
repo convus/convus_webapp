@@ -43,8 +43,12 @@ module ApplicationHelper
   end
 
   def sortable_params
-    # HACK: sortable_search_params was warning unpermitted every time it's invoked - e.g. each row in the table
-    @sortable_params ||= sortable_search_params.as_json.with_indifferent_access
+    @sortable_params ||= sortable_search_params.as_json.map do |k, v|
+      # Skip default sort parameters, to reduce unnecessary params
+      next if v.blank? || k == "sort" && v == default_column ||
+        k == "sort_direction" && v == default_direction
+      [k, v]
+    end.compact.to_h.with_indifferent_access
   end
 
   def agreement_display(agreement = nil, link: false)

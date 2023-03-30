@@ -36,7 +36,7 @@
             <small class="convertTime"><%= l(user.updated_at, format: :convert_time) %></small>
           </td>
           <td>
-            <%= link_to user&.username, ratings_path(sortable_search_params.merge(user: user.username)) %>
+            <%= link_to user&.username, ratings_path(sortable_params.merge(user: user.username)) %>
           </td>
           <td>
             <small><%= user.email %></small>

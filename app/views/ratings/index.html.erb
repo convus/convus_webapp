@@ -145,7 +145,7 @@
   <% hide_private_users = ["all", "other users"].include?(viewing_display_name) %>
   <% if @assigning %>
     <%# duplicating this whole thing is gross, but... HACK HACK HACK %>
-    <%= form_tag add_topic_ratings_path(sortable_search_params), method: :post, class: "" do %>
+    <%= form_tag add_topic_ratings_path(sortable_params), method: :post, class: "" do %>
       <%= hidden_field_tag :included_ratings, @ratings.pluck(:id).join(",") %>
 
       <p class="large-width-container mb-3">

@@ -46,10 +46,12 @@ RSpec.describe base_url, type: :request do
       expect(assigns(:user_subject)&.id).to be_blank
       expect(assigns(:viewing_display_name)).to eq "all"
       expect(response).to render_template("ratings/index")
+      expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
       get "#{base_url}?user=all"
       expect(response.code).to eq "200"
       expect(response).to render_template("ratings/index")
       expect(assigns(:viewing_display_name)).to eq "all"
+      expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
     end
     context "no user found" do
       it "raises" do

@@ -10,7 +10,7 @@
         <strong><%= current_topics.map(&:name).to_sentence %></strong>
         <small class="less-strong">
           <%= viewing %> for
-          <%= link_to "all topics", url_for(sortable_search_params.merge(search_topics: nil)) %>
+          <%= link_to "all topics", url_for(sortable_params.merge(search_topics: nil)) %>
         </small>
       </p>
     <% end %>
