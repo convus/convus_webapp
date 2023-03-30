@@ -101,7 +101,7 @@
                 </small>
               <% end %>
               <span class="block md:hidden mt-1 max-w-md maxWScreen">
-                <%= rating_display_name(rating) %>
+                <%= rating_display(rating) %>
                 <span class="ml-2">
                   <%= agreement_display(rating.agreement, link: filter_links) %>
                   <%= quality_display(rating.quality, link: filter_links) %>
@@ -124,7 +124,7 @@
               </td>
             <% end %>
             <td class="hidden md:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth">
-              <%= rating_display_name(rating) %>
+              <%= rating_display(rating) %>
               <% if display_dev_info? %><code class="only-dev-visible-small citationId"><%= rating.citation_id %></code><% end %>
             </td>
             <!-- <td class="hidden md:table-cell">

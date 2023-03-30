@@ -6,6 +6,7 @@ class TopicReviewVote < ApplicationRecord
   belongs_to :topic_review
   belongs_to :user
   belongs_to :rating
+  belongs_to :topic_review_citation
 
   enum rank: RANK_ENUM
 
@@ -21,7 +22,7 @@ class TopicReviewVote < ApplicationRecord
   scope :rating_ordered, -> { order(:rating_at) }
   scope :recommended, -> { where(rank: recommended_ranks) }
 
-  attr_accessor :skip_calculated_vote_score
+  attr_accessor :skip_vote_score_calculated
 
   def self.recommended_ranks
     %w[constructive required].freeze
@@ -37,12 +38,26 @@ class TopicReviewVote < ApplicationRecord
     (score > Rating::RANK_OFFSET) ? "required" : "constructive"
   end
 
+  # Hack, I think there is a better way?
+  def self.usernames
+    User.where(id: distinct.pluck(:user_id)).order(:username)
+      .distinct.pluck(:username).compact
+  end
+
+  def username
+    user&.username
+  end
+
   def topic
     topic_review&.topic
   end
 
   def topic_name
     topic&.name
+  end
+
+  def citation
+    rating&.citation
   end
 
   def recommended?
@@ -55,12 +70,14 @@ class TopicReviewVote < ApplicationRecord
 
   def set_calculated_attributes
     self.user ||= rating&.user
-    if !skip_calculated_vote_score && auto_score?
-      self.vote_score = calculated_vote_score
+    if !skip_vote_score_calculated && auto_score?
+      self.vote_score = vote_score_calculated
     end
     # It's possible that rating will use updated_at in the future
-    self.rating_at = rating&.created_at || Timc.current
+    self.rating_at = rating&.created_at || Time.current
     self.rank = self.class.vote_score_rank(vote_score)
+    self.topic_review_citation ||= TopicReviewCitation.where(topic_review: topic_review, citation: citation)
+      .first_or_create
   end
 
   def review_user_votes
@@ -75,7 +92,7 @@ class TopicReviewVote < ApplicationRecord
     id.present? ? topic_user_ratings.where("id < ?", rating_id) : topic_user_ratings
   end
 
-  def calculated_vote_score
+  def vote_score_calculated
     dscore = rating.default_vote_score
     prev_ratings_matching_count = prev_topic_user_ratings
       .count { |r| r.default_vote_score == dscore }

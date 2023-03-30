@@ -4,7 +4,9 @@ class TopicReview < ApplicationRecord
   STATUS_ENUM = {pending: 0, active: 1, ended: 2}.freeze
 
   belongs_to :topic
+
   has_many :topic_review_votes
+  has_many :topic_review_citations
 
   enum status: STATUS_ENUM
 

@@ -25,6 +25,14 @@ class Admin::TopicReviewsController < Admin::BaseController
   end
 
   def edit
+    page = params[:page] || 1
+    @per_page = params[:per_page] || 50
+    @topic_review_citations = @topic_review.topic_review_citations.vote_ordered
+      .includes(:topic_review_votes, :citation)
+      .page(page).per(@per_page)
+    @topic_review_votes = searched_topic_review_votes
+      .includes(:rating, :user)
+      .page(page).per(@per_page)
   end
 
   def update
@@ -67,6 +75,14 @@ class Admin::TopicReviewsController < Admin::BaseController
     time_columns = %w[updated_at start_at end_at]
     @time_range_column = time_columns.include?(sort_column) ? sort_column : "created_at"
     topic_reviews.where(@time_range_column => @time_range)
+  end
+
+  def searched_topic_review_votes
+    topic_review_votes = @topic_review.topic_review_votes.vote_ordered
+    if user_subject.present?
+      topic_review_votes = topic_review_votes.where(user_id: user_subject.id)
+    end
+    topic_review_votes
   end
 
   def permitted_params

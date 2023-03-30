@@ -54,10 +54,10 @@ RSpec.describe base_url, type: :request do
     describe "update" do
       let(:topic_review_vote2) { FactoryBot.create(:topic_review_vote, topic_review: topic_review, user: current_user, quality: :quality_high) }
       it "updates" do
-        expect(topic_review_vote2.reload.calculated_vote_score).to eq 1001
+        expect(topic_review_vote2.reload.vote_score_calculated).to eq 1001
         expect(topic_review_vote2.vote_score).to eq 1001
         expect(topic_review_vote2.rating.topics.pluck(:id)).to eq([topic.id])
-        expect(topic_review_vote.reload.calculated_vote_score).to eq 1
+        expect(topic_review_vote.reload.vote_score_calculated).to eq 1
         expect(topic_review_vote.vote_score).to eq 1
         expect(topic_review_vote.rating.topics.pluck(:id)).to eq([topic.id])
         expect(topic_review_vote_offtopic.reload.vote_score).to eq 1

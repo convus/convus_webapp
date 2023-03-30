@@ -84,6 +84,15 @@ RSpec.describe base_url, type: :request do
         expect(response.code).to eq "200"
         expect(response).to render_template("admin/topic_reviews/edit")
       end
+      context "with topic review citations" do
+        let!(:topic_review_citation) { FactoryBot.create(:topic_review_citation, topic_review: topic_review) }
+        it "renders them" do
+          get "#{base_url}/#{topic_review.to_param}/edit"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("admin/topic_reviews/edit")
+          expect(assigns(:topic_review_citations).pluck(:id)).to eq([topic_review_citation.id])
+        end
+      end
     end
 
     describe "update" do

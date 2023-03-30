@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_29_192216) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_30_171042) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -100,6 +100,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_29_192216) do
     t.index ["user_id"], name: "index_ratings_on_user_id"
   end
 
+  create_table "topic_review_citations", force: :cascade do |t|
+    t.bigint "topic_review_id"
+    t.bigint "citation_id"
+    t.bigint "citation_topic_id"
+    t.integer "vote_score"
+    t.integer "vote_score_manual"
+    t.integer "rank"
+    t.string "display_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["citation_id"], name: "index_topic_review_citations_on_citation_id"
+    t.index ["citation_topic_id"], name: "index_topic_review_citations_on_citation_topic_id"
+    t.index ["topic_review_id"], name: "index_topic_review_citations_on_topic_review_id"
+  end
+
   create_table "topic_review_votes", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "topic_review_id"
@@ -110,7 +125,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_29_192216) do
     t.datetime "rating_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "topic_review_citation_id"
     t.index ["rating_id"], name: "index_topic_review_votes_on_rating_id"
+    t.index ["topic_review_citation_id"], name: "index_topic_review_votes_on_topic_review_citation_id"
     t.index ["topic_review_id"], name: "index_topic_review_votes_on_topic_review_id"
     t.index ["user_id"], name: "index_topic_review_votes_on_user_id"
   end
