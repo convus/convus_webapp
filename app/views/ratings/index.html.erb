@@ -153,7 +153,7 @@
           Mark checked ratings applicable to <%= topic_review_display(@assign_topics, "ml-1") %>
         <% end %>
       </p>
-      <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: @viewing_current_user, render_user: !@viewing_single_user, hide_private_users: hide_private_users, render_assign_topic: @assigning} %>
+      <%= render partial: "table", locals: {ratings: @ratings, render_user: !@viewing_single_user, hide_private_users: hide_private_users, render_assign_topic: @assigning} %>
       <p class="large-width-container mt-2 mb-3">
         <%= button_tag type: "submit", class: "btn" do %>
           Mark checked ratings applicable to <%= topic_review_display(@assign_topics, "ml-1") %>

@@ -1,6 +1,5 @@
 <% ratings ||= @ratings %>
 <% skip_sortable ||= false %>
-<% edit_ratings ||= false %>
 
 <% render_user ||= false %>
 <% hide_private_users ||= false %>
@@ -88,9 +87,6 @@
             <td>
               <% if display_dev_info? %><code class="only-dev-visible-small ratingId"><%= rating.id %></code><% end %>
               <small class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
-              <% if edit_ratings %>
-                <small class="less-strong"><%= link_to "edit", edit_rating_path(rating) %></small>
-              <% end %>
               <% if render_user %>
                 <small class="inline md:hidden less-strong">
                   <% if private_user && !show_private_user %>
@@ -99,6 +95,9 @@
                     <%= link_to rating.user&.username, ratings_path(sortable_params.merge(user: rating.user.username)) %>
                   <% end %>
                 </small>
+              <% end %>
+              <% if rating.user_id == current_user&.id %>
+                <small class="ml-1"><%= link_to "edit", edit_rating_path(rating) %></small>
               <% end %>
               <span class="block md:hidden mt-1 max-w-md maxWScreen">
                 <%= rating_display(rating) %>

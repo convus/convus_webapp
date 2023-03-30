@@ -79,7 +79,27 @@ RSpec.describe UrlCleaner do
     it "returns without anchor" do
       target = "https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
       expect(subject.without_utm("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target + "#cite_note-10"
-      expect(subject.without_utm_or_anchor("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target
+      expect(subject.normalized_url("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target
+    end
+  end
+
+  describe "normalized_url" do
+    it "returns without anchor, utm and mobile" do
+      og = "https://en.m.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10"
+      target = "https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
+      expect(subject.without_anchor(og)).to eq "https://en.m.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
+      expect(subject.normalized_url(og.gsub("https://en.", ""))).to eq "http://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
+      expect(subject.normalized_url(og)).to eq target
+    end
+    it "doesn't remove non mobile m subdomains" do
+      expect(subject.normalized_url("https://mm.wikipedia.org/wiki/Illegal_number")).to eq "https://mm.wikipedia.org/wiki/Illegal_number"
+      expect(subject.normalized_url("https://mm.m.wikipedia.org/wiki/Illegal_number")).to eq "https://mm.wikipedia.org/wiki/Illegal_number"
+      expect(subject.normalized_url("mm.wikipedia.org/wiki/Illegal_number")).to eq "http://mm.wikipedia.org/wiki/Illegal_number"
+    end
+    it "works on spanish wikipedia too" do
+      og = "https://es.m.wikipedia.org/wiki/Illegal_number?somethingimportant=true#cite_note-10&utm_source=recirc-desktop&utm_medium=article"
+      expect(subject.normalized_url(og)).to eq "https://es.wikipedia.org/wiki/Illegal_number?somethingimportant=true"
+      expect(subject.normalized_url(og.gsub("https://", "").upcase)).to eq "http://ES.wikipedia.org/WIKI/ILLEGAL_NUMBER?SOMETHINGIMPORTANT=TRUE"
     end
   end
 

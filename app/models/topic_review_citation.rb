@@ -38,6 +38,10 @@ class TopicReviewCitation < ApplicationRecord
     !manual_score?
   end
 
+  def rank_humanized
+    TopicReviewVote.rank_humanized(rank)
+  end
+
   def set_calculated_attributes
     if topic.present?
       self.citation_topic ||= citation&.citation_topics&.where(topic_id: topic&.id)&.first
