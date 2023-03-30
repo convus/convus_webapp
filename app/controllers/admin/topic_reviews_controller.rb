@@ -25,6 +25,11 @@ class Admin::TopicReviewsController < Admin::BaseController
   end
 
   def edit
+    page = params[:page] || 1
+    @per_page = params[:per_page] || 50
+    @topic_review_citations = @topic_review.topic_review_citations.vote_ordered
+      .includes(:topic_review_votes, :citation)
+      .page(page).per(@per_page)
   end
 
   def update

@@ -1,12 +1,4 @@
 class TopicReviewCitation < ApplicationRecord
-  # t.references :topic_review
-  # t.references :citation
-  # t.integer :vote_score_calculated
-  # t.integer :vote_score_manual
-  # t.integer :rank
-
-  # t.string :display_name
-
   belongs_to :topic_review
   belongs_to :citation
   belongs_to :citation_topic
@@ -21,6 +13,8 @@ class TopicReviewCitation < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
+  scope :vote_ordered, -> { order(vote_score: :desc) }
+  scope :recommended, -> { where(rank: TopicReviewVote.recommended_ranks) }
   scope :manual_score, -> { where.not(vote_score_manual: nil) }
   scope :auto_score, -> { where(vote_score_manual: nil) }
 
@@ -48,11 +42,13 @@ class TopicReviewCitation < ApplicationRecord
     if topic.present?
       self.citation_topic ||= citation&.citation_topics.where(topic_id: topic&.id).first
     end
+    self.display_name = citation.display_name if citation.present?
     self.vote_score = vote_score_manual || vote_score_calculated
     self.rank = TopicReviewVote.vote_score_rank(vote_score)
   end
 
   def vote_score_calculated
-    0
+    return 0 if topic_review_votes.none?
+    topic_review_votes.sum(:vote_score) / topic_review_votes.count
   end
 end

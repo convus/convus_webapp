@@ -1,2 +1,10 @@
 <h1 class="standard-top-offset mb-2">Edit Topic Review</h1>
 <%= render partial: "/admin/topic_reviews/form" %>
+
+<h3 class="standard-top-offset mb-2">Topic Review's Citations</h3>
+
+<div class="row">
+  <%= render partial: "tranzito_utils/pagination", locals: {collection: @topic_review_citations, name: "Topic Review Citation"} %>
+</div>
+
+<%= render partial: "/admin/topic_review_citations/table", locals: {topic_review_citations: @topic_review_citations, skip_sortable: true} %>
