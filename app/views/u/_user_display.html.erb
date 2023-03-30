@@ -1,5 +1,5 @@
 <% render_second_hr ||= false %>
-<% render_links = @viewing_current_user || user.account_public || user.follower_approved?(current_user) %>
+<% render_links = @viewing_current_user || user.account_public? || user.follower_approved?(current_user) %>
 <div>
   <div><%# not p because button_to breaks it %>
     <strong class="inline-block mr-1">User</strong>
@@ -57,7 +57,7 @@
     <% else %>
       <%= number_with_delimiter(user.ratings.count) %>
     <% end %>
-    <% if user.ratings_private %>
+    <% if user.ratings_private? %>
       <span class="less-strong">(private)</span>
     <% else %>
       <span class="ml-2 less-strong opacity-0">

@@ -16,7 +16,7 @@ class UserFollowing < ApplicationRecord
   end
 
   def set_calculated_attributes
-    if unapproved && following.account_public
+    if unapproved && following.account_public?
       self.approved = true
     end
   end

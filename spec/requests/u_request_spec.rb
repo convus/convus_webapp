@@ -33,7 +33,7 @@ RSpec.describe base_url, type: :request do
 
   describe "following" do
     it "renders" do
-      expect(user_subject.account_public).to be_truthy
+      expect(user_subject.account_public?).to be_truthy
       get "#{base_url}/#{user_subject.to_param}/following"
       expect(flash).to be_blank
       expect(assigns(:user)&.id).to eq user_subject.id
@@ -42,17 +42,17 @@ RSpec.describe base_url, type: :request do
     context "account_private" do
       let(:user_subject) { user_private }
       it "redirects" do
-        expect(user_subject.account_private).to be_truthy
+        expect(user_subject.account_private?).to be_truthy
         get "#{base_url}/#{user_subject.id}/following"
         expect(flash[:notice]).to match(/account/i)
-        expect(response).to redirect_to(new_user_registration_path)
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
   end
 
   describe "followers" do
     it "renders" do
-      expect(user_subject.account_public).to be_truthy
+      expect(user_subject.account_public?).to be_truthy
       get "#{base_url}/#{user_subject.to_param}/followers"
       expect(flash).to be_blank
       expect(assigns(:user)&.id).to eq user_subject.id
@@ -61,10 +61,10 @@ RSpec.describe base_url, type: :request do
     context "account_private" do
       let(:user_subject) { user_private }
       it "redirects" do
-        expect(user_subject.account_private).to be_truthy
+        expect(user_subject.account_private?).to be_truthy
         get "#{base_url}/#{user_subject.id}/followers"
         expect(flash[:notice]).to match(/account/i)
-        expect(response).to redirect_to(new_user_registration_path)
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
   end
@@ -73,7 +73,7 @@ RSpec.describe base_url, type: :request do
     it "redirects" do
       get "#{base_url}/#{user_subject.id}/edit"
       expect(session[:user_return_to]).to eq "#{base_url}/#{user_subject.id}/edit"
-      expect(response).to redirect_to("/users/sign_up")
+      expect(response).to redirect_to("/users/sign_in")
     end
   end
 
@@ -99,7 +99,7 @@ RSpec.describe base_url, type: :request do
       let(:current_user) { FactoryBot.create(:user_private) }
       let(:user_following_approved) { FactoryBot.create(:user_following, user: user_subject, following: FactoryBot.create(:user_private), approved: true) }
       it "renders" do
-        expect(user_subject.reload.account_public).to be_truthy
+        expect(user_subject.reload.account_public?).to be_truthy
         expect(user_following_approved).to be_valid
         expect(user_subject.user_followings.approved.pluck(:id)).to eq([user_following_approved.id])
         get "#{base_url}/#{user_subject.to_param}/following"
@@ -112,7 +112,7 @@ RSpec.describe base_url, type: :request do
         let(:user_subject) { current_user }
         let!(:user_following) { FactoryBot.create(:user_following, user: current_user, following: user_private) }
         it "renders" do
-          expect(current_user.account_private).to be_truthy
+          expect(current_user.account_private?).to be_truthy
           expect(user_following_approved).to be_valid
           expect(user_following.approved).to be_falsey
           get "#{base_url}/#{user_subject.to_param}/following"
@@ -133,7 +133,7 @@ RSpec.describe base_url, type: :request do
         let(:user_following) { FactoryBot.create(:user_following, user: user_subject, following: current_user, approved: approved) }
         let(:approved) { false }
         it "redirects" do
-          expect(user_subject.reload.account_private).to be_truthy
+          expect(user_subject.reload.account_private?).to be_truthy
           get "#{base_url}/#{user_subject.id}/following"
           expect(flash[:notice]).to match(/account/i)
           expect(response).to redirect_to(root_url)
@@ -153,7 +153,7 @@ RSpec.describe base_url, type: :request do
           let(:approved) { true }
           let!(:user_following_unapproved) { FactoryBot.create(:user_following, user: user_subject, following: FactoryBot.create(:user_private)) }
           it "renders" do
-            expect(user_subject.reload.account_private).to be_truthy
+            expect(user_subject.reload.account_private?).to be_truthy
             expect(user_following_approved).to be_valid
             expect(user_following_approved.approved).to be_truthy
             expect(user_following).to be_valid
@@ -178,7 +178,7 @@ RSpec.describe base_url, type: :request do
       let(:current_user) { FactoryBot.create(:user_private) }
       let(:user_follower_approved) { FactoryBot.create(:user_following, following: user_subject, user: FactoryBot.create(:user_private), approved: true) }
       it "renders" do
-        expect(user_subject.reload.account_public).to be_truthy
+        expect(user_subject.reload.account_public?).to be_truthy
         expect(user_follower_approved).to be_valid
         expect(user_subject.user_followers.approved.pluck(:id)).to eq([user_follower_approved.id])
         get "#{base_url}/#{user_subject.to_param}/followers"
@@ -191,7 +191,7 @@ RSpec.describe base_url, type: :request do
         let(:user_subject) { current_user }
         let!(:user_follower) { FactoryBot.create(:user_following, following: current_user, user: user_private) }
         it "renders" do
-          expect(current_user.account_private).to be_truthy
+          expect(current_user.account_private?).to be_truthy
           expect(user_follower_approved).to be_valid
           expect(user_follower.approved).to be_falsey
           get "#{base_url}/#{user_subject.to_param}/followers"
@@ -212,7 +212,7 @@ RSpec.describe base_url, type: :request do
         let(:user_follower) { FactoryBot.create(:user_following, following: user_subject, user: current_user, approved: approved) }
         let(:approved) { false }
         it "redirects" do
-          expect(user_subject.reload.account_private).to be_truthy
+          expect(user_subject.reload.account_private?).to be_truthy
           get "#{base_url}/#{user_subject.id}/followers"
           expect(flash[:notice]).to match(/account/i)
           expect(response).to redirect_to(root_url)
@@ -232,7 +232,7 @@ RSpec.describe base_url, type: :request do
           let(:approved) { true }
           let!(:user_following_unapproved) { FactoryBot.create(:user_following, user: user_subject, following: FactoryBot.create(:user_private)) }
           it "renders" do
-            expect(user_subject.reload.account_private).to be_truthy
+            expect(user_subject.reload.account_private?).to be_truthy
             expect(user_follower_approved).to be_valid
             expect(user_follower_approved.approved).to be_truthy
             expect(user_follower).to be_valid
@@ -268,7 +268,7 @@ RSpec.describe base_url, type: :request do
       end
       context "unpermitted parameters" do
         it "doesn't updates" do
-          expect(current_user.ratings_public).to be_truthy
+          expect(current_user.ratings_public?).to be_truthy
           patch "#{base_url}/#{current_user.id}", params: {user: {
             password: "newpassword",
             email: "new@example.com"

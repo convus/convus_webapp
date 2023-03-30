@@ -43,8 +43,12 @@ module ApplicationHelper
   end
 
   def sortable_params
-    # HACK: sortable_search_params was warning unpermitted every time it's invoked - e.g. each row in the table
-    @sortable_params ||= sortable_search_params.as_json.with_indifferent_access
+    @sortable_params ||= sortable_search_params.as_json.map do |k, v|
+      # Skip default sort parameters, to reduce unnecessary params
+      next if v.blank? || k == "sort" && v == default_column ||
+        k == "sort_direction" && v == default_direction
+      [k, v]
+    end.compact.to_h.with_indifferent_access
   end
 
   def agreement_display(agreement = nil, link: false)
@@ -52,8 +56,11 @@ module ApplicationHelper
     if agreement.to_s == "neutral"
       nil
     elsif link
+      # TODO: tests :/
+      u_params = {"search_disagree" => false, "search_agree" => false}
+      u_params["search_#{agreement}"] = !(@search_agreement == agreement)
       link_to(display_icon(agreement),
-        url_for(sortable_params.merge("search_#{agreement}" => !params["search_#{agreement}"])),
+        url_for(sortable_params.merge(u_params)),
         title: agreement.to_s&.titleize)
     else
       content_tag(:span, display_icon(agreement), title: agreement.to_s&.titleize)
@@ -65,8 +72,9 @@ module ApplicationHelper
     str = Rating.quality_humanized(quality)
     return nil if str == "medium"
     if link
+      link_target = params["search_quality_#{str}"].present? ? nil : true
       link_to(display_icon("quality_#{str}"),
-        url_for(sortable_params.merge("search_quality_#{str}" => !params["search_quality_#{str}"])),
+        url_for(sortable_params.merge("search_quality_#{str}" => link_target)),
         title: "#{str.titleize} Quality")
     else
       content_tag(:span, display_icon("quality_#{str}"), title: "#{str.titleize} Quality")
@@ -131,6 +139,7 @@ module ApplicationHelper
   end
 
   def topic_review_display(topic_obj, klass = nil)
+    topic_obj = topic_obj.first if topic_obj.is_a?(Array) # TODO: fix this
     text = if topic_obj.is_a?(TopicReview)
       topic_obj&.topic_name
     elsif topic_obj.is_a?(Topic)

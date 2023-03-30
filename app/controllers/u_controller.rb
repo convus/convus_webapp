@@ -73,7 +73,7 @@ class UController < ApplicationController
   end
 
   def redirect_unless_approved!
-    return true if @user.account_public || @viewing_current_user
+    return true if @user.account_public? || @viewing_current_user
     if current_user.blank?
       flash[:notice] = "User's account is only visible to their followers"
       return redirect_to_signup_unless_user_present!

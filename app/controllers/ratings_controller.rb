@@ -18,11 +18,7 @@ class RatingsController < ApplicationController
       .includes(:citation, :user).page(page).per(@per_page)
 
     @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.id]
-    if TranzitoUtils::Normalize.boolean(params[:search_assign_topic])
-      @assigning = true
-      @assign_topic = @viewing_primary_topic ? primary_topic_review : current_topics.first
-      @assign_topic ||= primary_topic_review.topic
-    end
+    set_rating_assigment_if_passed if @viewing_current_user
     @action_display_name = viewing_display_name.titleize
   end
 
@@ -72,26 +68,15 @@ class RatingsController < ApplicationController
   end
 
   def add_topic
-    included_rating_ids = params[:included_ratings].split(",").map(&:to_i)
-    @assign_topic = current_topics.first
-    if @assign_topic.blank?
-      flash[:error] = "Unable to find topic: '#{params[:search_topics]}'"
+    set_rating_assigment_if_passed
+    if @assign_topics.blank?
+      flash[:error] = "Unable to find topic: \"#{params[:search_topics] || " "}\""
     else
-      ratings_updated = 0
+      included_rating_ids = (params[:included_ratings] || "").split(",").map(&:to_i)
       included_ratings = current_user.ratings.where(id: included_rating_ids)
-      ratings_with_topic = RatingTopic.where(topic_id: @assign_topic.id, rating_id: included_ratings)
-      # These are the ratings to add topic to
-      included_ratings.where(id: rating_ids_selected - ratings_with_topic.pluck(:rating_id)).each do |rating|
-        ratings_updated += 1
-        rating.add_topic(@assign_topic)
-      end
-      ratings_with_topic.where.not(rating_id: rating_ids_selected).each do |rating_topic|
-        ratings_updated += 1
-        rating_topic.rating.remove_topic(@assign_topic)
-      end
-      # included_ratings
-      if ratings_updated > 0
-        flash[:success] = "Added ratings to #{@assign_topic.name}"
+      ratings_updated = @assign_topics.map { |t| update_ratings_with_topic(t, included_ratings) }
+      if ratings_updated.sum > 0
+        flash[:success] = "Added ratings to #{@assign_topics.map(&:name).join(", ")}"
       else
         flash[:notice] = "No ratings were updated"
       end
@@ -130,7 +115,7 @@ class RatingsController < ApplicationController
   end
 
   def multi_user_searches
-    %w[all following]
+    %w[all other_users following]
   end
 
   def viewable_ratings
@@ -141,8 +126,8 @@ class RatingsController < ApplicationController
       raise ActiveRecord::RecordNotFound if user_subject.blank?
       @viewing_single_user = true
       @viewing_current_user = user_subject == current_user
-      @ratings_private = user_subject.ratings_private
-      @can_view_ratings = user_subject.account_public || @viewing_current_user ||
+      @ratings_private = user_subject.ratings_private?
+      @can_view_ratings = user_subject.account_public? || @viewing_current_user ||
         user_subject.follower_approved?(current_user)
     end
     searched_ratings
@@ -153,7 +138,11 @@ class RatingsController < ApplicationController
     @viewing_display_name ||= if user_subject.present?
       user_subject.username
     else
-      (params[:user] || multi_user_searches.first).downcase
+      if multi_user_searches.include?(params[:user])
+        params[:user]
+      else
+        multi_user_searches.first
+      end.humanize.downcase
     end
   end
 
@@ -167,21 +156,28 @@ class RatingsController < ApplicationController
     end
   end
 
-  def searched_ratings
-    ratings = if viewing_display_name == "following"
+  def viewed_ratings
+    if viewing_display_name == "following"
       current_user&.following_ratings_visible || Rating.none
     elsif viewing_display_name == "all"
+      Rating
+    elsif viewing_display_name == "other users"
       Rating.where.not(user_id: current_user&.id)
     else
       @can_view_ratings ? user_subject.ratings : Rating.none
     end
+  end
+
+  def searched_ratings
+    ratings = viewed_ratings
 
     if current_topics.present?
       ratings = ratings.matching_topics(current_topics)
     end
-    if current_user.present? && TranzitoUtils::Normalize.boolean(params[:search_not_rated])
+    if current_user.present? && TranzitoUtils::Normalize.boolean(params[:search_not_rated]) && !@viewing_current_user
       ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
     end
+    ratings = ratings.display_name_search(params[:query]) if params[:query].present?
 
     if TranzitoUtils::Normalize.boolean(params[:search_disagree])
       @search_agreement = "disagree"
@@ -220,6 +216,35 @@ class RatingsController < ApplicationController
 
     @time_range_column = "created_at"
     ratings.where(@time_range_column => @time_range)
+  end
+
+  def set_rating_assigment_if_passed
+    if TranzitoUtils::Normalize.boolean(params[:search_topic_assignment])
+      topic = current_topics.any? ? current_topics : primary_topic_review&.topic
+      return unless topic.present?
+      @assigning = true
+      @assign_topics = Array(topic)
+    elsif params[:search_assign_topics].present?
+      topic = Topic.friendly_find(params[:search_assign_topics])
+      return unless topic.present?
+      @assign_topics = [topic]
+      @assigning = true
+    end
+  end
+
+  def update_ratings_with_topic(topic, included_ratings)
+    ratings_updated = 0
+    ratings_with_topic = RatingTopic.where(topic_id: topic.id, rating_id: included_ratings)
+    # These are the ratings to add topic to
+    included_ratings.where(id: rating_ids_selected - ratings_with_topic.pluck(:rating_id)).each do |rating|
+      ratings_updated += 1
+      rating.add_topic(topic)
+    end
+    ratings_with_topic.where.not(rating_id: rating_ids_selected).each do |rating_topic|
+      ratings_updated += 1
+      rating_topic.rating.remove_topic(topic)
+    end
+    ratings_updated
   end
 
   def find_and_authorize_rating

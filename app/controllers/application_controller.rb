@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   before_action :enable_rack_profiler
 
   helper_method :display_dev_info?, :user_subject, :user_root_url, :controller_namespace,
-    :current_topics, :primary_topic_review
+    :current_topics, :primary_topic_review, :default_direction, :default_column
 
   def append_info_to_payload(payload)
     super
@@ -74,6 +74,14 @@ class ApplicationController < ActionController::Base
     after_sign_in_path_for(resource) || user_root_url
   end
 
+  def default_direction
+    "desc"
+  end
+
+  def default_column
+    sortable_columns&.first
+  end
+
   protected
 
   def configure_permitted_parameters
@@ -90,7 +98,7 @@ class ApplicationController < ActionController::Base
       return current_user
     end
     store_return_to
-    redirect_to new_user_registration_path, status: :see_other
+    redirect_to new_user_session_path, status: :see_other
     false
   end
 

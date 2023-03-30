@@ -13,6 +13,7 @@ class User < ApplicationRecord
   has_many :followings, through: :user_followings, source: :following
   has_many :user_followings_approved, -> { approved }, class_name: "UserFollowing"
   has_many :followings_approved, through: :user_followings_approved, source: :following
+  has_many :followings_approved_private, -> { account_private }, through: :user_followings_approved, source: :following
   has_many :user_followers, class_name: "UserFollowing", foreign_key: :following_id, dependent: :destroy
   has_many :followers, through: :user_followers, source: :user
   has_many :user_followers_approved, -> { approved }, class_name: "UserFollowing", foreign_key: :following_id, dependent: :destroy
@@ -58,17 +59,16 @@ class User < ApplicationRecord
     username_slug
   end
 
-  # account_private
-  def account_public
+  def account_public?
     !account_private
   end
 
-  def ratings_public
-    account_public
+  def ratings_public?
+    account_public?
   end
 
-  def ratings_private
-    !ratings_public
+  def ratings_private?
+    !ratings_public?
   end
 
   # Need to pass in the timezone here ;)
@@ -107,6 +107,7 @@ class User < ApplicationRecord
     return true unless @should_update_followers
     # Inefficient, but solves the problem
     user_followers.unapproved.each { |f| f.update(updated_at: Time.current) }
+    ratings.update_all(account_public: account_public?)
   end
 
   private

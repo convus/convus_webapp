@@ -4,6 +4,7 @@ RSpec.describe Rating, type: :model do
   describe "topics" do
     let(:rating) { Rating.new }
     it "is empty" do
+      rating.set_calculated_attributes
       expect(rating.topic_names).to eq([])
       expect(rating.account_public?).to be_falsey
       expect(rating.default_attrs?).to be_truthy
@@ -81,6 +82,18 @@ RSpec.describe Rating, type: :model do
       expect(ReconcileRatingTopicsJob.jobs.count).to be > 0
       ReconcileRatingTopicsJob.new.perform(rating.id)
       expect(rating.reload.topics_text).to eq "new topic"
+    end
+  end
+
+  describe "account_public" do
+    let(:rating) { FactoryBot.create(:rating) }
+    let(:user) { rating.user }
+    it "updates after user save" do
+      expect(user.reload.account_public?).to be_truthy
+      expect(rating.reload.account_public?).to be_truthy
+      user.update(account_private: true)
+      expect(user.reload.account_public?).to be_falsey
+      expect(rating.reload.account_public?).to be_falsey
     end
   end
 
@@ -166,6 +179,23 @@ RSpec.describe Rating, type: :model do
       it "is -1000" do
         expect(rating.default_vote_score).to eq(-1000)
       end
+    end
+  end
+
+  describe "normalize_search_string and search" do
+    let!(:rating1) { FactoryBot.create(:rating, citation_title: "A cool article about important things") }
+    let!(:rating2) { FactoryBot.create(:rating, citation_title: "Another article about other things") }
+    let!(:rating3) { FactoryBot.create(:rating, citation_title: nil, submitted_url: "https://example.com/cool-stuff") }
+    it "finds the rating" do
+      expect(Rating.normalize_search_string(" ")).to eq ""
+      expect(Rating.normalize_search_string(" S ")).to eq "S"
+      expect(Rating.normalize_search_string(" S B\nT\t")).to eq "S B T"
+      expect(Rating.display_name_search.pluck(:id)).to match_array([rating1.id, rating2.id, rating3.id])
+      expect(Rating.display_name_search(" ").pluck(:id)).to match_array([rating1.id, rating2.id, rating3.id])
+      expect(Rating.display_name_search("article").pluck(:id)).to match_array([rating1.id, rating2.id])
+      expect(Rating.display_name_search(" ARTIcle ").pluck(:id)).to match_array([rating1.id, rating2.id])
+      expect(Rating.display_name_search("Another  article ").pluck(:id)).to match_array([rating2.id])
+      expect(Rating.display_name_search("cool ").pluck(:id)).to match_array([rating1.id, rating3.id])
     end
   end
 end

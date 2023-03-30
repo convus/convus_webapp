@@ -6,10 +6,14 @@
 <%= hidden_field_tag :period, params[:period] %>
 <%= hidden_field_tag :end_time, params[:end_time] %>
 <%= hidden_field_tag :start_time, params[:start_time] %>
-<%# convus search keys %>
-<%= hidden_field_tag :user, params[:user] %>
-<% skip_topics ||= false %>
 
+<%# convus search keys %>
+<% skip_user ||= false %>
+<% unless skip_user %>
+  <%= hidden_field_tag :user, params[:user] %>
+<% end %>
+
+<% skip_topics ||= false %>
 <% unless skip_topics %>
   <%= hidden_field_tag :search_topics, params[:search_topics] %>
 <% end %>

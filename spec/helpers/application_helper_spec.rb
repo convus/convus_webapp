@@ -138,4 +138,28 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "sortable_params" do
+    let(:params) { ActionController::Parameters.new(passed_params) }
+    let(:passed_params) { {user: "something", per_page: 12, other: "Thing"} }
+    it "returns as expected" do
+      expect_hashes_to_match(sortable_params, passed_params.except(:other))
+      # Verify indifferent access
+      expect(sortable_params[:user]).to eq "something"
+    end
+    context "with array parameters" do
+      let(:passed_params) { {search_topics: ["one", "another topic"], search_other: "example", render_chart: ""} }
+      it "returns as expected" do
+        expect_hashes_to_match(sortable_params, passed_params.except(:render_chart))
+      end
+    end
+    context "default sort and direction" do
+      let(:default_direction) { "desc" }
+      let(:default_column) { "created_at" }
+      let(:passed_params) { {sort: "created_at", sort_direction: "desc", search_other: "example", user: "other", render_chart: "", period: ""} }
+      it "returns with default sort and direction" do
+        expect_hashes_to_match(sortable_params, {search_other: "example", user: "other"})
+      end
+    end
+  end
 end

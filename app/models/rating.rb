@@ -43,6 +43,8 @@ class Rating < ApplicationRecord
   scope :changed_opinion, -> { where(changed_opinion: true) }
   scope :significant_factual_error, -> { where(significant_factual_error: true) }
   scope :not_understood, -> { where(not_understood: true) }
+  scope :account_public, -> { where(account_public: true) }
+  scope :account_private, -> { where(account_public: false) }
 
   def self.quality_humanized(str)
     return nil if str.blank?
@@ -62,6 +64,16 @@ class Rating < ApplicationRecord
 
   def self.matching_topics(topic_ids)
     joins(:rating_topics).where(rating_topics: {topic_id: Array(topic_ids)})
+  end
+
+  def self.normalize_search_string(str)
+    (str || "").strip.gsub(/\s+/, " ")
+  end
+
+  def self.display_name_search(str = nil)
+    str = normalize_search_string(str)
+    return all if str.blank?
+    where("display_name ILIKE ?", "%#{str}%")
   end
 
   def edit_title?
@@ -131,10 +143,6 @@ class Rating < ApplicationRecord
     errors.add(:submitted_url, "'#{submitted_url}' is not valid")
   end
 
-  def account_public?
-    user.present? && user.account_public
-  end
-
   def account_private?
     !account_public?
   end
@@ -160,6 +168,7 @@ class Rating < ApplicationRecord
     self.created_date ||= self.class.date_in_timezone(created_at, timezone)
     self.topics_text = nil if topics_text.blank?
     self.error_quotes = nil if error_quotes.blank?
+    self.account_public = calculated_account_public?
   end
 
   def perform_rating_created_event_job
@@ -175,5 +184,11 @@ class Rating < ApplicationRecord
   # cached so we can order by it
   def calculated_display_name
     citation_title.presence || citation&.display_name || "missing url"
+  end
+
+  private
+
+  def calculated_account_public?
+    user.present? && user.account_public?
   end
 end
