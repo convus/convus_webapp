@@ -77,18 +77,12 @@
             <td class="hidden md:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth"><em class="less-strong"><%= rating %></em></td>
             <td colspan="<%= colspan %>"></td>
           <% else %>
-            <%# HACK HACK HACK, super duper gross - passing topic_review_votes %>
-            <% if rating.is_a?(TopicReviewVote) %>
-              <% rank = rating.vote_score %>
-              <% rating = rating.rating %>
-            <% end %>
             <% private_user = render_user && hide_private_users && rating.account_private? %>
             <% show_private_user = private_user && shown_private_user_ids.include?(rating.user_id) %>
             <% if render_assign_topic %>
               <td><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(assign_topic), class: "toggleableCheck" %></td>
             <% elsif render_ranking %>
-              <%# conditionally assign in case topic_review_votes are passed %>
-              <% rank ||= ranking_count + ranking_modifier - i %>
+              <% rank = ranking_count + ranking_modifier - i %>
               <td class="rank-cell"><%= number_field_tag "rank_rating_#{rating.id}", rank, step: 1, class: "form-control w-8 border-slate-900 p-0 text-center leading-none" %></td>
             <% end %>
             <td>

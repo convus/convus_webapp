@@ -5,7 +5,8 @@ RSpec.describe TopicReviewCitation, type: :model do
     let(:topic_review_citation) { FactoryBot.create(:topic_review_citation) }
     it "is valid" do
       expect(topic_review_citation).to be_valid
-      expect(topic_review_citation.vote_score).to eq 0
+      expect(topic_review_citation.reload.topic_review_votes.count).to eq 0
+      expect(topic_review_citation.vote_score).to eq -1000
       expect(topic_review_citation.vote_score_manual).to be_nil
       expect(topic_review_citation.auto_score?).to be_truthy
     end
@@ -54,26 +55,5 @@ RSpec.describe TopicReviewCitation, type: :model do
         expect(topic_review_citation.vote_score).to eq 501
       end
     end
-    # describe "2 low quality" do
-    #   let(:topic_review_vote2) { FactoryBot.create(:topic_review_vote, topic: topic, user: user, quality: :quality_low) }
-    #   let(:topic_review_vote3) { FactoryBot.create(:topic_review_vote, topic: topic, user: user, quality: :quality_low) }
-    #   let(:vote_ids) { [topic_review_vote.id, topic_review_vote2.id, topic_review_vote3.id] }
-    #   it "has expected scores" do
-    #     expect(topic_review_vote.reload.vote_score).to eq(1001)
-    #     expect(topic_review_vote2.reload.vote_score_calculated).to eq(-1001)
-    #     expect(topic_review_vote2.vote_score).to eq(-1001)
-    #     expect(topic_review_vote3.reload.vote_score_calculated).to eq(-1001)
-    #     expect(topic_review_vote3.vote_score).to eq(-1001)
-    #     user_topic_votes = user.reload.topic_review_votes.where(topic_review_id: topic_review_vote.topic_review_id)
-    #     expect(user_topic_votes.vote_ordered.pluck(:id)).to eq vote_ids
-    #     expect(topic_review_vote.reload.vote_score_calculated).to eq(-1003)
-    #     topic_review_vote.update(updated_at: Time.current)
-    #     expect(topic_review_vote.vote_score).to eq(-1003)
-    #     topic_review_vote2.reload.update(updated_at: Time.current)
-    #     expect(topic_review_vote2.vote_score).to eq(-1002)
-    #     topic_review_vote3.reload.update(updated_at: Time.current)
-    #     expect(topic_review_vote3.vote_score).to eq(-1001)
-    #   end
-    # end
   end
 end

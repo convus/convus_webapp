@@ -11,7 +11,7 @@ class Admin::TopicReviewCitationsController < Admin::BaseController
   end
 
   def update
-    if @topic_review.update(permitted_params)
+    if @topic_review_citation.update(permitted_params)
       flash[:success] = "Review updated"
       redirect_to admin_topic_reviews_path, status: :see_other
     else
@@ -22,7 +22,7 @@ class Admin::TopicReviewCitationsController < Admin::BaseController
   private
 
   def permitted_params
-    params.require(:topic_review).permit(:topic_name, :timezone, :start_at_in_zone, :end_at_in_zone)
+    params.require(:topic_review_citation).permit(:vote_score_manual)
   end
 
   def find_topic_review_citation

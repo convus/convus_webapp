@@ -48,7 +48,7 @@ class TopicReviewCitation < ApplicationRecord
   end
 
   def vote_score_calculated
-    return 0 if topic_review_votes.none?
+    return -Rating::RANK_OFFSET if topic_review_votes.none?
     topic_review_votes.sum(:vote_score) / topic_review_votes.count
   end
 end

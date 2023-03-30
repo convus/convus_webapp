@@ -1,7 +1,111 @@
-<h1 class="standard-top-offset mb-2">Edit Topic Review Citation</h1>
-<h3 class="mb-2">Topic review: <%= link_to @topic_review_citation.topic_name, edit_admin_topic_review_path(@topic_review.to_param) %></h3>
-<h3 class="mb-2">Citation: <%= citation_display(@topic_review_citation.citation) %></h3>
+<h1 class="standard-top-offset mb-4">Edit Topic Review Citation</h1>
+<h3 class="mb-4">Topic review: <%= link_to @topic_review_citation.topic_name, edit_admin_topic_review_path(@topic_review.to_param) %></h3>
+<h3 class="mb-4">Citation: <%= citation_display(@topic_review_citation.citation) %></h3>
 
-<h2 class="standard-top-offset mb-2">Ratings</h2>
+<% topic_review ||= @topic_review %>
+<% editing_topic_review = topic_review.id.present? %>
+<% form_url = editing_topic_review ? admin_topic_review_url(topic_review) : admin_topic_reviews_url %>
+<%= form_with(model: @topic_review_citation, url: admin_topic_review_citation_url(@topic_review_citation), method: :patch, class: "pb-2") do |f| %>
+  <%= render partial: "/shared/errors", locals: {obj: @topic_review_citation, name: "Topic Review Citation"} %>
+  <div class="row sm:grid-cols-2 standard-top-offset">
+    <div class="col">
+      <div class="form-row">
+        <%= f.label :vote_score_manual do %>
+          Manual score
+          <small class="less-strong">make blank to use auto score</small>
+        <% end %>
+        <%= f.text_field :vote_score_manual, class: "form-control" %>
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-row">
+        <label>Calculated vote score</label>
+        <input class="form-control" disabled="true" type="text" value="<%= @topic_review_citation.vote_score_calculated %>" name="">
+      </div>
+    </div>
+  </div>
+  <div class="form-row-btn">
+    <%= f.submit "save", class: "btn" %>
+  </div>
+<% end %>
 
-<%= render partial: "/ratings/table", locals: {ratings: @topic_review_votes, skip_sortable: true, render_ranking: true, render_user: true} %>
+
+<h2 class="standard-top-offset mb-2">
+  Ratings
+  <%= admin_number_display(@topic_review_votes.count) %>
+</h2>
+
+<% skip_sortable ||= true %>
+<% edit_ratings ||= false %>
+
+<div class="">
+  <table class="table table-sm break-words max-w-full">
+    <thead class="sortable">
+      <tr>
+        <th>Score</th>
+        <th><small>Manual?</small></th>
+        <th>
+          <%= sortable "created_at", "Rated", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          <%= sortable "user_id", skip_sortable: skip_sortable %>
+        </th>
+        <!-- <th class="hidden md:table-cell">Topics</th> -->
+        <th class="break-normal text-center border-r">
+          <span title="Agreement">A<span class="hidden md:inline">greement</span></span>
+        </th>
+        <th class="break-normal text-center border-r">
+          <span title="Quality">Q<span class="hidden md:inline">uality</span></span>
+        </th>
+        <th class="break-normal text-center border-r">
+          <span title="Learned something?">L<span class="hidden md:inline">earned <br>
+              something?</span></span>
+        </th>
+        <th class="break-normal text-center border-r">
+          <span title="Changed opinion?">C<span class="hidden md:inline">hanged <br>
+              opinion?</span></span>
+        </th>
+        <th class="break-normal text-center border-r">
+          <span title="Didn't understand?">D<span class="hidden md:inline">idn't <br>
+              understand?</span></span>
+        </th>
+        <th class="break-normal text-center border-r">
+          <span title="Error?">E<span class="hidden md:inline">rror?</span></span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @topic_review_votes.each do |topic_review_vote| %>
+        <% rating = topic_review_vote.rating %>
+        <tr>
+          <td><%= topic_review_vote.vote_score %></td>
+          <td><%= check_mark if topic_review_vote.manual_score? %></td>
+          <td>
+            <span class="convertTime"><%= l(rating.created_at, format: :convert_time) %></span>
+          </td>
+          <td>
+            <%= link_to rating.user&.username, ratings_path(sortable_params.merge(user: rating.user.username)) %>
+          <td class="text-center border-r">
+            <%= agreement_display(rating.agreement) %>
+          </td>
+          <td class="text-center border-r">
+            <%= quality_display(rating.quality) %>
+          </td>
+          <td class="text-center border-r">
+            <%= learned_something_display(rating.learned_something?) %>
+          </td>
+          <td class="text-center border-r">
+            <%= changed_opinion_display(rating.changed_opinion?) %>
+          </td>
+          <td class="text-center border-r">
+            <%= not_understood_display(rating.not_understood?) %>
+          </td>
+          <td class="text-center border-r">
+            <%= significant_factual_error_display(rating.significant_factual_error?) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
