@@ -21,6 +21,7 @@ RSpec.describe TopicReviewVote, type: :model do
         expect(topic_review_vote2.topic_review_id).to eq topic_review_vote.topic_review_id
         expect(topic_review_vote2.user_id).to_not eq topic_review_vote.user_id
         expect(topic_review_vote2.rating_id).to_not eq topic_review_vote.rating_id
+        expect(TopicReviewVote.usernames).to eq([topic_review_vote.username, topic_review_vote2.username])
       end
     end
   end

@@ -1,5 +1,9 @@
-<h1 class="standard-top-offset mb-4">Edit Topic Review</h1>
-<h3 class="mb-8">Topic: <%= link_to @topic_review.topic.name, edit_admin_topic_path(@topic_review.topic.to_param) %></h3>
+<h1 class="standard-top-offset mb-4">
+  Edit Topic Review
+  <small class="less-strong"><%= link_to "non admin view", review_path(@topic_review.id) %></small>
+</h1>
+<h3 class="mb-4">Topic: <%= link_to @topic_review.topic.name, edit_admin_topic_path(@topic_review.topic.to_param) %></h3>
+
 <%= render partial: "/admin/topic_reviews/form" %>
 
 <h3 class="standard-top-offset mb-2">Topic Review's Citations</h3>

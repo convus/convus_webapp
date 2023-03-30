@@ -38,6 +38,16 @@ class TopicReviewVote < ApplicationRecord
     (score > Rating::RANK_OFFSET) ? "required" : "constructive"
   end
 
+  # Hack, I think there is a better way?
+  def self.usernames
+    User.where(id: distinct.pluck(:user_id)).order(:username)
+      .distinct.pluck(:username).compact
+  end
+
+  def username
+    user&.username
+  end
+
   def topic
     topic_review&.topic
   end

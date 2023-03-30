@@ -13,7 +13,7 @@ class Admin::TopicReviewCitationsController < Admin::BaseController
   def update
     if @topic_review_citation.update(permitted_params)
       flash[:success] = "Review Citation updated"
-      redirect_to admin_topic_review_path(@topic_review_citation.topic_review), status: :see_other
+      redirect_to edit_admin_topic_review_path(@topic_review_citation.topic_review), status: :see_other
     else
       render :edit, status: :see_other
     end
