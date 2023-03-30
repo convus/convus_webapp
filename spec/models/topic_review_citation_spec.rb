@@ -1,0 +1,25 @@
+require 'rails_helper'
+
+RSpec.describe TopicReviewCitation, type: :model do
+  describe "factory" do
+    let(:topic_review_citation) { FactoryBot.create(:topic_review_citation) }
+    it "is valid" do
+      expect(topic_review_citation).to be_valid
+      expect(topic_review_citation.vote_score).to eq 0
+      expect(topic_review_citation.vote_score_manual).to be_nil
+      expect(topic_review_citation.auto_score?).to be_truthy
+    end
+    context "topic_review_vote" do
+      let(:topic_review_vote) { FactoryBot.build(:topic_review_vote) }
+      let(:topic_review_citation) { topic_review_vote.topic_review_citation }
+      it "creates" do
+        expect {
+          topic_review_vote.save
+        }.to change(TopicReviewCitation, :count).by 1
+        expect(topic_review_citation).to be_valid
+        expect(topic_review_citation.reload.topic_review_votes.count).to eq 1
+        expect(TopicReview.count).to eq 1
+      end
+    end
+  end
+end
