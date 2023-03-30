@@ -43,8 +43,7 @@ class Citation < ApplicationRecord
   end
 
   def self.normalized_url(str)
-    s = UrlCleaner.normalized_url(str)
-    return nil unless s.present?
+    UrlCleaner.normalized_url(str)
   end
 
   def self.url_to_components(str)

@@ -88,7 +88,7 @@ RSpec.describe UrlCleaner do
       og = "https://en.m.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10"
       target = "https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
       expect(subject.without_anchor(og)).to eq "https://en.m.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
-      # expect(subject.normalized_url(og.gsub("https://en.", "")).to eq "http://en.wikipedia.org/wiki/Illegal_number?somethingimportant=true"
+      expect(subject.normalized_url(og.gsub("https://en.", ""))).to eq "http://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
       expect(subject.normalized_url(og)).to eq target
     end
     it "doesn't remove non mobile m subdomains" do
