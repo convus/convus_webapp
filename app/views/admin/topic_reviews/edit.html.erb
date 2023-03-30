@@ -9,3 +9,17 @@
 </div>
 
 <%= render partial: "/admin/topic_review_citations/table", locals: {topic_review_citations: @topic_review_citations, skip_sortable: true} %>
+
+<p class="standard-top-offset mb-2">
+  <strong><%= admin_number_display(@topic_review_votes.count) %></strong>
+  <%= "Rating".pluralize(@topic_review_votes.count) %>
+  <% if user_subject.present? %>
+    for <%= user_subject.username %>
+    <small class="less-strong">
+      show ratings for
+      <%= link_to "all users", url_for(sortable_params.merge(user: nil)) %>
+    </small>
+  <% end %>
+</p>
+
+<%= render partial: "/admin/topic_reviews/votes_table", locals: {topic_review_votes: @topic_review_votes, skip_article: true} %>
