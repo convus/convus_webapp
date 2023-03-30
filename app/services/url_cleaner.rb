@@ -19,13 +19,16 @@ class UrlCleaner
 
     def pretty_url(str)
       return str unless str.present?
-      without_utm_or_anchor(str)
+      normalized_url(str)
         .gsub(/\Ahttps?:\/\//i, "") # Remove https
         .gsub(/\Awww\./i, "") # Remove www
     end
 
-    def without_utm_or_anchor(str)
-      without_utm(without_anchor(str))
+    def normalized_url(str)
+      return nil unless str.present?
+      with_http(
+        without_mobile_parameters(
+          without_utm(without_anchor(str))))
     end
 
     def without_utm(str)
@@ -37,6 +40,13 @@ class UrlCleaner
     def without_anchor(str)
       return nil unless str.present?
       str.strip.gsub(/#.*\z/, "")
+    end
+
+    # Currently only handling wikipedia. Will add more as they come!
+    def without_mobile_parameters(str)
+      return str unless str.present? && str.match?(/(\A|\.)m\.wikipedia\.org/i)
+      str.gsub(/(\A|\.)m\.wikipedia\.org/i, ".wikipedia.org")
+        .gsub(/\A\.wikipedia\.org/, "en.wikipedia.org") # Default to english wikipedia if missing language
     end
 
     def with_http(str)

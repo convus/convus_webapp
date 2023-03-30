@@ -42,7 +42,7 @@ class Citation < ApplicationRecord
   end
 
   def self.normalized_url(str)
-    s = UrlCleaner.without_utm_or_anchor(str)
+    s = UrlCleaner.normalized_url(str)
     return nil unless s.present?
     s.start_with?(/http/i) ? s : "http://#{s}"
   end
