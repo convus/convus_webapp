@@ -79,7 +79,7 @@ RSpec.describe TopicReviewCitation, type: :model do
     end
   end
 
-  describe "creation" do
+  describe "creation via ReconcileRatingTopicsJob" do
     let(:topic_review) { FactoryBot.create(:topic_review_active) }
     let!(:topic) { topic_review.topic }
     let!(:rating) { FactoryBot.create(:rating, quality: :quality_high) }

@@ -157,6 +157,31 @@ RSpec.describe ReconcileRatingTopicsJob, type: :job do
           expect(citation.reload.topics_active.pluck(:id)).to eq([])
         end
       end
+      context "multiple ratings and topics" do
+        let(:rating3) { FactoryBot.create(:rating_with_topic, submitted_url: citation.url) }
+        it "doesn't re-enqueue endlessly" do
+          expect(rating2.reload.topics.pluck(:id)).to eq([topic1.id])
+          expect(rating2.citation_id).to eq rating.citation_id
+          expect(instance.active_citation_topics(rating).pluck(:id)).to eq([topic1.id])
+          expect(instance.topics_match_citation_topics?(rating)).to be_truthy
+          expect(instance.topics_match_citation_topics?(rating2)).to be_falsey
+          expect(instance.topics_match_citation_topics?(rating3)).to be_falsey
+          Sidekiq::Worker.clear_all
+          # pp "------------------------ rating3"
+          expect {
+            instance.perform(rating3.id)
+          }.to change(described_class.jobs, :count).by(2)
+          expect(ReconcileRatingTopicsJob.jobs.map { |j| j["args"] }.flatten).to match_array([rating.id, rating2.id])
+          instance.perform(rating.id)
+          Sidekiq::Worker.clear_all
+          # pp "here here here"
+          instance.perform(rating2.id)
+          expect(ReconcileRatingTopicsJob.jobs.count).to eq 0
+          expect(instance.topics_match_citation_topics?(rating.reload)).to be_truthy
+          expect(instance.topics_match_citation_topics?(rating2.reload)).to be_truthy
+          expect(instance.topics_match_citation_topics?(rating3.reload)).to be_truthy
+        end
+      end
     end
   end
 end
