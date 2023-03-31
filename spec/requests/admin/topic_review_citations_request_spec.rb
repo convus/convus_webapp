@@ -33,7 +33,7 @@ RSpec.describe base_url, type: :request do
         expect(response).to render_template("admin/topic_review_citations/edit")
       end
       context "with topic review votes" do
-        let!(:topic_review_vote) { FactoryBot.create(:topic_review_vote, topic_review: topic_review, citation: topic_review_citation.citation) }
+        let!(:topic_review_vote) { FactoryBot.create(:topic_review_vote_with_citation, topic_review: topic_review, citation: topic_review_citation.citation) }
         it "renders them" do
           expect(topic_review_citation.reload.topic_review_votes.pluck(:id)).to eq([topic_review_vote.id])
           get edit_path

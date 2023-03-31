@@ -23,6 +23,7 @@ RSpec.describe ReconcileRatingTopicsJob, type: :job do
       expect(topic.name).to eq "Some cool topic"
       expect(rating.reload.topics_text).to eq topic.name
       expect(rating.topics.pluck(:id)).to eq([topic.id])
+      expect(citation.reload.topics.pluck(:id)).to eq([topic.id])
 
       # And delete it!
       expect {
@@ -45,6 +46,7 @@ RSpec.describe ReconcileRatingTopicsJob, type: :job do
 
         expect(rating.reload.topics_text).to eq "First topic\nSecond topic\nThird Topic"
         expect(Topic.count).to eq 3
+        expect(citation.reload.topics.count).to eq 3
         # Update a topic without a slug change
         topic = Topic.friendly_find("third topic")
         expect {

@@ -21,5 +21,13 @@ FactoryBot.define do
         quality: quality,
         submitted_url: citation.url)
     end
+
+    trait :with_topic_review_citation do
+      after(:create) do |vote, _evaluator|
+        vote.update_topic_review_citation
+      end
+    end
+
+    factory :topic_review_vote_with_citation, traits: [:with_topic_review_citation]
   end
 end
