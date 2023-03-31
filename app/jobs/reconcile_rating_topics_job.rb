@@ -1,12 +1,12 @@
 class ReconcileRatingTopicsJob < ApplicationJob
   # Enable passing in object, it's run inline sometimes
   def perform(id = nil, rating = nil)
+    return # Temporary block
     rating ||= Rating.find_by_id(id)
     return if rating.blank?
     topics = rating.topic_names.map { |t| Topic.find_or_create_for_name(t) }
     topics += active_citation_topics(rating)
     topic_ids = topics.map(&:id).sort # need to sort for comparison
-    return if topics_match_citation_topics?(rating, topic_ids)
     rating.rating_topics.where.not(topic_id: topic_ids).destroy_all
     (topic_ids - rating.rating_topics.pluck(:topic_id)).each do |i|
       RatingTopic.create(rating_id: rating.id, topic_id: i)
@@ -56,6 +56,6 @@ class ReconcileRatingTopicsJob < ApplicationJob
 
   def topics_match_citation_topics?(rating, target_topic_ids = nil)
     target_topic_ids ||= rating.citation.topics_active.pluck(:id).sort
-    target_topic_ids == rating.topics.reorder(:id).pluck(:id)
+    target_topic_ids == rating.topics.pluck(:id).sort
   end
 end
