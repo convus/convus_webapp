@@ -56,6 +56,10 @@ class TopicReviewVote < ApplicationRecord
     topic_review&.topic
   end
 
+  def topic_id
+    topic&.id
+  end
+
   def topic_name
     topic&.name
   end
@@ -84,8 +88,6 @@ class TopicReviewVote < ApplicationRecord
     # It's possible that rating will use updated_at in the future
     self.rating_at = rating&.created_at || Time.current
     self.rank = self.class.vote_score_rank(vote_score)
-    self.topic_review_citation ||= TopicReviewCitation.where(topic_review: topic_review, citation: citation)
-      .first_or_create
   end
 
   def review_user_votes
@@ -98,6 +100,13 @@ class TopicReviewVote < ApplicationRecord
 
   def prev_topic_user_ratings
     id.present? ? topic_user_ratings.where("id < ?", rating_id) : topic_user_ratings
+  end
+
+  # This is called from ReconcileRatingTopicsJob. It recalculates the topic review citation
+  def update_topic_review_citation!
+    trc = TopicReviewCitation.find_or_create_for_vote(self)
+    update(topic_review_citation_id: trc.id) if topic_review_citation_id != trc.id
+    trc
   end
 
   def vote_score_calculated

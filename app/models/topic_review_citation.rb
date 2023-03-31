@@ -18,8 +18,19 @@ class TopicReviewCitation < ApplicationRecord
   scope :manual_score, -> { where.not(vote_score_manual: nil) }
   scope :auto_score, -> { where(vote_score_manual: nil) }
 
+  def self.find_or_create_for_vote(topic_review_vote)
+    topic_review_citation = where(citation_id: topic_review_vote.citation.id,
+      topic_review_id: topic_review_vote.topic_review.id).first_or_create
+    topic_review_citation.update(updated_at: Time.current) if topic_review_citation.needs_update?
+    topic_review_citation
+  end
+
   def topic
     topic_review&.topic
+  end
+
+  def topic_id
+    topic&.id
   end
 
   def topic_name
@@ -49,6 +60,10 @@ class TopicReviewCitation < ApplicationRecord
     self.display_name = citation.display_name if citation.present?
     self.vote_score = vote_score_manual || vote_score_calculated
     self.rank = TopicReviewVote.vote_score_rank(vote_score)
+  end
+
+  def needs_update?
+    auto_score? && vote_score_calculated != vote_score
   end
 
   def vote_score_calculated
