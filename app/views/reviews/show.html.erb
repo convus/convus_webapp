@@ -23,7 +23,19 @@
   </h2>
 
   <% if @topic_review.ended? %>
-    <%= render partial: "/shared/citations_list", locals: {kind: "required", topic_review_citations: @topic_review_citations.required} %>
+    <div class="max-w-prose standard-top-offset">
+      <%= render partial: "/shared/best_citations_list", locals: {topic_review_citations: @topic_review_citations.required} %>
+    </div>
+    <% if @topic_review_citations.constructive.any? %>
+      <div class="standard-top-offset">
+        <h3>Other articles users found useful:</h3>
+        <ul class="list-disc pl-5">
+          <% @topic_review_citations.constructive.each do |trc| %>
+            <li class="py-1 px-2 max-w-prose"><%= citation_display(trc.citation) %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
     <%# also add in recommended %>
   <% elsif @topic_review.pending? %>
 

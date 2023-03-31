@@ -38,14 +38,14 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   describe "rating_display" do
-    let(:target) { "<span class=\"less-strong\">missing url</span>" }
+    let(:target) { "<span class=\" less-strong\">missing url</span>" }
     it "returns target" do
       rating = Rating.new
       rating.display_name = rating.calculated_display_name
       expect(rating_display(rating)).to eq target
     end
     context "with rating" do
-      let(:target) { "<a title=\"#{citation.pretty_url}\" class=\"break-words\" href=\"#{rating.submitted_url}\">texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as...</a>" }
+      let(:target) { "<a class=\" break-words\" title=\"#{citation.pretty_url}\" href=\"#{rating.submitted_url}\">texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as...</a>" }
       let(:citation) { rating.citation }
       let(:rating) { FactoryBot.create(:rating, submitted_url: "https://www.texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as%20sent%20(02539672xD2C78)%20(002).pdf") }
       it "returns target" do
@@ -55,7 +55,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
     context "with rating with title" do
-      let(:target) { "<a class=\"break-words\" href=\"https://example.com\">Somewhere</a>" }
+      let(:target) { "<a class=\" break-words\" title=\"Somewhere\" href=\"https://example.com\">Somewhere</a>" }
       let(:rating) { Rating.new(submitted_url: "https://example.com", citation_title: "Somewhere") }
       it "returns target" do
         rating.display_name = rating.calculated_display_name
@@ -65,10 +65,16 @@ RSpec.describe ApplicationHelper, type: :helper do
   end
 
   describe "citation_display" do
-    let(:target) { "<a class=\"break-words\" href=\"https://example.com\">Somewhere</a>" }
+    let(:target) { "<a class=\" break-words\" title=\"Somewhere\" href=\"https://example.com\">Somewhere</a>" }
     let(:citation) { Citation.new(url: "https://example.com", title: "Somewhere") }
     it "renders" do
       expect(citation_display(citation)).to eq target
+    end
+    context "passed class" do
+      let(:target) { "<a class=\"otherClass break-words\" title=\"Somewhere\" href=\"https://example.com\">Somewhere</a>" }
+      it "renders" do
+        expect(citation_display(citation, {class: "otherClass"})).to eq target
+      end
     end
   end
 

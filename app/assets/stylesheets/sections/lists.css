@@ -1,0 +1,11 @@
+.list-striped {
+  @apply border-x border-b border-gray-200;
+
+  & li {
+    @apply border-t border-inherit;
+  }
+
+  & li:nth-of-type(odd) {
+    @apply bg-gray-50;
+  }
+}

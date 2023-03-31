@@ -1,9 +1,5 @@
-<% valid_kinds = %w[recommended required not_recommended] %>
-<% kind ||= valid_kinds.first %>
-<% kind = valid_kinds.first unless valid_kinds.include?(kind) %>
 <% topic_review_citations ||= @topic_review_citations %>
-<% title ||= "Best articles" if kind == "required" %>
-<% title ||= "KIND: #{kind}" %>
+<% title ||= "Best articles" %>
 
 <div class="border border-gray-200">
   <h3 class="pt-2 pb-1.5 px-2.5"><%= title %></h3>
