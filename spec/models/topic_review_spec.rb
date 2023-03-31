@@ -18,6 +18,12 @@ RSpec.describe TopicReview, type: :model do
         expect(topic_review.status).to eq "active"
       end
     end
+    context "with start_at and not end" do
+      let(:topic_review) { FactoryBot.create(:topic_review, start_at: Time.current + 1.day) }
+      it "sets end_at" do
+        expect(topic_review.reload.end_at).to be_within(5).of(topic_review.start_at + 4.days)
+      end
+    end
     context "topic_review future" do
       let(:topic_review) { FactoryBot.create(:topic_review, start_at: Time.current + 1.day, end_at: Time.current + 3.days) }
       it "is valid" do

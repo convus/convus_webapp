@@ -15,6 +15,7 @@ class ReviewsController < ApplicationController
   def show
     @topic_review_votes = user_topic_review_votes.vote_ordered
     @action_display_name = @topic_review.topic_name
+    @topic_review_citations = @topic_review.topic_review_citations
   end
 
   def update

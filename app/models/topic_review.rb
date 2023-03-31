@@ -2,6 +2,7 @@ class TopicReview < ApplicationRecord
   include FriendlyFindable
 
   STATUS_ENUM = {pending: 0, active: 1, ended: 2}.freeze
+  STANDARD_PERIOD = 4.days
 
   belongs_to :topic
 
@@ -55,6 +56,7 @@ class TopicReview < ApplicationRecord
     end
     self.topic_name = topic&.name if topic.present?
     self.slug = Slugifyer.slugify(topic_name)
+    self.end_at ||= start_at + STANDARD_PERIOD if start_at.present?
     # Reverse the times if they should be reversed
     if start_at.present? && end_at.present? && end_at < start_at
       new_start = end_at

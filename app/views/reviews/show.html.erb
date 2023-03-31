@@ -1,31 +1,53 @@
 <%= content_for :main_wrapper_class, "container-padded" %>
 <div class="large-width-container standard-top-offset">
-  <h1 class="">
-    The current topic being reviewed is
-    <%= topic_review_display(@topic_review) %>
+  <h1 class="mb-4">
+    Review of <%= topic_review_display(@topic_review) %>
   </h1>
-  <p class="mt-4 mb-4">
-    This review will end
-    <span class="convertTime withPreposition"><%= l(@topic_review.end_at || Time.current + 1.week, format: :convert_time) %></span>.
-  </p>
-  <p class="mt-2 mb-4">
-    Want help finding articles on <%= @topic_review.topic_name %>? Check out articles other people have
-    <%= link_to "rated on this topic", ratings_path(search_topics: @topic_review.slug) %> to get started.
-  </p>
-
-  <p class="mb-4">
-    <% if current_user.blank? %>
-      After you have rated some articles, select
-    <% elsif @topic_review_votes.blank? %>
-      You haven't marked any ratings applicable to <%= @topic_review.topic_name %> yet. Select
+  <h2 class="mb-4">
+    This topic review
+    <% if @topic_review.pending? %>
+      <% if @topic_review.start_at.present? %>
+        is scheduled to start
+        <span class="convertTime withPreposition"><%= l(@topic_review.start_at, format: :convert_time) %></span>.
+      <% else %>
+        isn't scheduled to start <small>email <a href="mailto:support@convus.org">support@convus.org</a> if you have questions</small>.
+      <% end %>
     <% else %>
-      Select
+      <% if @topic_review.active? %>
+        is <strong>active</strong>. Review ends
+      <% else %>
+        ended
+      <% end %>
+      <span class="convertTime withPreposition"><%= l(@topic_review.end_at || Time.current + 1.week, format: :convert_time) %></span>.
     <% end %>
-    <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topics: @topic_review&.slug) %> that apply to this topic and rank them on this page.
-  </p>
+  </h2>
+
+  <% if @topic_review.ended? %>
+    <%= render partial: "/shared/citations_list", locals: {kind: "required", topic_review_citations: @topic_review_citations.required} %>
+    <%# also add in recommended %>
+  <% elsif @topic_review.pending? %>
+
+  <% else %>
+
+    <p class="mb-4">
+      Want help finding articles on <%= @topic_review.topic_name %>? Check out articles other people have
+      <%= link_to "rated on this topic", ratings_path(search_topics: @topic_review.slug) %> to get started.
+    </p>
+
+    <p class="mb-4">
+      <% if current_user.blank? %>
+        After you have rated some articles, select
+      <% elsif @topic_review_votes.blank? %>
+        You haven't marked any ratings applicable to <%= @topic_review.topic_name %> yet. Select
+      <% else %>
+        Select
+      <% end %>
+      <%= link_to "your ratings", ratings_path(user: "current_user", search_assign_topics: @topic_review&.slug) %> that apply to this topic and rank them on this page.
+    </p>
+  <% end %>
 </div>
 
-<% if current_user.present? && @topic_review_votes.present? %>
+<% if @topic_review.active? && current_user.present? && @topic_review_votes.present? %>
   <% topic_review ||= @topic_review %>
   <% topic_review_votes ||= @topic_review_votes %>
   <%= form_tag review_path(topic_review.slug), method: :patch, class: "" do %>

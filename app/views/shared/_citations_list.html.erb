@@ -1,0 +1,8 @@
+<% valid_kinds = %w[recommended required not_recommended] %>
+<% kind ||= valid_kinds.first %>
+<% kind = valid_kinds.first unless valid_kinds.include?(kind) %>
+
+<div class="border border-gray-200">
+  <h3 class="border-b border-gray-200 py-1 px-2"><%= kind %></h3>
+  list
+</div>
