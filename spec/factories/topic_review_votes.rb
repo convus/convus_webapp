@@ -24,7 +24,7 @@ FactoryBot.define do
 
     trait :with_topic_review_citation do
       after(:create) do |vote, _evaluator|
-        vote.update_topic_review_citation!
+        vote.update_topic_review_citation
       end
     end
 

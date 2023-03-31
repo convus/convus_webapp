@@ -17,7 +17,7 @@ class ReconcileRatingTopicsJob < ApplicationJob
     TopicReview.active.where(topic_id: topic_ids).pluck(:id).each do |ti_id|
       trv = TopicReviewVote.where(rating_id: rating.id, topic_review_id: ti_id)
         .first_or_create
-      trv.update_topic_review_citation!
+      trv.update_topic_review_citation
     end
 
     # Delete any votes that no longer match a topic

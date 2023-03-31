@@ -102,8 +102,8 @@ class TopicReviewVote < ApplicationRecord
     id.present? ? topic_user_ratings.where("id < ?", rating_id) : topic_user_ratings
   end
 
-  # This is called from ReconcileRatingTopicsJob. It recalculates the topic review citation
-  def update_topic_review_citation!
+  # This is called from ReconcileRatingTopicsJob. It recalculates topic_review_citation vote_score if necessary
+  def update_topic_review_citation
     trc = TopicReviewCitation.find_or_create_for_vote(self)
     update(topic_review_citation_id: trc.id) if topic_review_citation_id != trc.id
     trc

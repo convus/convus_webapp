@@ -31,7 +31,7 @@ RSpec.describe TopicReviewCitation, type: :model do
     let(:quality) { :quality_med }
     let(:topic_review_vote) { FactoryBot.create(:topic_review_vote, topic: topic, rating: rating) }
     let(:user) { rating.user }
-    let(:topic_review_citation) { topic_review_vote.update_topic_review_citation! }
+    let(:topic_review_citation) { topic_review_vote.update_topic_review_citation }
     let(:citation) { topic_review_citation.citation }
     it "calculates" do
       expect(rating.default_vote_score).to eq 0
