@@ -23,8 +23,8 @@ FactoryBot.define do
     end
 
     trait :with_topic_review_citation do
-      after(:create) do |rating, _evaluator|
-        rating.update_topic_review_citation!
+      after(:create) do |vote, _evaluator|
+        vote.update_topic_review_citation!
       end
     end
 

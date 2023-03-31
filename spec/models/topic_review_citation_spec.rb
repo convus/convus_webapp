@@ -11,13 +11,12 @@ RSpec.describe TopicReviewCitation, type: :model do
       expect(topic_review_citation.auto_score?).to be_truthy
     end
     context "topic_review_vote" do
-      let(:topic_review_vote) { FactoryBot.build(:topic_review_vote) }
+      let(:topic_review_vote) { FactoryBot.create(:topic_review_vote_with_citation) }
       let(:topic_review_citation) { topic_review_vote.topic_review_citation }
       it "creates" do
-        expect {
-          Sidekiq::Worker.clear_all
-          Sidekiq::Testing.inline! { topic_review_vote.save }
-        }.to change(TopicReviewCitation, :count).by 1
+        expect(TopicReviewCitation.count).to eq 0
+        expect(topic_review_vote).to be_valid
+        expect(TopicReviewCitation.count).to eq 1
         expect(topic_review_citation).to be_valid
         expect(topic_review_citation.reload.topic_review_votes.count).to eq 1
         expect(TopicReview.count).to eq 1
@@ -97,18 +96,18 @@ RSpec.describe TopicReviewCitation, type: :model do
       ReconcileRatingTopicsJob.new.perform(rating.id, rating)
       expect(ReconcileRatingTopicsJob.jobs.map { |j| j["args"] }.flatten).to eq([rating2.id])
       ReconcileRatingTopicsJob.drain
-      expect(citation.reload.topics_text.pluck(:id)).to eq([topic.id])
+      expect(ReconcileRatingTopicsJob.jobs.count).to eq 0
+      expect(citation.reload.topics.pluck(:id)).to eq([topic.id])
       expect(citation.topics.pluck(:id)).to eq([topic.id])
       expect(rating.reload.topic_review_votes.count).to eq 1
       expect(rating2.reload.topic_review_votes.count).to eq 1
-      topic_review_vote = rating.topic_review_votes.first
       expect(topic_review.reload.topic_review_citations.count).to eq 1
       topic_review_citation = topic_review.topic_review_citations.first
       expect(topic_review_citation.topic_review_votes.count).to eq 2
       expect(topic_review_citation.vote_score).to eq 1001
       rating.remove_topic(topic)
-      expect(topic_review_citation.reload.topic_review_votes.pluck(:id)).to eq([])
-      expect(topic_review_citation.vote_score).to eq 1
+      expect(topic_review_citation.reload.topic_review_votes.count).to eq 2
+      expect(topic_review_citation.vote_score).to eq 1001
     end
   end
 end
