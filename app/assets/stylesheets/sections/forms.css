@@ -18,3 +18,12 @@
 .form-row-btn {
   @apply mt-4; /* taller because line-height */
 }
+
+.form-control.number-field-no-btns {
+  &input::-webkit-outer-spin-button,
+  &input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+}
