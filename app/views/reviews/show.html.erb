@@ -28,7 +28,7 @@
     </div>
     <% if @topic_review_citations.constructive.any? %>
       <div class="standard-top-offset">
-        <h3>Other articles users found useful:</h3>
+        <h3>Other articles that users found useful:</h3>
         <ul class="list-disc pl-5">
           <% @topic_review_citations.constructive.each do |trc| %>
             <li class="py-1 px-2 max-w-prose"><%= citation_display(trc.citation) %></li>
@@ -47,7 +47,7 @@
 
     <% if @topic_review_citations.recommended.any? %>
       <div class="standard-top-offset">
-        <h3>Articles users have recommended on this topic:</h3>
+        <h3>Articles which users have recommended on this topic:</h3>
         <ul class="list-disc pl-5">
           <% @topic_review_citations.recommended.each do |trc| %>
             <li class="py-1 px-2 max-w-prose">
