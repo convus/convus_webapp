@@ -50,7 +50,7 @@
         <h3>Articles which users have recommended on this topic:</h3>
         <ul class="list-disc pl-5">
           <% @topic_review_citations.recommended.each do |trc| %>
-            <li class="py-1 px-2 max-w-prose">
+            <li class="py-1 px-2">
               <%= citation_display(trc.citation) %>
               <% if current_user&.rated?(trc.citation) %>
                 <small class="less-strong">you already rated</small>
@@ -60,7 +60,7 @@
         </ul>
       </div>
     <% end %>
-
+    <hr class="mt-8">
     <p class="standard-top-offset">
       <% if current_user.blank? %>
         After you have rated some articles, select
