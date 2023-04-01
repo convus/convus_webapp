@@ -24,7 +24,7 @@
 
   <% if @topic_review.ended? %>
     <div class="max-w-prose standard-top-offset">
-      <%= render partial: "/shared/best_citations_list", locals: {topic_review_citations: @topic_review_citations.required} %>
+      <%= render partial: "/shared/best_citations_list", locals: {topic_review_citations: @topic_review_citations.required, topic_review: @topic_review } %>
     </div>
     <% if @topic_review_citations.constructive.any? %>
       <div class="standard-top-offset">
