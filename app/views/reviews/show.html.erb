@@ -10,7 +10,7 @@
         is scheduled to start
         <span class="convertTime withPreposition"><%= l(@topic_review.start_at, format: :convert_time) %></span>.
       <% else %>
-        is pending and doesn't have a scheduled start <small>email <a href="mailto:support@convus.org">support@convus.org</a> if you have questions</small>
+        is pending and doesn't have a scheduled start
       <% end %>
     <% else %>
       <% if @topic_review.active? %>
@@ -38,15 +38,30 @@
     <% end %>
     <%# also add in recommended %>
   <% elsif @topic_review.pending? %>
-
+    <p>Email <a href="mailto:support@convus.org">support@convus.org</a> if you have questions</p>
   <% else %>
-
-    <p class="mb-4">
+    <!-- <p class="mb-4">
       Want help finding articles on <%= @topic_review.topic_name %>? Check out articles other people have
       <%= link_to "rated on this topic", ratings_path(search_topics: @topic_review.slug) %> to get started.
-    </p>
+    </p> -->
 
-    <p class="mb-4">
+    <% if @topic_review_citations.recommended.any? %>
+      <div class="standard-top-offset">
+        <h3>Articles users have recommended on this topic:</h3>
+        <ul class="list-disc pl-5">
+          <% @topic_review_citations.recommended.each do |trc| %>
+            <li class="py-1 px-2 max-w-prose">
+              <%= citation_display(trc.citation) %>
+              <% if current_user&.rated?(trc.citation) %>
+                <small class="less-strong">you already rated</small>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <p class="standard-top-offset">
       <% if current_user.blank? %>
         After you have rated some articles, select
       <% elsif @topic_review_votes.blank? %>
@@ -72,7 +87,7 @@
       <% required_ratings = topic_review_votes.required.ratings %>
       <% constructive_ratings = topic_review_votes.constructive.ratings %>
       <% not_recommended_ratings = topic_review_votes.not_recommended.ratings %>
-      <% required_ratings = ["No required ratings - increase the rank of a recommended rating by #{TopicReviewVote::RENDERED_OFFSET} to move it into required"] if required_ratings.none? %>
+      <% required_ratings = ["No \"Best of\" ratings"] if required_ratings.none? %>
       <%= render partial: "/ratings/table", locals: {ratings: required_ratings, skip_sortable: true, render_ranking: true, ranking_modifier: constructive_ratings.count + TopicReviewVote::RENDERED_OFFSET} %>
 
       <div class="large-width-container standard-top-offset mb-2">

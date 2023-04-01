@@ -8,10 +8,8 @@ RSpec.describe base_url, type: :request do
   context "index" do
     it "responds" do
       get base_url
-      expect(response).to redirect_to(review_path(topic_review.slug))
-      # TODO: once there are multiple topic_reviews, render this
-      # expect(response.code).to eq "200"
-      # expect(response).to render_template("reviews/index")
+      expect(response.code).to eq "200"
+      expect(response).to render_template("reviews/index")
     end
   end
 
@@ -33,10 +31,8 @@ RSpec.describe base_url, type: :request do
     describe "index" do
       it "responds" do
         get base_url
-        expect(response).to redirect_to(review_path(topic_review.slug))
-        # TODO: once there are multiple topic_reviews, render this
-        # expect(response.code).to eq "200"
-        # expect(response).to render_template("reviews/index")
+        expect(response.code).to eq "200"
+        expect(response).to render_template("reviews/index")
       end
     end
 

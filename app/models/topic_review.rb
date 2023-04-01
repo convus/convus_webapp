@@ -19,6 +19,7 @@ class TopicReview < ApplicationRecord
   scope :name_ordered, -> { order(arel_table["topic_name"].lower) }
   scope :active_but_ended, -> { active.where("start_at < ?", Time.current) }
   scope :pending_but_started, -> { pending.where("start_at > ?", Time.current) }
+  scope :with_end_date, -> { where.not(end_at: nil) }
   scope :incorrect_status, -> { active_but_ended.or(pending_but_started) }
 
   attr_accessor :timezone

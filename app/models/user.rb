@@ -47,6 +47,12 @@ class User < ApplicationRecord
     SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64 + SecureRandom.urlsafe_base64
   end
 
+  def rated?(citation_or_id)
+    citation_id = citation_or_id.id if citation_or_id.is_a?(Citation)
+    citation_id ||= citation_or_id # May accept other models later
+    ratings.where(citation_id: citation_id).limit(1).any?
+  end
+
   def admin?
     developer?
   end
