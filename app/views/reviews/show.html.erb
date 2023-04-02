@@ -59,39 +59,44 @@
   <% constructive_ratings = topic_review_votes.constructive.ratings %>
   <% not_recommended_ratings = topic_review_votes.not_recommended.ratings %>
 
-  <%= form_tag review_path(topic_review.slug), method: :patch, class: " standard-top-offset" do %>
-    <%=
-      render partial: "/shared/citations_list",
-      locals: {objects: required_ratings,
-               bordered_list: true,
-               render_ranking: true,
-               ranking_modifier: constructive_ratings.count + TopicReviewVote::RENDERED_OFFSET,
-               title: "Best articles on #{@topic_review.topic_name}"}
-    %>
+  <%= form_tag review_path(topic_review.slug), method: :patch, class: "standard-top-offset" do %>
+    <div data-controller="sortable-ratings">
+      <script><%= "window.rankOffset = #{TopicReviewVote::RENDERED_OFFSET} " %></script>
+      <%=
+        render partial: "/shared/citations_list",
+        locals: {objects: required_ratings,
+                 bordered_list: true,
+                 render_ranking: true,
+                 list_id: "bestList",
+                 ranking_modifier: constructive_ratings.count + TopicReviewVote::RENDERED_OFFSET,
+                 title: "Best articles on #{@topic_review.topic_name}"}
+      %>
 
 
-    <%=
-      render partial: "/shared/citations_list",
-      locals: {objects: constructive_ratings,
-               render_ranking: true,
-               wrapper_class: "mt-4",
-               ranking_modifier: 0,
-               title: "Good Articles (but not the best)"}
-    %>
+      <%=
+        render partial: "/shared/citations_list",
+        locals: {objects: constructive_ratings,
+                 render_ranking: true,
+                 wrapper_class: "mt-4",
+                 ranking_modifier: 0,
+                 list_id: "constructiveList",
+                 title: "Good Articles (but not the best)"}
+      %>
 
-    <div class="mt-8 pb-1.5">
-      <%= button_tag "Save ranking", type: "submit", class: "btn" %>
+      <div class="mt-8 pb-1.5">
+        <%= button_tag "Save ranking", type: "submit", class: "btn" %>
+      </div>
+
+      <h3 class="mt-8">Articles you <strong class="text-error">wouldn't</strong> recommend</h3>
+      <%=
+        render partial: "/shared/citations_list",
+        locals: {objects: not_recommended_ratings,
+                 render_ranking: true,
+                 bordered_list: true,
+                 list_id: "notRecommendedList",
+                 ranking_modifier: -(not_recommended_ratings.count + 1),
+                 skip_title: true}
+      %>
     </div>
-
-    <h3 class="mt-8">Articles you <strong class="text-error">wouldn't</strong> recommend</h3>
-    <%=
-      render partial: "/shared/citations_list",
-      locals: {objects: not_recommended_ratings,
-               render_ranking: true,
-               bordered_list: true,
-               ranking_modifier: -(not_recommended_ratings.count + 1),
-               skip_title: true}
-    %>
-
   <% end %>
 <% end %>

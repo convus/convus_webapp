@@ -19,7 +19,7 @@ RSpec.describe VoteScoreUpdater do
     let(:passed_params) { ActionController::Parameters.new(phash) }
     let(:target) do
       {
-        "166" => 17, "69" => 6, "70" => 5, "131" => 4, "169" => 3, "175" => 2, "173" => 1,
+        "166" => 57, "69" => 6, "70" => 5, "131" => 4, "169" => 3, "175" => 2, "173" => 1,
         "105" => -1, "198" => -2
       }
     end
