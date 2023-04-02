@@ -1,57 +1,54 @@
 import { Controller } from '@hotwired/stimulus'
-import Sortable from 'sortablejs';
+import Sortable from 'sortablejs'
 import log from '../scripts/log' // eslint-disable-line
 
 // Connects to data-controller="sortable-ratings"
 export default class extends Controller {
-  static bestList() {return document.getElementById("bestList") }
-  static constructiveList() { document.getElementById("constructiveList")}
-  static notRecommendedList() { document.getElementById("notRecommendedList")}
+  // Standard isn't happy with the static methods, so pretend they're globals
+  /* global bestList, constructiveList, notRecommendedList */
+  static bestList () { document.getElementById('bestList') }
+  static constructiveList () { document.getElementById('constructiveList') }
+  static notRecommendedList () { document.getElementById('notRecommendedList') }
 
   connect () {
     // Hide the ranking fields
-    // document.querySelectorAll('.ranking-list input[type="number"]')
-    //   .forEach(el => el.classList.add('hidden'))
+    document.querySelectorAll('.ranking-list input[type="number"]')
+      .forEach(el => el.classList.add('hidden'))
 
-    window.updateRankings = this.updateRankings
+    Sortable.create(bestList, {
+      group: 'rankingLists',
+      animation: 150,
+      onEnd: this.updateRankings
+    })
 
-    new Sortable(bestList, {
-        group: 'rankingLists', // set both lists to same group
-        animation: 150,
-        onEnd: updateRankings
-    });
+    Sortable.create(constructiveList, {
+      group: 'rankingLists',
+      animation: 150,
+      onEnd: this.updateRankings
+    })
 
-    new Sortable(constructiveList, {
-        group: 'rankingLists',
-        animation: 150,
-        onEnd: updateRankings
-    });
-
-    new Sortable(notRecommendedList, {
-        group: 'rankingLists',
-        animation: 150,
-        onEnd: updateRankings
-    });
-    this.updateRankings()
+    Sortable.create(notRecommendedList, {
+      group: 'rankingLists',
+      animation: 150,
+      onEnd: this.updateRankings
+    })
   }
 
-
-
   updateRankings () {
-    notRecommendedList.querySelectorAll(".rankInput").forEach((el, i) => {
-      const newRating = -1 - i;
+    notRecommendedList.querySelectorAll('.rankInput').forEach((el, i) => {
+      const newRating = -1 - i
       el.value = newRating
     })
 
-    const goodFirstRank = constructiveList.querySelectorAll(".rankInput").length - 1
-    constructiveList.querySelectorAll(".rankInput").forEach((el, i) => {
-      const newRating = goodFirstRank - i;
+    const goodFirstRank = constructiveList.querySelectorAll('.rankInput').length
+    constructiveList.querySelectorAll('.rankInput').forEach((el, i) => {
+      const newRating = goodFirstRank - i
       el.value = newRating
     })
 
-    const bestFirstRank = goodFirstRank + window.rankOffset + bestList.querySelectorAll(".rankInput").length
-    bestList.querySelectorAll(".rankInput").forEach((el, i) => {
-      const newRating = bestFirstRank - i;
+    const bestFirstRank = goodFirstRank + window.rankOffset + bestList.querySelectorAll('.rankInput').length
+    bestList.querySelectorAll('.rankInput').forEach((el, i) => {
+      const newRating = bestFirstRank - i
       el.value = newRating
     })
   }

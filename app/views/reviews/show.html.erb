@@ -61,7 +61,9 @@
 
   <%= form_tag review_path(topic_review.slug), method: :patch, class: "standard-top-offset" do %>
     <div data-controller="sortable-ratings">
-      <script><%= "window.rankOffset = #{TopicReviewVote::RENDERED_OFFSET} " %></script>
+      <script>
+        <%= "window.rankOffset = #{TopicReviewVote::RENDERED_OFFSET} " %>
+      </script>
       <%=
         render partial: "/shared/citations_list",
         locals: {objects: required_ratings,
@@ -71,7 +73,6 @@
                  ranking_modifier: constructive_ratings.count + TopicReviewVote::RENDERED_OFFSET,
                  title: "Best articles on #{@topic_review.topic_name}"}
       %>
-
 
       <%=
         render partial: "/shared/citations_list",
