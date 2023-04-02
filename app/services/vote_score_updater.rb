@@ -42,12 +42,12 @@ class VoteScoreUpdater
       #   topic_review_votes.where(id: normalized_rank.keys).manual_score
       #     .each { |v| v.update(manual_score: false) }
       # else
-        normalized_rank.each do |i_r|
-          id, score = i_r.first, i_r.last
-          # manual_scoring gets 1.5 the rank offset - so it comes significantly before
-          vote_score = score + (rank_offset / 2)
-          TopicReviewVote.find(id).update(manual_score: true, vote_score: vote_score)
-        end
+      normalized_rank.each do |i_r|
+        id, score = i_r.first, i_r.last
+        # manual_scoring gets 1.5 the rank offset - so it comes significantly before
+        vote_score = score + (rank_offset / 2)
+        TopicReviewVote.find(id).update(manual_score: true, vote_score: vote_score)
+      end
       # end
     end
 
