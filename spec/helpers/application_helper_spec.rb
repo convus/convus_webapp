@@ -45,7 +45,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(rating_display(rating)).to eq target
     end
     context "with rating" do
-      let(:target) { "<a class=\" break-words\" title=\"#{citation.pretty_url}\" href=\"#{rating.submitted_url}\">texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as...</a>" }
+      let(:target) { "<a class=\" break-words\" title=\"#{citation.pretty_url}\" href=\"#{rating.submitted_url}\">texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as%20sent%20(02539672x...</a>" }
       let(:citation) { rating.citation }
       let(:rating) { FactoryBot.create(:rating, submitted_url: "https://www.texasattorneygeneral.gov/sites/default/files/images/admin/2021/Press/DC%20Statehood%20letter%20as%20sent%20(02539672xD2C78)%20(002).pdf") }
       it "returns target" do

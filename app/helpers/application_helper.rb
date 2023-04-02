@@ -131,10 +131,10 @@ module ApplicationHelper
     html_opts[:class] ||= ""
     html_opts[:class] += " break-words"
     html_opts[:title] ||= display_name
-    if display_name.length < 100
+    if display_name.length < 120
       link_to(display_name, citation_url, html_opts)
     else
-      link_to(display_name.truncate(100), citation_url, html_opts)
+      link_to(display_name.truncate(120), citation_url, html_opts)
     end
   end
 

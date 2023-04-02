@@ -9,3 +9,50 @@
     @apply bg-gray-50;
   }
 }
+
+
+.citations-list, .citations-list-bordered {
+  @apply max-w-2xl;
+  & li {
+    @apply pt-2 pb-1.5 px-2.5;
+  }
+  &.ranking-list li {
+    @apply cursor-move;
+    /* This isn't working the way I want :/
+      & .form-control:focus, & .form-control:active {outline-color: gray;}
+    */
+  }
+}
+
+.citations-list {
+  & .citation-list-title {
+    @apply pt-2 pb-1.5;
+  }
+  & ul {
+    @apply list-disc pl-5;
+  }
+}
+
+.citations-list-bordered {
+  @apply border border-gray-200;
+  & .citation-list-title {
+    @apply pt-2 pb-1.5 px-2.5;
+  }
+  & ul {
+    @apply list-striped;
+    border-left: 0; /* can't apply; doesn't override the list-striped styles */
+    border-right: 0;
+  }
+  & li {
+    @apply block border-0 border-x-0;
+  }
+
+  &.ranking-list {
+    min-height: 10rem;
+    padding-bottom: 2.5rem;
+  }
+
+  &.not-recommended {
+    @apply border-error;
+  }
+}
