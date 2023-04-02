@@ -62,7 +62,7 @@
   <%= form_tag review_path(topic_review.slug), method: :patch, class: "standard-top-offset" do %>
     <div data-controller="sortable-ratings">
       <script>
-        <%= "window.rankOffset = #{TopicReviewVote::RENDERED_OFFSET} " %>
+        <%= "window.rankOffset = #{TopicReviewVote::RENDERED_OFFSET * 2} " %>
       </script>
       <%=
         render partial: "/shared/citations_list",

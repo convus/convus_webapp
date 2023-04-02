@@ -38,16 +38,17 @@ class VoteScoreUpdater
 
     def update_rank(rank, default_rank, normalized_rank, topic_review_votes)
       # Remove any manual_score votes if it is default
-      if default_rank == normalized_rank
-        topic_review_votes.where(id: normalized_rank.keys).manual_score
-          .each { |v| v.update(manual_score: false) }
-      else
+      # if default_rank == normalized_rank
+      #   topic_review_votes.where(id: normalized_rank.keys).manual_score
+      #     .each { |v| v.update(manual_score: false) }
+      # else
         normalized_rank.each do |i_r|
-          # manual_scoring gets 0.5 the rank offset - so it comes significantly before
-          vote_score = i_r.last + rank_offset / 2
-          TopicReviewVote.find(i_r.first).update(manual_score: true, vote_score: vote_score)
+          id, score = i_r.first, i_r.last
+          # manual_scoring gets 1.5 the rank offset - so it comes significantly before
+          vote_score = score + (rank_offset / 2)
+          TopicReviewVote.find(id).update(manual_score: true, vote_score: vote_score)
         end
-      end
+      # end
     end
 
     def normalize_score_hash(vote_ranks)

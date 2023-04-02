@@ -12,8 +12,8 @@ export default class extends Controller {
 
   connect () {
     // Hide the ranking fields
-    document.querySelectorAll('.ranking-list input[type="number"]')
-      .forEach(el => el.classList.add('hidden'))
+    // document.querySelectorAll('.ranking-list input[type="number"]')
+    //   .forEach(el => el.classList.add('hidden'))
 
     Sortable.create(bestList, {
       group: 'rankingLists',
