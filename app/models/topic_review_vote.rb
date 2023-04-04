@@ -1,7 +1,7 @@
 class TopicReviewVote < ApplicationRecord
   RANK_ENUM = {not_recommended: 0, constructive: 1, required: 2}.freeze
 
-  RENDERED_OFFSET = 10
+  RENDERED_OFFSET = 50
 
   belongs_to :topic_review
   belongs_to :user

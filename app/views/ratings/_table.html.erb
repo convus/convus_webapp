@@ -91,8 +91,10 @@
                 <small class="inline md:hidden less-strong">
                   <% if private_user && !show_private_user %>
                     private
+                  <% elsif rating.user.blank? %>
+                    missing
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(sortable_params.merge(user: rating.user.username)) %>
+                    <%= link_to rating.user.username, ratings_path(sortable_params.merge(user: rating.user.username_slug)) %>
                   <% end %>
                 </small>
               <% end %>
@@ -116,8 +118,10 @@
                 <small>
                   <% if private_user && !show_private_user %>
                     private
+                  <% elsif rating.user.blank? %>
+                    missing
                   <% else %>
-                    <%= link_to rating.user&.username, ratings_path(sortable_params.merge(user: rating.user.username)) %>
+                    <%= link_to rating.user.username, ratings_path(sortable_params.merge(user: rating.user.username_slug)) %>
                   <% end %>
                 </small>
               </td>

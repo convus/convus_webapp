@@ -53,7 +53,7 @@ RSpec.describe VoteScoreUpdater do
     let(:vote_ranks) { score_hash_to_vote_ranks(normalized) }
 
     it "returns itself" do
-      target_vote_ranks = {"166" => 15, "69" => 14, "70" => 3, "131" => 2,
+      target_vote_ranks = {"166" => 55, "69" => 54, "70" => 3, "131" => 2,
                            "169" => 1, "105" => -1, "198" => -2}
       # Verify that the transformation works correctly
       expect(score_hash_to_vote_ranks(normalized)).to eq target_vote_ranks
@@ -62,14 +62,14 @@ RSpec.describe VoteScoreUpdater do
       expect(described_class.send(:normalize_score_hash, vote_ranks)).to eq normalized
     end
     context "required higher" do
-      let(:passed) { vote_ranks.merge("166" => 19, "69" => 17) }
+      let(:passed) { vote_ranks.merge("166" => 59, "69" => 57) }
       it "returns normalized" do
         expect_hashes_to_match(described_class.send(:normalize_score_hash, passed), normalized)
         expect(described_class.send(:normalize_score_hash, passed)).to eq normalized
       end
     end
     context "bigger variance" do
-      let(:passed) { vote_ranks.merge("166" => 30, "69" => 29, "105" => 0, "198" => -20) }
+      let(:passed) { vote_ranks.merge("166" => 70, "69" => 60, "105" => 0, "198" => -20) }
       it "returns normalized" do
         expect_hashes_to_match(described_class.send(:normalize_score_hash, passed), normalized)
         expect(described_class.send(:normalize_score_hash, passed)).to eq normalized
@@ -83,7 +83,7 @@ RSpec.describe VoteScoreUpdater do
           not_recommended: {"105" => -1001, "198" => -1002}
         }
       end
-      let(:passed) { vote_ranks.merge("166" => 26, "69" => 20, "169" => 9, "198" => -20) }
+      let(:passed) { {"131" => 102, "166" => 106, "69" => 104, "70" => 103, "169" => 100, "198" => -20, "105" => -1} }
       it "returns normalized" do
         expect_hashes_to_match(described_class.send(:normalize_score_hash, passed), normalized)
         expect(described_class.send(:normalize_score_hash, passed)).to eq normalized
@@ -135,13 +135,13 @@ RSpec.describe VoteScoreUpdater do
       expect(topic_review_votes.reload.pluck(:id, :vote_score).flatten).to eq([vote_required1.id, 1002, vote_required2.id, 1001, vote_constructive.id, 1, vote_not_recommended2.id, -1001, vote_not_recommended1.id, -1002])
       expect(topic_review_votes.manual_score.any?).to be_falsey
       # Update changing the required ranks
-      new_vote_ranks = vote_ranks.merge(vote_required2.id.to_s => 14)
+      new_vote_ranks = vote_ranks.merge(vote_required2.id.to_s => 54)
       described_class.update_scores(user, topic_review, new_vote_ranks)
       expect(topic_review_votes.reload.pluck(:id, :vote_score).flatten).to eq([vote_required2.id, 1502, vote_required1.id, 1501, vote_constructive.id, 1, vote_not_recommended2.id, -1001, vote_not_recommended1.id, -1002])
       expect(topic_review_votes.manual_score.any?).to be_truthy
       expect(topic_review_votes.manual_score.pluck(:id)).to match_array([vote_required1.id, vote_required2.id])
       # Update to go back to default scores
-      new_vote_ranks = new_vote_ranks.merge(vote_required1.id.to_s => 11)
+      new_vote_ranks = new_vote_ranks.merge(vote_required1.id.to_s => 51)
       described_class.update_scores(user, topic_review, new_vote_ranks)
       expect(topic_review_votes.reload.pluck(:id, :vote_score).flatten).to eq([vote_required1.id, 1002, vote_required2.id, 1001, vote_constructive.id, 1, vote_not_recommended2.id, -1001, vote_not_recommended1.id, -1002])
       expect(topic_review_votes.manual_score.any?).to be_falsey

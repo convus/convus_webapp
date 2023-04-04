@@ -45,7 +45,6 @@ class ReconcileRatingTopicsJob < ApplicationJob
     # Run update orphan first, no need to run against the new topics
     citation.reload.citation_topics.each { |ct| ct.update_ophaned_status! }
     new_topic_ids = topic_ids - citation.citation_topics.pluck(:topic_id)
-    # pp "new topic ids: #{new_topic_ids}"
     new_topic_ids.each { |i| CitationTopic.create(topic_id: i, citation_id: citation.id) }
     # Citation topics have changed! Update any ratings that don't have all the pertinent topics
     citation.reload.ratings.each do |rating|
@@ -57,7 +56,6 @@ class ReconcileRatingTopicsJob < ApplicationJob
   def topics_match_citation_topics?(rating, target_topic_ids = nil)
     target_topic_ids ||= rating.citation.topics_active.pluck(:id).sort
     rating_topic_ids = rating.topics.pluck(:id).sort
-    # pp "Rating topic ids: #{rating_topic_ids}  target: #{target_topic_ids}"
     target_topic_ids == rating_topic_ids
   end
 end

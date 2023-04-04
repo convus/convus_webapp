@@ -125,21 +125,26 @@ module ApplicationHelper
     end
   end
 
-  def citation_display(citation, citation_url: nil, display_name: nil)
+  def citation_display(citation, html_opts = {}, citation_url: nil, display_name: nil)
     display_name ||= citation&.display_name || "missing"
     citation_url ||= citation&.url
-    if display_name.length < 100
-      link_to(display_name, citation_url, class: "break-words")
+    html_opts[:class] ||= ""
+    html_opts[:class] += " break-words"
+    html_opts[:title] ||= display_name
+    if display_name.length < 120
+      link_to(display_name, citation_url, html_opts)
     else
-      link_to(display_name.truncate(100), citation_url, title: display_name, class: "break-words")
+      link_to(display_name.truncate(120), citation_url, html_opts)
     end
   end
 
-  def rating_display(rating)
+  def rating_display(rating, html_opts = {})
     if rating.display_name.blank? || rating.display_name == "missing url"
-      content_tag(:span, "missing url", class: "less-strong")
+      html_opts[:class] ||= ""
+      html_opts[:class] += " less-strong"
+      content_tag(:span, "missing url", html_opts)
     else
-      citation_display(rating.citation,
+      citation_display(rating.citation, html_opts,
         citation_url: rating.citation_url,
         display_name: rating.display_name)
     end

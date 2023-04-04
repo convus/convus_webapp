@@ -8,10 +8,8 @@ RSpec.describe base_url, type: :request do
   context "index" do
     it "responds" do
       get base_url
-      expect(response).to redirect_to(review_path(topic_review.slug))
-      # TODO: once there are multiple topic_reviews, render this
-      # expect(response.code).to eq "200"
-      # expect(response).to render_template("reviews/index")
+      expect(response.code).to eq "200"
+      expect(response).to render_template("reviews/index")
     end
   end
 
@@ -33,10 +31,8 @@ RSpec.describe base_url, type: :request do
     describe "index" do
       it "responds" do
         get base_url
-        expect(response).to redirect_to(review_path(topic_review.slug))
-        # TODO: once there are multiple topic_reviews, render this
-        # expect(response.code).to eq "200"
-        # expect(response).to render_template("reviews/index")
+        expect(response.code).to eq "200"
+        expect(response).to render_template("reviews/index")
       end
     end
 
@@ -67,8 +63,8 @@ RSpec.describe base_url, type: :request do
           "rank_rating_#{topic_review_vote2.rating_id}" => 18
         }
         expect(flash[:success]).to be_present
-        expect(topic_review_vote2.reload.vote_score).to eq 1501
-        expect(topic_review_vote.reload.vote_score).to eq 1502
+        expect(topic_review_vote2.reload.vote_score).to eq 501
+        expect(topic_review_vote.reload.vote_score).to eq 502
         # The off topic vote isn't updated
         expect(topic_review_vote_offtopic.reload.vote_score).to eq 1
       end

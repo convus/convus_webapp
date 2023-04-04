@@ -34,13 +34,20 @@
       @apply py-1 px-2
     }
   }
+  &.thead-light thead {
+    @apply bg-transparent;
+    & tr {
+      @apply border-t-transparent;
+    }
+  }
+
+  &.table-striped tbody tr:nth-of-type(odd) {
+    @apply bg-gray-50;
+  }
 }
 
-.full-screen-table-auto-width {
-  & table {max-width: 100%;
-  @apply lg:mx-auto;
-/*  width: auto;*/
-}
+.full-screen-table-auto-width table {
+  @apply lg:mx-auto max-w-full;
 }
 
 .full-screen-table-overflown {
@@ -70,12 +77,4 @@
 .rank-cell {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  & input::-webkit-outer-spin-button,
-  & input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  & input[type=number] {
-    -moz-appearance: textfield;
-  }
 }
