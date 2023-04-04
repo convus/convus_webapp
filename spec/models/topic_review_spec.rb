@@ -22,6 +22,43 @@ RSpec.describe TopicReview, type: :model do
       let(:topic_review) { FactoryBot.create(:topic_review, start_at: Time.current + 1.day) }
       it "sets end_at" do
         expect(topic_review.reload.end_at).to be_within(5).of(topic_review.start_at + 4.days)
+        expect(topic_review.status).to eq "pending"
+        expect(topic_review.incorrect_status?).to be_falsey
+        expect(TopicReview.incorrect_status.pluck(:id)).to eq([])
+      end
+      context "incorrect status" do
+        before { topic_review.update_column :start_at, Time.current - 1.day }
+        it "is incorrect" do
+          expect(topic_review.reload.status).to eq "pending"
+          expect(topic_review.pending_but_started?).to be_truthy
+          expect(topic_review.incorrect_status?).to be_truthy
+          expect(TopicReview.pending_but_started.pluck(:id)).to eq([topic_review.id])
+          expect(TopicReview.incorrect_status.pluck(:id)).to eq([topic_review.id])
+          TopicReview.update_incorrect_statuses!
+          expect(topic_review.reload.status).to eq "active"
+          expect(topic_review.incorrect_status?).to be_falsey
+        end
+      end
+    end
+    context "ended" do
+      let(:topic_review) { FactoryBot.create(:topic_review, start_at: Time.current - 3.days, end_at: Time.current - 1.day) }
+      it "is ended" do
+        expect(topic_review.reload.status).to eq "ended"
+        expect(topic_review.incorrect_status?).to be_falsey
+        expect(TopicReview.incorrect_status.pluck(:id)).to eq([])
+      end
+      context "incorrect status" do
+        before { topic_review.update_column :status, "active" }
+        it "is incorrect" do
+          expect(topic_review.reload.status).to eq "active"
+          expect(topic_review.active_but_ended?).to be_truthy
+          expect(topic_review.incorrect_status?).to be_truthy
+          expect(TopicReview.active_but_ended.pluck(:id)).to eq([topic_review.id])
+          expect(TopicReview.incorrect_status.pluck(:id)).to eq([topic_review.id])
+          TopicReview.update_incorrect_statuses!
+          expect(topic_review.reload.status).to eq "ended"
+          expect(topic_review.incorrect_status?).to be_falsey
+        end
       end
     end
     context "topic_review future" do
@@ -38,6 +75,14 @@ RSpec.describe TopicReview, type: :model do
         expect(topic_review.status).to eq "active"
         # missmatch is corrected
         expect(topic_review.start_at).to be < topic_review.end_at
+      end
+    end
+    context "hidden" do
+      let(:topic_review) { FactoryBot.create(:topic_review, :active, status: "hidden") }
+      it "returns hidden" do
+        expect(topic_review.reload.status).to eq "hidden"
+        expect(topic_review.incorrect_status?).to be_falsey
+        expect(TopicReview.incorrect_status.pluck(:id)).to eq([])
       end
     end
   end

@@ -1,7 +1,7 @@
 class TopicReview < ApplicationRecord
   include FriendlyFindable
 
-  STATUS_ENUM = {pending: 0, active: 1, ended: 2}.freeze
+  STATUS_ENUM = {pending: 0, active: 1, ended: 2, hidden: 3}.freeze
   STANDARD_PERIOD = 4.days
 
   belongs_to :topic
@@ -34,6 +34,10 @@ class TopicReview < ApplicationRecord
     where(slug: Slugifyer.slugify(str)).order(id: :desc).limit(1).first
   end
 
+  def self.update_incorrect_statuses!
+    TopicReview.incorrect_status.each { |t| t.update(updated_at: Time.current) }
+  end
+
   def start_at_in_zone=(val)
     self.start_at = TranzitoUtils::TimeParser.parse(val, timezone)
   end
@@ -48,6 +52,19 @@ class TopicReview < ApplicationRecord
 
   def end_at_in_zone
     end_at
+  end
+
+  def pending_but_started?
+    pending? && start_at < Time.current && end_at > Time.current
+  end
+
+  def active_but_ended?
+    active? && end_at < Time.current
+  end
+
+  def incorrect_status?
+    return false if hidden?
+    pending_but_started? || active_but_ended?
   end
 
   def set_calculated_attributes
@@ -68,6 +85,7 @@ class TopicReview < ApplicationRecord
   end
 
   def calculated_status
+    return "hidden" if status == "hidden"
     if end_at.blank? || start_at.blank? || start_at > Time.current
       "pending"
     elsif end_at > Time.current
