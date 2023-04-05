@@ -34,7 +34,7 @@
           <%= link_to "Exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
           <% ratings_active = controller_name == "ratings" && viewing_display_name == "all" %>
-          <%= link_to "Ratings", ratings_path, class: "main-nav-link ml-2 #{ratings_active ? 'active' : ''}" %>
+          <%= link_to "Ratings", (current_user.present? ? ratings_path(user: "following") : ratings_path), class: "main-nav-link ml-2 #{ratings_active ? 'active' : ''}" %>
           <% if primary_topic_review.present? %>
             <% rank_active = controller_name == "reviews" && action_name == "show" && @topic_review&.id == primary_topic_review.id %>
             <%= link_to review_path(primary_topic_review.slug), title: "Review #{primary_topic_review.topic_name}", class: "main-nav-link ml-2 #{rank_active ? 'active' : ''}" do %>
