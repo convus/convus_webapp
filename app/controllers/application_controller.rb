@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   before_action :enable_rack_profiler
 
   helper_method :display_dev_info?, :user_subject, :user_root_url, :controller_namespace,
-    :current_topics, :primary_topic_review, :default_direction, :default_column
+    :current_topics, :primary_topic_review, :default_direction, :default_column, :ratings_landing_url
 
   def append_info_to_payload(payload)
     super
@@ -59,6 +59,10 @@ class ApplicationController < ActionController::Base
   def primary_topic_review
     return @primary_topic_review if defined?(@primary_topic_review)
     @primary_topic_review = TopicReview.primary
+  end
+
+  def ratings_landing_url
+    current_user.present? ? ratings_url(user: "following") : ratings_url
   end
 
   def user_root_url
