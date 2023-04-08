@@ -132,6 +132,39 @@ RSpec.describe Topic, type: :model do
         end
       end
     end
+    describe "update_attrs and amp" do
+      it "creates and updates" do
+        topic = Topic.find_or_create_for_name("Newspapers & magazines", update_attrs: true)
+        expect(topic.name).to eq "Newspapers & magazines"
+        Topic.find_or_create_for_name("newspapers & magazines", update_attrs: true)
+        expect(topic.reload.name).to eq "newspapers & magazines"
+        Topic.find_or_create_for_name("newspapers  &  magazines", update_attrs: true)
+        expect(topic.reload.name).to eq "newspapers  &  magazines"
+        Topic.find_or_create_for_name("Newspapers and MAgazines", update_attrs: true)
+        expect(topic.reload.name).to eq "Newspapers and MAgazines"
+      end
+      context "existing and" do
+        let!(:topic) { FactoryBot.create(:topic, name: "Newspapers and Magazines") }
+        it "doesn't update" do
+          Topic.find_or_create_for_name("newspapers  &  magazines", update_attrs: true)
+          expect(topic.reload.name).to eq "Newspapers and Magazines"
+          Topic.find_or_create_for_name("newspapers &Amp; magazines", update_attrs: true)
+          expect(topic.reload.name).to eq "Newspapers and Magazines"
+          # It updates non amp updates
+          Topic.find_or_create_for_name("newspapers aND magazines", update_attrs: true)
+          expect(topic.reload.name).to eq "newspapers aND magazines"
+        end
+      end
+      context "previous and" do
+        let!(:topic) { FactoryBot.create(:topic, name: "Newspapers & Magazines", previous_slug: "newspapers-and-and-and-and") }
+        it "updates" do
+          Topic.find_or_create_for_name("newspapers  &  magazines", update_attrs: true)
+          expect(topic.reload.name).to eq "newspapers  &  magazines"
+          Topic.find_or_create_for_name("newSPAPERS and and and and", update_attrs: true)
+          expect(topic.reload.name).to eq "newSPAPERS and and and and"
+        end
+      end
+    end
   end
 
   describe "matching_topics" do

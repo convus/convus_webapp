@@ -17,7 +17,6 @@ class TopicCsvImporter
       csv = CSV.new(open_file, headers: headers)
       while (row = csv.shift)
         row_index += 1 # row_index is current line number
-        pp row
         import_topic(row[:name])
       end
     end

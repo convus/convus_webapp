@@ -19,9 +19,13 @@ module FriendlyFindable
       friendly_find(str) || (raise ActiveRecord::RecordNotFound)
     end
 
+    def slugify(str = nil)
+      Slugifyer.slugify(str)
+    end
+
     def friendly_find_slug(str)
       return nil if str.blank?
-      find_by_slug(Slugifyer.slugify(str))
+      find_by_slug(slugify(str))
     end
   end
 end

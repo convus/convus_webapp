@@ -20,9 +20,14 @@ class Topic < ApplicationRecord
 
   attr_accessor :skip_update_associations
 
+  def self.slugify(str = nil)
+    Slugifyer.slugify_and(str)
+  end
+
+  # Overrides FriendlyFindable
   def self.friendly_find_slug(str = nil)
     return nil if str.blank?
-    slug = Slugifyer.slugify(str)
+    slug = slugify(str)
     find_by_slug(slug) || find_by_previous_slug(slug)
   end
 
@@ -30,7 +35,10 @@ class Topic < ApplicationRecord
     existing = friendly_find(name)
     if existing.present?
       if attrs[:update_attrs] && existing.name != name.strip
-        existing.update(name: name)
+        # Don't switch to "&" if existing uses "and"
+        unless name.match("&") && existing.name.match?(/\band\b/i) && !existing.name.match("&")
+          existing.update(name: name)
+        end
       end
       existing
     else
@@ -54,7 +62,7 @@ class Topic < ApplicationRecord
     self.orphaned = calculated_orphaned?
     self.name = name&.strip
     old_slug = slug
-    self.slug = Slugifyer.slugify(name)
+    self.slug = self.class.slugify(name)
     if old_slug.present? && old_slug != slug
       self.previous_slug = old_slug
     end

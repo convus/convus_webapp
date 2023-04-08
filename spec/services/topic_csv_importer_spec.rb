@@ -1,6 +1,18 @@
 require "rails_helper"
 
 RSpec.describe TopicCsvImporter do
+  describe "import_url" do
+    let(:file_url) { "https://raw.githubusercontent.com/convus/convus_reviews/main/spec/fixtures/example_topics.csv" }
+    it "imports" do
+      VCR.use_cassette("topic_csv_importer") do
+        expect(Topic.count).to eq 0
+        described_class.import_url(file_url)
+        expect(Topic.count).to eq 2
+        expect(Topic.pluck(:name)).to match_array(["San Francisco", "California"])
+      end
+    end
+  end
+
   describe "import_csv" do
     let(:csv_lines) { ["name", "A topic", "Party"] }
     let!(:tempfile) do
@@ -18,6 +30,15 @@ RSpec.describe TopicCsvImporter do
       tempfile.rewind
       expect(described_class.import_csv(tempfile))
       expect(Topic.count).to eq 2
+    end
+    context "amps" do
+      let(:csv_lines) { ["name", "Netflix", "Netflix and chill", "Netflix & chill ", "Netflix &Amp; chill "] }
+      it "imports" do
+        expect(Topic.count).to eq 0
+        expect(described_class.import_csv(tempfile))
+        # expect(Topic.count).to eq 2
+        expect(Topic.pluck(:name)).to match_array(["Netflix", "Netflix and chill"])
+      end
     end
   end
 

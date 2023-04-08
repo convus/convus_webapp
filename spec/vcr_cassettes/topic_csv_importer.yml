@@ -1,0 +1,74 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://raw.githubusercontent.com/convus/convus_reviews/main/spec/fixtures/example_topics.csv
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '30'
+      Cache-Control:
+      - max-age=300
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Etag:
+      - W/"2e8964747e1fef8e9e2649dfab33c2f6754268abe472355671dae76602912ec0"
+      Strict-Transport-Security:
+      - max-age=31536000
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Github-Request-Id:
+      - CA3A:5BA3:90DA09:AB0FF3:6430EECC
+      Accept-Ranges:
+      - bytes
+      Date:
+      - Sat, 08 Apr 2023 04:45:03 GMT
+      Via:
+      - 1.1 varnish
+      X-Served-By:
+      - cache-sjc10060-SJC
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Timer:
+      - S1680929103.197846,VS0,VE17
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Access-Control-Allow-Origin:
+      - "*"
+      X-Fastly-Request-Id:
+      - a2c6894839e17ce2131a38ebb081c67cdf9ffd8d
+      Expires:
+      - Sat, 08 Apr 2023 04:50:03 GMT
+      Source-Age:
+      - '22'
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        Name
+        San Francisco
+        California
+  recorded_at: Sat, 08 Apr 2023 04:45:03 GMT
+recorded_with: VCR 6.1.0
