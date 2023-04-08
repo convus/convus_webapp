@@ -26,8 +26,16 @@ class Topic < ApplicationRecord
     find_by_slug(slug) || find_by_previous_slug(slug)
   end
 
-  def self.find_or_create_for_name(name, attrs = {})
-    friendly_find(name) || create(attrs.merge(name: name))
+  def self.find_or_create_for_name(name, attrs = {update_attrs: false})
+    existing = friendly_find(name)
+    if existing.present?
+      if attrs[:update_attrs] && existing.name != name.strip
+        existing.update(name: name)
+      end
+      existing
+    else
+      create(attrs.except(:update_attrs).merge(name: name))
+    end
   end
 
   def self.friendly_find_all(arr)
