@@ -58,8 +58,8 @@ RSpec.describe Slugifyer do
       expect(subject.slugify_and(nil)).to be_nil
     end
     it "handles basic URL" do
-        expect(subject.slugify_and("https://bikeindex.org/bikes/323232")).to eq("bikeindex-org-bikes-323232")
-      end
+      expect(subject.slugify_and("https://bikeindex.org/bikes/323232")).to eq("bikeindex-org-bikes-323232")
+    end
     it "handles &" do
       expect(subject.slugify_and("Bikes & Trikes")).to eq "bikes-and-trikes"
       expect(subject.slugify_and("Bikes &Amp; Trikes")).to eq "bikes-and-trikes"

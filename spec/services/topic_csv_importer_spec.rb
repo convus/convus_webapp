@@ -36,8 +36,10 @@ RSpec.describe TopicCsvImporter do
       it "imports" do
         expect(Topic.count).to eq 0
         expect(described_class.import_csv(tempfile))
-        # expect(Topic.count).to eq 2
         expect(Topic.pluck(:name)).to match_array(["Netflix", "Netflix and chill"])
+        tempfile.rewind
+        expect(described_class.import_csv(tempfile))
+        expect(Topic.count).to eq 2
       end
     end
   end

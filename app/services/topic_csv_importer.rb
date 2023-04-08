@@ -9,7 +9,6 @@ class TopicCsvImporter
     def import_csv(open_file)
       # Grab the first line of the csv (which is the header line) and transform it
       headers = convert_headers(open_file.readline)
-      csv = CSV.new(open_file, headers: headers)
       # Stream process the rest of the csv, cribbed from:
       # github.com/bikeindex/bike_index/blob/main/app/workers/bulk_import_worker.rb
       # We want lines to start at 1, not 0
