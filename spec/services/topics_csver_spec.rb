@@ -1,10 +1,10 @@
 require "rails_helper"
 
-RSpec.describe TopicCsvImporter do
+RSpec.describe TopicsCsver do
   describe "import_url" do
     let(:file_url) { "https://raw.githubusercontent.com/convus/convus_reviews/main/spec/fixtures/example_topics.csv" }
     it "imports" do
-      VCR.use_cassette("topic_csv_importer") do
+      VCR.use_cassette("topics_csver_import") do
         expect(Topic.count).to eq 0
         described_class.import_url(file_url)
         expect(Topic.count).to eq 2
@@ -14,10 +14,15 @@ RSpec.describe TopicCsvImporter do
   end
 
   describe "import_csv" do
-    let(:csv_lines) { ["name", "A topic", "Party"] }
+    let(:csv_lines) do
+      [["name, Parents"],
+       ["A topic",nil],
+       ["Party ", "a topic"]]
+    end
+    let(:csv_string) { csv_lines.map { |r| r.join(",") }.join("\n") }
     let!(:tempfile) do
       file = Tempfile.new
-      file.write(csv_lines.join("\n"))
+      file.write(csv_string)
       file.rewind
       file
     end
@@ -32,7 +37,13 @@ RSpec.describe TopicCsvImporter do
       expect(Topic.count).to eq 2
     end
     context "amps" do
-      let(:csv_lines) { ["name", "Netflix", "Netflix and chill", "Netflix & chill ", "Netflix &Amp; chill "] }
+      let(:csv_lines) do
+        [["name", "parents"],
+         ["Netflix", nil],
+         ["Netflix and chill", nil],
+         ["Netflix & chill ", ""],
+         ["Netflix &Amp; chill ", nil]]
+      end
       it "imports" do
         expect(Topic.count).to eq 0
         expect(described_class.import_csv(tempfile))
