@@ -24,9 +24,8 @@ class TopicsCsver
       end
     end
 
-    def import_topic(name, parents)
-      pp parents if parents.present?
-      Topic.find_or_create_for_name(name, update_attrs: true)
+    def import_topic(name, parents = nil)
+      Topic.find_or_create_for_name(name, update_attrs: true, parents_string: parents)
     end
 
     def convert_headers(str)

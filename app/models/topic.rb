@@ -7,6 +7,10 @@ class Topic < ApplicationRecord
   has_many :citations, through: :citation_topics
   has_many :topic_reviews
   has_many :topic_review_votes, through: :topic_reviews
+  has_many :parent_relations, class_name: "TopicRelation", foreign_key: :child_id
+  has_many :parents, through: :parent_relations, source: :parent
+  has_many :child_relations, class_name: "TopicRelation", foreign_key: :parent_id
+  has_many :children, through: :child_relations, source: :child
 
   validates_uniqueness_of :name, case_sensitive: false
   validate :slug_uniq_if_name_uniq

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_30_171042) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_08_054931) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_30_171042) do
     t.boolean "account_public", default: false
     t.index ["citation_id"], name: "index_ratings_on_citation_id"
     t.index ["user_id"], name: "index_ratings_on_user_id"
+  end
+
+  create_table "topic_relations", force: :cascade do |t|
+    t.bigint "parent_id"
+    t.bigint "child_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["child_id"], name: "index_topic_relations_on_child_id"
+    t.index ["parent_id"], name: "index_topic_relations_on_parent_id"
   end
 
   create_table "topic_review_citations", force: :cascade do |t|
