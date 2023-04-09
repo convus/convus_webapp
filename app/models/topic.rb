@@ -7,10 +7,16 @@ class Topic < ApplicationRecord
   has_many :citations, through: :citation_topics
   has_many :topic_reviews
   has_many :topic_review_votes, through: :topic_reviews
-  has_many :parent_relations, class_name: "TopicRelation", foreign_key: :child_id
+
+  has_many :parent_relations, class_name: "TopicRelation", foreign_key: :child_id, dependent: :destroy
   has_many :parents, through: :parent_relations, source: :parent
-  has_many :child_relations, class_name: "TopicRelation", foreign_key: :parent_id
+  has_many :child_relations, class_name: "TopicRelation", foreign_key: :parent_id, dependent: :destroy
   has_many :children, through: :child_relations, source: :child
+
+  has_many :direct_parent_relations, -> { direct }, class_name: "TopicRelation", foreign_key: :child_id, dependent: :destroy
+  has_many :direct_parents, through: :direct_parent_relations, source: :parent
+  has_many :direct_child_relations, -> { direct }, class_name: "TopicRelation", foreign_key: :parent_id, dependent: :destroy
+  has_many :direct_children, through: :direct_child_relations, source: :child
 
   validates_uniqueness_of :name, case_sensitive: false
   validate :slug_uniq_if_name_uniq
@@ -50,12 +56,30 @@ class Topic < ApplicationRecord
     end
   end
 
-  def self.friendly_find_all(arr)
+  def self.friendly_find_all(arr = nil)
+    return [] if arr.blank?
     arr.flatten.map { |s| friendly_find(s) }.compact
   end
 
   def to_param
     slug
+  end
+
+  def parents_string=(val)
+    parent_ids = self.class.friendly_find_all(val&.split(",")).map(&:id)
+    parent_relations.where.not(parent_id: parent_ids).destroy_all
+    new_ids = parent_ids - parent_relations.pluck(:parent_id)
+    parent_relations.distant.update_all(direct: true)
+    new_ids.each { |i| parent_relations.build(parent_id: i, direct: true) }
+  end
+
+  def parents_string
+    direct_parent_names.join(", ")
+  end
+
+  # May get more complicated someday...
+  def direct_parent_names
+    direct_parents.name_ordered.pluck(:name)
   end
 
   def active?
@@ -67,6 +91,7 @@ class Topic < ApplicationRecord
     self.name = name&.strip
     old_slug = slug
     self.slug = self.class.slugify(name)
+    self.previous_slug = self.class.slugify(previous_slug)
     if old_slug.present? && old_slug != slug
       self.previous_slug = old_slug
     end

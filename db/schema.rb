@@ -103,6 +103,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_08_054931) do
   create_table "topic_relations", force: :cascade do |t|
     t.bigint "parent_id"
     t.bigint "child_id"
+    t.boolean "direct", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["child_id"], name: "index_topic_relations_on_child_id"

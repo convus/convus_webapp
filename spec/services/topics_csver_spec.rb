@@ -35,14 +35,17 @@ RSpec.describe TopicsCsver do
       tempfile.rewind
       expect(described_class.import_csv(tempfile))
       expect(Topic.count).to eq 2
+      topic = Topic.friendly_find "Party"
+      expect(topic.direct_parents.pluck(:name)).to eq(["A topic"])
     end
-    context "amps" do
+    context "amps and dupes" do
       let(:csv_lines) do
         [["name", "parents"],
          ["Netflix", nil],
          ["Netflix and chill", nil],
          ["Netflix & chill ", ""],
-         ["Netflix &Amp; chill ", nil]]
+         ["Netflix &Amp; chill ", nil],
+         [nil, nil]]
       end
       it "imports" do
         expect(Topic.count).to eq 0

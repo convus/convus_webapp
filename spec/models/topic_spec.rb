@@ -198,4 +198,47 @@ RSpec.describe Topic, type: :model do
       end
     end
   end
+
+  describe "parents_string" do
+    let!(:parent) { FactoryBot.create(:topic, name: "Programming") }
+    let(:topic) { FactoryBot.create(:topic, name: "Ruby on Rails") }
+    it "doesn't error when not found" do
+      expect(topic.reload.parents.pluck(:id)).to eq([])
+      topic.update(parents_string: "programming,")
+      expect(topic.reload.parents.pluck(:id)).to eq([parent.id])
+      expect(topic.direct_parents.pluck(:id)).to eq([parent.id])
+      topic.update(parents_string: ",,")
+      expect(topic.reload.parents.pluck(:id)).to eq([])
+    end
+    context "on create" do
+      let(:topic) { FactoryBot.create(:topic, name: "Ruby on Rails", parents_string: ", programming") }
+      it "builds" do
+        expect(topic).to be_valid
+        expect(topic.reload.parents.pluck(:id)).to eq([parent.id])
+        expect(parent.reload.direct_children.pluck(:id)).to eq([topic.id])
+        # Test dependent destroy
+        expect(TopicRelation.count).to eq 1
+        topic.destroy
+        expect(TopicRelation.count).to eq 0
+        expect(parent.reload).to be_present
+      end
+    end
+    context "distant" do
+      let(:grandparent) { FactoryBot.create(:topic, name: "computers") }
+      it "removes the grandparent" do
+        TopicRelation.create(parent: grandparent, child: parent, direct: true)
+        TopicRelation.create(parent: grandparent, child: topic)
+        expect(grandparent.reload.children.pluck(:id)).to match_array([parent.id, topic.id])
+        expect(topic.reload.parents.pluck(:id)).to eq([grandparent.id])
+        topic.update(parents_string: "programming, Computers")
+        expect(topic.reload.parents.pluck(:id)).to match_array([parent.id, grandparent.id])
+        expect(topic.direct_parents.pluck(:id)).to match_array([parent.id, grandparent.id])
+        topic.update(parents_string: "programming,")
+        expect(topic.reload.parents.pluck(:id)).to eq([parent.id])
+        expect(topic.direct_parents.pluck(:id)).to eq([parent.id])
+        topic.update(parents_string: ",,")
+        expect(topic.reload.parents.pluck(:id)).to eq([])
+      end
+    end
+  end
 end
