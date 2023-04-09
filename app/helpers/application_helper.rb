@@ -42,7 +42,6 @@ module ApplicationHelper
     !@no_layout
   end
 
-
   def render_updated_at
     TranzitoUtils::Normalize.boolean(params[:search_updated_at])
   end

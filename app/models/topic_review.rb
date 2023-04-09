@@ -30,7 +30,7 @@ class TopicReview < ApplicationRecord
   end
 
   def self.slugify(str)
-    Topic.slugify
+    Topic.slugify(str)
   end
 
   def self.friendly_find_slug(str = nil)

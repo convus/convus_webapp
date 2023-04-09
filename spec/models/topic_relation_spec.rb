@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe TopicRelation, type: :model do
   let(:topic_relation) { FactoryBot.create(:topic_relation) }

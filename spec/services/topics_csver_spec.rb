@@ -16,8 +16,8 @@ RSpec.describe TopicsCsver do
   describe "import_csv" do
     let(:csv_lines) do
       [["name, Parents"],
-       ["A topic",nil],
-       ["Party ", "a topic"]]
+        ["A topic", nil],
+        ["Party ", "a topic"]]
     end
     let(:csv_string) { csv_lines.map { |r| r.join(",") }.join("\n") }
     let!(:tempfile) do
@@ -41,11 +41,11 @@ RSpec.describe TopicsCsver do
     context "amps and dupes" do
       let(:csv_lines) do
         [["name", "parents"],
-         ["Netflix", nil],
-         ["Netflix and chill", nil],
-         ["Netflix & chill ", ""],
-         ["Netflix &Amp; chill ", nil],
-         [nil, nil]]
+          ["Netflix", nil],
+          ["Netflix and chill", nil],
+          ["Netflix & chill ", ""],
+          ["Netflix &Amp; chill ", nil],
+          [nil, nil]]
       end
       it "imports" do
         expect(Topic.count).to eq 0

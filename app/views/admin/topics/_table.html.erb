@@ -47,15 +47,14 @@
           <td>
             <small><%= topic.parents_string %></small>
           </td>
-            <td>
-              <%= link_to admin_number_display(topic.rating_topics.count), ratings_path(search_topics: topic.slug) %>
-            </td>
-            <td class="table-cell-check">
-              <%= check_mark if topic.active? %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-
+          <td>
+            <%= link_to admin_number_display(topic.rating_topics.count), ratings_path(search_topics: topic.slug) %>
+          </td>
+          <td class="table-cell-check">
+            <%= check_mark if topic.active? %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
