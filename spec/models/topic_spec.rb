@@ -210,7 +210,6 @@ RSpec.describe Topic, type: :model do
     end
   end
 
-
   describe "matching_topics" do
     let!(:topic) { FactoryBot.create(:topic, name: "Warmth") }
     let(:rating) { FactoryBot.create(:rating, topics_text: "warmth") }
