@@ -48,6 +48,7 @@ Rails.application.routes.draw do
     resources :topics, only: %i[index edit update show]
     resources :topic_reviews, except: [:show]
     resources :topic_review_citations, only: %i[edit update]
+    resources :citations, only: %i[index edit update show]
   end
 
   authenticate :user, lambda { |u| u.developer? } do

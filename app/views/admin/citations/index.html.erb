@@ -1,0 +1,59 @@
+<h1 class="standard-top-offset mb-4">Admin Citations</h1>
+<%= render partial: "/shared/current_header", locals: {collection: @citations, render_period_select: true} %>
+
+<% skip_sortable ||= false %>
+
+<div class="full-screen-table">
+  <table class="table table-sm table-striped thead-light">
+    <thead class="sortable">
+      <tr>
+        <th>
+          <%= sortable "created_at", skip_sortable: skip_sortable %>
+        </th>
+        <% if render_updated_at %>
+          <th>
+            <small><%= sortable "updated_at", skip_sortable: skip_sortable %></small>
+          </th>
+        <% end %>
+        <th>
+          <%= sortable "title", skip_sortable: skip_sortable %>
+        </th>
+        <!-- <th><%= sortable "url", skip_sortable: skip_sortable %></th> -->
+        <th>Topics</th>
+        <th>Ratings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @citations.each do |citation| %>
+        <tr>
+          <td>
+            <% if display_dev_info? %><code class="only-dev-visible-small"><%= citation.id %></code><% end %>
+            <%= link_to l(citation.created_at, format: :convert_time), edit_admin_citation_path(citation), class: "convertTime" %>
+          </td>
+          <% if render_updated_at %>
+            <td>
+              <small class="convertTime"><%= l(citation.updated_at, format: :convert_time) %></small>
+            </td>
+          <% end %>
+          <td>
+            <%= citation.title %>
+            <% if citation.url.present? %>
+              <small class="block">
+                <%= link_to citation.url.truncate(100), citation.url %>
+              </small>
+            <% end %>
+          </td>
+          <!-- <td>
+            <% if citation.url.present? %>
+              <%= link_to citation.url.truncate(50), citation.url %>
+            <% end %>
+          </td> -->
+          <td>
+            <small><%= citation.topics_string %></small>
+          </td>
+          <td><%= admin_number_display(citation.ratings.count) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
