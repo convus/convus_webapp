@@ -156,16 +156,60 @@ RSpec.describe Topic, type: :model do
         end
       end
       context "previous and" do
+        let!(:parent) { FactoryBot.create(:topic, name: "News") }
         let!(:topic) { FactoryBot.create(:topic, name: "Newspapers & Magazines", previous_slug: "newspapers-and-and-and-and") }
         it "updates" do
-          Topic.find_or_create_for_name("newspapers  &  magazines", update_attrs: true)
+          expect(topic.parents_string).to be_blank
+          Topic.find_or_create_for_name("newspapers  &  magazines", update_attrs: true, parents_string: "News")
           expect(topic.reload.name).to eq "newspapers  &  magazines"
-          Topic.find_or_create_for_name("newSPAPERS and and and and", update_attrs: true)
+          expect(topic.parents_string).to eq "News"
+          Topic.find_or_create_for_name("newSPAPERS and and and and", update_attrs: true, parents_string: nil)
           expect(topic.reload.name).to eq "newSPAPERS and and and and"
+          expect(topic.parents_string).to be_blank
+        end
+      end
+    end
+    describe "plurals" do
+      let(:name) { "Conspiracy Theories" }
+      it "creates with plural, updates to singular but not back" do
+        topic = Topic.find_or_create_for_name(name)
+        expect(topic.id).to be_present
+        expect(Topic.friendly_find("Conspiracy Theory")&.id).to be_blank
+        expect(Topic.friendly_find_plural("Conspiracy Theory")&.id).to eq topic.id
+        new_topic = Topic.find_or_create_for_name("Conspiracy Theory", update_attrs: true)
+        expect(new_topic.id).to eq topic.id
+        expect(new_topic.reload.name).to eq "Conspiracy Theory"
+        expect(new_topic.slug).to eq "conspiracy-theory"
+        expect(Topic.find_by_singular("conspiracy-theories")&.id).to eq topic.id
+        expect(Topic.friendly_find(name)&.id).to eq new_topic.id
+        expect(topic.reload.name).to eq "Conspiracy Theory"
+        # Doesn't update back to plural
+        topic = Topic.find_or_create_for_name(name, update_attrs: true)
+        expect(topic.id).to eq new_topic.id
+        new_topic.reload
+        expect(new_topic.reload.name).to eq "Conspiracy Theory"
+      end
+      context "amp and plural" do
+        let(:name) { "Conspiracy & Theories" }
+        it "handles as expected" do
+          topic = Topic.find_or_create_for_name(name)
+          expect(topic.id).to be_present
+          new_topic = Topic.find_or_create_for_name("Conspiracy & Theory", update_attrs: true)
+          expect(new_topic.id).to eq topic.id
+          expect(new_topic.reload.name).to eq "Conspiracy & Theory"
+          # Doesn't update back to plural
+          topic = Topic.find_or_create_for_name(name, update_attrs: true)
+          expect(topic.id).to eq new_topic.id
+          expect(new_topic.reload.name).to eq "Conspiracy & Theory"
+          # It does update amp though
+          new_topic = Topic.find_or_create_for_name("Conspiracy and Theory", update_attrs: true)
+          expect(topic.id).to eq new_topic.id
+          expect(new_topic.reload.name).to eq "Conspiracy and Theory"
         end
       end
     end
   end
+
 
   describe "matching_topics" do
     let!(:topic) { FactoryBot.create(:topic, name: "Warmth") }

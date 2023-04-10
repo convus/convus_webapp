@@ -38,17 +38,42 @@ class Topic < ApplicationRecord
   def self.friendly_find_slug(str = nil)
     return nil if str.blank?
     slug = slugify(str)
-    find_by_slug(slug) || find_by_previous_slug(slug)
+    # Find by singular before find_by_previous, so it doesn't revert update
+    find_by_slug(slug) || find_by_singular(slug) || find_by_previous_slug(slug)
+  end
+
+  def self.find_by_singular(str)
+    singular = str.singularize
+    return nil if singular == str
+    result = find_by_slug(singular)
+    @found_singular = result.present?
+    result
+  end
+
+  # This is only used for create, not in normal friendly_find
+  def self.friendly_find_plural(str)
+    result = find_by_slug(slugify(str.pluralize))
+    @found_plural = result.present?
+    result
   end
 
   def self.find_or_create_for_name(name, attrs = {update_attrs: false})
-    existing = friendly_find(name)
+    @found_plural, @found_singular = false, false
+    existing = friendly_find(name) || friendly_find_plural(name)
+    # pp "singular: #{@found_singular} plural: #{@found_plural}"
     if existing.present?
-      if attrs[:update_attrs] && existing.name != name.strip
-        # Don't switch to "&" if existing uses "and"
-        unless name.match("&") && existing.name.match?(/\band\b/i) && !existing.name.match("&")
-          existing.update(name: name)
+      if attrs[:update_attrs]
+        # Don't update if the new name is a plural (or unchanged)
+        if !@found_singular && existing.name != name.strip
+          if @found_plural
+            existing.name = name
+          elsif name.match("&") && existing.name.match?(/\band\b/i) && !existing.name.match("&")
+            # Don't switch to "&" if existing uses "and"
+          else
+            existing.name = name
+          end
         end
+        existing.update(attrs.except(:update_attrs))
       end
       existing
     else

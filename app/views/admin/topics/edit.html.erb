@@ -40,3 +40,6 @@
     <%= f.submit "save", class: "btn" %>
   </div>
 <% end %>
+
+<h4 class="standard-top-offset">Direct Children</h4>
+<%= render partial: "table", locals: {topics: @topic.direct_children, skip_sortable: false} %>
