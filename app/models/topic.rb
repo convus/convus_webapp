@@ -52,7 +52,7 @@ class Topic < ApplicationRecord
 
   # This is only used for create, not in normal friendly_find
   def self.friendly_find_plural(str)
-    result = find_by_slug(slugify(str.pluralize))
+    result = find_by_slug(slugify(str&.pluralize))
     @found_plural = result.present?
     result
   end
@@ -60,7 +60,6 @@ class Topic < ApplicationRecord
   def self.find_or_create_for_name(name, attrs = {update_attrs: false})
     @found_plural, @found_singular = false, false
     existing = friendly_find(name) || friendly_find_plural(name)
-    # pp "singular: #{@found_singular} plural: #{@found_plural}"
     if existing.present?
       if attrs[:update_attrs]
         # Don't update if the new name is a plural (or unchanged)
