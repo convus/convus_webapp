@@ -76,6 +76,17 @@ class Citation < ApplicationRecord
     title.presence || pretty_url
   end
 
+  def topics_string=(val)
+    topic_ids = Topic.friendly_find_all(val&.split(",")).map(&:id)
+    citation_topics.where.not(topic_id: topic_ids).destroy_all
+    new_ids = topic_ids - citation_topics.pluck(:topic_id)
+    new_ids.each { |i| citation_topics.build(topic_id: i) }
+  end
+
+  def topics_string
+    topics.pluck(:name).join(", ")
+  end
+
   def set_calculated_attributes
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)

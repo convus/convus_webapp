@@ -74,5 +74,28 @@ RSpec.describe Citation, type: :model do
         expect(Citation.find_or_create_for_url("https://convus.org/other/things?UTM_CAMPAIGN=riverthere=false&a[]=f&a[]&a[]=z&utm_content=top-bar-latest&here=true")&.id).to eq citation.id
       end
     end
+
+    describe "topics_string" do
+      let!(:topic) { FactoryBot.create(:topic, name: "San Francisco") }
+      let(:citation) { FactoryBot.create(:citation) }
+      it "updates" do
+        expect(citation.reload.topics.pluck(:id)).to eq([])
+        citation.update(topics_string: "san francisco")
+        expect(citation.reload.topics.pluck(:id)).to eq([topic.id])
+        expect(citation.topics_string).to eq "San Francisco"
+      end
+      context "build" do
+        let(:citation) { FactoryBot.create(:citation, topics_string: " san francisco   ") }
+        it "creates" do
+          expect(citation).to be_valid
+          expect(citation.reload.topics.pluck(:id)).to eq([topic.id])
+          citation.update(topics_string: "   \n")
+          expect(citation.reload.topics.pluck(:id)).to eq([])
+          expect(citation.topics_string).to be_blank
+        end
+      end
+    end
   end
+
+
 end
