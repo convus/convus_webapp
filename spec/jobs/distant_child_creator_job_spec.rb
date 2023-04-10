@@ -37,6 +37,17 @@ RSpec.describe DistantChildCreatorJob, type: :job do
         expect(illinois.reload.direct_children.pluck(:id)).to match_array([chicago.id, springfield.id])
       end
     end
+
+    context "circular relation" do
+      before { illinois.update(parents_string: "U.S. States,Illinois") }
+      it "doesn't hang" do
+        instance.perform(united_states.id)
+        expect(chicago.reload.parents.count).to eq 3
+        expect(united_states.reload.children.count).to eq 5
+        expect(united_states.direct_children.pluck(:id)).to match_array([us_state.id])
+        expect(illinois.reload.direct_children.pluck(:id)).to match_array([chicago.id, springfield.id])
+      end
+    end
   end
 
   describe "enqueue_jobs" do

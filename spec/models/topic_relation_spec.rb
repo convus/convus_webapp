@@ -39,4 +39,12 @@ RSpec.describe TopicRelation, type: :model do
       expect(topic_parent.direct_parent_relations.pluck(:id)).to eq([])
     end
   end
+
+  describe "not_self_relation" do
+    let(:topic) { FactoryBot.create(:topic) }
+    let(:topic_relation) { TopicRelation.new(parent_id: topic.id, child_id: topic.id) }
+    it "isn't valid" do
+      expect(topic_relation).to_not be_valid
+    end
+  end
 end
