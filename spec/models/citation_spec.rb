@@ -96,6 +96,4 @@ RSpec.describe Citation, type: :model do
       end
     end
   end
-
-
 end
