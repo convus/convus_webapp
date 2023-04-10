@@ -37,6 +37,13 @@ RSpec.describe base_url, type: :request do
       end
     end
 
+    describe "show" do
+      it "redirects" do
+        get "#{base_url}/#{citation.id}"
+        expect(response).to redirect_to edit_admin_citation_path(citation)
+      end
+    end
+
     describe "edit" do
       it "renders" do
         get "#{base_url}/#{citation.id}/edit"
@@ -54,6 +61,12 @@ RSpec.describe base_url, type: :request do
         expect(flash[:success]).to be_present
         expect(citation.reload.title).to eq "new title"
         expect(citation.topics.pluck(:id)).to eq([topic.id])
+        patch "#{base_url}/#{citation.id}", params: {
+          citation: {title: "Whoop", topics_string: "Other"}
+        }
+        expect(flash[:success]).to be_present
+        expect(citation.reload.title).to eq "Whoop"
+        expect(citation.topics.pluck(:id)).to eq([])
       end
     end
   end
