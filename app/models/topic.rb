@@ -28,7 +28,11 @@ class Topic < ApplicationRecord
   scope :active, -> { where(orphaned: false) }
   scope :orphaned, -> { where(orphaned: true) }
 
-  attr_accessor :skip_update_associations
+  attr_accessor :skip_update_associations, :skip_distant_children
+
+  def self.without_parent
+    select { |t| t.parents.limit(1).none? }
+  end
 
   def self.slugify(str = nil)
     Slugifyer.slugify_and(str)
@@ -141,6 +145,8 @@ class Topic < ApplicationRecord
     return true if skip_update_associations
     topic_reviews.each { |ti| ti.update(updated_at: Time.current) }
     enqueue_rating_reconcilliation
+    return true if skip_distant_children
+    DistantChildCreatorJob.perform_async(id)
   end
 
   def enqueue_rating_reconcilliation

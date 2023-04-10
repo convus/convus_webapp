@@ -76,6 +76,15 @@ RSpec.describe base_url, type: :request do
           expect(topic.parents_string).to eq "Another, another topic"
         end
       end
+      context "Update with plural" do
+        let!(:topic) { FactoryBot.create(:topic, name: "Theory") }
+        it "updates to be plural" do
+          patch "#{base_url}/#{topic.id}", params: {topic: {name: "Theories"}}
+          expect(flash[:success]).to be_present
+          expect(topic.reload.name).to eq "Theories"
+          expect(topic.previous_slug).to eq "theory"
+        end
+      end
     end
   end
 end
