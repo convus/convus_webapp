@@ -46,13 +46,44 @@ RSpec.describe base_url, type: :request do
     end
 
     describe "update" do
-      let(:valid_params) { {name: "new name"} }
+      let(:valid_params) { {name: "new name", previous_slug: ""} }
+      let!(:og_slug) { topic.slug }
       it "updates" do
-        og_slug = topic.slug
         patch "#{base_url}/#{topic.id}", params: {topic: valid_params}
         expect(flash[:success]).to be_present
         expect(topic.reload.name).to eq "new name"
         expect(topic.previous_slug).to eq og_slug
+      end
+      context "update with previous_slug" do
+        let!(:parent) { FactoryBot.create(:topic, name: "another topic") }
+        let!(:parent2) { FactoryBot.create(:topic, name: "Another") }
+        let(:valid_params) { {name: topic.name, parents_string: "Another topic, one more", previous_slug: "RRRrrrrRRR"} }
+        it "updates" do
+          topic.update(parents_string: "Another")
+          expect(topic.reload.parents_string).to eq "Another"
+          patch "#{base_url}/#{topic.id}", params: {topic: valid_params}
+          expect(flash[:success]).to be_present
+          expect(topic.reload.slug).to eq og_slug
+          expect(topic.previous_slug).to eq "rrrrrrrrrr"
+          expect(topic.parents_string).to eq "another topic"
+          patch "#{base_url}/#{topic.id}", params: {topic: {
+            name: "Cool thing", previous_slug: "RRRrrrRRR",
+            parents_string: "Another, Another TOPIC"
+          }}
+          expect(flash[:success]).to be_present
+          expect(topic.reload.slug).to eq "cool-thing"
+          expect(topic.previous_slug).to eq og_slug
+          expect(topic.parents_string).to eq "Another, another topic"
+        end
+      end
+      context "Update with plural" do
+        let!(:topic) { FactoryBot.create(:topic, name: "Theory") }
+        it "updates to be plural" do
+          patch "#{base_url}/#{topic.id}", params: {topic: {name: "Theories"}}
+          expect(flash[:success]).to be_present
+          expect(topic.reload.name).to eq "Theories"
+          expect(topic.previous_slug).to eq "theory"
+        end
       end
     end
   end

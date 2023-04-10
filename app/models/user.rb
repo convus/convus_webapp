@@ -33,7 +33,7 @@ class User < ApplicationRecord
 
   def self.friendly_find_slug(str = nil)
     return nil if str.blank?
-    find_by_username_slug(Slugifyer.slugify(str))
+    find_by_username_slug(slugify(str))
   end
 
   def self.admin_search(str)
@@ -104,7 +104,7 @@ class User < ApplicationRecord
     self.about = nil if about.blank?
     self.api_token = self.class.generate_api_token if new_api_token?
     self.username = username&.strip
-    self.username_slug = Slugifyer.slugify(username)
+    self.username_slug = self.class.slugify(username)
     self.total_kudos ||= 0
     @should_update_followers = account_private_changed?
   end

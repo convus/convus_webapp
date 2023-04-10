@@ -29,9 +29,13 @@ class TopicReview < ApplicationRecord
     active.first || pending.first
   end
 
+  def self.slugify(str)
+    Topic.slugify(str)
+  end
+
   def self.friendly_find_slug(str = nil)
     return nil if str.blank?
-    where(slug: Slugifyer.slugify(str)).order(id: :desc).limit(1).first
+    where(slug: slugify(str)).order(id: :desc).limit(1).first
   end
 
   def self.update_incorrect_statuses!
@@ -73,7 +77,7 @@ class TopicReview < ApplicationRecord
       self.topic = Topic.find_or_create_for_name(topic_name, {skip_update_associations: true})
     end
     self.topic_name = topic&.name if topic.present?
-    self.slug = Slugifyer.slugify(topic_name)
+    self.slug = self.class.slugify(topic_name)
     self.end_at ||= start_at + STANDARD_PERIOD if start_at.present?
     # Reverse the times if they should be reversed
     if start_at.present? && end_at.present? && end_at < start_at

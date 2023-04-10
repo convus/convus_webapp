@@ -117,9 +117,9 @@ class Rating < ApplicationRecord
     target_slug = if val.is_a?(Topic)
       val.slug
     else
-      Slugifyer.slugify(val)
+      Topic.slugify(val)
     end
-    new_topics = topic_names.reject { |t| Slugifyer.slugify(t) == target_slug }
+    new_topics = topic_names.reject { |t| Topic.slugify(t) == target_slug }
     update(topics_text: new_topics.join("\n"))
   end
 

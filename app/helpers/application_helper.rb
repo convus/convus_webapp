@@ -42,6 +42,10 @@ module ApplicationHelper
     !@no_layout
   end
 
+  def render_updated_at
+    TranzitoUtils::Normalize.boolean(params[:search_updated_at])
+  end
+
   def sortable_params
     @sortable_params ||= sortable_search_params.as_json.map do |k, v|
       # Skip default sort parameters, to reduce unnecessary params
