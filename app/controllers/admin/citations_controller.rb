@@ -20,6 +20,7 @@ class Admin::CitationsController < Admin::BaseController
 
   def update
     if @citation.update(permitted_params)
+      @citation.ratings.each { |r| update_citation_rating_topics(@citation, r) }
       flash[:success] = "Citation updated"
       redirect_to admin_citations_path, status: :see_other
     else
@@ -46,5 +47,10 @@ class Admin::CitationsController < Admin::BaseController
 
   def find_citation
     @citation = Citation.find(params[:id])
+  end
+
+  def update_citation_rating_topics(citation, rating)
+    # Currently, citation topics are complicated to create backward
+    rating.add_topic(citation.reload.topics.pluck(:name))
   end
 end

@@ -68,6 +68,21 @@ RSpec.describe base_url, type: :request do
         expect(citation.reload.title).to eq "Whoop"
         expect(citation.topics.pluck(:id)).to eq([])
       end
+      context "rating present" do
+        let!(:rating) { FactoryBot.create(:rating, submitted_url: citation.url) }
+        it "updates and enqueues reconciliation" do
+          expect(rating.reload.topics.pluck(:id)).to eq([])
+          expect(citation.reload.topics.pluck(:id)).to eq([])
+          Sidekiq::Worker.clear_all
+          patch "#{base_url}/#{citation.id}", params: {citation: valid_params}
+          expect(flash[:success]).to be_present
+          expect(citation.reload.title).to eq "new title"
+          expect(citation.topics.pluck(:id)).to eq([topic.id])
+          expect(ReconcileRatingTopicsJob.jobs.count).to eq 1
+          ReconcileRatingTopicsJob.drain
+          expect(rating.reload.topics.pluck(:id)).to eq([topic.id])
+        end
+      end
     end
   end
 end

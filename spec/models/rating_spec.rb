@@ -83,6 +83,19 @@ RSpec.describe Rating, type: :model do
       ReconcileRatingTopicsJob.new.perform(rating.id)
       expect(rating.reload.topics_text).to eq "new topic"
     end
+    context "array" do
+      it "adds multiple" do
+        expect(rating.reload.topics.count).to eq(0)
+        rating.add_topic(["other", "new topic"])
+        expect(rating.reload.topics_text).to eq "other\nnew topic"
+        ReconcileRatingTopicsJob.new.perform(rating.id)
+        expect(rating.reload.topics.pluck(:name)).to match_array(["new topic", "other"])
+        rating.add_topic(["new topic", "Stuff", "other"])
+        ReconcileRatingTopicsJob.new.perform(rating.id)
+        expect(rating.reload.topics.pluck(:name)).to match_array(["new topic", "other", "Stuff"])
+        expect(rating.topics_text).to eq "new topic\nother\nStuff"
+      end
+    end
   end
 
   describe "account_public" do
