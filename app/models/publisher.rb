@@ -22,7 +22,7 @@ class Publisher < ApplicationRecord
   def set_calculated_attributes
     @remove_query_enabled = remove_query_changed? && remove_query
     self.domain = domain&.downcase
-    self.name ||= domain&.gsub(/\.[^\.]*\z/, "")
+    self.name ||= domain&.gsub(/\.[^.]*\z/, "")
   end
 
   def remove_citation_queries_if_changed
