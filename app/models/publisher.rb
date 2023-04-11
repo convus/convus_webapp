@@ -1,13 +1,17 @@
 class Publisher < ApplicationRecord
+  DEFAULT_REMOVE_QUERY_MATCHES = ["[^\.]\.*substack.com"]
+
   has_many :citations
 
   validates_uniqueness_of :domain, allow_nil: false
+  validates_presence_of :name
 
+  before_validation :set_default_remove_query, on: :create
   before_validation :set_calculated_attributes
   after_commit :remove_citation_queries_if_changed
 
   scope :remove_query, -> { where(remove_query: true) }
-  scope :retain_query, -> { where(remove_query: false) }
+  scope :keep_query, -> { where(remove_query: false) }
 
   def self.remove_query?(str = nil)
     return false if str.blank?
@@ -19,10 +23,22 @@ class Publisher < ApplicationRecord
       create(domain: domain, name: name, remove_query: remove_query)
   end
 
+  def keep_query?
+    !remove_query?
+  end
+
+  def set_default_remove_query
+    self.remove_query = true if default_remove_query?
+  end
+
   def set_calculated_attributes
     @remove_query_enabled = remove_query_changed? && remove_query
     self.domain = domain&.downcase
     self.name ||= domain&.gsub(/\.[^.]*\z/, "")
+  end
+
+  def default_remove_query?
+    DEFAULT_REMOVE_QUERY_MATCHES.any? { |q| domain.match?(/#{q}/) }
   end
 
   def remove_citation_queries_if_changed

@@ -35,7 +35,13 @@ RSpec.describe Publisher, type: :model do
       it "name doesn't remove subdomain" do
         expect(publisher).to be_valid
         expect(publisher.name).to eq "epistemink.substack"
-        expect(publisher.remove_query).to be_falsey
+        # Because substack is default truthy
+        expect(publisher.remove_query).to be_truthy
+        expect(publisher.default_remove_query?).to be_truthy
+        # But it isn't locked
+        publisher.update(remove_query: false)
+        expect(publisher.reload.remove_query?).to be_falsey
+        expect(publisher.default_remove_query?).to be_truthy
       end
     end
   end

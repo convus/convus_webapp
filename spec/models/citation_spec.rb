@@ -77,25 +77,28 @@ RSpec.describe Citation, type: :model do
         url3 = "https://convus.org/other/things?UTM_CAMPAIGN=river&there=false&utm_content=top-bar-latest&here=true"
         expect(Citation.url_to_components(url3)).to eq url_components
         expect(Citation.find_or_create_for_url(url3)&.id).to eq citation.id
-        # TODO: equivalent in Rails - but not actually everywhere, so this shouldn't work
         expect {
           Citation.find_or_create_for_url("https://convus.org/other/things?there=0&here=1")
         }.to change(Citation, :count).by 1
       end
     end
-    # describe "query array" do
-    #   let(:citation) { Citation.find_or_create_for_url("https://convus.org/other/things?here=true&a[]=&a[]=z&a[]=f") }
-    #   let(:url_components) { {host: "convus.org", path: "/other/things", query: {here: "true", a: ["f", "z"]}}.with_indifferent_access }
-    #   it "finds" do
-    #     expect(citation).to be_valid
-    #     expect(citation.url_components).to eq url_components
-    #     expect(Citation.find_or_create_for_url("https://convus.org/other/things?here=true&there=false&a[]=z&a[]=f")&.id).to eq citation.id
-    #     expect(Citation.find_or_create_for_url("https://convus.org/other/things?here=true&there=false&a[]&a[]=f&a[]&a[]=z&utm_content=top-bar-latest")&.id).to eq citation.id
-    #     expect(Citation.find_or_create_for_url("https://convus.org/other/things?UTM_CAMPAIGN=riverthere=false&a[]=f&a[]&a[]=z&utm_content=top-bar-latest&here=true")&.id).to eq citation.id
-    #     expect(Citation.matching_url_components(url_components).first&.id).to eq citation.id
-    #     expect(Citation.matching_url_components(url_components.merge(query: {here: "true"})).first&.id).to be_blank
-    #   end
-    # end
+    describe "query array" do
+      let(:citation) { Citation.find_or_create_for_url("https://convus.org/other/things?here=true&a[]=&a[]=z&a[]=f") }
+      let(:url_components) { {host: "convus.org", path: "/other/things", query: {here: "true", a: ["f", "z"]}}.with_indifferent_access }
+      it "finds" do
+        expect(citation).to be_valid
+        expect(citation.url_components).to eq url_components
+        url1 = "https://convus.org/other/things?here=true&&a[]=z&a[]=f"
+        expect(Citation.url_to_components(url1)).to eq url_components
+        expect(Citation.find_or_create_for_url(url1)&.id).to eq citation.id
+        url2 = "https://convus.org/other/things?here=true&a[]&a[]=f&a[]&a[]=z&utm_content=top-bar-latest"
+        expect(Citation.url_to_components(url2)).to eq url_components
+        expect(Citation.find_or_create_for_url(url2)&.id).to eq citation.id
+        expect(Citation.find_or_create_for_url("https://convus.org/other/things?UTM_CAMPAIGN=river&a[]=f&a[]&a[]=z&utm_content=top-bar-latest&here=true")&.id).to eq citation.id
+        expect(Citation.matching_url_components(url_components).first&.id).to eq citation.id
+        expect(Citation.matching_url_components(url_components.merge(query: {here: "true"})).first&.id).to be_blank
+      end
+    end
     describe "youtube" do
       let(:url) { "https://www.youtube.com/watch?v=5u9s8m8uaO4" }
       let!(:citation) { Citation.find_or_create_for_url(url) }
