@@ -1,5 +1,6 @@
 <% skip_sortable ||= false %>
 <% topics ||= @topics %>
+<% skip_ratings_count ||= false %>
 <div class="full-screen-table">
   <table class="table table-sm">
     <thead class="sortable">
@@ -19,7 +20,9 @@
           <small><%= sortable "previous_slug", "Previously", skip_sortable: skip_sortable %></small>
         </th>
         <th>Parents</th>
-        <th>Ratings</th>
+        <% unless skip_ratings_count %>
+          <th>Ratings</th>
+        <% end %>
         <th>
           <small>Active</small>
         </th>
@@ -48,7 +51,9 @@
             <small><%= topic.parents_string %></small>
           </td>
           <td>
-            <%= link_to admin_number_display(topic.rating_topics.count), ratings_path(search_topics: topic.slug) %>
+            <% unless skip_ratings_count %>
+              <%= link_to admin_number_display(topic.rating_topics.count), ratings_path(search_topics: [topic.slug]) %>
+            <% end %>
           </td>
           <td class="table-cell-check">
             <%= check_mark if topic.active? %>
