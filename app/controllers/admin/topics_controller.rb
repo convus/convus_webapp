@@ -5,7 +5,7 @@ class Admin::TopicsController < Admin::BaseController
 
   def index
     page = params[:page] || 1
-    @per_page = params[:per_page] || 25
+    @per_page = params[:per_page] || 1_000
     @topics = searched_topics.reorder("topics.#{sort_column} #{sort_direction}")
       .includes(:rating_topics).page(page).per(@per_page)
   end

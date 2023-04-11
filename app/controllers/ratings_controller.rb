@@ -17,7 +17,7 @@ class RatingsController < ApplicationController
     @ratings = viewable_ratings.reorder(order_scope_query)
       .includes(:citation, :user).page(page).per(@per_page)
 
-    @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.id]
+    @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.topic_id]
     set_rating_assigment_if_passed if @viewing_current_user
     @action_display_name = viewing_display_name.titleize
   end

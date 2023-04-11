@@ -1,5 +1,7 @@
 <%= content_for :main_wrapper_class, "container-padded" %>
 <div class="large-width-container">
+  <h1>Primary: <%= @viewing_primary_topic %></h1>
+  <h3><%#= current_topics %>, <%= current_topics.pluck(:id) %> <%= [primary_topic_review&.id] %></h3>
   <% search_params_present = (params.keys - %w[user controller action]).any? %>
   <% if @viewing_single_user %>
     <% unless search_params_present %>
