@@ -72,6 +72,14 @@ RSpec.describe Rating, type: :model do
     end
   end
 
+  describe "find_or_build_for" do
+    # To prevent publishing email addresses
+    it "silently rejects gmail url" do
+      rating = Rating.find_or_build_for(submitted_url: "https://mail.google.com/mail/u/0/popout?ver=13u&", title: "Something - example@gmail.com - Gmail")
+      expect(rating.id).to be_invalid
+    end
+  end
+
   describe "add_topic" do
     let(:rating) { FactoryBot.create(:rating) }
     it "adds" do
