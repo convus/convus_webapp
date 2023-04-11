@@ -25,21 +25,23 @@ class UrlCleaner
         .gsub(/\Awww\./i, "") # Remove www
     end
 
-    def normalized_url(str)
+    def normalized_url(str, remove_query: false)
       return nil unless str.present?
-      with_http(
-        without_mobile_parameters(
-          without_utm_or_ignored_queries(without_anchor(str))
-        )
-      )
+      url = remove_query ? without_query(str) : without_utm_or_ignored_queries(without_anchor(str))
+      with_http(without_mobile_parameters(url))
     end
 
     def without_utm_or_ignored_queries(str)
       return nil unless str.present?
       without = str.dup
       IGNORED_QUERY_KEYS.each { |k| without.gsub!(/&?#{k}=[^(&|$)]*/i, "") }
-      without.gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
+      without.gsub(/&?utm_[^=]*=[^(&|$)]*/i, "") # Remove UTM parameters
+        .gsub(/\?&+/, "?") # Sometimes, after removing utm parameters, there are extra &s
         .gsub(/\/?\??\z/, "") # Remove trailing slash and ?
+    end
+
+    def without_query(str)
+      str.split("?").first.gsub(/\/\z/, "") # Remove trailing slash
     end
 
     def without_anchor(str)

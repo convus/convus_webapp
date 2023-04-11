@@ -75,6 +75,7 @@ RSpec.describe UrlCleaner do
     it "returns without UTM parameters" do
       target = "https://www.nationalrating.com/2020/09/bring-back-the-bison/?somethingimportant=33333utm"
       expect(subject.without_utm_or_ignored_queries("https://www.nationalrating.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target
+      expect(subject.without_utm_or_ignored_queries("https://www.nationalrating.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&another=fff&utm_term=second")).to eq "#{target}&another=fff"
     end
     it "returns without anchor" do
       target = "https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
@@ -86,6 +87,10 @@ RSpec.describe UrlCleaner do
       target = "https://www.nytimes.com/interactive/2023/03/10/climate/buildings-carbon-dioxide-emissions-climate.html?action=click&algo=bandit-all-surfaces-time-cutoff-30_impression_cut_3_filter_new_arm_5_1&alpha=0.05&block=more_in_recirc&fellback=false&imp_id=375080313&index=1&pgtype=Article&pool=more_in_pools%2Fclimate&region=footer&surface=eos-more-in&variant=0_bandit-all-surfaces-time-cutoff-30_impression_cut_3_filter_new_arm_5_1"
       expect(subject.without_utm_or_ignored_queries(url)).to eq target
       expect(subject.normalized_url(url)).to eq target
+      no_query = "https://www.nytimes.com/interactive/2023/03/10/climate/buildings-carbon-dioxide-emissions-climate.html"
+      expect(subject.normalized_url(url, remove_query: true)).to eq no_query
+      # Trailing slash removal
+      expect(subject.normalized_url(url.gsub("html", "html/"), remove_query: true)).to eq no_query
     end
   end
 
