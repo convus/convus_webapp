@@ -5,7 +5,7 @@ class Admin::CitationsController < Admin::BaseController
 
   def index
     page = params[:page] || 1
-    @per_page = params[:per_page] || 25
+    @per_page = params[:per_page] || 50
     @citations = searched_citations.reorder("citations.#{sort_column} #{sort_direction}")
       .includes(:ratings, :topics).page(page).per(@per_page)
   end

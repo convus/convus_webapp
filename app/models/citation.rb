@@ -1,4 +1,6 @@
 class Citation < ApplicationRecord
+  belongs_to :publisher
+
   has_many :ratings
   has_many :rating_topics, through: :ratings
   has_many :citation_topics
@@ -12,20 +14,22 @@ class Citation < ApplicationRecord
 
   before_validation :set_calculated_attributes
 
-  def self.find_or_create_for_url_and_title(str, title = nil)
-    citation = find_or_create_for_url(str)
-    return citation if citation.blank? || citation.title.present?
-    citation
+  delegate :remove_query, to: :publisher, allow_nil: true
+
+  def self.find_for_url(str, url: nil, url_components: nil)
+    url ||= normalized_url(str)
+    return nil if url.blank?
+    existing = where("url ILIKE ?", url).first
+    return existing if existing.present?
+    url_components ||= url_to_components(url)
+    matching_url_components(url_components).first
   end
 
   def self.find_or_create_for_url(str, title = nil)
     url = normalized_url(str)
     return nil if url.blank?
-    existing = where("url ILIKE ?", url).first
-    if existing.blank?
-      url_components = url_to_components(url)
-      existing = matching_url_components(url_components).first
-    end
+    url_components = url_to_components(url)
+    existing = find_for_url(str, url: url, url_components: url_components)
     if existing.present?
       existing.update(title: title) if existing.title.blank? && title.present?
       return existing
@@ -36,15 +40,23 @@ class Citation < ApplicationRecord
   def self.matching_url_components(url_components)
     # TODO: fallback match path case insensitive
     matches = where("url_components_json ->> 'host' = ?", url_components[:host])
-    if url_components[:path].blank?
+    matches = if url_components[:path].blank?
       matches.where("url_components_json ->> 'path' IS NULL")
     else
       matches.where("url_components_json ->> 'path' = ?", url_components[:path])
     end
+    if Publisher.remove_query?(url_components[:host])
+      matches # Query is just ignored!
+    elsif url_components[:query].blank?
+      matches.where("url_components_json ->> 'query' IS NULL")
+    else
+      # puts matches.where("url_components_json -> 'query' = ?", url_components[:query].to_json)
+      matches.where("url_components_json -> 'query' = ?", url_components[:query].to_json)
+    end
   end
 
-  def self.normalized_url(str)
-    UrlCleaner.normalized_url(str)
+  def self.normalized_url(str, remove_query = false)
+    UrlCleaner.normalized_url(str, remove_query: remove_query)
   end
 
   def self.url_to_components(str)
@@ -91,6 +103,16 @@ class Citation < ApplicationRecord
   def set_calculated_attributes
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)
-    self.url_components_json ||= self.class.url_to_components(url)
+    self.url_components_json ||= self.class.url_to_components(url).except(:remove_query)
+    # If assigning publisher, remove query if required
+    if publisher.blank?
+      self.publisher = Publisher.find_or_create_for_domain(url_components[:host])
+      self.url = self.class.normalized_url(url, remove_query) if publisher.remove_query?
+    end
+  end
+
+  # Called if publisher updated with remove_query, in callback - so do a direct update
+  def remove_query!
+    update_columns(url: Citation.normalized_url(url, true))
   end
 end

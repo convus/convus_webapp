@@ -37,14 +37,16 @@ class Rating < ApplicationRecord
   after_commit :perform_rating_created_event_job, only: :create
   after_commit :reconcile_rating_topics
 
-  attr_accessor :skip_rating_created_event, :skip_topics_job
-
   scope :learned_something, -> { where(learned_something: true) }
   scope :changed_opinion, -> { where(changed_opinion: true) }
   scope :significant_factual_error, -> { where(significant_factual_error: true) }
   scope :not_understood, -> { where(not_understood: true) }
   scope :account_public, -> { where(account_public: true) }
   scope :account_private, -> { where(account_public: false) }
+
+  attr_accessor :skip_rating_created_event, :skip_topics_job
+
+  delegate :publisher, to: :citation, allow_nil: true
 
   def self.quality_humanized(str)
     return nil if str.blank?

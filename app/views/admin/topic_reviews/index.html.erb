@@ -32,13 +32,13 @@
         <tr>
           <td>
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= topic_review.id %></code><% end %>
-            <span class="convertTime"><%= l(topic_review.created_at, format: :convert_time) %></span>
+            <%= link_to l(topic_review.created_at, format: :convert_time), edit_admin_topic_review_path(topic_review), class: "convertTime" %>
           </td>
           <td>
             <small class="convertTime"><%= l(topic_review.updated_at, format: :convert_time) %></small>
           </td>
           <td>
-            <%= link_to topic_review.topic_name, edit_admin_topic_review_path(topic_review) %>
+            <%= topic_review.topic_name %>
           </td>
           <td>
             <%= topic_review.status %>

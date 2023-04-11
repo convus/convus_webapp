@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_08_054931) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_11_163918) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -30,6 +30,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_08_054931) do
     t.jsonb "url_components_json"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "publisher_id"
+    t.index ["publisher_id"], name: "index_citations_on_publisher_id"
   end
 
   create_table "events", force: :cascade do |t|
@@ -65,6 +67,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_08_054931) do
     t.index ["event_id"], name: "index_kudos_events_on_event_id"
     t.index ["kudos_event_kind_id"], name: "index_kudos_events_on_kudos_event_kind_id"
     t.index ["user_id"], name: "index_kudos_events_on_user_id"
+  end
+
+  create_table "publishers", force: :cascade do |t|
+    t.string "domain"
+    t.string "name"
+    t.boolean "remove_query", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "rating_topics", force: :cascade do |t|

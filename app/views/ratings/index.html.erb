@@ -165,7 +165,7 @@
       </p>
     <% end %>
   <% else %>
-    <%# duplicating this whole thing is gross %>
+    <%# duplicating this whole thing is gross. It's also duplicated in admin/citations/edit %>
     <% if @ratings.total_count > 0 %>
       <%= render partial: "table", locals: {ratings: @ratings, edit_ratings: user_subject == current_user, render_user: !@viewing_single_user, hide_private_users: hide_private_users} %>
     <% end %>

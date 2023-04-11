@@ -157,5 +157,21 @@ RSpec.describe base_url, type: :request do
         expect_hashes_to_match(json_result, {message: ["Submitted url 'ERROR' is not valid"]})
       end
     end
+    #
+    # TODO: prevent submitting gmail url
+    # context "gmail address" do
+    #   let(:error_params) { {submitted_url: "https://mail.google.com/mail/u/0/popout?ver=13u&", title: "Something - example@gmail.com - Gmail"} }
+    #   it "errors" do
+    #     expect {
+    #       post base_url, params: {review: error_params}, headers: {
+    #         "HTTP_ORIGIN" => "*",
+    #         "Authorization" => "Bearer #{current_user.api_token}"
+    #       }
+    #     }.to change(Rating, :count).by 0
+    #     expect(response.code).to eq "400"
+
+    #     expect_hashes_to_match(json_result, {message: ["Submitted url is email inbox, which isn't shareable"]})
+    #   end
+    # end
   end
 end

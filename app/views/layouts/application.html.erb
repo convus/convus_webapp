@@ -32,6 +32,7 @@
           <%= active_link "Topics", admin_topics_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= active_link "Reviews", admin_topic_reviews_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= active_link "Citations", admin_citations_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= active_link "Pubs", admin_publishers_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= link_to "Exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
           <% ratings_active = controller_name == "ratings" && viewing_display_name == "all" %>
