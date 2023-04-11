@@ -60,6 +60,9 @@
 
 .sortable .sortable-link {
   @apply text-bodytext underline;
+  &.sortable-link-narrow {
+    @apply inline-block mr-3;
+  }
 }
 
 /*
