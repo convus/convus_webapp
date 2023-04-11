@@ -110,7 +110,7 @@ class Rating < ApplicationRecord
 
   def add_topic(val)
     t_name = val.is_a?(Topic) ? val.name : val
-    update(topics_text: (topic_names + [t_name]).join("\n"))
+    update(topics_text: (topic_names + Array(t_name)).join("\n"))
   end
 
   def remove_topic(val)

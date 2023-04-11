@@ -121,16 +121,20 @@
             Only articles you haven't rated
           <% end %>
         <% end %>
-        <% if primary_topic_review.present? %>
+        <%# Topics to render: current passed topics and primary review topic %>
+        <% primary_topic_id = primary_topic_review&.topic_id %>
+        <% (current_topics + [primary_topic_review&.topic]).compact.uniq.each do |topic| %>
+          <% checked = current_topics.include?(topic) %>
           <label class="form-control-check"><%# TODO: make this a functioning label_tag %>
-            <%= check_box_tag "search_topics[]", primary_topic_review.slug, @viewing_primary_topic, class: "submitOnChange" %>
-            Only articles about <%= topic_review_display(primary_topic_review) %>
+            <%= check_box_tag "search_topics[]", topic.slug, checked, class: "submitOnChange" %>
+            Only articles about <%= topic_review_display(topic) %>
+            <% if topic.id == primary_topic_id %><small class="less-strong">(current review topic)</small><% end %>
           </label>
-          <% if @viewing_current_user %>
-            <%= label_tag :search_topic_assignment, class: "form-control-check" do %>
-              <%= check_box_tag :search_topic_assignment, true, @assigning, class: "submitOnChange" %>
-              Choose which of your ratings are applicable to <%= topic_review_display(primary_topic_review) %>
-            <% end %>
+        <% end %>
+        <% if primary_topic_review.present? && @viewing_current_user %>
+          <%= label_tag :search_topic_assignment, class: "form-control-check" do %>
+            <%= check_box_tag :search_topic_assignment, true, @assigning, class: "submitOnChange" %>
+            Choose which of your ratings are applicable to <%= topic_review_display(primary_topic_review) %>
           <% end %>
         <% end %>
       </div>

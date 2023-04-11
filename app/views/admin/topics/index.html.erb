@@ -1,4 +1,4 @@
 <h1 class="standard-top-offset mb-4">Admin topics</h1>
 <%= render partial: "/shared/current_header", locals: {collection: @topics, render_period_select: true, render_period: true} %>
 
-<%= render partial: "table", locals: {topics: @topics, skip_sortable: false} %>
+<%= render partial: "table", locals: {topics: @topics, skip_sortable: false, skip_ratings_count: false} %>
