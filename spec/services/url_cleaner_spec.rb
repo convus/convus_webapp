@@ -68,18 +68,24 @@ RSpec.describe UrlCleaner do
     end
   end
 
-  describe "without_utm" do
+  describe "without_utm_or_ignored_queries" do
     it "returns nil" do
-      expect(subject.without_utm("   \n")).to eq(nil)
+      expect(subject.without_utm_or_ignored_queries("   \n")).to eq(nil)
     end
     it "returns without UTM parameters" do
       target = "https://www.nationalrating.com/2020/09/bring-back-the-bison/?somethingimportant=33333utm"
-      expect(subject.without_utm("https://www.nationalrating.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target
+      expect(subject.without_utm_or_ignored_queries("https://www.nationalrating.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target
     end
     it "returns without anchor" do
       target = "https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true"
-      expect(subject.without_utm("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target + "#cite_note-10"
+      expect(subject.without_utm_or_ignored_queries("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target + "#cite_note-10"
       expect(subject.normalized_url("https://en.wikipedia.org/wiki/Rationale_for_the_Iraq_War?somethingimportant=true#cite_note-10")).to eq target
+    end
+    it "skips the ignored queries" do
+      url = "https://www.nytimes.com/interactive/2023/03/10/climate/buildings-carbon-dioxide-emissions-climate.html?action=click&algo=bandit-all-surfaces-time-cutoff-30_impression_cut_3_filter_new_arm_5_1&alpha=0.05&block=more_in_recirc&fellback=false&imp_id=375080313&impression_id=fe98acf1-c480-11ed-a679-93706db9db3a&index=1&pgtype=Article&pool=more_in_pools%2Fclimate&region=footer&req_id=201785425&surface=eos-more-in&variant=0_bandit-all-surfaces-time-cutoff-30_impression_cut_3_filter_new_arm_5_1&leadSource=fffff&REF=cccc"
+      target = "https://www.nytimes.com/interactive/2023/03/10/climate/buildings-carbon-dioxide-emissions-climate.html?action=click&algo=bandit-all-surfaces-time-cutoff-30_impression_cut_3_filter_new_arm_5_1&alpha=0.05&block=more_in_recirc&fellback=false&imp_id=375080313&index=1&pgtype=Article&pool=more_in_pools%2Fclimate&region=footer&surface=eos-more-in&variant=0_bandit-all-surfaces-time-cutoff-30_impression_cut_3_filter_new_arm_5_1"
+      expect(subject.without_utm_or_ignored_queries(url)).to eq target
+      expect(subject.normalized_url(url)).to eq target
     end
   end
 
@@ -107,7 +113,7 @@ RSpec.describe UrlCleaner do
     it "returns with http" do
       expect(subject.with_http("example.com")).to eq "http://example.com"
       expect(subject.with_http("http://example.com")).to eq "http://example.com"
-      expect(subject.with_http(subject.without_utm("example.com"))).to eq "http://example.com"
+      expect(subject.with_http(subject.without_utm_or_ignored_queries("example.com"))).to eq "http://example.com"
     end
     it "doesn't modify https" do
       expect(subject.with_http("https://www.nationalrating.com/2020/09/?")).to eq "https://www.nationalrating.com/2020/09/?"

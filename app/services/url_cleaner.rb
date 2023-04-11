@@ -1,4 +1,5 @@
 class UrlCleaner
+  IGNORED_QUERY_KEYS = %w[ref leadSource impression_id req_id].freeze
   class << self
     def base_domains(str)
       str = "http://#{str}" unless str.match?(/\Ahttp/i) # uri parse doesn't work without protocol
@@ -28,14 +29,16 @@ class UrlCleaner
       return nil unless str.present?
       with_http(
         without_mobile_parameters(
-          without_utm(without_anchor(str))
+          without_utm_or_ignored_queries(without_anchor(str))
         )
       )
     end
 
-    def without_utm(str)
+    def without_utm_or_ignored_queries(str)
       return nil unless str.present?
-      str.gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
+      without = str.dup
+      IGNORED_QUERY_KEYS.each { |k| without.gsub!(/&?#{k}=[^(&|$)]*/i, "") }
+      without.gsub(/&?utm_.+?(&|$)/i, "") # Remove UTM parameters
         .gsub(/\/?\??\z/, "") # Remove trailing slash and ?
     end
 
