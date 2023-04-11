@@ -1,5 +1,5 @@
 class Publisher < ApplicationRecord
-  DEFAULT_REMOVE_QUERY_MATCHES = ["[^\.]\.*substack.com"]
+  DEFAULT_REMOVE_QUERY_MATCHES = ["[^.].*substack.com"]
 
   has_many :citations
 
