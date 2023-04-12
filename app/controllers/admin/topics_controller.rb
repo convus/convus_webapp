@@ -1,7 +1,7 @@
 class Admin::TopicsController < Admin::BaseController
   include TranzitoUtils::SortableTable
   before_action :set_period, only: [:index]
-  before_action :find_topic, except: [:index]
+  before_action :find_topic, except: [:index, :new, :create]
 
   def index
     page = params[:page] || 1
@@ -13,6 +13,20 @@ class Admin::TopicsController < Admin::BaseController
   def show
     redirect_to edit_admin_topic_path(params[:id])
     nil
+  end
+
+  def new
+    @topic ||= Topic.new
+  end
+
+  def create
+    @topic = Topic.new(permitted_params)
+    if @topic.save
+      flash[:success] = "Topic created"
+      redirect_to admin_topics_path, status: :see_other
+    else
+      render :new, status: :see_other
+    end
   end
 
   def edit

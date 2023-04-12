@@ -1,4 +1,5 @@
 <h1 class="standard-top-offset mb-4">Admin topics</h1>
+<p class="mb-4"><%= link_to "New topic", new_admin_topic_path, class: "link-primary" %></p>
 <%= render partial: "/shared/current_header", locals: {collection: @topics, render_period_select: true, render_period: true} %>
 
 <%= render partial: "table", locals: {topics: @topics, skip_sortable: false, skip_ratings_count: false} %>

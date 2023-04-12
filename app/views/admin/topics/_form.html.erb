@@ -24,7 +24,9 @@
   <div class="form-row">
     <%= f.label :parents_string do %>
       Parent topics
-      <small class="less-strong">Only include <em>direct</em> parents. Does <strong>not</strong> create new topics</small>
+      <small class="less-strong">
+        Only include <em>direct</em> parents. Does <strong>not</strong> create new topics. Comma delineated
+      </small>
     <% end %>
     <%= f.text_field :parents_string, class: "form-control" %>
   </div>

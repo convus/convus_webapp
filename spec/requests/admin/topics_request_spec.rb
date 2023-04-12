@@ -52,8 +52,8 @@ RSpec.describe base_url, type: :request do
         post base_url, params: {topic: valid_params}
         expect(flash[:success]).to be_present
         new_topic = Topic.last
-        expect(topic.name).to eq "name"
-        expect(topic.direct_parents.pluck(:id)).to eq([parent.id])
+        expect(new_topic.name).to eq "name"
+        expect(new_topic.direct_parents.pluck(:id)).to eq([parent.id])
       end
     end
 
