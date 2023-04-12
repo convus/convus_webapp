@@ -37,6 +37,26 @@ RSpec.describe base_url, type: :request do
       end
     end
 
+    describe "new" do
+      it "renders" do
+        get "#{base_url}/new"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("admin/topics/new")
+      end
+    end
+
+    describe "create" do
+      let!(:parent) { FactoryBot.create(:topic, name: "Something") }
+      let(:valid_params) { {name: "name", parents_string: "something"} }
+      it "creates" do
+        post base_url, params: {topic: valid_params}
+        expect(flash[:success]).to be_present
+        new_topic = Topic.last
+        expect(topic.name).to eq "name"
+        expect(topic.direct_parents.pluck(:id)).to eq([parent.id])
+      end
+    end
+
     describe "edit" do
       it "renders" do
         get "#{base_url}/#{topic.id}/edit"
