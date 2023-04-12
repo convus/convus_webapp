@@ -54,6 +54,8 @@ class Admin::TopicsController < Admin::BaseController
   def searched_topics
     topics = Topic
 
+    topics = topics.admin_search(params[:query]) if params[:query].present?
+
     @time_range_column = (sort_column == "updated_at") ? "updated_at" : "created_at"
     topics.where(@time_range_column => @time_range)
   end

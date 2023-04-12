@@ -1,6 +1,6 @@
 <h1 class="standard-top-offset mb-2">Admin Topic reviews</h1>
 <p class="mb-4"><%= link_to "New review", new_admin_topic_review_path, class: "link-primary" %></p>
-<%= render partial: "/shared/current_header", locals: {collection: @topic_reviews, render_period_select: true} %>
+<%= render partial: "/shared/current_header", locals: {collection: @topic_reviews, render_period: true} %>
 <% skip_sortable ||= false %>
 <div class="full-screen-table">
   <table class="table table-sm">

@@ -89,6 +89,10 @@ class Topic < ApplicationRecord
     arr.flatten.map { |s| friendly_find(s) }.compact
   end
 
+  def self.admin_search(str)
+    where("name ILIKE ?", "%#{str.strip}%")
+  end
+
   def to_param
     slug
   end
