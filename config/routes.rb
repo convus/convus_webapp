@@ -45,7 +45,7 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "users#index"
     resources :users, only: [:index]
-    resources :topics, only: %i[index edit update show]
+    resources :topics
     resources :topic_reviews, except: [:show]
     resources :topic_review_citations, only: %i[edit update]
     resources :citations, only: %i[index edit update show]
