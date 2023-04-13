@@ -100,6 +100,10 @@ class Citation < ApplicationRecord
     topics.pluck(:name).join(", ")
   end
 
+  def references_filepath
+    "#{references_folder}/#{references_filename}"
+  end
+
   def set_calculated_attributes
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)
@@ -114,5 +118,19 @@ class Citation < ApplicationRecord
   # Called if publisher updated with remove_query, in callback - so do a direct update
   def remove_query!
     update_columns(url: Citation.normalized_url(url, true))
+  end
+
+  def v1_serialized
+    {id: id, url: url, filename: references_filepath}
+  end
+
+  private
+
+  def references_folder
+    Slugifyer.filename_slugify(url_components[:host])
+  end
+
+  def references_filename
+    Slugifyer.filename_slugify(pretty_url.gsub(url_components[:host], ""))
   end
 end

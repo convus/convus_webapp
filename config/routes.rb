@@ -37,6 +37,7 @@ Rails.application.routes.draw do
         collection { get :status }
       end
       resources :reviews, only: [:create]
+      resources :citations, only: %i[index show]
 
       get "*a", to: "api_v1#not_found"
     end

@@ -1,3 +1,4 @@
+# NOTE: This controller is deprecated, it's named incorrectly (should be rating)
 module API
   module V1
     class ReviewsController < APIV1Controller
