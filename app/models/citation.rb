@@ -50,7 +50,6 @@ class Citation < ApplicationRecord
     elsif url_components[:query].blank?
       matches.where("url_components_json ->> 'query' IS NULL")
     else
-      # puts matches.where("url_components_json -> 'query' = ?", url_components[:query].to_json)
       matches.where("url_components_json -> 'query' = ?", url_components[:query].to_json)
     end
   end
