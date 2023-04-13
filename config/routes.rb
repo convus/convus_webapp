@@ -37,7 +37,9 @@ Rails.application.routes.draw do
         collection { get :status }
       end
       resources :reviews, only: [:create]
-      resources :citations, only: %i[index show]
+      resources :citations, only: %i[index show] do
+        collection { post :filepath }
+      end
 
       get "*a", to: "api_v1#not_found"
     end

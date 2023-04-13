@@ -21,14 +21,14 @@ class Citation < ApplicationRecord
     return nil if url.blank?
     existing = where("url ILIKE ?", url).first
     return existing if existing.present?
-    url_components ||= url_to_components(url)
+    url_components ||= url_to_components(url, normalized: true)
     matching_url_components(url_components).first
   end
 
   def self.find_or_create_for_url(str, title = nil)
     url = normalized_url(str)
     return nil if url.blank?
-    url_components = url_to_components(url)
+    url_components = url_to_components(url, normalized: true)
     existing = find_for_url(str, url: url, url_components: url_components)
     if existing.present?
       existing.update(title: title) if existing.title.blank? && title.present?
@@ -58,8 +58,8 @@ class Citation < ApplicationRecord
     UrlCleaner.normalized_url(str, remove_query: remove_query)
   end
 
-  def self.url_to_components(str)
-    str = normalized_url(str)&.downcase
+  def self.url_to_components(str, normalized: false)
+    str = normalized ? str.downcase : normalized_url(str)&.downcase
     return {} if str.blank?
     parsed_uri = URI.parse(str)
     # if scheme is missing, parse fails to pull out the host sometimes
@@ -74,6 +74,13 @@ class Citation < ApplicationRecord
       path: path.blank? ? nil : path,
       query: query
     }.with_indifferent_access
+  end
+
+  def self.references_filepath(str)
+    host = url_to_components(str)[:host]
+    pretty_url = UrlCleaner.pretty_url(str, remove_query: Publisher.remove_query?(host))
+    [Slugifyer.filename_slugify(host),
+     Slugifyer.filename_slugify(pretty_url.gsub(host, ""))].join("/")
   end
 
   def url_components
@@ -106,7 +113,7 @@ class Citation < ApplicationRecord
   def set_calculated_attributes
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)
-    self.url_components_json ||= self.class.url_to_components(url).except(:remove_query)
+    self.url_components_json ||= self.class.url_to_components(url, normalized: true).except(:remove_query)
     # If assigning publisher, remove query if required
     if publisher.blank?
       self.publisher = Publisher.find_or_create_for_domain(url_components[:host])
@@ -119,8 +126,8 @@ class Citation < ApplicationRecord
     update_columns(url: Citation.normalized_url(url, true))
   end
 
-  def v1_serialized
-    {id: id, url: url, filename: references_filepath}
+  def api_v1_serialized
+    {id: id, url: url, filepath: references_filepath}
   end
 
   private
