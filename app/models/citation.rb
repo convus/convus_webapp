@@ -80,7 +80,7 @@ class Citation < ApplicationRecord
     host = url_to_components(str)[:host]
     pretty_url = UrlCleaner.pretty_url(str, remove_query: Publisher.remove_query?(host))
     [Slugifyer.filename_slugify(host),
-     Slugifyer.filename_slugify(pretty_url.gsub(host, ""))].join("/")
+      Slugifyer.filename_slugify(pretty_url.gsub(host, ""))].join("/")
   end
 
   def url_components
