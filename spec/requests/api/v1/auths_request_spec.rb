@@ -37,7 +37,7 @@ RSpec.describe base_url, type: :request do
         get "#{base_url}/status", params: {api_token: current_user.api_token},
           headers: {"HTTP_ORIGIN" => "*"}
         expect(response.code).to eq "200"
-        expect_hashes_to_match(json_result, {message: "authenticated"})
+        expect_hashes_to_match(json_result, {message: "authenticated", name: current_user.username})
         expect(response.headers["access-control-allow-origin"]).to eq("*")
         expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
       end
@@ -49,7 +49,7 @@ RSpec.describe base_url, type: :request do
           "Authorization" => "Bearer #{current_user.api_token}"
         }
         expect(response.code).to eq "200"
-        expect_hashes_to_match(json_result, {message: "authenticated"})
+        expect_hashes_to_match(json_result, {message: "authenticated", name: current_user.username})
         expect(response.headers["access-control-allow-origin"]).to eq("*")
         expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
       end
@@ -63,6 +63,7 @@ RSpec.describe base_url, type: :request do
       }.to_json
       expect(response.code).to eq "200"
       expect(json_result[:review_token]).to eq current_user.api_token
+      expect(json_result[:name]).to eq current_user.username
     end
 
     context "bare user" do

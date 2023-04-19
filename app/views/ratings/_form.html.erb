@@ -1,3 +1,4 @@
+<%# previously, this mirrored the browser extension. As of v0.8, that isn't true anymore %>
 <% rating ||= Rating.new %>
 <% render_menu ||= false %>
 <% editing_rating = rating.id.present? %>
@@ -23,6 +24,7 @@
   </div>
 <% end %>
 <%# Need to manually specify the URL and method here because it can't just be the path %>
+
 <% form_url = editing_rating ? rating_url(rating) : ratings_url %>
 <% collapsible_field_classes = editing_rating ? '' : 'hidden' %>
 <%= form_with(model: rating, url: form_url, method: (editing_rating ? :patch : :post), class: "pb-2") do |f| %>

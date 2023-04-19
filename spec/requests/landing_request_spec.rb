@@ -49,6 +49,7 @@ RSpec.describe "/", type: :request do
       expect(response).to redirect_to("/users/sign_in")
     end
     context "current_user present" do
+      include_context :logged_in_as_user
       it "renders" do
         get "/browser_extension_auth"
         expect(response.code).to eq "200"
