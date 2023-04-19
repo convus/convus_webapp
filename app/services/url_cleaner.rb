@@ -18,9 +18,9 @@ class UrlCleaner
       base_domains(str).last # Last in array will not have www
     end
 
-    def pretty_url(str)
+    def pretty_url(str, remove_query: false)
       return str unless str.present?
-      normalized_url(str)
+      normalized_url(str, remove_query: remove_query)
         .gsub(/\Ahttps?:\/\//i, "") # Remove https
         .gsub(/\Awww\./i, "") # Remove www
     end
@@ -33,7 +33,7 @@ class UrlCleaner
 
     def without_utm_or_ignored_queries(str)
       return nil unless str.present?
-      without = str.dup
+      without = str.dup.strip
       IGNORED_QUERY_KEYS.each { |k| without.gsub!(/&?#{k}=[^(&|$)]*/i, "") }
       without.gsub(/&?utm_[^=]*=[^(&|$)]*/i, "") # Remove UTM parameters
         .gsub(/\?&+/, "?") # Sometimes, after removing utm parameters, there are extra &s
@@ -41,12 +41,12 @@ class UrlCleaner
     end
 
     def without_query(str)
-      str.split("?").first.gsub(/\/\z/, "") # Remove trailing slash
+      str.strip.split("?").first.gsub(/\/\z/, "") # Remove trailing slash
     end
 
     def without_anchor(str)
       return nil unless str.present?
-      str.strip.gsub(/#.*\z/, "")
+      str.gsub(/#.*\z/, "")
     end
 
     # Currently only handling wikipedia. Will add more as they come!

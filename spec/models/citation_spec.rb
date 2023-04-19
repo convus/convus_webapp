@@ -150,4 +150,22 @@ RSpec.describe Citation, type: :model do
       end
     end
   end
+
+  describe "references_filepath" do
+    let(:url) { "https://www.youtube.com/watch?v=5u9s8m8uaO4" }
+    let!(:citation) { Citation.find_or_create_for_url(url) }
+    let(:target) { "youtube-com/watch-v-5u9s8m8uao4" }
+    it "returns target" do
+      expect(citation.references_filepath).to eq target
+      expect(Citation.references_filepath(url)).to eq target
+    end
+    context "subdomain" do
+      let(:url) { "korystamper.wordpress.com/2016/03/05/its-complicated-national-grammar-day-and-apostrophe-abuse" }
+      let(:target) { "korystamper-wordpress-com/2016-03-05-its-complicated-national-grammar-day-and-apostrophe-abuse" }
+      it "returns target" do
+        expect(citation.references_filepath).to eq target
+        expect(Citation.references_filepath(url)).to eq target
+      end
+    end
+  end
 end

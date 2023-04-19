@@ -62,9 +62,16 @@ RSpec.describe UrlCleaner do
       expect(subject.pretty_url("http://en.wikipedia.org/wiki/John_von_Neumann?")).to eq "en.wikipedia.org/wiki/John_von_Neumann"
       expect(subject.pretty_url("http://en.wikipedia.org/wiki/John_von_Neumann/?")).to eq "en.wikipedia.org/wiki/John_von_Neumann"
     end
-    it "returns without UTM parameters" do
-      target = "nationalrating.com/2020/09/bring-back-the-bison/?somethingimportant=33333utm"
-      expect(subject.pretty_url(" www.nationalrating.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second")).to eq target
+    context "nationalrating url" do
+      let(:url_str) { " www.nationalrating.com/2020/09/bring-back-the-bison/?utm_source=recirc-desktop&utm_medium=article&UTM_CAMPAIGN=river&somethingimportant=33333utm&utm_content=top-bar-latest&utm_term=second" }
+      it "returns without UTM parameters" do
+        target = "nationalrating.com/2020/09/bring-back-the-bison/?somethingimportant=33333utm"
+        expect(subject.pretty_url(url_str)).to eq target
+      end
+      it "returns without query if remove_query" do
+        target = "nationalrating.com/2020/09/bring-back-the-bison"
+        expect(subject.pretty_url(url_str, remove_query: true)).to eq target
+      end
     end
   end
 
