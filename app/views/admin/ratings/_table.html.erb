@@ -17,9 +17,6 @@
           <%= sortable "display_name", "Article", skip_sortable: skip_sortable %>
         </th>
         <th>Version</th>
-        <th class="break-normal text-center border-r">
-          <span title="Error?">E<span class="hidden md:inline">rror?</span></span>
-        </th>
         <th>Meta?</th>
       </tr>
     </thead>
@@ -50,9 +47,6 @@
           </td>
           <td>
             <small><%= rating.source %></small>
-          </td>
-          <td class="table-cell-check">
-            <%= check_mark if rating.significant_factual_error %>
           </td>
           <td class="table-cell-check">
             <%= check_mark if rating.meta_present? %>

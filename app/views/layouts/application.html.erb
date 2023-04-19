@@ -67,7 +67,7 @@
       <%= render partial: "shared/flash_messages" %>
       <%= yield %>
     </div>
-    <% if !Rails.env.development? %>
+    <% if !Rails.env.development? && !@skip_ga %>
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z16M1CGWN8"></script>
       <script>
         window.dataLayer = window.dataLayer || [];

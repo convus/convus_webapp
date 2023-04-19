@@ -14,6 +14,7 @@ class LandingController < ApplicationController
 
   def browser_extension_auth
     redirect_to_signup_unless_user_present!
+    @skip_ga = true # Skip Google analytics, this is a private page
   end
 
   def support
