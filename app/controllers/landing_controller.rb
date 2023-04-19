@@ -12,6 +12,10 @@ class LandingController < ApplicationController
   def browser_extensions
   end
 
+  def browser_extension_auth
+    redirect_to_signup_unless_user_present!
+  end
+
   def support
   end
 end

@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   get "/support", to: "landing#support"
   get "/browser_extensions", to: "landing#browser_extensions"
   get "/browser_extension", to: redirect("browser_extensions")
+  get "/browser_extension_auth", to: "landing#browser_extension_auth"
 
   resources :ratings, except: [:show] do
     collection { post :add_topic }

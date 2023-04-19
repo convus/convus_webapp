@@ -43,6 +43,20 @@ RSpec.describe "/", type: :request do
     end
   end
 
+  describe "/browser_extension_auth" do
+    it "redirects" do
+      get "/browser_extension_auth"
+      expect(response).to redirect_to("/users/sign_in")
+    end
+    context "current_user present" do
+      it "renders" do
+        get "/browser_extension_auth"
+        expect(response.code).to eq "200"
+        expect(response).to render_template("landing/browser_extension_auth")
+      end
+    end
+  end
+
   describe "/privacy" do
     it "renders" do
       get "/privacy"
