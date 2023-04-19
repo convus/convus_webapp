@@ -30,4 +30,4 @@
 </div>
 
 <% ratings = @citation.ratings.reorder(created_at: :desc).limit(20) %>
-<%= render partial: "/ratings/table", locals: {ratings: ratings, render_user: true, hide_private_users: false} %>
+<%= render partial: "/admin/ratings/table", locals: {ratings: ratings, skip_sortable: true} %>

@@ -20,7 +20,7 @@ module API
         params.require(:rating)
           .permit(:agreement, :changed_opinion, :citation_title, :not_understood,
             :error_quotes, :learned_something, :quality, :significant_factual_error,
-            :source, :submitted_url, :timezone, :topics_text)
+            :source, :submitted_url, :timezone, :topics_text, :citation_metadata)
           .merge(user_id: current_user.id)
       end
     end
