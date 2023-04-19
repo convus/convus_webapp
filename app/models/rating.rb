@@ -141,8 +141,14 @@ class Rating < ApplicationRecord
 
   # Added to make testing rating form errors easy
   def not_error_url
-    return true if submitted_url.downcase != "error"
-    errors.add(:submitted_url, "'#{submitted_url}' is not valid")
+    case submitted_url.downcase
+    when "error"
+      errors.add(:submitted_url, "'#{submitted_url}' is not valid")
+    when /\Ahttps:\/\/mail.google.com\/mail/
+      errors.add(:submitted_url, "looks like an email inbox - which can't be shared")
+    else
+      true
+    end
   end
 
   def account_private?
