@@ -165,6 +165,10 @@ class Rating < ApplicationRecord
     end
   end
 
+  def meta_present?
+    citation_metadata.present?
+  end
+
   def associate_citation
     self.citation_title = nil if citation_title.blank?
     self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)

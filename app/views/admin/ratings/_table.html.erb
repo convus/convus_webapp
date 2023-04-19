@@ -1,0 +1,64 @@
+<% ratings ||= @ratings %>
+<% skip_sortable ||= false %>
+<% filter_links ||= true %>
+
+<% table_classes = "table table-sm break-words max-w-full" %>
+<div class="">
+  <table class="<%= table_classes %>">
+    <thead class="sortable">
+      <tr>
+        <th>
+          <%= sortable "created_at", "Rated", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
+          <% if !skip_sortable %>
+            <%= sortable "user_id", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
+          <% end %>
+        </th>
+        <th>
+          <%= sortable "display_name", "Article", skip_sortable: skip_sortable %>
+        </th>
+        <th>Version</th>
+        <th class="break-normal text-center border-r">
+          <span title="Error?">E<span class="hidden md:inline">rror?</span></span>
+        </th>
+        <th>Meta?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% ratings.each do |rating| %>
+        <tr>
+          <td>
+            <% if display_dev_info? %><code class="only-dev-visible-small ratingId"><%= rating.id %></code><% end %>
+            <small class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
+            <small class="inline less-strong">
+              <%= link_to rating.user.username, url_for(sortable_params.merge(user: rating.user.username_slug)) %>
+            </small>
+          </td>
+          <td>
+            <% rating_text = "missing url" if rating.display_name.blank? || rating.display_name == "missing url" %>
+            <% rating_text ||= rating.display_name %>
+            <%= link_to rating_text, admin_rating_path(rating) %>
+            <%= link_to display_icon("link"), rating.citation_url %>
+
+            <span class="ml-2">
+              <%= agreement_display(rating.agreement, link: filter_links) %>
+              <%= quality_display(rating.quality, link: filter_links) %>
+              <%= learned_something_display(rating.learned_something?, link: filter_links) %>
+              <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
+              <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
+            </span>
+            <span class="block text-sm less-strong"><%= rating.topic_names.join(", ") %></span>
+          </td>
+          <td>
+            <small><%= rating.source %></small>
+          </td>
+          <td class="table-cell-check">
+            <%= check_mark if rating.significant_factual_error %>
+          </td>
+          <td class="table-cell-check">
+            <%= check_mark if rating.meta_present? %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

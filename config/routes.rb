@@ -53,6 +53,7 @@ Rails.application.routes.draw do
     resources :topic_reviews, except: [:show]
     resources :topic_review_citations, only: %i[edit update]
     resources :citations, only: %i[index edit update show]
+    resources :ratings, only: %i[index show]
     resources :publishers, only: %i[index edit update show]
   end
 
