@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   get "/support", to: "landing#support"
   get "/browser_extensions", to: "landing#browser_extensions"
   get "/browser_extension", to: redirect("browser_extensions")
+  get "/browser_extension_auth", to: "landing#browser_extension_auth"
 
   resources :ratings, except: [:show] do
     collection { post :add_topic }
@@ -37,6 +38,7 @@ Rails.application.routes.draw do
         collection { get :status }
       end
       resources :reviews, only: [:create]
+      resources :ratings, only: [:create]
       resources :citations, only: %i[index show] do
         collection { post :filepath }
       end
@@ -52,6 +54,7 @@ Rails.application.routes.draw do
     resources :topic_reviews, except: [:show]
     resources :topic_review_citations, only: %i[edit update]
     resources :citations, only: %i[index edit update show]
+    resources :ratings, only: %i[index show]
     resources :publishers, only: %i[index edit update show]
   end
 

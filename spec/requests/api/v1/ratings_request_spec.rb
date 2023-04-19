@@ -1,36 +1,36 @@
 require "rails_helper"
 
-base_url = "/api/v1/reviews"
+base_url = "/api/v1/ratings"
 RSpec.describe base_url, type: :request do
   let(:current_user) { FactoryBot.create(:user) }
-  let(:review_params) do
+  let(:rating_params) do
     {
       submitted_url: "http://example.com",
       agreement: "disagree",
       quality: "quality_high",
       citation_title: "something",
-      changed_my_opinion: "true",
+      changed_opinion: "true",
       significant_factual_error: "1",
       error_quotes: "Quote goes here",
       topics_text: "A topic\n\nAnd another topic",
       source: "chrome_extension",
       learned_something: true,
-      did_not_understand: true,
+      not_understood: true,
       timezone: "Europe/Kyiv"
     }
   end
 
   describe "create" do
     let(:user_url) { "http://test.com/u/#{current_user.username}" }
-    let(:target_response) { {message: "Review added", share: "10 kudos tday, 0 yday\n\n#{user_url}"} }
-    def expect_event_created(review)
-      expect(review.events.count).to eq 1
-      event = review.events.last
+    let(:target_response) { {message: "Rating added", share: "10 kudos tday, 0 yday\n\n#{user_url}"} }
+    def expect_event_created(rating)
+      expect(rating.events.count).to eq 1
+      event = rating.events.last
       expect(event.total_kudos).to eq 10
     end
     it "returns 200" do
       expect(Rating.count).to eq 0
-      post base_url, params: {review: review_params}.to_json, headers: json_headers.merge(
+      post base_url, params: {rating: rating_params}.to_json, headers: json_headers.merge(
         "HTTP_ORIGIN" => "*",
         "Authorization" => "Bearer #{current_user.api_token}"
       )
@@ -41,7 +41,7 @@ RSpec.describe base_url, type: :request do
       expect(Rating.count).to eq 1
       rating = Rating.last
       expect(rating.user_id).to eq current_user.id
-      expect_attrs_to_match_hash(rating, review_params.except(:changed_my_opinion, :did_not_understand), match_timezone: true)
+      expect_attrs_to_match_hash(rating, rating_params, match_timezone: true)
       expect(rating.changed_opinion).to be_truthy
       expect(rating.not_understood).to be_truthy
       expect(rating.timezone).to eq "Europe/Kyiv"
@@ -52,12 +52,11 @@ RSpec.describe base_url, type: :request do
       expect(citation.title).to eq "something"
       expect_event_created(rating)
     end
-    context "review unwrapped" do
+    context "rating unwrapped" do
       include_context :test_csrf_token
       it "returns 200" do
         expect(Rating.count).to eq 0
-        # NOTE: no review key
-        post base_url, params: review_params.to_json, headers: json_headers.merge(
+        post base_url, params: rating_params.to_json, headers: json_headers.merge(
           "HTTP_ORIGIN" => "*",
           "Authorization" => "Bearer #{current_user.api_token}"
         )
@@ -69,7 +68,7 @@ RSpec.describe base_url, type: :request do
         expect(Rating.count).to eq 1
         rating = Rating.last
         expect(rating.user_id).to eq current_user.id
-        expect_attrs_to_match_hash(rating, review_params.except(:changed_my_opinion, :did_not_understand))
+        expect_attrs_to_match_hash(rating, rating_params)
         expect(rating.changed_opinion).to be_truthy
         expect(rating.not_understood).to be_truthy
         expect(rating.default_attrs?).to be_falsey
@@ -79,26 +78,25 @@ RSpec.describe base_url, type: :request do
         expect(citation.title).to eq "something"
       end
       context "default_attrs" do
-        let(:review_params) do
+        let(:rating_params) do
           {
             submitted_url: "http://example.com",
             agreement: "neutral",
             quality: "quality_med",
             citation_title: "OG title",
-            changed_my_opinion: "0",
+            changed_opinion: "0",
             significant_factual_error: "0",
             error_quotes: "",
             topics_text: "",
             source: "chrome_extension",
             learned_something: "0",
-            did_not_understand: "0",
+            not_understood: "0",
             timezone: "Europe/Kyiv"
           }
         end
         it "returns 200" do
           expect(Rating.count).to eq 0
-          # NOTE: no review key
-          post base_url, params: review_params.to_json, headers: json_headers.merge(
+          post base_url, params: rating_params.to_json, headers: json_headers.merge(
             "HTTP_ORIGIN" => "*",
             "Authorization" => "Bearer #{current_user.api_token}"
           )
@@ -110,7 +108,7 @@ RSpec.describe base_url, type: :request do
           expect(Rating.count).to eq 1
           rating = Rating.last
           expect(rating.user_id).to eq current_user.id
-          expect_attrs_to_match_hash(rating, review_params.except(:changed_my_opinion, :did_not_understand))
+          expect_attrs_to_match_hash(rating, rating_params.except(:changed_my_opinion, :did_not_understand))
           expect(rating.changed_opinion).to be_falsey
           expect(rating.not_understood).to be_falsey
           expect(rating.default_attrs?).to be_truthy
@@ -119,7 +117,7 @@ RSpec.describe base_url, type: :request do
           expect(citation.url).to eq "http://example.com"
           expect(citation.title).to eq "OG title"
           # posting again updates
-          post base_url, params: review_params.merge(citation_title: "new title").to_json, headers: json_headers.merge(
+          post base_url, params: rating_params.merge(citation_title: "new title").to_json, headers: json_headers.merge(
             "HTTP_ORIGIN" => "*",
             "Authorization" => "Bearer #{current_user.api_token}"
           )
@@ -132,7 +130,7 @@ RSpec.describe base_url, type: :request do
     context "with invalid user in params" do
       it "returns 401" do
         expect(Rating.count).to eq 0
-        post base_url, params: {review: review_params}, headers: {
+        post base_url, params: {rating: rating_params}, headers: {
           "HTTP_ORIGIN" => "*",
           "Authorization" => "Bearer ---#{current_user.api_token}"
         }
@@ -143,11 +141,11 @@ RSpec.describe base_url, type: :request do
         expect(Rating.count).to eq 0
       end
     end
-    context "error review" do
-      let(:error_params) { review_params.merge(submitted_url: "ERROR") }
+    context "error rating" do
+      let(:error_params) { rating_params.merge(submitted_url: "ERROR") }
       it "errors" do
         expect {
-          post base_url, params: {review: error_params}, headers: {
+          post base_url, params: {rating: error_params}, headers: {
             "HTTP_ORIGIN" => "*",
             "Authorization" => "Bearer #{current_user.api_token}"
           }
@@ -155,6 +153,20 @@ RSpec.describe base_url, type: :request do
         expect(response.code).to eq "400"
 
         expect_hashes_to_match(json_result, {message: ["Submitted url 'ERROR' is not valid"]})
+      end
+    end
+    context "gmail address" do
+      let(:error_params) { {submitted_url: "https://mail.google.com/mail/u/0/popout?ver=13u&", title: "Something - example@gmail.com - Gmail"} }
+      it "errors" do
+        expect {
+          post base_url, params: {rating: error_params}, headers: {
+            "HTTP_ORIGIN" => "*",
+            "Authorization" => "Bearer #{current_user.api_token}"
+          }
+        }.to change(Rating, :count).by 0
+        expect(response.code).to eq "400"
+
+        expect_hashes_to_match(json_result, {message: ["Submitted url looks like an email inbox - which can't be shared"]})
       end
     end
   end

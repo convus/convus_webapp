@@ -185,8 +185,6 @@ module ApplicationHelper
     c_name.singularize.titleize
   end
 
-  private
-
   def display_icon(str)
     image_tag("#{str}_icon.svg", class: "w-4 inline-block")
   end

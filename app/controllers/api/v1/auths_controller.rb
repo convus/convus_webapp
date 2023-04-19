@@ -5,7 +5,7 @@ module API
 
       def status
         if current_user.present?
-          render json: {message: "authenticated"}
+          render json: {message: "authenticated", name: current_user.username}
         end
       end
 
@@ -14,7 +14,7 @@ module API
         password = params.dig(:user, :password) || params[:password]
         user = User.find_by_email(email)
         if user&.valid_password?(password)
-          render json: {review_token: user.api_token}
+          render json: {review_token: user.api_token, name: user.username}
         else
           render(json: {message: "Incorrect email or password"}, status: :unauthorized)
         end

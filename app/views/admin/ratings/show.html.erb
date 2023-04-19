@@ -1,0 +1,15 @@
+<%= content_for :main_wrapper_class, "container-padded" %>
+<div class="large-width-container mb-5">
+  <h1 class="standard-top-offset mb-4">Admin Rating</h1>
+</div>
+
+<%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true} %>
+
+<div class="large-width-container">
+  <h3 class="mt-5">Metadata:</h3>
+  <% if @rating.meta_present? %>
+    <%= pretty_print_json(@rating.citation_metadata) %>
+  <% else %>
+    No metadata
+  <% end %>
+</div>

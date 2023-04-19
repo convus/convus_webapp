@@ -1,6 +1,6 @@
 <%# NOTE: when you add new search_ params here, also add it to hidden_search_fields %>
 <% viewing ||= controller_name.humanize %>
-<% current_header_keys = %w[search_topics] %>
+<% current_header_keys = %w[search_topics user_subject] %>
 <% header_present ||= (current_header_keys & params.keys).any? %>
 <% if header_present %>
   <div>
@@ -11,6 +11,16 @@
         <small class="less-strong">
           <%= viewing %> for
           <%= link_to "all topics", url_for(sortable_params.merge(search_topics: nil)) %>
+        </small>
+      </p>
+    <% end %>
+    <% if user_subject.present? %>
+      <p class="mb-2">
+        <%= viewing %> for
+        <strong><%= user_subject.username %></strong>
+        <small class="less-strong">
+          <%= viewing %> for
+          <%= link_to "all users", url_for(sortable_params.merge(user: nil)) %>
         </small>
       </p>
     <% end %>
