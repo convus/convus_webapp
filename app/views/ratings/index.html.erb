@@ -124,7 +124,7 @@
           <% end %>
           <% if !@not_rated || @disagree_following %>
             <%= label_tag :search_disagree_following, class: "form-control-check" do %>
-              <%= check_box_tag :search_disagree_following, true, @not_rated, class: "submitOnChange" %>
+              <%= check_box_tag :search_disagree_following, true, @disagree_following, class: "submitOnChange" %>
               Only ratings by people you follow which disagree with your ratings
               <% if @disagree_following %>
                 <span class="less-strong">sorry Andy, this doesn't work yet 😘</span>
