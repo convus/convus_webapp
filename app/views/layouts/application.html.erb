@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <% if @render_api_token %><%# put at the top so it is loaded absolutely as quickly as possible %>
+      <meta name="ext-token" content="<%= current_user.api_token %>"/>
+      <meta name="ext-username" content="<%= current_user.username %>"/>
+    <% end %>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
     <meta content="width=device-width,initial-scale=1" name="viewport"/>
     <title><%= page_title %></title>
