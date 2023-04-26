@@ -126,9 +126,9 @@
             <%= label_tag :search_disagree_following, class: "form-control-check" do %>
               <%= check_box_tag :search_disagree_following, true, @disagree_following, class: "submitOnChange" %>
               Only following disagreed ratings
-              <small class="block">Articles you rated differently from the people you follow (high vs low quality or agreement)</small>
+              <small>articles you rated differently from the people you follow (high vs low quality/agreement)</small>
               <% if @disagree_following %>
-                <span class="less-strong">sorry Andy, this doesn't work yet 😘</span>
+                <span class="less-strong block ml-5">Sorry Andy, this doesn't work yet 😘</span>
               <% end %>
             <% end %>
           <% end %>

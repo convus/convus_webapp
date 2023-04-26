@@ -41,6 +41,7 @@ class Rating < ApplicationRecord
   scope :changed_opinion, -> { where(changed_opinion: true) }
   scope :significant_factual_error, -> { where(significant_factual_error: true) }
   scope :not_understood, -> { where(not_understood: true) }
+  scope :not_finished, -> { where(not_finished: true) }
   scope :account_public, -> { where(account_public: true) }
   scope :account_private, -> { where(account_public: false) }
 
@@ -96,8 +97,8 @@ class Rating < ApplicationRecord
 
   def default_attrs?
     quality_med? && neutral? && topics_text.blank? && !changed_opinion &&
-      !learned_something && !not_understood && !significant_factual_error &&
-      error_quotes.blank?
+      !learned_something && !not_understood && !not_finished &&
+      !significant_factual_error && error_quotes.blank?
   end
 
   # HACK HACK HACK - improve
@@ -123,6 +124,14 @@ class Rating < ApplicationRecord
     end
     new_topics = topic_names.reject { |t| Topic.slugify(t) == target_slug }
     update(topics_text: new_topics.join("\n"))
+  end
+
+  def citation_metadata_string=(val)
+    self.citation_metadata = MetadataParser.parse_string(val)
+  end
+
+  def citation_metadata_string
+    citation_metadata.to_json
   end
 
   # reconciliation makes the topics match, skip loading

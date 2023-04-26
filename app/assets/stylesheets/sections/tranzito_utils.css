@@ -25,6 +25,26 @@
   margin-bottom: 2px;
 }
 
+/* Code */
+
+.code-small {
+  font-size: 80%;
+  line-height: 1.5;
+/*  word-break: break-all;*/
+}
+/*.code-small.no-break {
+  word-break: normal;
+}*/
+.code-small pre {
+  margin-bottom: 0;
+  padding: 0;
+  border: none;
+}
+.code-small code {
+  position: relative;
+}
+
+
 /*
 
   This pagination stuff is gross

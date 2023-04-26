@@ -1,6 +1,6 @@
 <% ratings ||= @ratings %>
 <% skip_sortable ||= false %>
-<% filter_links ||= true %>
+<% filter_links ||= !skip_sortable %>
 
 <% table_classes = "table table-sm break-words max-w-full" %>
 <div class="">
@@ -42,6 +42,7 @@
               <%= learned_something_display(rating.learned_something?, link: filter_links) %>
               <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
               <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
+              <%= not_finished_display(rating.not_finished?, link: filter_links) %>
             </span>
             <span class="block text-sm less-strong"><%= rating.topic_names.join(", ") %></span>
           </td>

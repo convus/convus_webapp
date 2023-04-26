@@ -24,7 +24,7 @@ module ApplicationHelper
 
   # Overrides tranzito_utils, enables using a block
   def active_link(name = nil, options = nil, html_options = nil, &block)
-    html_options, options, name = options, name, block if block_given?
+    html_options, options, name = options, name, block if block
     options ||= {}
 
     match_controller = html_options.delete(:match_controller)
@@ -138,7 +138,7 @@ module ApplicationHelper
   def not_understood_display(not_understood, link: false)
     return nil unless not_understood
     if link
-      link_to(display_icon("error"),
+      link_to(display_icon("not_understood"),
         url_for(sortable_params.merge(search_not_understood: !@search_not_understood)),
         title: "Didn't understand")
     else
@@ -149,7 +149,7 @@ module ApplicationHelper
   def not_finished_display(not_finished, link: false)
     return nil unless not_finished
     if link
-      link_to(display_icon("error"),
+      link_to(display_icon("not_finished"),
         url_for(sortable_params.merge(search_not_finished: !@search_not_finished)),
         title: "Did not finish")
     else
