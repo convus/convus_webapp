@@ -126,11 +126,11 @@ class Rating < ApplicationRecord
     update(topics_text: new_topics.join("\n"))
   end
 
-  def citation_metadata_string=(val)
+  def citation_metadata_str=(val)
     self.citation_metadata = MetadataParser.parse_string(val)
   end
 
-  def citation_metadata_string
+  def citation_metadata_str
     citation_metadata.to_json
   end
 
@@ -190,6 +190,7 @@ class Rating < ApplicationRecord
     self.topics_text = nil if topics_text.blank?
     self.error_quotes = nil if error_quotes.blank?
     self.account_public = calculated_account_public?
+    self.citation_metadata ||= []
   end
 
   def perform_rating_created_event_job

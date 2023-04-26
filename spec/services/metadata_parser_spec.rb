@@ -28,4 +28,21 @@ RSpec.describe MetadataParser do
       end
     end
   end
+
+  describe "ignored_tag?" do
+    it "ignores nonce" do
+      expect(subject.ignored_tag?({"name" => "html-safe-nonce"})).to be_truthy
+      expect(subject.ignored_tag?({"name" => "nonce-html-safe"})).to be_truthy
+      expect(subject.ignored_tag?({"name" => "nonced-html-safe"})).to be_falsey
+    end
+    it "ignores hash" do
+      expect(subject.ignored_tag?({"name" => "html-safe-hash"})).to be_truthy
+      expect(subject.ignored_tag?({"name" => "hashparty"})).to be_falsey
+    end
+    it "ignores hmac" do
+      expect(subject.ignored_tag?({"name" => "visitor-HMAC"})).to be_truthy
+      expect(subject.ignored_tag?({"name" => "hMaC"})).to be_truthy
+      expect(subject.ignored_tag?({"name" => "hmacing"})).to be_falsey
+    end
+  end
 end

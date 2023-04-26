@@ -6,6 +6,8 @@ module API
 
       def create
         pparams = permitted_params
+        # I have NO idea why I have to override this like this, but - it fixes the param not showing up
+        pparams[:citation_metadata_str] ||= params[:citation_metadata_str] if params[:citation_metadata_str].present?
         rating = Rating.find_or_build_for(pparams.merge(skip_rating_created_event: true))
         if rating.save
           RatingCreatedEventJob.new.perform(rating.id, rating)
@@ -20,8 +22,7 @@ module API
         params.require(:rating)
           .permit(:agreement, :changed_opinion, :citation_title, :not_understood,
             :error_quotes, :learned_something, :quality, :significant_factual_error,
-            :source, :submitted_url, :timezone, :topics_text, :not_finished,
-            :citation_metadata_string)
+            :source, :submitted_url, :timezone, :topics_text, :citation_metadata_str, :not_finished)
           .merge(user_id: current_user.id)
       end
     end
