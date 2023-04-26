@@ -34,10 +34,18 @@
         <% if in_admin? %>
           <%= active_link "Users", admin_users_path, class: "main-nav-link ml-2", match_controller: true %>
           <%= active_link "Topics", admin_topics_path, class: "main-nav-link ml-2", match_controller: true %>
-          <%= active_link "Rev", admin_topic_reviews_path, class: "main-nav-link ml-2", match_controller: true %>
-          <%= active_link "Cit", admin_citations_path, class: "main-nav-link ml-2", match_controller: true %>
-          <%= active_link "Pubs", admin_publishers_path, class: "main-nav-link ml-2", match_controller: true %>
-          <%= active_link "Rat", admin_ratings_path, class: "main-nav-link ml-2", match_controller: true %>
+          <%= active_link admin_topic_reviews_path, class: "main-nav-link ml-2", match_controller: true do %>
+            <span title="Reviews">Rev<span class="hidden md:inline">iews</span></span>
+          <% end %>
+          <%= active_link admin_citations_path, class: "main-nav-link ml-2", match_controller: true do %>
+            <span title="Citations">Cit<span class="hidden md:inline">ations</span></span>
+          <% end %>
+          <%= active_link admin_publishers_path, class: "main-nav-link ml-2", match_controller: true do %>
+            <span title="Publishers">Pub<span class="hidden md:inline">lishers</span></span>
+          <% end %>
+          <%= active_link admin_ratings_path, class: "main-nav-link ml-2", match_controller: true do %>
+            <span title="Ratings">Rat<span class="hidden md:inline">ings</span></span>
+          <% end %>
           <%= link_to "Exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
           <% ratings_active = controller_name == "ratings" && viewing_display_name == "all" %>
