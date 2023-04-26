@@ -129,6 +129,17 @@ module ApplicationHelper
     end
   end
 
+  def not_finished_display(not_finished, link: false)
+    return nil unless not_finished
+    if link
+      link_to(display_icon("error"),
+        url_for(sortable_params.merge(search_not_finished: !@search_not_finished)),
+        title: "Did not finish")
+    else
+      content_tag(:span, display_icon("not_finished"), title: "Did not finish")
+    end
+  end
+
   def citation_display(citation, html_opts = {}, citation_url: nil, display_name: nil)
     display_name ||= citation&.display_name || "missing"
     citation_url ||= citation&.url
@@ -186,6 +197,6 @@ module ApplicationHelper
   end
 
   def display_icon(str)
-    image_tag("#{str}_icon.svg", class: "w-4 inline-block")
+    image_tag("icons/#{str}_icon.svg", class: "w-4 inline-block")
   end
 end
