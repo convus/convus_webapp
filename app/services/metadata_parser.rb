@@ -1,9 +1,9 @@
 class MetadataParser
   IGNORED_NAMES = %w[viewport charset request-id google-site-verification
-    application-name apple-itunes-app slack-app-id].freeze
-  IGNORED_NAME_MATCHES = %w[nonce hash hmac].freeze
+    application-name apple-itunes-app slack-app-id advertising robots].freeze
+  IGNORED_NAME_MATCHES = %w[nonce hash hmac msapplication].freeze
 
-  IGNORED_PROPERTIES = ["fb:app_id"].freeze
+  IGNORED_PROPERTIES = ["fb:app_id", "fb:admins", "fb:pages"].freeze
   IGNORED_EQUIV = %w[origin-trial content-security-policy].freeze
 
   def self.parse_string(str)
