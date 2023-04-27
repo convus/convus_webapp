@@ -29,6 +29,40 @@ RSpec.describe MetadataParser do
     end
   end
 
+  describe "parse_array" do
+    context "json_ld" do
+      let(:json_ld_str) { "[{\"@context\":\"https://schema.org\",\"@type\":\"NewsArticle\",\"mainEntityOfPage\":\"https://www.vox.com/today-explained-podcast/2023/3/11/23634087/dc-crime-bill-congress-overrule-biden-no-veto\",\"url\":\"https://www.vox.com/today-explained-podcast/2023/3/11/23634087/dc-crime-bill-congress-overrule-biden-no-veto\",\"headline\":\"Why Congress — and Biden — killed DC’s crime bill\",\"description\":\"Washington just owned DC.\",\"speakable\":{\"@type\":\"SpeakableSpecification\",\"xpath\":[\"/html/head/title\",\"/html/head/meta[@name='description']/@content\"]},\"datePublished\":\"2023-03-11T07:00:00-05:00\",\"dateModified\":\"2023-03-11T07:00:00-05:00\",\"author\":[{\"@type\":\"Person\",\"name\":\"Miles Bryan\"}],\"publisher\":{\"@type\":\"Organization\",\"name\":\"Vox\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://cdn.vox-cdn.com/uploads/chorus_asset/file/13668548/google_amp.0.png\",\"width\":600,\"height\":60}},\"articleSection\":\"Today, Explained\",\"keywords\":[\"Front Page\",\"Politics\",\"Podcasts\",\"Policy\",\"Today, Explained\"],\"image\":[{\"@type\":\"ImageObject\",\"url\":\"https://cdn.vox-cdn.com/thumbor/0ro0ofBU37xkLZfqou79peurSiQ=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/24494606/GettyImages_1472152372.jpg\",\"width\":1400,\"height\":1400},{\"@type\":\"ImageObject\",\"url\":\"https://cdn.vox-cdn.com/thumbor/1ONgy2FkjPtL-xJKWrGhih6BBMQ=/1400x1050/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/24494606/GettyImages_1472152372.jpg\",\"width\":1400,\"height\":1050},{\"@type\":\"ImageObject\",\"url\":\"https://cdn.vox-cdn.com/thumbor/akI2NtWTRzfiYlZ3ie7_U3DKx7Y=/1400x788/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/24494606/GettyImages_1472152372.jpg\",\"width\":1400,\"height\":788}],\"thumbnailUrl\":\"https://cdn.vox-cdn.com/thumbor/0ro0ofBU37xkLZfqou79peurSiQ=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/24494606/GettyImages_1472152372.jpg\"}]" }
+      # NOTE: metadata is a method name in rspec, so avoid using it
+      let(:m_data) { {"json_ld" => [json_ld_str]} }
+      let(:target_keys) { %w[@context @type articleSection author dateModified datePublished description headline image keywords mainEntityOfPage publisher speakable thumbnailUrl url] }
+      it "parses json_ld" do
+        result = subject.parse_array([m_data])
+        expect(result.count).to eq 1
+        json_ld = result.first["json_ld"]
+        expect(json_ld.count).to eq 1
+        expect(json_ld.first.keys.sort).to eq target_keys
+      end
+      context "json_ld not wrapped" do
+        let(:m_data) { {"json_ld" => json_ld_str} }
+        it "parses if json_ld isn't wrapped" do
+          result = subject.parse_array([m_data])
+          expect(result.count).to eq 1
+          json_ld = result.first["json_ld"]
+          expect(json_ld.count).to eq 1
+          expect(json_ld.first.keys.sort).to eq target_keys
+        end
+      end
+      context "json_ld invalid" do
+        let(:m_data) { {"json_ld" => [{stuff: "fff"}]} }
+        it "doesn't error if json_ld is invalid" do
+          result = subject.parse_array([m_data])
+          expect(result.count).to eq 1
+          expect(result.first).to eq m_data
+        end
+      end
+    end
+  end
+
   describe "ignored_tag?" do
     it "ignores nonce" do
       expect(subject.ignored_tag?({"name" => "html-safe-nonce"})).to be_truthy

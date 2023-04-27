@@ -28,8 +28,11 @@
 /* Code */
 
 .code-small {
+  @apply bg-gray-50 p-1;
   font-size: 80%;
   line-height: 1.5;
+  overflow-x: scroll;
+
 /*  word-break: break-all;*/
 }
 /*.code-small.no-break {
