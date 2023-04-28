@@ -15,6 +15,12 @@ class Admin::RatingsController < Admin::BaseController
   def show
   end
 
+  def destroy
+    @rating.destroy
+    flash[:success] = "Rating deleted!"
+    redirect_to admin_ratings_path
+  end
+
   private
 
   def sortable_columns

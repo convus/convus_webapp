@@ -1,6 +1,10 @@
 <%= content_for :main_wrapper_class, "container-padded" %>
 <div class="large-width-container mb-5">
   <h1 class="standard-top-offset mb-4">Admin Rating</h1>
+  <p class="mb-4">
+    <%= button_to "Delete rating", {controller: "ratings", action: "destroy", id: @rating.id}, method: :delete, class: "gray-link"  %>
+  </p>
+
 </div>
 
 <%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true} %>

@@ -21,9 +21,9 @@ class Rating < ApplicationRecord
   belongs_to :citation
   belongs_to :user
 
-  has_many :events, as: :target
+  has_many :events, as: :target, dependent: :destroy
   has_many :kudos_events, through: :events
-  has_many :rating_topics
+  has_many :rating_topics, dependent: :destroy
   has_many :topics, through: :rating_topics
   has_many :topic_review_votes
 
