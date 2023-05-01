@@ -31,15 +31,15 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(rating.metadata_at).to be_within(1).of Time.current
         expect(rating.citation_metadata.count).to eq 33
         expect(instance.metadata_authors(rating.citation_metadata)).to eq(["Jonathan Blitzer"])
-        expect(instance.metadata_published_at(rating.citation_metadata).to_i).to be_within(1).of 1682713348
-        expect(instance.metadata_published_updated_at(rating.citation_metadata)).to be_nil
-        expect(instance.metadata_published_updated_at_value(rating.citation_metadata).to_i).to be_within(1).of 1682713348
+        expect(instance.metadata_published_at(rating.citation_metadata)&.to_i).to be_within(1).of 1682713348
+        expect(instance.metadata_published_updated_at(rating.citation_metadata)&.to_i).to be_within(1).of 1682713348
         expect(instance.metadata_description(rating.citation_metadata)).to eq "Jonathan Blitzer writes about the House Republican’s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy’s weakened position as Speaker."
         expect(instance.metadata_canonical_url(rating.citation_metadata)).to be_nil
         expect(instance.metadata_word_count(rating.citation_metadata)).to eq 2_037
         expect(instance.metadata_paywall(rating.citation_metadata)).to be_falsey
         instance.perform(citation.id)
         citation.reload
+        pp citation.attributes.slice(*metadata_attrs.keys.map(&:to_s))
         expect_attrs_to_match_hash(citation, metadata_attrs)
         # Updates publisher
         expect(publisher.reload.name).to eq "The New Yorker"
@@ -59,6 +59,24 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at, :paywall))
           # even with override, it doesn't update publisher name
           expect(publisher.reload.name).to eq "Cool publisher"
+        end
+      end
+      context "earlier metadata" do
+        let(:older_string) { '[{"content":"New Yorked","property":"og:site_name"},{"name":"author","content":"Condé Nast"},{"content":"2023-01-28T20:22:28.267Z","property":"article:published_time"},{"content":"2023-02-28T20:22:28.267Z","property":"article:modified_time"},{"content":"Earlier.","property":"twitter:description"},{"word_count":286}]' }
+        let(:rating_older) { FactoryBot.create(:rating, submitted_url: submitted_url, citation_metadata_str: older_string) }
+        it "parses but is overridden" do
+          expect(rating.citation_id).to eq rating_older.citation_id
+          rating_older.update(metadata_at: Time.current - 4.hours)
+          expect(instance.metadata_authors(rating_older.citation_metadata)).to eq(["Condé Nast"])
+          expect(instance.metadata_published_at(rating_older.citation_metadata)&.to_i).to be_within(1).of 1674937348
+          expect(instance.metadata_published_updated_at(rating_older.citation_metadata)&.to_i).to be_within(1).of 1677615748
+          expect(instance.metadata_description(rating_older.citation_metadata)).to eq "Earlier."
+          expect(instance.metadata_canonical_url(rating_older.citation_metadata)).to be_nil
+          # expect(instance.metadata_word_count(rating_older.citation_metadata)).to eq 286 # Lazy ivar useage
+          expect(instance.metadata_paywall(rating_older.citation_metadata)).to be_falsey
+          instance.perform(citation.id)
+          citation.reload
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at))
         end
       end
     end

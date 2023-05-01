@@ -9,6 +9,7 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
   def perform(id, override = false)
     citation = Citation.find(id)
     ratings_metadata = ordered_ratings(citation).pluck(:citation_metadata)
+    @publisher = citation.publisher
     new_attributes = METADATA_ATTRS.map do |attrib|
       next if citation.send(attrib).present? && !override
       # returns first value that matches
@@ -16,11 +17,14 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
         self.send("metadata_#{attrib}", rmd)
       end.first
       val.present? ? [attrib, val] : nil
+    end.compact.to_h
+    if new_attributes[:published_updated_at].present? && new_attributes[:published_updated_at] <= new_attributes[:published_at]
+      new_attributes[:published_updated_at] = nil
     end
     citation.update(new_attributes.compact.to_h)
-    unless citation.publisher.name_assigned?
+    unless @publisher.name_assigned?
       val = ratings_metadata.lazy.filter_map { |rmd| metadata_publisher(rmd) }.first
-      citation.publisher.update(name: val) if val.present?
+      @publisher.update(name: val) if val.present?
     end
     citation
   end
@@ -54,11 +58,6 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
   end
 
   def metadata_published_updated_at(rating_metadata)
-    modified = metadata_published_updated_at_value(rating_metadata)
-    metadata_published_at(rating_metadata) == modified ? nil : modified
-  end
-
-  def metadata_published_updated_at_value(rating_metadata)
     time = json_ld(rating_metadata)&.dig("dateModified")
     time ||= prop_or_name_content(rating_metadata, "article:modified_time")
     TranzitoUtils::TimeParser.parse(time)
@@ -80,7 +79,6 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
 
   def metadata_paywall(rating_metadata)
     ld = json_ld(rating_metadata)
-    # pp ld&.key?("isAccessibleForFree")
     return !ld["isAccessibleForFree"] if ld&.key?("isAccessibleForFree")
     false # TODO: include publisher
   end
@@ -96,7 +94,7 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     end
     word_count = rating_metadata.detect { |i| i["word_count"].present? }&.dig("word_count")
     return nil if word_count.blank? || word_count < 100
-    word_count - publisher.base_word_count
+    word_count - @publisher.base_word_count
   end
 
   def prop_or_name_content(rating_metadata, prop_or_name)
@@ -112,6 +110,7 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
 
   def json_ld(rating_metadata)
     json_lds = rating_metadata.select { |m| m.keys.include?("json_ld") }
+    return nil if json_lds.blank?
     raise "Multiple json_ld elements: #{json_lds.map(&:keys)}" if json_lds.count > 1
     attrs = {}
     json_lds.first.values.flatten.each do |data|
