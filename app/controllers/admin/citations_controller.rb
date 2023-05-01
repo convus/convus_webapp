@@ -42,7 +42,9 @@ class Admin::CitationsController < Admin::BaseController
   end
 
   def permitted_params
-    params.require(:citation).permit(:title, :topics_string)
+    params.require(:citation).permit(:title, :topics_string, :authors_str, :timezone,
+      :published_at, :published_updated_at, :description, :canonical_url,
+      :word_count, :paywall)
   end
 
   def find_citation

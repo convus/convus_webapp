@@ -27,6 +27,9 @@ class ReconcileRatingTopicsJob < ApplicationJob
 
     # Update citation topics - also enqueues other ratings that need updates
     update_citation_topics(rating.id, rating.citation, topic_ids)
+    if rating.metadata_at.present?
+      UpdateCitationMetadataFromRatingsJob.perform_async(rating.citation.id)
+    end
   end
 
   # NOTE: with assignment of topics from citations, when multiple ratings have a topic

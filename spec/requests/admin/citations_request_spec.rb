@@ -68,6 +68,11 @@ RSpec.describe base_url, type: :request do
         expect(citation.reload.title).to eq "Whoop"
         expect(citation.topics.pluck(:id)).to eq([])
       end
+      context "metadata" do
+        let(:metadata_params) do
+          valid_attrs.merge()
+        end
+      end
       context "rating present" do
         let!(:rating) { FactoryBot.create(:rating, submitted_url: citation.url) }
         it "updates and enqueues reconciliation" do
