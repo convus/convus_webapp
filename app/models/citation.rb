@@ -114,6 +114,7 @@ class Citation < ApplicationRecord
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)
     self.url_components_json ||= self.class.url_to_components(url, normalized: true).except(:remove_query)
+    self.authors ||= []
     # If assigning publisher, remove query if required
     if publisher.blank?
       self.publisher = Publisher.find_or_create_for_domain(url_components[:host])

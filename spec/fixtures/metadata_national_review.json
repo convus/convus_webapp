@@ -1,0 +1,229 @@
+[
+  {
+    "name": "p:domain_verify",
+    "content": "d01ad36f4033677a2e4883eee1a13af1"
+  },
+  {
+    "name": "description",
+    "content": "Last week’s groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America."
+  },
+  {
+    "name": "generator",
+    "content": "WordPress 6.2"
+  },
+  {
+    "name": "sailthru.date",
+    "content": "2020-09-16 06:30:59"
+  },
+  {
+    "name": "sailthru.title",
+    "content": "How the Private Sector Is Shaping the Future of Nuclear Energy"
+  },
+  {
+    "name": "sailthru.author",
+    "content": "Christopher Barnard"
+  },
+  {
+    "name": "sailthru.description",
+    "content": "We should remain optimistic about the future of nuclear energy in America."
+  },
+  {
+    "name": "sailthru.image.full",
+    "content": "https://www.nationalreview.com/wp-content/uploads/2020/09/power-lines.jpg?fit=2057%2C1200"
+  },
+  {
+    "name": "sailthru.image.thumb",
+    "content": "https://www.nationalreview.com/wp-content/uploads/2020/09/power-lines.jpg?fit=50%2C29"
+  },
+  {
+    "name": "twitter-handle",
+    "content": "@ChrisBarnardDL"
+  },
+  {
+    "name": "twitter-url",
+    "content": "https://twitter.com/ChrisBarnardDL"
+  },
+  {
+    "name": "p:domain_verify",
+    "content": "d01ad36f4033677a2e4883eee1a13af1"
+  },
+  {
+    "name": "onesignal",
+    "content": "wordpress-plugin"
+  },
+  {
+    "content": "article",
+    "property": "og:type",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "How the Private Sector Is Shaping the Future of Nuclear Energy | National Review",
+    "property": "og:title",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/",
+    "property": "og:url",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "We should remain optimistic about the future of nuclear energy in America.",
+    "property": "og:description",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "2020-09-16T10:30:59+00:00",
+    "property": "article:published_time",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "2020-09-16T08:46:42+00:00",
+    "property": "article:modified_time",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "National Review",
+    "property": "og:site_name",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "https://www.nationalreview.com/wp-content/uploads/2020/09/power-lines.jpg?fit=2057%2C1200",
+    "property": "og:image",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "2057",
+    "property": "og:image:width",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "1200",
+    "property": "og:image:height",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "",
+    "property": "og:image:alt",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "en_US",
+    "property": "og:locale",
+    "data-react-helmet": "true"
+  },
+  {
+    "name": "sailthru.date",
+    "content": "2020-09-16 06:30:59",
+    "data-react-helmet": "true"
+  },
+  {
+    "name": "sailthru.title",
+    "content": "How the Private Sector Is Shaping the Future of Nuclear Energy",
+    "data-react-helmet": "true"
+  },
+  {
+    "name": "sailthru.author",
+    "content": "Christopher Barnard",
+    "data-react-helmet": "true"
+  },
+  {
+    "name": "sailthru.description",
+    "content": "We should remain optimistic about the future of nuclear energy in America.",
+    "data-react-helmet": "true"
+  },
+  {
+    "name": "sailthru.image.full",
+    "content": "https://www.nationalreview.com/wp-content/uploads/2020/09/power-lines.jpg?fit=2057%2C1200",
+    "data-react-helmet": "true"
+  },
+  {
+    "name": "sailthru.image.thumb",
+    "content": "https://www.nationalreview.com/wp-content/uploads/2020/09/power-lines.jpg?fit=50%2C29",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "How the Private Sector Is Shaping the Future of Nuclear Energy",
+    "property": "twitter:text:title",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "https://www.nationalreview.com/wp-content/uploads/2020/09/power-lines.jpg?fit=2057%2C1200&#038;w=640",
+    "property": "twitter:image",
+    "data-react-helmet": "true"
+  },
+  {
+    "content": "summary_large_image",
+    "property": "twitter:card",
+    "data-react-helmet": "true"
+  },
+  {
+    "name": "description",
+    "content": "Last week’s groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America.",
+    "data-react-helmet": "true"
+  },
+  {
+    "word_count": 10049
+  },
+  {
+    "json_ld": [
+      {
+        "url": "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/",
+        "@type": "NewsArticle",
+        "image": {
+          "url": "https://www.nationalreview.com/wp-content/uploads/2020/09/power-lines.jpg?fit=2057%2C1200",
+          "@type": "ImageObject",
+          "width": 2057,
+          "height": 1200
+        },
+        "author": [
+          "Christopher Barnard"
+        ],
+        "creator": [
+          "Christopher Barnard"
+        ],
+        "hasPart": [
+
+        ],
+        "@context": "http://schema.org",
+        "headline": "How the Private Sector Is Shaping the Future of Nuclear Energy",
+        "keywords": [
+          "topic: Capital Matters",
+          "topic: Energy & Environment",
+          "topic: The Economy",
+          "NRPLUS Member Articles",
+          "Nuclear Power",
+          "section: Article",
+          "Premium Content"
+        ],
+        "metadata": {
+          "post_id": 851369,
+          "postType": "post",
+          "wordcount": 991,
+          "hide_from_widgets": false
+        },
+        "publisher": {
+          "url": "https://www.nationalreview.com",
+          "logo": {
+            "url": "https://www.nationalreview.com/wp-content/themes/national-review/static/images/logo.png",
+            "name": "National Review",
+            "@type": "ImageObject",
+            "width": "360",
+            "height": "180"
+          },
+          "name": "National Review",
+          "@type": "Organization",
+          "@context": "http://schema.org"
+        },
+        "dateCreated": "2020-09-16T06:30:59-04:00",
+        "dateModified": "2020-09-16T04:46:42-04:00",
+        "thumbnailUrl": "https://www.nationalreview.com/wp-content/uploads/2020/09/power-lines.jpg?fit=789%2C460",
+        "datePublished": "2020-09-16T06:30:59-04:00",
+        "articleSection": [
+          "articles"
+        ],
+        "mainEntityOfPage": "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/",
+        "isAccessibleForFree": ""
+      }
+    ]
+  }
+]

@@ -174,6 +174,25 @@ RSpec.describe Rating, type: :model do
     end
   end
 
+  describe "citation_metadata_str" do
+    let(:rating) { Rating.new }
+    it "assigns metadata_at" do
+      rating.citation_metadata_str = '[{"something": "aaaa"}]'
+      expect(rating.citation_metadata).to eq([{"something" => "aaaa"}])
+      expect(rating.metadata_at).to be_within(1).of Time.current
+    end
+    context "create" do
+      let(:rating) { FactoryBot.create(:rating, citation_metadata_str: '[{"ff": "zzz"}]') }
+      it "assigns metadata_at, blanks if blanked" do
+        expect(rating.reload.citation_metadata).to eq([{"ff" => "zzz"}])
+        expect(rating.metadata_at).to be_within(1).of Time.current
+        rating.update(citation_metadata_str: 'null')
+        expect(rating.reload.citation_metadata).to eq([])
+        expect(rating.metadata_at).to be_blank
+      end
+    end
+  end
+
   describe "default_vote_score" do
     let(:rating) { Rating.new }
     it "is 0" do

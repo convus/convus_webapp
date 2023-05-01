@@ -31,12 +31,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_01_163602) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "publisher_id"
-    t.text "authors"
+    t.jsonb "authors"
     t.datetime "published_at"
     t.datetime "published_updated_at"
-    t.integer "wordcount"
     t.text "description"
     t.text "canonical_url"
+    t.integer "word_count"
+    t.boolean "paywall", default: false
     t.index ["publisher_id"], name: "index_citations_on_publisher_id"
   end
 

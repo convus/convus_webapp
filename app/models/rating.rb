@@ -44,6 +44,7 @@ class Rating < ApplicationRecord
   scope :not_finished, -> { where(not_finished: true) }
   scope :account_public, -> { where(account_public: true) }
   scope :account_private, -> { where(account_public: false) }
+  scope :with_metadata, -> { where.not(citation_metadata: {}) }
 
   attr_accessor :skip_rating_created_event, :skip_topics_job
 

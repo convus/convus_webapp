@@ -103,7 +103,7 @@ class User < ApplicationRecord
     self.role ||= "normal_user"
     self.about = nil if about.blank?
     self.api_token = self.class.generate_api_token if new_api_token?
-    self.username = username&.strip
+    self.username = username&.strip || "u#{id || User.order(:id).last.id + 1}"
     self.username_slug = self.class.slugify(username)
     self.total_kudos ||= 0
     @should_update_followers = account_private_changed?

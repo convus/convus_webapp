@@ -75,6 +75,7 @@ GEM
     builder (3.2.4)
     chartkick (4.2.1)
     coderay (1.1.3)
+    commonmarker (0.23.9)
     concurrent-ruby (1.1.10)
     connection_pool (2.3.0)
     crack (0.4.5)
@@ -377,6 +378,7 @@ DEPENDENCIES
   bootsnap (>= 1.1.0)
   chartkick
   coderay
+  commonmarker
   cssbundling-rails
   devise
   dotenv-rails
