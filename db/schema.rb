@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_26_191704) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_01_163602) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -31,6 +31,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_191704) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "publisher_id"
+    t.text "authors"
+    t.datetime "published_at"
+    t.datetime "published_updated_at"
+    t.integer "wordcount"
+    t.text "description"
+    t.text "canonical_url"
     t.index ["publisher_id"], name: "index_citations_on_publisher_id"
   end
 
@@ -75,6 +81,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_191704) do
     t.boolean "remove_query", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "base_word_count"
   end
 
   create_table "rating_topics", force: :cascade do |t|
@@ -108,6 +115,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_191704) do
     t.boolean "account_public", default: false
     t.jsonb "citation_metadata"
     t.boolean "not_finished", default: false
+    t.datetime "metadata_at"
     t.index ["citation_id"], name: "index_ratings_on_citation_id"
     t.index ["user_id"], name: "index_ratings_on_user_id"
   end

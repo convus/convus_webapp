@@ -47,7 +47,7 @@ class Admin::PublishersController < Admin::BaseController
   end
 
   def permitted_params
-    params.require(:publisher).permit(:name, :remove_query)
+    params.require(:publisher).permit(:name, :remove_query, :base_word_count)
   end
 
   def find_publisher

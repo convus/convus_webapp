@@ -53,14 +53,16 @@ RSpec.describe base_url, type: :request do
     end
 
     describe "update" do
-      let(:valid_params) { {name: "99 Percent Invisible", remove_query: true} }
+      let(:valid_params) { {name: "99 Percent Invisible", remove_query: true, base_word_count: '30'} }
       it "updates" do
         expect(publisher.reload.name).to eq "99percentinvisible"
         expect(publisher.remove_query).to be_falsey
+        expect(publisher.base_word_count).to eq 100
         patch "#{base_url}/#{publisher.id}", params: {publisher: valid_params}
         expect(flash[:success]).to be_present
         expect(publisher.reload.name).to eq valid_params[:name]
         expect(publisher.remove_query).to be_truthy
+        expect(publisher.base_word_count).to eq 30
         # And again
         patch "#{base_url}/#{publisher.id}", params: {
           publisher: {name: "Whoop", remove_query: "0"}
@@ -68,6 +70,7 @@ RSpec.describe base_url, type: :request do
         expect(flash[:success]).to be_present
         expect(publisher.reload.name).to eq "Whoop"
         expect(publisher.remove_query).to be_falsey
+        expect(publisher.base_word_count).to eq 30
       end
       context "rating present" do
         let(:url) { "http://99percentinvisible.org/episode/a-whale-oiled-machine?f=z&c=d&b=3" }

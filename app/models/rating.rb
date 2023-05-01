@@ -128,6 +128,8 @@ class Rating < ApplicationRecord
 
   def citation_metadata_str=(val)
     self.citation_metadata = MetadataParser.parse_string(val)
+    self.metadata_at = Time.current if citation_metadata.present?
+    citation_metadata
   end
 
   def citation_metadata_str
@@ -191,6 +193,7 @@ class Rating < ApplicationRecord
     self.error_quotes = nil if error_quotes.blank?
     self.account_public = calculated_account_public?
     self.citation_metadata ||= []
+    self.metadata_at = nil if citation_metadata.blank?
   end
 
   def perform_rating_created_event_job
