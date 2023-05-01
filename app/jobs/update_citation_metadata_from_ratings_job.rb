@@ -44,11 +44,12 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
   end
 
   def metadata_description(rating_metadata)
-    description = json_ld(rating_metadata)&.dig("description")
-    description ||= prop_or_name_content(rating_metadata, "og:description")
-    description ||= prop_or_name_content(rating_metadata, "twitter:description")
-    description ||= prop_or_name_content(rating_metadata, "description")
-    description
+    # I think the longer the better, for now...
+    descriptions = [json_ld(rating_metadata)&.dig("description")]
+    descriptions << prop_or_name_content(rating_metadata, "og:description")
+    descriptions << prop_or_name_content(rating_metadata, "twitter:description")
+    descriptions << prop_or_name_content(rating_metadata, "description")
+    descriptions.reject(&:blank?).max_by(&:length)
   end
 
   def metadata_published_at(rating_metadata)
@@ -79,7 +80,9 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
 
   def metadata_paywall(rating_metadata)
     ld = json_ld(rating_metadata)
-    return !ld["isAccessibleForFree"] if ld&.key?("isAccessibleForFree")
+    if ld&.key?("isAccessibleForFree")
+      return !TranzitoUtils::Normalize.boolean(ld["isAccessibleForFree"])
+    end
     false # TODO: include publisher
   end
 

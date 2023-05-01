@@ -39,7 +39,6 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(instance.metadata_paywall(rating.citation_metadata)).to be_falsey
         instance.perform(citation.id)
         citation.reload
-        pp citation.attributes.slice(*metadata_attrs.keys.map(&:to_s))
         expect_attrs_to_match_hash(citation, metadata_attrs)
         # Updates publisher
         expect(publisher.reload.name).to eq "The New Yorker"
@@ -80,7 +79,29 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         end
       end
     end
-    # "Last week’s groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America."
+    context "national review" do
+      let(:citation_metadata_str) { File.read(Rails.root.join("spec", "fixtures", "metadata_national_review.json")) }
+      let(:submitted_url) { "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/" }
+      let(:metadata_attrs) do
+        {
+          authors: ["Christopher Barnard"],
+          published_at: Time.at(1600252259),
+          published_updated_at: nil,
+          description: "Last week’s groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America.",
+          canonical_url: nil,
+          word_count: 9_949,
+          paywall: true
+        }
+      end
+      it "parses" do
+        instance.perform(citation.id)
+        citation.reload
+        expect_attrs_to_match_hash(citation, metadata_attrs)
+        # Updates publisher
+        expect(publisher.reload.name).to eq "National Review"
+        expect(publisher.name_assigned?).to be_truthy
+      end
+    end
   end
 
   describe "json_ld" do
