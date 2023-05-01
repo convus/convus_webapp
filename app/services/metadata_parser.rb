@@ -6,8 +6,8 @@ class MetadataParser
   IGNORED_PROPERTIES = ["fb:app_id", "fb:admins", "fb:pages"].freeze
   IGNORED_EQUIV = %w[origin-trial content-security-policy X-UA-Compatible].freeze
 
-  def self.parse_string(str)
-    return [] if str == "null"
+  def self.parse_string(str = nil)
+    return [] if str.blank? || str == "null"
     parse_array(JSON.parse(str))
   end
 

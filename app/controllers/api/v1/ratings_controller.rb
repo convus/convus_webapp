@@ -1,4 +1,3 @@
-# NOTE: This controller is deprecated, it's named incorrectly (should be rating)
 module API
   module V1
     class RatingsController < APIV1Controller
@@ -6,8 +5,8 @@ module API
 
       def create
         pparams = permitted_params
-        # I have NO idea why I have to override this like this, but - it fixes the param not showing up
-        pparams[:citation_metadata_str] ||= params[:citation_metadata_str] if params[:citation_metadata_str].present?
+        # I don't understand why this needs to be overridden, but otherwise it's ignored
+        pparams[:citation_metadata_str] = params[:citation_metadata_str]
         rating = Rating.find_or_build_for(pparams.merge(skip_rating_created_event: true))
         if rating.save
           RatingCreatedEventJob.new.perform(rating.id, rating)
