@@ -7,6 +7,7 @@ class MetadataParser
   IGNORED_EQUIV = %w[origin-trial content-security-policy X-UA-Compatible].freeze
 
   def self.parse_string(str)
+    return [] if str == "null"
     parse_array(JSON.parse(str))
   end
 

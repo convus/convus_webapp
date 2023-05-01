@@ -27,6 +27,12 @@ RSpec.describe MetadataParser do
         expect(result).to eq target
       end
     end
+    context "null" do
+      it "returns nil" do
+        expect(subject.parse_string("null")).to eq([])
+        expect(subject.parse_string("[null]")).to eq([])
+      end
+    end
   end
 
   describe "parse_array" do

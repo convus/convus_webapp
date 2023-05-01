@@ -61,7 +61,7 @@ RSpec.describe base_url, type: :request do
       include_context :test_csrf_token
       it "returns 200" do
         expect(Rating.count).to eq 0
-        post base_url, params: rating_params.to_json, headers: json_headers.merge(
+        post base_url, params: rating_params.merge(citation_metadata_str: "null").to_json, headers: json_headers.merge(
           "HTTP_ORIGIN" => "*",
           "Authorization" => "Bearer #{current_user.api_token}"
         )
@@ -90,7 +90,20 @@ RSpec.describe base_url, type: :request do
           expect(rating.citation_metadata).to eq citation_metadata.as_json
         end
         context "updating" do
+          let!(:rating) { Rating.create(user: current_user, submitted_url: ratings_with_citation_metadata[:submitted_url]) }
           it "updates" do
+            expect(rating).to be_valid
+            expect(Rating.count).to eq 1
+            post base_url, params: ratings_with_citation_metadata.to_json,
+              headers: json_headers.merge(
+                "HTTP_ORIGIN" => "*",
+                "Authorization" => "Bearer #{current_user.api_token}"
+              )
+            expect(response.code).to eq "200"
+
+            rating = Rating.last
+            expect_rating_matching_params(json_result, target_response, rating)
+            expect(rating.citation_metadata).to eq citation_metadata.as_json
           end
         end
       end
