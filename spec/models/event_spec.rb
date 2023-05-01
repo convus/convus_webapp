@@ -46,7 +46,7 @@ RSpec.describe Event, type: :model do
     #   end
     # end
     context "rating" do
-      it "destroys just the rating" do
+      it "destroys the rating and kudos" do
         kudos_event.reload
         expect(KudosEventKind.count).to eq 1
         expect(KudosEvent.count).to eq 1
@@ -55,7 +55,7 @@ RSpec.describe Event, type: :model do
         expect(User.count).to eq 1
         rating.destroy
         expect(KudosEventKind.count).to eq 1
-        expect(KudosEvent.count).to eq 1
+        expect(KudosEvent.count).to eq 0
         expect(Rating.count).to eq 0
         expect(Citation.count).to eq 1
         expect(User.count).to eq 1

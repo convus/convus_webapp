@@ -108,6 +108,8 @@
                   <%= quality_display(rating.quality, link: filter_links) %>
                   <%= learned_something_display(rating.learned_something?, link: filter_links) %>
                   <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
+                  <%= not_understood_display(rating.not_understood?, link: filter_links) %>
+                  <%= not_finished_display(rating.not_finished?, link: filter_links) %>
                   <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
                 </span>
               </span>

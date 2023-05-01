@@ -1,4 +1,5 @@
 class RatingsController < ApplicationController
+  include RateSearchable
   include TranzitoUtils::SortableTable
   before_action :set_period, only: %i[index] # Actually, will want to set after assigning via
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
@@ -130,7 +131,7 @@ class RatingsController < ApplicationController
       @can_view_ratings = user_subject.account_public? || @viewing_current_user ||
         user_subject.follower_approved?(current_user)
     end
-    searched_ratings
+    searched_ratings(viewed_ratings) # in RateSearchable
   end
 
   def viewing_display_name
@@ -166,56 +167,6 @@ class RatingsController < ApplicationController
     else
       @can_view_ratings ? user_subject.ratings : Rating.none
     end
-  end
-
-  def searched_ratings
-    ratings = viewed_ratings
-
-    if current_topics.present?
-      ratings = ratings.matching_topics(current_topics)
-    end
-    if current_user.present? && TranzitoUtils::Normalize.boolean(params[:search_not_rated]) && !@viewing_current_user
-      ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
-    end
-    ratings = ratings.display_name_search(params[:query]) if params[:query].present?
-
-    if TranzitoUtils::Normalize.boolean(params[:search_disagree])
-      @search_agreement = "disagree"
-      ratings = ratings.disagree
-    elsif TranzitoUtils::Normalize.boolean(params[:search_agree])
-      @search_agreement = "agree"
-      ratings = ratings.agree
-    end
-
-    if TranzitoUtils::Normalize.boolean(params[:search_quality_low])
-      @search_quality = "low"
-      ratings = ratings.quality_low
-    elsif TranzitoUtils::Normalize.boolean(params[:search_quality_high])
-      @search_quality = "high"
-      ratings = ratings.quality_high
-    end
-
-    if TranzitoUtils::Normalize.boolean(params[:search_learned_something])
-      @search_learned_something = true
-      ratings = ratings.learned_something
-    end
-    if TranzitoUtils::Normalize.boolean(params[:search_changed_opinion])
-      @search_changed_opinion = true
-      ratings = ratings.changed_opinion
-    end
-
-    if TranzitoUtils::Normalize.boolean(params[:search_significant_factual_error])
-      @search_significant_factual_error = true
-      ratings = ratings.significant_factual_error
-    end
-
-    if TranzitoUtils::Normalize.boolean(params[:search_not_understood])
-      @search_not_understood = true
-      ratings = ratings.not_understood
-    end
-
-    @time_range_column = "created_at"
-    ratings.where(@time_range_column => @time_range)
   end
 
   def set_rating_assigment_if_passed

@@ -35,7 +35,7 @@ class Admin::TopicsController < Admin::BaseController
   def update
     if @topic.update(permitted_params)
       flash[:success] = "Topic updated"
-      redirect_to admin_topics_path, status: :see_other
+      redirect_to edit_admin_topic_path(@topic), status: :see_other
     else
       render :edit, status: :see_other
     end

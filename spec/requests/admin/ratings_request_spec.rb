@@ -45,5 +45,28 @@ RSpec.describe base_url, type: :request do
         expect(response).to render_template("admin/ratings/show")
       end
     end
+
+    describe "destroy" do
+      let(:rating) { FactoryBot.create(:rating_with_topic) }
+      let(:citation) { rating.citation }
+      it "renders" do
+        # Sidekiq creates the kudos event and rating_topic
+        Sidekiq::Testing.inline! { expect(rating).to be_valid }
+
+        expect(Rating.count).to eq 1
+        expect(KudosEvent.count).to eq 1
+        expect(Event.count).to eq 1
+        expect(RatingTopic.count).to eq 1
+        expect(citation.reload.topics.count).to eq 1
+        delete "#{base_url}/#{rating.id}"
+        expect(flash[:success]).to be_present
+        expect(citation.reload.topics.count).to eq 1
+        expect(Rating.count).to eq 0
+        expect(KudosEvent.count).to eq 0
+        expect(Event.count).to eq 0
+        expect(RatingTopic.count).to eq 0
+        expect(citation.reload.topics.count).to eq 1
+      end
+    end
   end
 end

@@ -116,9 +116,21 @@
         <% end %>
 
         <% if current_user.present? && !@viewing_current_user %>
-          <%= label_tag :search_not_rated, class: "form-control-check" do %>
-            <%= check_box_tag :search_not_rated, true, params[:search_not_rated], class: "submitOnChange" %>
-            Only articles you haven't rated
+          <% if !@disagree_following || @not_rated %>
+            <%= label_tag :search_not_rated, class: "form-control-check" do %>
+              <%= check_box_tag :search_not_rated, true, @not_rated, class: "submitOnChange" %>
+              Only articles you haven't rated
+            <% end %>
+          <% end %>
+          <% if !@not_rated || @disagree_following %>
+            <%= label_tag :search_disagree_following, class: "form-control-check" do %>
+              <%= check_box_tag :search_disagree_following, true, @disagree_following, class: "submitOnChange" %>
+              Only following disagreed ratings
+              <small>articles you rated differently from the people you follow (high vs low quality/agreement)</small>
+              <% if @disagree_following %>
+                <span class="less-strong block ml-5">Sorry Andy, this doesn't work yet 😘</span>
+              <% end %>
+            <% end %>
           <% end %>
         <% end %>
         <%# Topics to render: current passed topics and primary review topic %>

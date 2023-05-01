@@ -22,9 +22,13 @@ a, .link {
 @layer components {
   .btn {
     @apply inline-flex text-bodytext no-underline leading-5 items-center border border-gray-500 bg-gray-100 cursor-pointer
-      text-base rounded-lg py-1 px-3 justify-center disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:cursor-not-allowed;
+      text-base rounded-lg py-1 px-3 justify-center;
     &:hover, &.active, &:active {
       @apply bg-gray-200 border-gray-600
     }
+    &:disabled, &.disabled {
+      @apply bg-gray-200 hover:border-gray-500 hover:bg-gray-200 cursor-not-allowed;
+    }
   }
 }
+

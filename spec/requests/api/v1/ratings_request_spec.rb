@@ -15,7 +15,8 @@ RSpec.describe base_url, type: :request do
       topics_text: "A topic\n\nAnd another topic",
       source: "chrome_extension",
       learned_something: true,
-      not_understood: true,
+      not_understood: "true",
+      not_finished: 1,
       timezone: "Europe/Kyiv"
     }
   end
@@ -28,54 +29,83 @@ RSpec.describe base_url, type: :request do
       event = rating.events.last
       expect(event.total_kudos).to eq 10
     end
-    it "returns 200" do
-      expect(Rating.count).to eq 0
-      post base_url, params: {rating: rating_params}.to_json, headers: json_headers.merge(
-        "HTTP_ORIGIN" => "*",
-        "Authorization" => "Bearer #{current_user.api_token}"
-      )
-      expect(response.code).to eq "200"
-      expect_hashes_to_match(json_result, target_response)
+
+    def expect_rating_matching_params(result, target, rating)
+      expect_hashes_to_match(json_result, target)
       expect(response.headers["access-control-allow-origin"]).to eq("*")
       expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
+
       expect(Rating.count).to eq 1
-      rating = Rating.last
       expect(rating.user_id).to eq current_user.id
-      expect_attrs_to_match_hash(rating, rating_params, match_timezone: true)
+      expect_attrs_to_match_hash(rating, rating_params)
       expect(rating.changed_opinion).to be_truthy
       expect(rating.not_understood).to be_truthy
-      expect(rating.timezone).to eq "Europe/Kyiv"
-      expect(rating.created_date).to be_present
+      expect(rating.default_attrs?).to be_falsey
       expect(rating.citation).to be_present
       citation = rating.citation
       expect(citation.url).to eq "http://example.com"
       expect(citation.title).to eq "something"
       expect_event_created(rating)
     end
+    it "returns 200" do
+      expect(Rating.count).to eq 0
+      post base_url, params: {rating: rating_params}.to_json, headers: json_headers.merge(
+        "HTTP_ORIGIN" => "*",
+        "Authorization" => "Bearer #{current_user.api_token}"
+      )
+      rating = Rating.last
+      expect_rating_matching_params(json_result, target_response, rating)
+      expect(rating.citation_metadata).to eq([])
+    end
     context "rating unwrapped" do
       include_context :test_csrf_token
       it "returns 200" do
         expect(Rating.count).to eq 0
-        post base_url, params: rating_params.to_json, headers: json_headers.merge(
+        post base_url, params: rating_params.merge(citation_metadata_str: "null").to_json, headers: json_headers.merge(
           "HTTP_ORIGIN" => "*",
           "Authorization" => "Bearer #{current_user.api_token}"
         )
         expect(response.code).to eq "200"
 
-        expect_hashes_to_match(json_result, target_response)
-        expect(response.headers["access-control-allow-origin"]).to eq("*")
-        expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
-        expect(Rating.count).to eq 1
         rating = Rating.last
-        expect(rating.user_id).to eq current_user.id
-        expect_attrs_to_match_hash(rating, rating_params)
-        expect(rating.changed_opinion).to be_truthy
-        expect(rating.not_understood).to be_truthy
-        expect(rating.default_attrs?).to be_falsey
-        expect(rating.citation).to be_present
-        citation = rating.citation
-        expect(citation.url).to eq "http://example.com"
-        expect(citation.title).to eq "something"
+        expect_rating_matching_params(json_result, target_response, rating)
+        expect(rating.citation_metadata).to eq([])
+      end
+      context "metadata" do
+        let(:citation_metadata) do
+          [{something: "fff"}, {other: "ffff"}]
+        end
+        let(:ratings_with_citation_metadata) { rating_params.merge(citation_metadata_str: citation_metadata.to_json) }
+        it "returns 200" do
+          expect(Rating.count).to eq 0
+          post base_url, params: ratings_with_citation_metadata.to_json,
+            headers: json_headers.merge(
+              "HTTP_ORIGIN" => "*",
+              "Authorization" => "Bearer #{current_user.api_token}"
+            )
+          expect(response.code).to eq "200"
+
+          rating = Rating.last
+          expect_rating_matching_params(json_result, target_response, rating)
+          expect(rating.citation_metadata).to eq citation_metadata.as_json
+        end
+        context "updating" do
+          let!(:rating) { Rating.create(user: current_user, submitted_url: ratings_with_citation_metadata[:submitted_url]) }
+          it "updates" do
+            expect(rating).to be_valid
+            expect(Rating.count).to eq 1
+            post base_url, params: ratings_with_citation_metadata.to_json,
+              headers: json_headers.merge(
+                "HTTP_ORIGIN" => "*",
+                "Authorization" => "Bearer #{current_user.api_token}"
+              )
+            expect(response.code).to eq "200"
+
+            rating = Rating.last
+            expect_rating_matching_params(json_result, target_response, rating)
+            expect(rating.citation_metadata).to eq citation_metadata.as_json
+          end
+        end
       end
       context "default_attrs" do
         let(:rating_params) do
@@ -91,6 +121,7 @@ RSpec.describe base_url, type: :request do
             source: "chrome_extension",
             learned_something: "0",
             not_understood: "0",
+            not_finished: "0",
             timezone: "Europe/Kyiv"
           }
         end
@@ -111,6 +142,7 @@ RSpec.describe base_url, type: :request do
           expect_attrs_to_match_hash(rating, rating_params.except(:changed_my_opinion, :did_not_understand))
           expect(rating.changed_opinion).to be_falsey
           expect(rating.not_understood).to be_falsey
+          expect(rating.not_finished).to be_falsey
           expect(rating.default_attrs?).to be_truthy
           expect(rating.citation).to be_present
           citation = rating.citation

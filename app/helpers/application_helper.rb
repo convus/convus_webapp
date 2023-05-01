@@ -9,6 +9,7 @@ module ApplicationHelper
     "(#{user.ratings.created_yesterday.count} ratings and #{user.total_kudos_yesterday} kudos yesterday)"
   end
 
+  # Overrides tranzito_utils, correct page title for convus
   def page_title
     return @page_title if defined?(@page_title)
     suffix = in_admin? ? nil : "— Convus"
@@ -19,6 +20,22 @@ module ApplicationHelper
       [action_display_name, controller_display_name].compact.join(" - "),
       suffix
     ].compact.join(" ")
+  end
+
+  # Overrides tranzito_utils, enables using a block
+  def active_link(name = nil, options = nil, html_options = nil, &block)
+    html_options, options, name = options, name, block if block
+    options ||= {}
+
+    match_controller = html_options.delete(:match_controller)
+    html_options = convert_options_to_data_attributes(options, html_options)
+
+    url = url_for(options)
+    html_options["href".freeze] ||= url
+    html_options["class".freeze] ||= ""
+    html_options["class".freeze] += " active" if current_page_active?(url, match_controller)
+
+    content_tag("a".freeze, name || url, html_options, &block)
   end
 
   def render_user_page_description?
@@ -121,11 +138,22 @@ module ApplicationHelper
   def not_understood_display(not_understood, link: false)
     return nil unless not_understood
     if link
-      link_to(display_icon("error"),
+      link_to(display_icon("not_understood"),
         url_for(sortable_params.merge(search_not_understood: !@search_not_understood)),
         title: "Didn't understand")
     else
       content_tag(:span, display_icon("not_understood"), title: "Didn't understand")
+    end
+  end
+
+  def not_finished_display(not_finished, link: false)
+    return nil unless not_finished
+    if link
+      link_to(display_icon("not_finished"),
+        url_for(sortable_params.merge(search_not_finished: !@search_not_finished)),
+        title: "Did not finish")
+    else
+      content_tag(:span, display_icon("not_finished"), title: "Did not finish")
     end
   end
 
@@ -186,6 +214,6 @@ module ApplicationHelper
   end
 
   def display_icon(str)
-    image_tag("#{str}_icon.svg", class: "w-4 inline-block")
+    image_tag("icons/#{str}_icon.svg", class: "w-4 inline-block")
   end
 end

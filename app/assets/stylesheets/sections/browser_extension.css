@@ -1,6 +1,5 @@
 /* extension popup ID - make sure it matches the extension! */
 #body-popup, #new_rating.no-layout {
-  @apply pt-2;
   padding-left: 0.75rem; /* update rating menu if changed */
   padding-right: 0.75rem; /* update rating menu if changed */
   min-width: 375px;

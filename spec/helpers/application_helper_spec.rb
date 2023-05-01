@@ -13,7 +13,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
     context "agree" do
-      let(:target) { "<span title=\"Agree\"><img class=\"w-4 inline-block\" src=\"/images/agree_icon.svg\" /></span>" }
+      let(:target) { "<span title=\"Agree\"><img class=\"w-4 inline-block\" src=\"/images/icons/agree_icon.svg\" /></span>" }
       it "returns -" do
         expect(agreement_display(:agree)).to eq target
       end
@@ -30,7 +30,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
     context "agree" do
-      let(:target) { "<span title=\"High Quality\"><img class=\"w-4 inline-block\" src=\"/images/quality_high_icon.svg\" /></span>" }
+      let(:target) { "<span title=\"High Quality\"><img class=\"w-4 inline-block\" src=\"/images/icons/quality_high_icon.svg\" /></span>" }
       it "returns -" do
         expect(quality_display(:quality_high)).to eq target
       end
@@ -149,6 +149,16 @@ RSpec.describe ApplicationHelper, type: :helper do
       let(:action_name) { "index" }
       it "is about" do
         expect(page_title).to eq "🧰 Topics"
+      end
+    end
+  end
+
+  describe "active_link" do
+    context "match_controller" do
+      let(:request) { double("request", url: root_path) }
+      before { allow(helper).to receive(:request).and_return(request) }
+      it "returns the link active with match_controller if on the controller" do
+        expect(active_link("Home", root_path, class: "home_header", id: "something", match_controller: true)).to eq '<a class="home_header active" id="something" href="' + root_path + '">Home</a>'
       end
     end
   end

@@ -63,7 +63,7 @@ class ApplicationController < ActionController::Base
   end
 
   def ratings_landing_url
-    current_user.present? ? ratings_url(user: "following") : ratings_url
+    ratings_url # In the future, probably have a user configurable option for this
   end
 
   def user_root_url
