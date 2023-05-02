@@ -212,6 +212,10 @@ class Rating < ApplicationRecord
     citation_title.presence || citation&.display_name || "missing url"
   end
 
+  def citation_metadata_attributes
+    MetadataAttributer.from_rating(self)
+  end
+
   private
 
   def calculated_account_public?

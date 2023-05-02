@@ -95,6 +95,18 @@ class Citation < ApplicationRecord
     title.presence || pretty_url
   end
 
+  def authors_str
+    authors&.join("\n")
+  end
+
+  def authors_str=(val)
+    self.authors = val.split(/\n+/)
+  end
+
+  def publisher_name
+    publisher&.name
+  end
+
   def topics_string=(val)
     topic_ids = Topic.friendly_find_all(val&.split(",")).map(&:id)
     citation_topics.where.not(topic_id: topic_ids).destroy_all

@@ -70,7 +70,20 @@ RSpec.describe base_url, type: :request do
       end
       context "metadata" do
         let(:metadata_params) do
-          valid_attrs.merge()
+          {
+            titls: "",
+            topics_string: "",
+            authors_str: "",
+            timezone: "",
+            published_at: "",
+            published_updated_at: "",
+            description: "",
+            canonical_url: "",
+            word_count: "",
+            paywall: "")
+        end
+        it "updates" do
+          fail
         end
       end
       context "rating present" do
