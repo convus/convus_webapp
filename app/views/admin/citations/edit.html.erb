@@ -84,3 +84,16 @@
 
 <% ratings = @citation.ratings.reorder(created_at: :desc).limit(20) %>
 <%= render partial: "/admin/ratings/table", locals: {ratings: ratings, skip_sortable: true} %>
+
+<div class="large-width-container">
+  <div class="row sm:grid-cols-2 divide-x">
+    <% ratings.each do |rating| %>
+      <div class="col my-2">
+        <p>By: <%= rating.user&.username %></p>
+        <p>at: <%= link_to l(rating.created_at, format: :convert_time), admin_rating_path(rating), class: "convertTime" %></p>
+
+        <div class="code-small"><%= pretty_print_json(rating.citation_metadata_attributes) %></div>
+      </div>
+    <% end %>
+  </div>
+</div>

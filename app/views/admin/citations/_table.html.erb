@@ -19,6 +19,8 @@
         </th>
         <th>Topics</th>
         <th>Ratings</th>
+        <th>Ratings w meta</th>
+        <th>Missing meta #</th>
       </tr>
     </thead>
     <tbody>
@@ -45,6 +47,8 @@
             <small><%= citation.topics_string %></small>
           </td>
           <td><%= admin_number_display(citation.ratings.count) %></td>
+          <td><%= admin_number_display(citation.ratings.with_metadata.count) %></td>
+          <td><%= missing_meta_count(citation) %></td>
         </tr>
       <% end %>
     </tbody>
