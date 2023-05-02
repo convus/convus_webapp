@@ -36,7 +36,7 @@ RSpec.describe MetadataAttributer do
 
   describe "json_ld" do
     let(:rating_metadata) { [{"json_ld" => values}] }
-    let(:values) { [{"url"=> "https://www.example.com"}] }
+    let(:values) { [{"url" => "https://www.example.com"}] }
     it "returns json_ld" do
       expect(subject.json_ld_hash(rating_metadata)).to eq(values.first)
     end
@@ -48,13 +48,13 @@ RSpec.describe MetadataAttributer do
       end
     end
     context "multiple json_ld values" do
-      let(:values) { [{"url"=> "https://www.example.com"}, {"@type" => "OtherThing"}] }
+      let(:values) { [{"url" => "https://www.example.com"}, {"@type" => "OtherThing"}] }
       it "reduces" do
-        expect(subject.json_ld_hash(rating_metadata)).to eq({"url"=> "https://www.example.com", "@type" => "OtherThing"})
+        expect(subject.json_ld_hash(rating_metadata)).to eq({"url" => "https://www.example.com", "@type" => "OtherThing"})
       end
     end
     context "multiple matching values" do
-      let(:values) { [{"url"=> "https://www.example.com"}, {"url"=> "https://www.example.com"}] }
+      let(:values) { [{"url" => "https://www.example.com"}, {"url" => "https://www.example.com"}] }
       it "raises" do
         expect {
           subject.json_ld_hash(rating_metadata + rating_metadata)
@@ -62,18 +62,18 @@ RSpec.describe MetadataAttributer do
       end
     end
     context "more dataexample" do
-      let(:values) { [{"url"=>"https://example.com","@type"=>"NewsArticle","image"=>{"url"=>"https://example.com/image.png","@type"=>"ImageObject","width"=>2057,"height"=>1200},"author"=>["John Doe"],"creator"=>["John Doe"],"hasPart"=>[],"@context"=>"http://schema.org","headline"=>"example title","keywords"=>["topic: Cool Matters"]},{"@type"=> "BreadcrumbList","@context"=> "https://schema.org/"}] }
+      let(:values) { [{"url" => "https://example.com", "@type" => "NewsArticle", "image" => {"url" => "https://example.com/image.png", "@type" => "ImageObject", "width" => 2057, "height" => 1200}, "author" => ["John Doe"], "creator" => ["John Doe"], "hasPart" => [], "@context" => "http://schema.org", "headline" => "example title", "keywords" => ["topic: Cool Matters"]}, {"@type" => "BreadcrumbList", "@context" => "https://schema.org/"}] }
       let(:target) do
         {
-          "url"=>"https://example.com",
-          "@type"=>"NewsArticle",
-          "image"=>{"url"=>"https://example.com/image.png","@type"=>"ImageObject","width"=>2057,"height"=>1200},
-          "author"=>["John Doe"],
-          "creator"=>["John Doe"],
-          "hasPart"=>[],
-          "@context"=>"http://schema.org",
-          "headline"=>"example title",
-          "keywords"=>["topic: Cool Matters"]
+          "url" => "https://example.com",
+          "@type" => "NewsArticle",
+          "image" => {"url" => "https://example.com/image.png", "@type" => "ImageObject", "width" => 2057, "height" => 1200},
+          "author" => ["John Doe"],
+          "creator" => ["John Doe"],
+          "hasPart" => [],
+          "@context" => "http://schema.org",
+          "headline" => "example title",
+          "keywords" => ["topic: Cool Matters"]
         }
       end
       it "raises" do

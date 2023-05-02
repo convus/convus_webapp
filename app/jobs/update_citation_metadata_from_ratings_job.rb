@@ -1,5 +1,4 @@
 class UpdateCitationMetadataFromRatingsJob < ApplicationJob
-
   def perform(id, override = false)
     citation = Citation.find(id)
     citation_metadata_attributes = ordered_ratings(citation)

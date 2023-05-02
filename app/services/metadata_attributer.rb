@@ -1,4 +1,4 @@
-require 'commonmarker'
+require "commonmarker"
 
 class MetadataAttributer
   ATTR_KEYS = %i[authors canonical_url description paywall published_at published_updated_at
@@ -8,7 +8,7 @@ class MetadataAttributer
     rating_metadata = rating.citation_metadata
     json_ld = json_ld_hash(rating_metadata)
     attrs = (ATTR_KEYS - [:word_count]).map do |attrib|
-      val = self.send("metadata_#{attrib}", rating_metadata, json_ld)
+      val = send("metadata_#{attrib}", rating_metadata, json_ld)
       [attrib, val]
     end.compact.to_h
     attrs[:word_count] = metadata_word_count(rating_metadata, json_ld, rating.publisher.base_word_count)
@@ -92,7 +92,7 @@ class MetadataAttributer
   end
 
   def self.json_ld_hash(rating_metadata)
-    json_lds = rating_metadata.select { |m| m.keys.include?("json_ld") }
+    json_lds = rating_metadata.select { |m| m.key?("json_ld") }
     return nil if json_lds.blank?
     raise "Multiple json_ld elements: #{json_lds.map(&:keys)}" if json_lds.count > 1
     attrs = {}

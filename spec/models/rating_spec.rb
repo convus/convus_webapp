@@ -186,7 +186,7 @@ RSpec.describe Rating, type: :model do
       it "assigns metadata_at, blanks if blanked" do
         expect(rating.reload.citation_metadata).to eq([{"ff" => "zzz"}])
         expect(rating.metadata_at).to be_within(1).of Time.current
-        rating.update(citation_metadata_str: 'null')
+        rating.update(citation_metadata_str: "null")
         expect(rating.reload.citation_metadata).to eq([])
         expect(rating.metadata_at).to be_blank
       end

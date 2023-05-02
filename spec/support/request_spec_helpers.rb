@@ -36,4 +36,9 @@ module RequestSpecHelpers
     r = JSON.parse(response.body)
     r.is_a?(Hash) ? r.with_indifferent_access : r
   end
+
+  def form_formatted_time(time)
+    return "" if time.blank?
+    time.strftime("%Y-%m-%dT%H:%M")
+  end
 end

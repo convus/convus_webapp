@@ -16,6 +16,8 @@ class Citation < ApplicationRecord
 
   delegate :remove_query, to: :publisher, allow_nil: true
 
+  attr_accessor :timezone
+
   def self.find_for_url(str, url: nil, url_components: nil)
     url ||= normalized_url(str)
     return nil if url.blank?
@@ -96,11 +98,28 @@ class Citation < ApplicationRecord
   end
 
   def authors_str
-    authors&.join("\n")
+    return nil if authors.blank?
+    Array(authors)&.join("\n")
   end
 
   def authors_str=(val)
-    self.authors = val.split(/\n+/)
+    self.authors = val.split(/\n+/).reject(&:blank?)
+  end
+
+  def published_at_in_zone=(val)
+    self.published_at = TranzitoUtils::TimeParser.parse(val, timezone)
+  end
+
+  def published_updated_at_in_zone=(val)
+    self.published_updated_at = TranzitoUtils::TimeParser.parse(val, timezone)
+  end
+
+  def published_at_in_zone
+    published_at
+  end
+
+  def published_updated_at_in_zone
+    published_updated_at
   end
 
   def publisher_name

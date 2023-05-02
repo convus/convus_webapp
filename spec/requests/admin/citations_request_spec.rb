@@ -69,21 +69,28 @@ RSpec.describe base_url, type: :request do
         expect(citation.topics.pluck(:id)).to eq([])
       end
       context "metadata" do
+        let(:published_at) { Time.current - 1.week }
+        let(:updated_at) { Time.current - 1.day }
         let(:metadata_params) do
           {
-            titls: "",
-            topics_string: "",
-            authors_str: "",
-            timezone: "",
-            published_at: "",
-            published_updated_at: "",
-            description: "",
-            canonical_url: "",
-            word_count: "",
-            paywall: "")
+            title: "something",
+            # topics_string: "",
+            authors_str: "george\nSally, Post\n\nAlix",
+            timezone: "Europe/Kyiv",
+            published_at_in_zone: form_formatted_time(published_at),
+            published_updated_at_in_zone: form_formatted_time(updated_at),
+            description: "new description",
+            canonical_url: "https://something.com",
+            word_count: "2222",
+            paywall: "1"
+          }
         end
         it "updates" do
-          fail
+          patch "#{base_url}/#{citation.id}", params: {citation: metadata_params}
+          expect(flash[:success]).to be_present
+          citation.reload
+          expect_attrs_to_match_hash(citation, metadata_params.except(:authors_str))
+          expect(citation.authors).to eq(["george", "Sally, Post", "Alix"])
         end
       end
       context "rating present" do

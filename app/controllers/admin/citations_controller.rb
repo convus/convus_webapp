@@ -43,7 +43,7 @@ class Admin::CitationsController < Admin::BaseController
 
   def permitted_params
     params.require(:citation).permit(:title, :topics_string, :authors_str, :timezone,
-      :published_at, :published_updated_at, :description, :canonical_url,
+      :published_at_in_zone, :published_updated_at_in_zone, :description, :canonical_url,
       :word_count, :paywall)
   end
 
