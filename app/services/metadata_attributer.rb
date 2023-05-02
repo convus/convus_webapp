@@ -3,6 +3,7 @@ require "commonmarker"
 class MetadataAttributer
   ATTR_KEYS = %i[authors canonical_url description paywall published_at published_updated_at
     publisher_name word_count].freeze
+  RAISE_FOR_DUPES = false
 
   def self.from_rating(rating)
     rating_metadata = rating.citation_metadata
@@ -94,12 +95,16 @@ class MetadataAttributer
   def self.json_ld_hash(rating_metadata)
     json_lds = rating_metadata.select { |m| m.key?("json_ld") }
     return nil if json_lds.blank?
-    raise "Multiple json_ld elements: #{json_lds.map(&:keys)}" if json_lds.count > 1
+    if json_lds.count > 1 && RAISE_FOR_DUPES
+      raise "Multiple json_ld elements: #{json_lds.map(&:keys)}"
+    end
     attrs = {}
     json_lds.first.values.flatten.each do |data|
       next if data["@type"] == "BreadcrumbList"
       dupe_keys = (attrs.keys & data.keys)
-      raise "duplicate key: #{dupe_keys}" if dupe_keys.any?
+      if dupe_keys.any? && RAISE_FOR_DUPES
+        raise "duplicate key: #{dupe_keys}"
+      end
       attrs.merge!(data)
     end
     attrs
