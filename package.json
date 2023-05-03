@@ -4,7 +4,8 @@
   "scripts": {
     "build": "node esbuild.config.js",
     "build:css": "postcss ./app/assets/stylesheets/application.css -o ./app/assets/builds/application.css --minify",
-    "lint": "standard --fix"
+    "lint": "standard --fix",
+    "test": "jest"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.1",
@@ -30,6 +31,13 @@
     "tom-select": "^2.2.2",
     "tranzito_utils_js": "^1.1.9"
   },
+  "devDependencies": {
+    "@babel/preset-env": "^7.16.4",
+    "standard": "^16.0.4",
+    "babel-jest": "^27.4.6",
+    "jest-cli": "^27.4.7",
+    "jest-junit": "^13.0.0"
+  },
   "standard": {
     "globals": [
       "$",
@@ -42,6 +50,9 @@
     "ignore": [
       "/public/*",
       "node_modules/*"
+    ],
+    "env": [
+      "jest"
     ]
   }
 }
