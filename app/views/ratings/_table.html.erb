@@ -65,37 +65,36 @@
                 <%= render partial: "/shared/citation", locals: {citation: rating.citation} %>
               <% end %>
 
-
               <span class="block mt-2">
                 <small class="mr-1">Rated <span class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
-                <% if render_user %>
-                  <small class="mr-1">
-                    <% if private_user && !show_private_user %>
-                      private
-                    <% elsif rating.user.blank? %>
-                      missing
-                    <% else %>
-                      <%= link_to rating.user.username, ratings_path(sortable_params.merge(user: rating.user.username_slug)) %>
-                    <% end %>
-                  </small>
-                <% end %>
-                <% if rating.user_id == current_user&.id %>
-                  <small class="mr-1 less-strong"><%= link_to "edit rating", edit_rating_path(rating) %></small>
-                <% end %>
-                <span class="">
-                  <%= agreement_display(rating.agreement, link: filter_links) %>
-                  <%= quality_display(rating.quality, link: filter_links) %>
-                  <%= learned_something_display(rating.learned_something?, link: filter_links) %>
-                  <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
-                  <%= not_understood_display(rating.not_understood?, link: filter_links) %>
-                  <%= not_finished_display(rating.not_finished?, link: filter_links) %>
-                  <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
+                  <% if render_user %>
+                    <small class="mr-1">
+                      <% if private_user && !show_private_user %>
+                        private
+                      <% elsif rating.user.blank? %>
+                        missing
+                      <% else %>
+                        <%= link_to rating.user.username, ratings_path(sortable_params.merge(user: rating.user.username_slug)) %>
+                      <% end %>
+                    </small>
+                  <% end %>
+                  <% if rating.user_id == current_user&.id %>
+                    <small class="mr-1 less-strong"><%= link_to "edit rating", edit_rating_path(rating) %></small>
+                  <% end %>
+                  <span class="">
+                    <%= agreement_display(rating.agreement, link: filter_links) %>
+                    <%= quality_display(rating.quality, link: filter_links) %>
+                    <%= learned_something_display(rating.learned_something?, link: filter_links) %>
+                    <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
+                    <%= not_understood_display(rating.not_understood?, link: filter_links) %>
+                    <%= not_finished_display(rating.not_finished?, link: filter_links) %>
+                    <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
+                  </span>
                 </span>
-              </span>
-            </td>
-          <% end %>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>

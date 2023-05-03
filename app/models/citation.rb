@@ -133,9 +133,9 @@ class Citation < ApplicationRecord
     return 500 if word_count < 600
     return 1000 if word_count < 1500
     if word_count < 10_000
-      (word_count/1000.0).round * 1000
+      (word_count / 1000.0).round * 1000
     else
-      (word_count/5000.0).round * 5000
+      (word_count / 5000.0).round * 5000
     end
   end
 

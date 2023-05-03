@@ -195,7 +195,8 @@ class TimeParser {
     } else if (text !== null) {
       return moment(text, moment.ISO_8601)
     }
-    if (text === null || !time.isValid()) {
+    // REMOVED time.isValid because time isn't defined
+    if (text === null) {
       return null
     }
   }
