@@ -19,7 +19,7 @@
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
 <% table_classes += " hide_header" if hide_header %>
 
-<div class="">
+<div class="large-width-container">
   <table class="<%= table_classes %>">
     <thead class="sortable">
       <tr>
@@ -38,28 +38,6 @@
         <% end %>
         <th class="hidden md:table-cell">
           <%= sortable "display_name", "Article", skip_sortable: skip_sortable %>
-        </th>
-        <!-- <th class="hidden md:table-cell">Topics</th> -->
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Agreement">A<span class="hidden md:inline">greement</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Quality">Q<span class="hidden md:inline">uality</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Learned something?">L<span class="hidden md:inline">earned <br>
-              something?</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Changed opinion?">C<span class="hidden md:inline">hanged <br>
-              opinion?</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Didn't understand?">D<span class="hidden md:inline">idn't <br>
-              understand?</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Error?">E<span class="hidden md:inline">rror?</span></span>
         </th>
       </tr>
     </thead>
@@ -85,7 +63,6 @@
               <td class="rank-cell"><%= number_field_tag "rank_rating_#{rating.id}", rank, step: 1, class: "form-control w-8 border-slate-900 p-0 text-center leading-none" %></td>
             <% end %>
             <td>
-              <% if display_dev_info? %><code class="only-dev-visible-small ratingId"><%= rating.id %></code><% end %>
               <small class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
               <% if render_user %>
                 <small class="inline md:hidden less-strong">
@@ -130,28 +107,6 @@
             <% end %>
             <td class="hidden md:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth">
               <%= rating_display(rating) %>
-              <% if display_dev_info? %><code class="only-dev-visible-small citationId"><%= rating.citation_id %></code><% end %>
-            </td>
-            <!-- <td class="hidden md:table-cell">
-              <%= rating.topic_names.join(", ") %>
-            </td> -->
-            <td class="hidden md:table-cell text-center border-r">
-              <%= agreement_display(rating.agreement, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= quality_display(rating.quality, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= learned_something_display(rating.learned_something?, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= not_understood_display(rating.not_understood?, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
             </td>
           <% end %>
         </tr>
