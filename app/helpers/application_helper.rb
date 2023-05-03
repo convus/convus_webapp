@@ -171,7 +171,7 @@ module ApplicationHelper
   end
 
   def rating_display(rating, html_opts = {})
-    if rating.display_name.blank? || rating.display_name == "missing url"
+    if rating.missing_url?
       html_opts[:class] ||= ""
       html_opts[:class] += " less-strong"
       content_tag(:span, "missing url", html_opts)

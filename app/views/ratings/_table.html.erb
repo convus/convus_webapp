@@ -15,11 +15,12 @@
 
 <% filter_links ||= !render_ranking %>
 
-<% table_classes = "table table-sm break-words max-w-full" %>
+<% table_classes = "table table-sm table-striped break-words max-w-full" %>
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
 <% table_classes += " hide_header" if hide_header %>
 
-<div class="">
+<%# large-width-container - but without x-padding on smaller screens %>
+<div class="mx-auto max-w-main-content">
   <table class="<%= table_classes %>">
     <thead class="sortable">
       <tr>
@@ -28,38 +29,9 @@
         <% elsif render_ranking %>
           <th>Rank</th>
         <% end %>
-        <th>
-          <%= sortable "created_at", "Rated", skip_sortable: skip_sortable %>
-        </th>
-        <% if render_user %>
-          <th class="hidden md:table-cell">
-            <%= sortable "user_id", skip_sortable: skip_sortable %>
-          </th>
-        <% end %>
-        <th class="hidden md:table-cell">
-          <%= sortable "display_name", "Article", skip_sortable: skip_sortable %>
-        </th>
-        <!-- <th class="hidden md:table-cell">Topics</th> -->
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Agreement">A<span class="hidden md:inline">greement</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Quality">Q<span class="hidden md:inline">uality</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Learned something?">L<span class="hidden md:inline">earned <br>
-              something?</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Changed opinion?">C<span class="hidden md:inline">hanged <br>
-              opinion?</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Didn't understand?">D<span class="hidden md:inline">idn't <br>
-              understand?</span></span>
-        </th>
-        <th class="hidden md:table-cell break-normal text-center border-r">
-          <span title="Error?">E<span class="hidden md:inline">rror?</span></span>
+        <th class="">
+          <%= sortable "created_at", "Rated", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
+          <%= sortable "display_name", "Article", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
         </th>
       </tr>
     </thead>
@@ -71,91 +43,58 @@
             <% colspan = 5 %>
             <td><span class="block w-8"></span></td>
             <td><span class="w-3 less-strong">
-                <em class="block md:hidden mt-1 max-w-md"><%= rating %></em>
+                <em class="block lg:hidden mt-1 max-w-md"><%= rating %></em>
               </span></td>
-            <td class="hidden md:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth"><em class="less-strong"><%= rating %></em></td>
+            <td class="hidden lg:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth"><em class="less-strong"><%= rating %></em></td>
             <td colspan="<%= colspan %>"></td>
           <% else %>
             <% private_user = render_user && hide_private_users && rating.account_private? %>
             <% show_private_user = private_user && shown_private_user_ids.include?(rating.user_id) %>
             <% if render_assign_topic %>
-              <td><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(assign_topic), class: "toggleableCheck" %></td>
+              <td style="width: 2rem;"><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(assign_topic), class: "toggleableCheck" %></td>
             <% elsif render_ranking %>
               <% rank = ranking_count + ranking_modifier - i %>
               <td class="rank-cell"><%= number_field_tag "rank_rating_#{rating.id}", rank, step: 1, class: "form-control w-8 border-slate-900 p-0 text-center leading-none" %></td>
             <% end %>
-            <td>
-              <% if display_dev_info? %><code class="only-dev-visible-small ratingId"><%= rating.id %></code><% end %>
-              <small class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
-              <% if render_user %>
-                <small class="inline md:hidden less-strong">
-                  <% if private_user && !show_private_user %>
-                    private
-                  <% elsif rating.user.blank? %>
-                    missing
-                  <% else %>
-                    <%= link_to rating.user.username, ratings_path(sortable_params.merge(user: rating.user.username_slug)) %>
-                  <% end %>
-                </small>
-              <% end %>
-              <% if rating.user_id == current_user&.id %>
-                <small class="ml-1"><%= link_to "edit", edit_rating_path(rating) %></small>
-              <% end %>
-              <span class="block md:hidden mt-1 max-w-md maxWScreen">
+
+            <td class="maxWScreen max-w-lg lg:max-w-2xl lg:w-rWidth" style="padding-top: 1rem; padding-bottom: 1rem;">
+              <!-- max-w-md maxWScreen -->
+              <% if rating.missing_url? || rating.citation.blank? %>
                 <%= rating_display(rating) %>
-                <span class="ml-2">
-                  <%= agreement_display(rating.agreement, link: filter_links) %>
-                  <%= quality_display(rating.quality, link: filter_links) %>
-                  <%= learned_something_display(rating.learned_something?, link: filter_links) %>
-                  <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
-                  <%= not_understood_display(rating.not_understood?, link: filter_links) %>
-                  <%= not_finished_display(rating.not_finished?, link: filter_links) %>
-                  <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
-                </span>
-              </span>
-              <!-- <span class="block md:hidden text-sm"><%= rating.topic_names.join(", ") %></span> -->
-            </td>
-            <% if render_user %>
-              <td class="hidden md:table-cell less-strong">
-                <small>
-                  <% if private_user && !show_private_user %>
-                    private
-                  <% elsif rating.user.blank? %>
-                    missing
-                  <% else %>
-                    <%= link_to rating.user.username, ratings_path(sortable_params.merge(user: rating.user.username_slug)) %>
+              <% else %>
+                <%= render partial: "/shared/citation", locals: {citation: rating.citation} %>
+              <% end %>
+
+              <span class="block mt-2">
+                <small class="mr-1">Rated <span class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
+                  <% if render_user %>
+                    <small class="mr-1">
+                      <% if private_user && !show_private_user %>
+                        private
+                      <% elsif rating.user.blank? %>
+                        missing
+                      <% else %>
+                        <%= link_to rating.user.username, ratings_path(sortable_params.merge(user: rating.user.username_slug)) %>
+                      <% end %>
+                    </small>
                   <% end %>
-                </small>
+                  <% if rating.user_id == current_user&.id %>
+                    <small class="mr-1 less-strong"><%= link_to "edit rating", edit_rating_path(rating) %></small>
+                  <% end %>
+                  <span class="">
+                    <%= agreement_display(rating.agreement, link: filter_links) %>
+                    <%= quality_display(rating.quality, link: filter_links) %>
+                    <%= learned_something_display(rating.learned_something?, link: filter_links) %>
+                    <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
+                    <%= not_understood_display(rating.not_understood?, link: filter_links) %>
+                    <%= not_finished_display(rating.not_finished?, link: filter_links) %>
+                    <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
+                  </span>
+                </span>
               </td>
             <% end %>
-            <td class="hidden md:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth">
-              <%= rating_display(rating) %>
-              <% if display_dev_info? %><code class="only-dev-visible-small citationId"><%= rating.citation_id %></code><% end %>
-            </td>
-            <!-- <td class="hidden md:table-cell">
-              <%= rating.topic_names.join(", ") %>
-            </td> -->
-            <td class="hidden md:table-cell text-center border-r">
-              <%= agreement_display(rating.agreement, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= quality_display(rating.quality, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= learned_something_display(rating.learned_something?, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= not_understood_display(rating.not_understood?, link: filter_links) %>
-            </td>
-            <td class="hidden md:table-cell text-center border-r">
-              <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
-            </td>
-          <% end %>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>

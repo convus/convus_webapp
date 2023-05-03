@@ -48,7 +48,7 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
-    root to: "users#index"
+    root to: "ratings#index"
     resources :users, only: [:index, :edit]
     resources :topics
     resources :topic_reviews, except: [:show]

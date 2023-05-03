@@ -181,6 +181,10 @@ class Rating < ApplicationRecord
     citation_metadata.present?
   end
 
+  def missing_url?
+    display_name.blank? || display_name == "missing url"
+  end
+
   def associate_citation
     self.citation_title = nil if citation_title.blank?
     self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)
