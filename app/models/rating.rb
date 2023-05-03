@@ -209,7 +209,8 @@ class Rating < ApplicationRecord
 
   # cached so we can order by it
   def calculated_display_name
-    citation_title.presence || citation&.display_name || "missing url"
+    citation&.title.presence || citation_title.presence ||
+      citation&.display_name || "missing url"
   end
 
   def citation_metadata_attributes
