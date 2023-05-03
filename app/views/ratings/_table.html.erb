@@ -28,15 +28,18 @@
         <% elsif render_ranking %>
           <th>Rank</th>
         <% end %>
-        <th>
+        <th class="hidden lg:table-cell">
           <%= sortable "created_at", "Rated", skip_sortable: skip_sortable %>
         </th>
         <% if render_user %>
-          <th class="hidden md:table-cell">
+          <th class="hidden lg:table-cell">
             <%= sortable "user_id", skip_sortable: skip_sortable %>
           </th>
         <% end %>
-        <th class="hidden md:table-cell">
+        <th class="hidden lg:table-cell">
+          Rating
+        </th>
+        <th class="">
           <%= sortable "display_name", "Article", skip_sortable: skip_sortable %>
         </th>
       </tr>
@@ -49,9 +52,9 @@
             <% colspan = 5 %>
             <td><span class="block w-8"></span></td>
             <td><span class="w-3 less-strong">
-                <em class="block md:hidden mt-1 max-w-md"><%= rating %></em>
+                <em class="block lg:hidden mt-1 max-w-md"><%= rating %></em>
               </span></td>
-            <td class="hidden md:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth"><em class="less-strong"><%= rating %></em></td>
+            <td class="hidden lg:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth"><em class="less-strong"><%= rating %></em></td>
             <td colspan="<%= colspan %>"></td>
           <% else %>
             <% private_user = render_user && hide_private_users && rating.account_private? %>
@@ -62,10 +65,11 @@
               <% rank = ranking_count + ranking_modifier - i %>
               <td class="rank-cell"><%= number_field_tag "rank_rating_#{rating.id}", rank, step: 1, class: "form-control w-8 border-slate-900 p-0 text-center leading-none" %></td>
             <% end %>
-            <td>
+
+            <td class="hidden lg:table-cell">
               <small class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
               <% if render_user %>
-                <small class="inline md:hidden less-strong">
+                <small class="inline lg:hidden less-strong">
                   <% if private_user && !show_private_user %>
                     private
                   <% elsif rating.user.blank? %>
@@ -78,22 +82,9 @@
               <% if rating.user_id == current_user&.id %>
                 <small class="ml-1"><%= link_to "edit", edit_rating_path(rating) %></small>
               <% end %>
-              <span class="block md:hidden mt-1 max-w-md maxWScreen">
-                <%= rating_display(rating) %>
-                <span class="ml-2">
-                  <%= agreement_display(rating.agreement, link: filter_links) %>
-                  <%= quality_display(rating.quality, link: filter_links) %>
-                  <%= learned_something_display(rating.learned_something?, link: filter_links) %>
-                  <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
-                  <%= not_understood_display(rating.not_understood?, link: filter_links) %>
-                  <%= not_finished_display(rating.not_finished?, link: filter_links) %>
-                  <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
-                </span>
-              </span>
-              <!-- <span class="block md:hidden text-sm"><%= rating.topic_names.join(", ") %></span> -->
             </td>
             <% if render_user %>
-              <td class="hidden md:table-cell less-strong">
+              <td class="hidden lg:table-cell less-strong">
                 <small>
                   <% if private_user && !show_private_user %>
                     private
@@ -105,8 +96,31 @@
                 </small>
               </td>
             <% end %>
-            <td class="hidden md:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth">
+            <td class="hidden lg:table-cell less-strong">
+              <span class="ml-2">
+                <%= agreement_display(rating.agreement, link: filter_links) %>
+                <%= quality_display(rating.quality, link: filter_links) %>
+                <%= learned_something_display(rating.learned_something?, link: filter_links) %>
+                <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
+                <%= not_understood_display(rating.not_understood?, link: filter_links) %>
+                <%= not_finished_display(rating.not_finished?, link: filter_links) %>
+                <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
+              </span>
+            </td>
+            <td class="max-w-lg lg:max-w-2xl lg:w-rWidth">
               <%= rating_display(rating) %>
+              <span class="block lg:hidden mt-1 max-w-md maxWScreen">
+                <%= rating_display(rating) %>
+                <span class="ml-2">
+                  <%= agreement_display(rating.agreement, link: filter_links) %>
+                  <%= quality_display(rating.quality, link: filter_links) %>
+                  <%= learned_something_display(rating.learned_something?, link: filter_links) %>
+                  <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
+                  <%= not_understood_display(rating.not_understood?, link: filter_links) %>
+                  <%= not_finished_display(rating.not_finished?, link: filter_links) %>
+                  <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
+                </span>
+              </span>
             </td>
           <% end %>
         </tr>
