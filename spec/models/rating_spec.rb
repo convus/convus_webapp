@@ -36,9 +36,11 @@ RSpec.describe Rating, type: :model do
       citation = rating.citation
       expect(citation.url).to eq url
       expect(citation.title).to be_nil
+      expect(rating.display_name).to eq "example.com"
       rating.update(citation_title: "something")
       expect(rating.reload.citation_id).to eq citation.id
       expect(citation.reload.title).to eq "something"
+      expect(rating.reload.display_name).to eq "something"
     end
     it "updates citation if changed" do
       expect(rating.citation).to be_present
@@ -70,6 +72,10 @@ RSpec.describe Rating, type: :model do
           expect(rating.reload.citation_title).to eq "A different title"
           expect(citation.reload.url).to eq url
           expect(citation.title).to eq "A title"
+          rating.update(citation_title: "Test")
+          expect(citation.reload.title).to eq "A title"
+          expect(rating.reload.citation_title).to eq "Test"
+          expect(rating.display_name).to eq "A title"
         end
       end
     end

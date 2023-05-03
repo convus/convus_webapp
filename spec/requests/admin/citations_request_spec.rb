@@ -87,12 +87,17 @@ RSpec.describe base_url, type: :request do
             paywall: "1"
           }
         end
+        let!(:rating) { FactoryBot.create(:rating, submitted_url: citation.url, citation_title: "Titled Here") }
         it "updates" do
+          expect(citation.reload.title).to eq "Titled Here"
+          expect(rating.reload.display_name).to eq "Titled Here"
           patch "#{base_url}/#{citation.id}", params: {citation: metadata_params}
           expect(flash[:success]).to be_present
           citation.reload
           expect_attrs_to_match_hash(citation, metadata_params.except(:authors_str))
           expect(citation.authors).to eq(["george", "Sally, Post", "Alix"])
+          # Make sure rating is updated!
+          expect(rating.reload.display_name).to eq "something"
         end
       end
       context "rating present" do
