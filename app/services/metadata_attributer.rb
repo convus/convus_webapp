@@ -21,7 +21,7 @@ class MetadataAttributer
   def self.metadata_authors(rating_metadata, json_ld)
     ld_authors = json_ld&.dig("author")
     if ld_authors.present?
-      authors = Array(ld_authors).map { |a| text_or_name_prop(a) }
+      authors = [ld_authors].flatten.map { |a| text_or_name_prop(a) }.flatten.uniq
     end
     authors ||= prop_or_name_content(rating_metadata, "article:author")
     authors ||= prop_or_name_content(rating_metadata, "author")

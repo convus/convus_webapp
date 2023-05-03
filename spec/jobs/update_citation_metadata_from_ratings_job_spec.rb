@@ -9,6 +9,16 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
   let(:publisher) { citation.publisher }
 
   describe "perform" do
+    context "nil" do
+      let(:citation_metadata_str) { "{}" }
+      let(:submitted_url) { "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy" }
+      it "doesn't error" do
+        expect(rating).to be_valid
+        expect(citation).to be_valid
+        instance.perform(citation.id)
+        citation.reload
+      end
+    end
     context "new yorker" do
       let(:citation_metadata_str) { File.read(Rails.root.join("spec", "fixtures", "metadata_new_yorker.json")) }
       let(:submitted_url) { "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy?utm_s=example" }

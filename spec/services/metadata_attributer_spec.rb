@@ -81,4 +81,16 @@ RSpec.describe MetadataAttributer do
       end
     end
   end
+
+  describe "metadata_authors" do
+    context "json_ld authors" do
+      let(:json_ld) { {"author" => {"name" => ["Jennifer Ludden", "Marisa Peñaloza"], "@type" => "Person"}} }
+      let(:target) { ["Jennifer Ludden", "Marisa Peñaloza"] }
+      it "returns authors names" do
+        expect(described_class.text_or_name_prop(json_ld["author"])).to eq target
+        # Full author parsing
+        expect(described_class.metadata_authors({}, json_ld)).to eq target
+      end
+    end
+  end
 end
