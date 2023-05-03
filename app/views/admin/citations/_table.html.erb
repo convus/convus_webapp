@@ -35,7 +35,7 @@
               <small class="convertTime"><%= l(citation.updated_at, format: :convert_time) %></small>
             </td>
           <% end %>
-          <td>
+          <td class="max-w-md maxWScreen">
             <%= citation.title %>
             <% if citation.url.present? %>
               <small class="block">

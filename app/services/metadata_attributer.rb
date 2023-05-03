@@ -7,6 +7,7 @@ class MetadataAttributer
 
   def self.from_rating(rating)
     rating_metadata = rating.citation_metadata
+    return {} if rating_metadata.blank?
     json_ld = json_ld_hash(rating_metadata)
     attrs = (ATTR_KEYS - [:word_count]).map do |attrib|
       val = send("metadata_#{attrib}", rating_metadata, json_ld)
