@@ -5,7 +5,6 @@ import BrowserExtensionScript from './scripts/browser_extension_script.js'
 // Import flowbite, a tailwind component library, for interactions
 import 'flowbite/dist/flowbite.turbo.js'
 import { TimeParser, PeriodSelector, Pagination } from 'tranzito_utils_js'
-// import TimeParser from './scripts/time_parser'
 
 import log from './scripts/log' // eslint-disable-line
 
