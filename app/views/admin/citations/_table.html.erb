@@ -36,7 +36,7 @@
             </td>
           <% end %>
           <td class="max-w-md maxWScreen">
-            <%= citation.title %>
+            <span class="break-words"><%= citation.title %></span>
             <% if citation.url.present? %>
               <small class="block">
                 <%= link_to citation.url.truncate(100), citation.url, title: citation.url %>
