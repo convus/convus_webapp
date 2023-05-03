@@ -19,6 +19,8 @@
         </th>
         <th>Topics</th>
         <th>Ratings</th>
+        <th>Ratings w meta</th>
+        <th>Missing meta #</th>
       </tr>
     </thead>
     <tbody>
@@ -33,7 +35,7 @@
               <small class="convertTime"><%= l(citation.updated_at, format: :convert_time) %></small>
             </td>
           <% end %>
-          <td>
+          <td class="max-w-md maxWScreen">
             <%= citation.title %>
             <% if citation.url.present? %>
               <small class="block">
@@ -45,6 +47,8 @@
             <small><%= citation.topics_string %></small>
           </td>
           <td><%= admin_number_display(citation.ratings.count) %></td>
+          <td><%= admin_number_display(citation.ratings.metadata_present.count) %></td>
+          <td><%= missing_meta_count(citation) %></td>
         </tr>
       <% end %>
     </tbody>

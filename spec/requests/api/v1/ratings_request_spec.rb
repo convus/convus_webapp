@@ -90,10 +90,13 @@ RSpec.describe base_url, type: :request do
           expect(rating.citation_metadata).to eq citation_metadata.as_json
         end
         context "updating" do
-          let!(:rating) { Rating.create(user: current_user, submitted_url: ratings_with_citation_metadata[:submitted_url]) }
+          let!(:rating) { Rating.create(user: current_user, citation_metadata: [{something: "ccc"}], submitted_url: ratings_with_citation_metadata[:submitted_url]) }
+          let(:target_response) { {message: "Rating added", share: "0 kudos tday, 10 yday\n\n#{user_url}"} }
           it "updates" do
             expect(rating).to be_valid
             expect(Rating.count).to eq 1
+            expect(rating.reload.citation_metadata).to eq([{"something" => "ccc"}])
+            expect(rating.created_at.to_date).to eq Time.current.to_date
             post base_url, params: ratings_with_citation_metadata.to_json,
               headers: json_headers.merge(
                 "HTTP_ORIGIN" => "*",
@@ -101,7 +104,8 @@ RSpec.describe base_url, type: :request do
               )
             expect(response.code).to eq "200"
 
-            rating = Rating.last
+            expect(Rating.count).to eq 1
+            rating.reload
             expect_rating_matching_params(json_result, target_response, rating)
             expect(rating.citation_metadata).to eq citation_metadata.as_json
           end

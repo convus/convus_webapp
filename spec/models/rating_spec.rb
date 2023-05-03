@@ -20,6 +20,9 @@ RSpec.describe Rating, type: :model do
         it "has the topics" do
           expect(rating.reload.topic_names).to eq(["something", "other", "things"])
           expect(rating.topics.count).to eq 3
+          expect(rating.citation_metadata).to eq([])
+          expect(rating.metadata_present?).to be_falsey
+          expect(Rating.metadata_present.pluck(:id)).to eq([])
         end
       end
     end
@@ -170,6 +173,37 @@ RSpec.describe Rating, type: :model do
         # event uses the rating date
         expect(event.user_id).to eq rating.user_id
         expect(event.created_date).to eq rating.created_date
+      end
+    end
+  end
+
+  describe "citation_metadata_str" do
+    let(:rating) { Rating.new }
+    it "assigns metadata_at" do
+      expect(rating.metadata_present?).to be_falsey
+      rating.citation_metadata_str = '[{"something": "aaaa"}]'
+      expect(rating.citation_metadata).to eq([{"something" => "aaaa"}])
+      expect(rating.metadata_at).to be_within(1).of Time.current
+      expect(rating.metadata_present?).to be_truthy
+    end
+    context "empty hash" do
+      let(:rating) { FactoryBot.create(:rating, citation_metadata_str: "{}") }
+      it "assigns to []" do
+        expect(rating.reload.citation_metadata).to eq([])
+        expect(rating.metadata_present?).to be_falsey
+        expect(Rating.metadata_present.pluck(:id)).to eq([])
+      end
+    end
+    context "create" do
+      let(:rating) { FactoryBot.create(:rating, citation_metadata_str: '[{"ff": "zzz"}]') }
+      it "assigns metadata_at, blanks if blanked" do
+        expect(rating.reload.citation_metadata).to eq([{"ff" => "zzz"}])
+        expect(rating.metadata_at).to be_within(1).of Time.current
+        expect(Rating.metadata_present.pluck(:id)).to eq([rating.id])
+        rating.update(citation_metadata_str: "null")
+        expect(rating.reload.citation_metadata).to eq([])
+        expect(rating.metadata_at).to be_blank
+        expect(Rating.metadata_present.pluck(:id)).to eq([])
       end
     end
   end

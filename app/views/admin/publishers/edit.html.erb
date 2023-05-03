@@ -10,6 +10,12 @@
           <%= f.text_field :domain, class: "form-control", disabled: true %>
         </div>
       </div>
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :base_word_count %>
+          <%= f.number_field :base_word_count, min: 0, class: "form-control" %>
+        </div>
+      </div>
     </div>
     <div class="row sm:grid-cols-2">
       <div class="col">

@@ -32,7 +32,7 @@
             <% rating_text ||= rating.display_name %>
             <%= link_to rating_text, admin_citation_path(rating.citation), class: "mr-1" %>
             <small class="inline-block less-strong mr-1">
-              <%= link_to rating.user.username, url_for(sortable_params.merge(user: rating.user.username_slug)) %>
+              <%= link_to rating.user&.username, url_for(sortable_params.merge(user: rating.user_id)) %>
             </small>
             <%= link_to display_icon("link"), rating.citation_url, class: "mr-2" %>
             <span class="">
@@ -49,7 +49,7 @@
             <small><%= rating.source %></small>
           </td>
           <td class="table-cell-check">
-            <%= check_mark if rating.meta_present? %>
+            <%= check_mark if rating.metadata_present? %>
           </td>
         </tr>
       <% end %>

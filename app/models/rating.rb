@@ -44,6 +44,7 @@ class Rating < ApplicationRecord
   scope :not_finished, -> { where(not_finished: true) }
   scope :account_public, -> { where(account_public: true) }
   scope :account_private, -> { where(account_public: false) }
+  scope :metadata_present, -> { where.not("length(citation_metadata::text) <= 2") }
 
   attr_accessor :skip_rating_created_event, :skip_topics_job
 
@@ -128,6 +129,8 @@ class Rating < ApplicationRecord
 
   def citation_metadata_str=(val)
     self.citation_metadata = MetadataParser.parse_string(val)
+    self.metadata_at = Time.current if citation_metadata.present?
+    citation_metadata
   end
 
   def citation_metadata_str
@@ -174,7 +177,7 @@ class Rating < ApplicationRecord
     end
   end
 
-  def meta_present?
+  def metadata_present?
     citation_metadata.present?
   end
 
@@ -190,7 +193,8 @@ class Rating < ApplicationRecord
     self.topics_text = nil if topics_text.blank?
     self.error_quotes = nil if error_quotes.blank?
     self.account_public = calculated_account_public?
-    self.citation_metadata ||= []
+    self.citation_metadata = [] if citation_metadata.blank?
+    self.metadata_at = nil if citation_metadata.blank?
   end
 
   def perform_rating_created_event_job
@@ -206,6 +210,10 @@ class Rating < ApplicationRecord
   # cached so we can order by it
   def calculated_display_name
     citation_title.presence || citation&.display_name || "missing url"
+  end
+
+  def citation_metadata_attributes
+    MetadataAttributer.from_rating(self)
   end
 
   private

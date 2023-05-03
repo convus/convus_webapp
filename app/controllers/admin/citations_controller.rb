@@ -19,6 +19,7 @@ class Admin::CitationsController < Admin::BaseController
   end
 
   def update
+    @citation.manually_updating = true
     if @citation.update(permitted_params)
       @citation.ratings.each { |r| update_citation_rating_topics(@citation, r) }
       flash[:success] = "Citation updated"
@@ -42,7 +43,9 @@ class Admin::CitationsController < Admin::BaseController
   end
 
   def permitted_params
-    params.require(:citation).permit(:title, :topics_string)
+    params.require(:citation).permit(:title, :topics_string, :authors_str, :timezone,
+      :published_at_in_zone, :published_updated_at_in_zone, :description, :canonical_url,
+      :word_count, :paywall)
   end
 
   def find_citation

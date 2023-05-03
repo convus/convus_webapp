@@ -8,15 +8,10 @@ RSpec.describe base_url, type: :request do
   let(:valid_params) do
     {
       topic_name: "Example topic",
-      start_at_in_zone: form_formatted(start_at),
-      end_at_in_zone: form_formatted(end_at),
+      start_at_in_zone: form_formatted_time(start_at),
+      end_at_in_zone: form_formatted_time(end_at),
       timezone: "America/Bogota"
     }
-  end
-
-  def form_formatted(time)
-    return "" if time.blank?
-    time.strftime("%Y-%m-%dT%H:%M")
   end
 
   describe "index" do

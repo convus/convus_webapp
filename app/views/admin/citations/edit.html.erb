@@ -6,8 +6,14 @@
     <div class="row sm:grid-cols-2">
       <div class="col">
         <div class="form-row">
-          <%= f.label :title, "Title" %>
+          <%= f.label :title %>
           <%= f.text_field :title, class: "form-control", required: true %>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :url %>
+          <%= f.text_field :url, class: "form-control", disabled: true %>
         </div>
       </div>
     </div>
@@ -21,6 +27,59 @@
     <div class="form-row-btn">
       <%= f.submit "save", class: "btn" %>
     </div>
+    <div class="row sm:grid-cols-2">
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :authors_str do %>
+            Authors
+            <small class="less-strong">new line delineated</small>
+          <% end %>
+          <%= f.text_area :authors_str, class: "form-control" %>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :description %>
+          <%= f.text_area :description, class: "form-control" %>
+        </div>
+      </div>
+    </div>
+    <div class="row sm:grid-cols-2">
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :published_at %>
+          <%= f.datetime_local_field :published_at, class: "form-control" %>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :published_updated_at %>
+          <%= f.datetime_local_field :published_updated_at, class: "form-control" %>
+        </div>
+      </div>
+    </div>
+    <div class="row sm:grid-cols-2">
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :word_count %>
+          <%= f.number_field :word_count, class: "form-control" %>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :canonical_url %>
+          <%= f.text_field :canonical_url, class: "form-control" %>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :paywall, class: "form-control-check" do %>
+            <%= f.check_box :paywall %>
+            Has a paywall
+          <% end %>
+        </div>
+      </div>
+    </div>
   <% end %>
 
   <h2 class="standard-top-offset mb-2">
@@ -31,3 +90,16 @@
 
 <% ratings = @citation.ratings.reorder(created_at: :desc).limit(20) %>
 <%= render partial: "/admin/ratings/table", locals: {ratings: ratings, skip_sortable: true} %>
+
+<div class="large-width-container">
+  <div class="row sm:grid-cols-2 divide-x">
+    <% ratings.each do |rating| %>
+      <div class="col my-2">
+        <p>By: <%= rating.user&.username %></p>
+        <p>at: <%= link_to l(rating.created_at, format: :convert_time), admin_rating_path(rating), class: "convertTime" %></p>
+
+        <div class="code-small"><%= pretty_print_json(rating.citation_metadata_attributes) %></div>
+      </div>
+    <% end %>
+  </div>
+</div>

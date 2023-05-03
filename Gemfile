@@ -28,6 +28,8 @@ gem "devise" # Users
 gem "kaminari" # Pagination
 gem "faraday" # How we make requests for integrations
 
+gem "commonmarker" # parse markdown
+
 # Make logging - more useful and ingestible
 gem "lograge" # Structure log data, put it in single lines to improve the functionality
 gem "logstash-event" # Use logstash format for logging data

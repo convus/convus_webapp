@@ -1,0 +1,223 @@
+[
+  {
+    "name": "referrer",
+    "content": "no-referrer-when-downgrade"
+  },
+  {
+    "name": "author",
+    "content": "Condé Nast"
+  },
+  {
+    "name": "copyright",
+    "content": "Copyright (c) Condé Nast 2023"
+  },
+  {
+    "name": "description",
+    "content": "In the face of a catastrophic default, the House Speaker has pitted his most extreme members against the President."
+  },
+  {
+    "name": "id",
+    "content": "6449364e48c55341d9f0f6df"
+  },
+  {
+    "name": "keywords",
+    "content": "joe biden,u.s. budget,debt ceiling,kevin mccarthy,u.s. congress"
+  },
+  {
+    "name": "news_keywords",
+    "content": "joe biden,u.s. budget,debt ceiling,kevin mccarthy,u.s. congress"
+  },
+  {
+    "name": "content-type",
+    "content": "article"
+  },
+  {
+    "name": "parsely-post-id",
+    "content": "6449364e48c55341d9f0f6df"
+  },
+  {
+    "name": "parsely-metadata",
+    "content": "{\"description\":\"In the face of a catastrophic default, the House Speaker has pitted his most extreme members against the President.\",\"image-16-9\":\"https://media.newyorker.com/photos/644bfd92ba6e0dbdfb7a1bf0/16:9/w_1000,c_limit/Blitzer-Debt-Ceiling.jpg\",\"image-1-1\":\"https://media.newyorker.com/photos/644bfd92ba6e0dbdfb7a1bf0/1:1/w_1000,c_limit/Blitzer-Debt-Ceiling.jpg\"}"
+  },
+  {
+    "content": "In the face of a catastrophic default, the House Speaker has pitted his most extreme members against the President.",
+    "property": "og:description"
+  },
+  {
+    "content": "https://media.newyorker.com/photos/644bfd92ba6e0dbdfb7a1bf0/16:9/w_1280,c_limit/Blitzer-Debt-Ceiling.jpg",
+    "property": "og:image"
+  },
+  {
+    "content": "The New Yorker",
+    "property": "og:site_name"
+  },
+  {
+    "content": "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+    "property": "og:title"
+  },
+  {
+    "content": "article",
+    "property": "og:type"
+  },
+  {
+    "content": "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy",
+    "property": "og:url"
+  },
+  {
+    "content": "free",
+    "property": "article:content_tier"
+  },
+  {
+    "content": "false",
+    "property": "article:opinion"
+  },
+  {
+    "content": "en-US",
+    "http-equiv": "content-language"
+  },
+  {
+    "content": "tags",
+    "property": "article:section"
+  },
+  {
+    "content": "2023-04-28T20:22:28.267Z",
+    "property": "article:published_time"
+  },
+  {
+    "content": "2023-04-28T20:22:28.267Z",
+    "property": "article:modified_time"
+  },
+  {
+    "content": "Jonathan Blitzer",
+    "property": "article:author"
+  },
+  {
+    "content": "summary_large_image",
+    "property": "twitter:card"
+  },
+  {
+    "content": "@NewYorker",
+    "property": "twitter:creator"
+  },
+  {
+    "content": "In the face of a catastrophic default, the House Speaker has pitted his most extreme members against the President.",
+    "property": "twitter:description"
+  },
+  {
+    "content": "https://www.newyorker.com",
+    "property": "twitter:domain"
+  },
+  {
+    "content": "https://media.newyorker.com/photos/644bfd92ba6e0dbdfb7a1bf0/16:9/w_1280,c_limit/Blitzer-Debt-Ceiling.jpg?mbid=social_retweet",
+    "property": "twitter:image"
+  },
+  {
+    "content": "@NewYorker",
+    "property": "twitter:site"
+  },
+  {
+    "content": "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+    "property": "twitter:title"
+  },
+  {
+    "id": "google-signin-meta",
+    "name": "google-signin-client_id",
+    "content": "275906274807-b4eqbdqr511u9msdpj8mh0pf77fcciv7.apps.googleusercontent.com"
+  },
+  {
+    "word_count": 28683
+  },
+  {
+    "json_ld":
+    [
+      {
+        "url": "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy",
+        "@type": "NewsArticle",
+        "image":
+        [
+          "https://media.newyorker.com/photos/644bfd92ba6e0dbdfb7a1bf0/16:9/w_2559,h_1439,c_limit/Blitzer-Debt-Ceiling.jpg",
+          "https://media.newyorker.com/photos/644bfd92ba6e0dbdfb7a1bf0/4:3/w_2275,h_1706,c_limit/Blitzer-Debt-Ceiling.jpg",
+          "https://media.newyorker.com/photos/644bfd92ba6e0dbdfb7a1bf0/1:1/w_1707,h_1707,c_limit/Blitzer-Debt-Ceiling.jpg"
+        ],
+        "author":
+        [
+          {
+            "name": "Jonathan Blitzer",
+            "@type": "Person",
+            "sameAs": "https://www.newyorker.com/contributors/jonathan-blitzer"
+          }
+        ],
+        "@context": "http://schema.org",
+        "headline": "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+        "isPartOf":
+        {
+          "name": "The New Yorker",
+          "@type": "CreativeWork"
+        },
+        "keywords":
+        [
+          "the political scene",
+          "joe biden",
+          "u.s. budget",
+          "debt ceiling",
+          "kevin mccarthy",
+          "u.s. congress",
+          "textaboveleftsmallwithrule",
+          "web"
+        ],
+        "isBasedOn": "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy",
+        "publisher":
+        {
+          "url": "https://www.newyorker.com",
+          "logo":
+          {
+            "url": "https://www.newyorker.com/verso/static/the-new-yorker/assets/logo-seo.png",
+            "@type": "ImageObject",
+            "width": "500px",
+            "height": "117px"
+          },
+          "name": "The New Yorker",
+          "@type": "Organization",
+          "@context": "https://schema.org"
+        },
+        "articleBody": "+++dropcap\n\nEarlier this month, when Kevin McCarthy announced that House Republicans had drafted a bill to raise the debt ceiling, Party members began showing up at his office to make demands and extract concessions. Republicans have a five-vote majority, so any holdout wields outsized influence. The parade of visitors to the Speaker’s office included extremists from the Freedom Caucus, the entire Iowa delegation, and Nancy Mace, a legislator from South Carolina who’d been pushing for a clearer plan to balance the federal budget. They entered as nos and left as yeses. Even the Party’s most recalcitrant members said that they felt “heard.” On Wednesday evening, the bill passed the House, with four Republican members voting against it. McCarthy claimed victory and said it was now up to the President to prevent a catastrophic government default. “We lifted the debt limit. We’ve sent it to the Senate. We’ve done our job.”\n\n+++\n\nIn January, far-right Republican representatives threatened to block McCarthy’s Speakership and, after fifteen rounds of voting, emerged with plum committee assignments and [the power to easily remove him](https://www.newyorker.com/news/our-columnists/kevin-mccarthys-hollow-victory-will-have-economic-and-political-consequences) from his post. This time, a principle of mutual self-interest made it slightly easier on him. House Republicans are using the threat of a government default as leverage to force Joe Biden and the Democrat-controlled Senate to agree to a litany of conservative spending cuts. “The President does not want to negotiate unless he can see that the Republicans can get two hundred eighteen votes,” Don Bacon, a Republican from Nebraska and self-described pragmatic conservative, told me. Passing a bill “shows Biden that we’re serious.” Without a bill, the conference would be completely irrelevant. How could Democrats negotiate over a nonexistent proposal? “They know we get screwed if we don’t get something,” a senior Republican staffer told me. A former G.O.P. leadership aide said that Republicans “have to pass [the bill]. If not, they’re fucked, and there’s no Plan B.”\n\nThe bill’s text, [according to Politico](https://www.politico.com/news/2023/04/26/mccarthy-debt-plan-gop-00094065), was the product of a coördinated campaign by members of the Freedom Caucus which began immediately after McCarthy became Speaker. Knowing that [the debt-ceiling fight](https://www.newyorker.com/news/our-columnists/republican-debt-ceiling-madness-is-about-to-begin-again) would be the defining event of McCarthy’s Speakership, they wanted to press their advantage. Their bill would include strict work requirements for Medicaid and food stamps, major slashes to discretionary spending, and the elimination of unused pandemic aid. In exchange for some hundred and thirty billion dollars in cuts to next year’s budget, the Republicans would agree to raise the debt ceiling until March, 2024. The proposals came out of a series of conversations with [competing factions](https://www.washingtonpost.com/politics/interactive/2023/house-republican-five-families/) inside the House conference known as “the five families.” But the conservatives who’ve given McCarthy the greatest trouble are the ones he seemed to have paid the most attention to. “The leadership just picked up the House Freedom Caucus plan and helped us convert it into the legislative text,” Matt Gaetz, a Freedom Caucus member from Florida, [said](https://www.politico.com/news/2023/04/26/mccarthy-debt-plan-gop-00094065).\n\nAnd yet the Freedom Caucus’s demands kept mounting. Eventually, the three-hundred-page bill—the Limit, Save, Grow Act—turned into an attack on [the Inflation Reduction Act](https://www.newyorker.com/news/our-columnists/joe-bidens-innovative-attempt-to-reshape-the-american-economy), arguably Biden’s crowning legislative achievement. The Republican bill would, among other things, gut the I.R.A.’s green-energy tax incentives, endangering at least [a hundred thousand jobs](https://www.newyorker.com/news/our-columnists/bidens-new-green-jobs-are-boosting-purple-and-red-states), the vast majority of which were bound for Republican districts. This week, McCarthy pared back some of the bill’s measures in response to objections from other members. But the crux of it remained intact. “There wasn’t a strategy,” a Democratic House staffer told me. “They cut where they could get votes. It’s all posturing.” Chuck Schumer, the Senate Majority Leader, said the bill “might as well be called the Default on America Act, because that’s exactly what it is: D.O.A., dead on arrival.”\n\nThat the bill will go nowhere in the Senate was the reason McCarthy could wrangle support for it in the first place. It was an opening gambit. “What we’ll end up with will look different,” Bacon, the Nebraska Republican, told me.\n\nA government default, which would likely plunge the U.S. into recession and sink the world economy, was politically unthinkable until 2011. At the time, Republicans controlled the House and Democrats controlled the Senate, and a new conservative movement called the Tea Party was ascendant. “They said right from the get-go, egged on by Kevin McCarthy and Eric Cantor, that they were going to use the debt ceiling as a hostage with a series of non-negotiable demands,” Norman Ornstein, an emeritus scholar at the center-right American Enterprise Institute, told me. “John Boehner knew that if we breached the debt ceiling it would be catastrophic, but it was the beginning of the end of his Speakership.” To avert disaster, Boehner eventually cut a deal with the Obama White House—apostasy in the eyes of his rank and file—but the U.S.’s credit rating was downgraded for the first time in history. “Just because we came close,” Ornstein said.\n\nThe current course is much more worrisome. The Republican majority is far slimmer than it was in 2011, meaning the extremists have more sway. The Freedom Caucus didn’t exist before 2015, when they coalesced around Boehner’s ouster from the Speakership; their members, Ornstein said, “make the Tea Party people look like statesmen.” Last October, when I spoke to Representative Adam Kinzinger, an old McCarthy ally who became a bitter critic, he [told me](https://www.newyorker.com/magazine/2022/12/26/what-kevin-mccarthy-will-do-to-gain-power), “The debt limit scares the shit out of me.” Previous Republican Speakers were willing to make deals with Democrats and could rely on a critical mass of pragmatists in the G.O.P. “It’s going to be hard for McCarthy to cut deals,” Kinzinger predicted. Part of the problem, the former leadership aide told me, comparing 2011 with 2023, is that “Boehner gave a shit about something other than himself.”\n\nMcCarthy [is a careerist](https://www.newyorker.com/magazine/2022/12/26/what-kevin-mccarthy-will-do-to-gain-power) with a flexible set of principles and a history of catering to the far right. “He’s great at putting people in a room,” a Republican lawmaker told me. “When it comes to hardball, that’s not Kevin’s forte.” His preference has always been to find ways of giving his colleagues what they want, a quality that has earned him the loyalty of many members but also made him vulnerable. In 2015, [after Boehner was forced from the Speakership](https://www.newyorker.com/magazine/2015/12/14/a-house-divided), McCarthy was a heavy favorite for the job. When he ran, the Freedom Caucus blocked him at the eleventh hour. “You have to understand this about Kevin McCarthy,” Carlos Curbelo, a Florida Republican who served in the House at the time, told me, “Most people who would have gone through that experience ultimately wouldn’t have survived it. They would have left Congress or certainly left the leadership team. Kevin stayed and was able to remain because he has built so much good will at a personal level with members.” At times, that has meant elevating old enemies and rivals. Jim Jordan—who opposed McCarthy for Speaker in 2015 and unsuccessfully challenged him for Minority Leader three years later—is the chairman of the Judiciary Committee. Marjorie Taylor Greene, whom McCarthy has brought into the establishment fold, has become one of his most prominent boosters.\n\nCongressional Republicans and the White House are now operating on a set of clashing assumptions. McCarthy thinks Biden will feel pressured to start negotiating; the President expects Republicans to blink. At the White House, officials have been looking at 2011 polling data, which showed that voters ultimately blamed congressional Republicans, and not the President, for the debt-ceiling fight. An economic analysis by Moody’s projected that the Republican budget would result in the loss of nearly eight hundred thousand jobs. “They’re in Congress threatening to undo all the stuff that you helped me get done,” Biden told union workers in Maryland last week. “You and the American people should know about the competing economic visions of the country that are at stake right now.” He called McCarthy’s plan “the *MAGA*{: .small} economic vision.” Before the House passed its budget proposal, the White House said that it would refuse to negotiate on spending if the Republicans tied the talks to the debt ceiling. Its line was unchanged after Wednesday’s vote. “I’m happy to meet with McCarthy, but not on whether or not the debt limit gets extended,” the President said. “That’s not negotiable.”\n\nWith a majority as tenuous as McCarthy’s, every member matters, but those who matter most are the ones who are least willing to compromise. During the Speaker’s race, moderate Republicans were frustrated that a relatively small number of extremists could effectively hold everyone hostage. This week, with the passage of a spending bill that had been shaped by the conference’s most conservative members, I expected a similar sentiment. Yet the moderates I spoke with were more focussed on the President than their Party’s right flank. “Most of the big spending negotiations took place during the debt-ceiling negotiations,” David Joyce, an Ohio Republican who chairs the Republican Governance Group, a moderate coalition, told me. He pointed out that Biden, as Vice-President, had led the Obama Administration’s debt-ceiling negotiations in 2011. “He said at the time, ‘We got to make some real progress on the long-term debt,’&nbsp;” Joyce said. “Back then, our national debt was fourteen trillion dollars. Today, it’s over thirty-one. And now you refuse to negotiate?”\n\nBacon, who is a member of the bipartisan Problem Solvers Caucus, helped lead a round of talks earlier this spring about a framework for moving forward if the White House and McCarthy remained at odds. “We’re sixty-four people that know we need to negotiate,” he said. “We wanted to provide more of a decision framework versus hard numbers.” Ultimately, they proposed lifting the debt ceiling and then creating a long-term commission to study deficit spending. “Congress is too fractured to do a proposal on its own,” he said. But, he added, that only made it more urgent for Biden to broker a deal. “Reasonable Americans know we should negotiate,” Bacon said. “We can’t get everything we want. And I hope Biden understands that he can’t get everything he wants.”\n\nMeanwhile, there’s a danger that the White House and congressional Republicans will begin to look equally implicated in the impasse. Ornstein, who considers the Republicans to be the obvious instigators, told me that “many of them understand that the mainstream press isn’t going to treat this as a reckless terrorist act by House Republicans. They’re going to normalize this. They’re going to say, ‘Why isn’t Biden negotiating?’&nbsp;”\n\nThe White House’s dilemma is real. Some congressional Democrats have already called on Biden to begin talks with McCarthy. There are a few potential areas of compromise: the government could institute modest caps on future spending and it could reform permitting requirements for fossil-fuel and other energy projects, issues that, the former leadership aide told me, “have been bipartisan in the past or are now.” If Biden doesn’t come to the table, the country is at the mercy of an erratic Republican majority that the Speaker himself can barely control. If he does, the Republicans will have got him there through sheer bullying. And then what? No one expects hard-line House Republicans to give any ground. McCarthy would have to be willing to cut a deal that risks his Speakership.\n\nThe morning after the House bill passed, I spoke with Steny Hoyer, a veteran Democratic congressman from Maryland and a former House Majority Leader. When Nancy Pelosi was Speaker, she refused to deal with McCarthy, whom she called a “[moron](https://www.nytimes.com/2022/10/05/us/politics/pelosi-mccarthy-midterms.html),” so Hoyer was his main interlocutor with Democratic leadership. “I don’t think anyone has any illusions about that bill,” Hoyer told me. “It was part of a process.” He cited McCarthy’s recent speech at the New York Stock Exchange, where he had said that a default wasn’t an option. That was the “most relevant part,” Hoyer said. “I think that’s what he believes.” But the fates of John Boehner and Paul Ryan, who broke with the fringes of their conference and left Party leadership, are not lost on McCarthy. “What he’s trying to do is find some sort of sweet spot where he can rationalize without losing the Speakership,” Hoyer said. “He’s pretty pragmatic. That’s as kind a way as I can say it.”&nbsp;♦\n\n*An earlier version of this article misstated the makeup of the U.S. Senate in 2011.*\n\n",
+        "description": "Jonathan Blitzer writes about the House Republican’s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy’s weakened position as Speaker.",
+        "dateModified": "2023-04-28T16:22:28.267-04:00",
+        "thumbnailUrl": "https://media.newyorker.com/photos/644bfd92ba6e0dbdfb7a1bf0/3:2/w_2559,h_1706,c_limit/Blitzer-Debt-Ceiling.jpg",
+        "datePublished": "2023-04-28T16:22:28.267-04:00",
+        "articleSection": "the political scene",
+        "mainEntityOfPage":
+        {
+          "@id": "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy",
+          "@type": "WebPage"
+        },
+        "alternativeHeadline": "Jonathan Blitzer writes about the House Republican’s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy’s weakened position as Speaker.",
+        "isAccessibleForFree": true
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@context": "https://schema.org/",
+        "itemListElement":
+        [
+          {
+            "item": "https://www.newyorker.com/news",
+            "name": "News",
+            "@type": "ListItem",
+            "position": 1
+          },
+          {
+            "item": "https://www.newyorker.com/tag/joe-biden",
+            "name": "Joe Biden",
+            "@type": "ListItem",
+            "position": 2
+          },
+          {
+            "name": "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+            "@type": "ListItem",
+            "position": 3
+          }
+        ]
+      }
+    ]
+  }
+]

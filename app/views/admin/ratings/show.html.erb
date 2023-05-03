@@ -4,16 +4,85 @@
   <p class="mb-4">
     <%= button_to "Delete rating", {controller: "ratings", action: "destroy", id: @rating.id}, method: :delete, class: "gray-link"  %>
   </p>
-
 </div>
 
-<%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true} %>
+<div class="large-width-container mb-5">
+  <div class="row sm:grid-cols-2">
+    <div class="col">
+      <table class="table-list">
+        <tbody>
+          <tr>
+            <td>User</td>
+            <td><%= link_to @rating.user.username, edit_admin_user_path(@rating.user) %></td>
+          </tr>
+          <tr>
+            <td>Created</td>
+            <td>
+              <span class="convertTime"><%= l(@rating.created_at, format: :convert_time) %></span>
+            </td>
+          </tr>
+          <tr>
+            <td>Updated</td>
+            <td>
+              <span class="convertTime"><%= l(@rating.updated_at, format: :convert_time) %></span>
+            </td>
+          </tr>
+          <tr>
+            <td>Metadata</td>
+            <td>
+              <% if @rating.metadata_at.present? %>
+                <span class="convertTime"><%= l(@rating.updated_at, format: :convert_time) %></span>
+              <% end %>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <table class="table-list">
+        <tbody>
+          <tr>
+            <td>Citation</td>
+            <td>
+              <%= link_to @rating.display_name, admin_citation_path(@rating.citation), class: "mr-2" %>
+              <%= link_to display_icon("link"), @rating.citation_url %>
+            </td>
+          </tr>
+          <tr>
+            <td>Checks</td>
+            <td>
+              <%= agreement_display(@rating.agreement) %>
+              <%= quality_display(@rating.quality) %>
+              <%= learned_something_display(@rating.learned_something?) %>
+              <%= changed_opinion_display(@rating.changed_opinion?) %>
+              <%= significant_factual_error_display(@rating.significant_factual_error?) %>
+              <%= not_finished_display(@rating.not_finished?) %>
+            </td>
+          </tr>
+          <tr>
+            <td>Version</td>
+            <td><code><%= @rating.source %></code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <h3>Citation metadata attributes:</h3>
+      <div class="code-small"><%= pretty_print_json(@rating.citation_metadata_attributes) %></div>
+    </div>
+  </div>
+</div>
 
 <div class="large-width-container">
-  <h3 class="mt-5">Metadata:</h3>
-  <% if @rating.meta_present? %>
+  <h3 class="mt-5">Full Metadata:</h3>
+  <% if @rating.metadata_present? %>
     <div class="code-small"><%= pretty_print_json(@rating.citation_metadata) %></div>
   <% else %>
     No metadata
   <% end %>
+</div>
+
+<div class="mt-4">
+  <%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true} %>
 </div>

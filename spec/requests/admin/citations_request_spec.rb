@@ -61,12 +61,39 @@ RSpec.describe base_url, type: :request do
         expect(flash[:success]).to be_present
         expect(citation.reload.title).to eq "new title"
         expect(citation.topics.pluck(:id)).to eq([topic.id])
+        expect(citation.manually_updated_attributes).to eq(["title", "topics"])
         patch "#{base_url}/#{citation.id}", params: {
           citation: {title: "Whoop", topics_string: "Other"}
         }
         expect(flash[:success]).to be_present
         expect(citation.reload.title).to eq "Whoop"
         expect(citation.topics.pluck(:id)).to eq([])
+        expect(citation.manually_updated_attributes).to eq(["title"])
+      end
+      context "metadata" do
+        let(:published_at) { Time.current - 1.week }
+        let(:updated_at) { Time.current - 1.day }
+        let(:metadata_params) do
+          {
+            title: "something",
+            # topics_string: "",
+            authors_str: "george\nSally, Post\n\nAlix",
+            timezone: "Europe/Kyiv",
+            published_at_in_zone: form_formatted_time(published_at),
+            published_updated_at_in_zone: form_formatted_time(updated_at),
+            description: "new description",
+            canonical_url: "https://something.com",
+            word_count: "2222",
+            paywall: "1"
+          }
+        end
+        it "updates" do
+          patch "#{base_url}/#{citation.id}", params: {citation: metadata_params}
+          expect(flash[:success]).to be_present
+          citation.reload
+          expect_attrs_to_match_hash(citation, metadata_params.except(:authors_str))
+          expect(citation.authors).to eq(["george", "Sally, Post", "Alix"])
+        end
       end
       context "rating present" do
         let!(:rating) { FactoryBot.create(:rating, submitted_url: citation.url) }
