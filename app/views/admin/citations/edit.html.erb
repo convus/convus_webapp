@@ -34,13 +34,13 @@
             Authors
             <small class="less-strong">new line delineated</small>
           <% end %>
-          <%= f.text_area :authors_str, class: "form-control", required: true %>
+          <%= f.text_area :authors_str, class: "form-control" %>
         </div>
       </div>
       <div class="col">
         <div class="form-row">
           <%= f.label :description %>
-          <%= f.text_area :description, class: "form-control", required: true %>
+          <%= f.text_area :description, class: "form-control" %>
         </div>
       </div>
     </div>
@@ -62,13 +62,13 @@
       <div class="col">
         <div class="form-row">
           <%= f.label :word_count %>
-          <%= f.number_field :word_count, class: "form-control", required: true %>
+          <%= f.number_field :word_count, class: "form-control" %>
         </div>
       </div>
       <div class="col">
         <div class="form-row">
           <%= f.label :canonical_url %>
-          <%= f.text_field :canonical_url, class: "form-control", required: true %>
+          <%= f.text_field :canonical_url, class: "form-control" %>
         </div>
       </div>
       <div class="col">

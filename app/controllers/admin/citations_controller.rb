@@ -19,6 +19,7 @@ class Admin::CitationsController < Admin::BaseController
   end
 
   def update
+    @citation.manually_updating = true
     if @citation.update(permitted_params)
       @citation.ratings.each { |r| update_citation_rating_topics(@citation, r) }
       flash[:success] = "Citation updated"

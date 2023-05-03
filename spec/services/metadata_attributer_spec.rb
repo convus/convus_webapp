@@ -16,6 +16,7 @@ RSpec.describe MetadataAttributer do
           canonical_url: nil,
           word_count: 2_037,
           paywall: false,
+          title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
           publisher_name: "The New Yorker"
         }
       end

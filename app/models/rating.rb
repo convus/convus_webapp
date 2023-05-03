@@ -44,7 +44,7 @@ class Rating < ApplicationRecord
   scope :not_finished, -> { where(not_finished: true) }
   scope :account_public, -> { where(account_public: true) }
   scope :account_private, -> { where(account_public: false) }
-  scope :with_metadata, -> { where.not(citation_metadata: {}) }
+  scope :metadata_present, -> { where.not("length(citation_metadata::text) <= 2") }
 
   attr_accessor :skip_rating_created_event, :skip_topics_job
 
@@ -177,7 +177,7 @@ class Rating < ApplicationRecord
     end
   end
 
-  def meta_present?
+  def metadata_present?
     citation_metadata.present?
   end
 
@@ -193,7 +193,7 @@ class Rating < ApplicationRecord
     self.topics_text = nil if topics_text.blank?
     self.error_quotes = nil if error_quotes.blank?
     self.account_public = calculated_account_public?
-    self.citation_metadata ||= []
+    self.citation_metadata = [] if citation_metadata.blank?
     self.metadata_at = nil if citation_metadata.blank?
   end
 

@@ -134,9 +134,34 @@ RSpec.describe Citation, type: :model do
       let(:citation) { FactoryBot.create(:citation) }
       it "updates" do
         expect(citation.reload.topics.pluck(:id)).to eq([])
+        citation.manually_updating = true
         citation.update(topics_string: "san francisco")
         expect(citation.reload.topics.pluck(:id)).to eq([topic.id])
         expect(citation.topics_string).to eq "San Francisco"
+        expect(citation.manually_updated_attributes).to eq(["topics"])
+        citation.manually_updating = false
+        citation.update(topics_string: "")
+        expect(citation.reload.topics_string).to be_blank
+        expect(citation.manually_updated_attributes).to eq([])
+      end
+      context "multiple, manually_updating" do
+        let!(:topic2) { FactoryBot.create(:topic, name: "Housing") }
+        it "updates" do
+          expect(citation.reload.topics.pluck(:id)).to eq([])
+          citation.update(topics_string: "san francisco, housing")
+          expect(citation.reload.topics_string).to eq "Housing, San Francisco"
+          expect(citation.manually_updated_attributes).to eq([])
+          expect(citation.topics.pluck(:id).sort).to eq([topic.id, topic2.id])
+          citation.update(manually_updating: true, topics_string: "SAN francisco, HOUSING, housing")
+          expect(citation.reload.topics_string).to eq "Housing, San Francisco"
+          expect(citation.manually_updated_attributes).to eq([])
+          citation.update(manually_updating: true, topics_string: "SAN francisco")
+          expect(citation.reload.topics_string).to eq "San Francisco"
+          expect(citation.manually_updated_attributes).to eq(["topics"])
+          citation.update(manually_updating: false, topics_string: "")
+          expect(citation.reload.topics_string).to eq ""
+          expect(citation.manually_updated_attributes).to eq([])
+        end
       end
       context "build" do
         let(:citation) { FactoryBot.create(:citation, topics_string: " san francisco   ") }
@@ -148,6 +173,23 @@ RSpec.describe Citation, type: :model do
           expect(citation.topics_string).to be_blank
         end
       end
+    end
+  end
+
+  describe "manually updated" do
+    let(:citation) { FactoryBot.create(:citation) }
+    it "assigns when manual_update" do
+      citation.update(title: "ffff")
+      expect(citation.title).to eq "ffff"
+      expect(citation.manually_updated_attributes).to eq([])
+      citation.update(manually_updating: true, authors: ["zzzz"], title: "ffff")
+      expect(citation.reload.authors).to eq(["zzzz"])
+      expect(citation.manually_updated_attributes).to eq(["authors"])
+      citation.manually_updating = false
+      # Assigning it to blank removes it from manually_updated_attributes
+      citation.update(authors: "", title: "cccc")
+      expect(citation.reload.authors).to eq([])
+      expect(citation.manually_updated_attributes).to eq([])
     end
   end
 

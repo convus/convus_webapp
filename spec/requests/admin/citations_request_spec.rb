@@ -61,12 +61,14 @@ RSpec.describe base_url, type: :request do
         expect(flash[:success]).to be_present
         expect(citation.reload.title).to eq "new title"
         expect(citation.topics.pluck(:id)).to eq([topic.id])
+        expect(citation.manually_updated_attributes).to eq(["title", "topics"])
         patch "#{base_url}/#{citation.id}", params: {
           citation: {title: "Whoop", topics_string: "Other"}
         }
         expect(flash[:success]).to be_present
         expect(citation.reload.title).to eq "Whoop"
         expect(citation.topics.pluck(:id)).to eq([])
+        expect(citation.manually_updated_attributes).to eq(["title"])
       end
       context "metadata" do
         let(:published_at) { Time.current - 1.week }

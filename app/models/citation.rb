@@ -13,10 +13,11 @@ class Citation < ApplicationRecord
   validates_presence_of :url
 
   before_validation :set_calculated_attributes
+  before_save :set_manually_updated_attributes
 
   delegate :remove_query, to: :publisher, allow_nil: true
 
-  attr_accessor :timezone
+  attr_accessor :timezone, :manually_updating
 
   def self.find_for_url(str, url: nil, url_components: nil)
     url ||= normalized_url(str)
@@ -128,13 +129,22 @@ class Citation < ApplicationRecord
 
   def topics_string=(val)
     topic_ids = Topic.friendly_find_all(val&.split(",")).map(&:id)
+    if topic_ids.blank?
+      @topics_change = "blank"
+    else
+      existing_ids = citation_topics.pluck(:topic_id).sort
+      @topics_change = if topic_ids.uniq.sort != existing_ids
+        "changed"
+      end
+      # else assigns nil :)
+    end
     citation_topics.where.not(topic_id: topic_ids).destroy_all
     new_ids = topic_ids - citation_topics.pluck(:topic_id)
     new_ids.each { |i| citation_topics.build(topic_id: i) }
   end
 
   def topics_string
-    topics.pluck(:name).join(", ")
+    topics.name_ordered.pluck(:name).join(", ")
   end
 
   def references_filepath
@@ -145,12 +155,30 @@ class Citation < ApplicationRecord
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)
     self.url_components_json ||= self.class.url_to_components(url, normalized: true).except(:remove_query)
-    self.authors ||= []
+    self.authors = [] if authors.blank?
+    self.manually_updated_attributes = [] if manually_updated_attributes.blank?
     # If assigning publisher, remove query if required
     if publisher.blank?
       self.publisher = Publisher.find_or_create_for_domain(url_components[:host])
       self.url = self.class.normalized_url(url, remove_query) if publisher.remove_query?
     end
+  end
+
+  def set_manually_updated_attributes
+    current_m_attrs = manually_updated_attributes
+    changes.each do |k, v|
+      if v.last.blank?
+        current_m_attrs -= [k]
+      elsif manually_updating
+        current_m_attrs << k
+      end
+    end
+    if @topics_change == "blank"
+      current_m_attrs -= ["topics"]
+    elsif manually_updating && @topics_change == "changed"
+      current_m_attrs << "topics"
+    end
+    self.manually_updated_attributes = current_m_attrs.uniq.sort
   end
 
   # Called if publisher updated with remove_query, in callback - so do a direct update

@@ -29,9 +29,10 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           published_updated_at: nil,
           description: "Jonathan Blitzer writes about the House Republican’s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy’s weakened position as Speaker.",
           canonical_url: nil,
-          word_count: 2_037,
           paywall: false,
-          publisher_name: "The New Yorker"
+          publisher_name: "The New Yorker",
+          title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+          word_count: 2_037
         }
       end
       it "parses" do
@@ -49,19 +50,29 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(publisher.name_assigned?).to be_truthy
       end
       context "already assigned" do
-        it "updates only if override" do
-          initial_attrs = {authors: "z", published_at: Time.current, description: "c", word_count: 33, published_updated_at: Time.current, paywall: true}
+        let(:initial_attrs) { {authors: "z", published_at: Time.current, description: "c", word_count: 33, published_updated_at: Time.current, paywall: true} }
+        it "updates" do
           citation.update(initial_attrs)
           publisher.update(name: "Cool publisher")
           instance.perform(citation.id)
           citation.reload
-          expect_attrs_to_match_hash(citation, initial_attrs)
-          # And then, with override
-          instance.perform(citation.id, true)
-          citation.reload
-          expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at, :paywall, :publisher_name))
-          # even with override, it doesn't update publisher name
+          # TODO: better handle on paywall!
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:publisher_name, :paywall))
+          # It doesn't re-update the publisher
           expect(publisher.reload.name).to eq "Cool publisher"
+        end
+        context "manually_updated" do
+          it "doesn't update" do
+            citation.manually_updating = true
+            citation.update(initial_attrs)
+            expect(citation.reload.manually_updated_attributes).to eq(%w[authors description paywall published_at published_updated_at word_count])
+            publisher.update(name: "Cool publisher")
+            instance.perform(citation.id)
+            citation.reload
+            expect_attrs_to_match_hash(citation, initial_attrs)
+            # It doesn't re-update the publisher
+            expect(publisher.reload.name).to eq "Cool publisher"
+          end
         end
       end
       context "earlier metadata" do
@@ -101,6 +112,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           canonical_url: nil,
           paywall: true,
           publisher_name: "National Review",
+          title: "How the Private Sector Is Shaping the Future of Nuclear Energy",
           word_count: 9_949
         }
       end

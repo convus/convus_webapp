@@ -1,15 +1,17 @@
 class UpdateCitationMetadataFromRatingsJob < ApplicationJob
   sidekiq_options retry: 1
 
-  def perform(id, override = false)
+  def perform(id)
     citation = Citation.find(id)
     citation_metadata_attributes = ordered_ratings(citation)
       .map(&:citation_metadata_attributes)
 
+    skipped_attributes = citation.manually_updated_attributes.map(&:to_sym)
     new_attributes = MetadataAttributer::ATTR_KEYS.map do |attrib|
-      unless attrib == :publisher_name # Always get publisher_name
-        next if citation.send(attrib).present? && !override
-      end
+      next if skipped_attributes.include?(attrib)
+      # unless attrib == :publisher_name # Always get publisher_name
+      #   next if citation.send(attrib).present? && !override
+      # end
       # returns first value that matches, only process the first that's required
       val = citation_metadata_attributes.lazy.filter_map { |cma| cma[attrib] }.first
       val.present? ? [attrib, val] : nil
@@ -28,6 +30,6 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
 
   # TODO: Order by version, then submission
   def ordered_ratings(citation)
-    citation.ratings.with_metadata.order(metadata_at: :desc)
+    citation.ratings.metadata_present.order(metadata_at: :desc)
   end
 end

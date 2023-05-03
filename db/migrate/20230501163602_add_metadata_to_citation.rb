@@ -7,6 +7,7 @@ class AddMetadataToCitation < ActiveRecord::Migration[7.0]
     add_column :citations, :canonical_url, :text
     add_column :citations, :word_count, :integer
     add_column :citations, :paywall, :boolean, default: false
+    add_column :citations, :manually_updated_attributes, :jsonb
     # Other, non-citation things here
     add_column :publishers, :base_word_count, :integer
     add_column :ratings, :metadata_at, :datetime

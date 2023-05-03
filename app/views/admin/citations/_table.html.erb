@@ -47,7 +47,7 @@
             <small><%= citation.topics_string %></small>
           </td>
           <td><%= admin_number_display(citation.ratings.count) %></td>
-          <td><%= admin_number_display(citation.ratings.with_metadata.count) %></td>
+          <td><%= admin_number_display(citation.ratings.metadata_present.count) %></td>
           <td><%= missing_meta_count(citation) %></td>
         </tr>
       <% end %>

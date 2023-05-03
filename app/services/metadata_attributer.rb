@@ -2,7 +2,7 @@ require "commonmarker"
 
 class MetadataAttributer
   ATTR_KEYS = %i[authors canonical_url description paywall published_at published_updated_at
-    publisher_name word_count].freeze
+    publisher_name title word_count].freeze
   RAISE_FOR_DUPES = false
 
   def self.from_rating(rating)
@@ -26,6 +26,14 @@ class MetadataAttributer
     authors ||= prop_or_name_content(rating_metadata, "article:author")
     authors ||= prop_or_name_content(rating_metadata, "author")
     Array(authors)
+  end
+
+  def self.metadata_title(rating_metadata, json_ld)
+    # I think the longer the better, for now...
+    title = json_ld&.dig("headline")
+    title ||= prop_or_name_content(rating_metadata, "og:title")
+    title ||= prop_or_name_content(rating_metadata, "twitter:title")
+    title
   end
 
   def self.metadata_description(rating_metadata, json_ld)

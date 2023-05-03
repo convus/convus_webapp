@@ -38,6 +38,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_01_163602) do
     t.text "canonical_url"
     t.integer "word_count"
     t.boolean "paywall", default: false
+    t.jsonb "manually_updated_attributes"
     t.index ["publisher_id"], name: "index_citations_on_publisher_id"
   end
 
