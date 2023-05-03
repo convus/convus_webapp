@@ -1,5 +1,6 @@
 class UpdateCitationMetadataFromRatingsJob < ApplicationJob
   sidekiq_options retry: 1
+
   def perform(id, override = false)
     citation = Citation.find(id)
     citation_metadata_attributes = ordered_ratings(citation)
@@ -25,6 +26,7 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     citation
   end
 
+  # TODO: Order by version, then submission
   def ordered_ratings(citation)
     citation.ratings.with_metadata.order(metadata_at: :desc)
   end
