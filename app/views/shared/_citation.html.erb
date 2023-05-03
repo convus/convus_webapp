@@ -1,0 +1,4 @@
+<h4 class="text-lg" style=""><%= link_to citation.title, citation.url, class: "no-underline hover:underline" %></h4>
+<% if citation.description.present? %>
+  <p><%= citation.description %></p>
+<% end %>

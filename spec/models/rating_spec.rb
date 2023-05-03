@@ -41,6 +41,8 @@ RSpec.describe Rating, type: :model do
       expect(rating.reload.citation_id).to eq citation.id
       expect(citation.reload.title).to eq "something"
       expect(rating.reload.display_name).to eq "something"
+      rating.update(citation_title: " ")
+      expect(rating.reload.display_name).to eq "something"
     end
     it "updates citation if changed" do
       expect(rating.citation).to be_present

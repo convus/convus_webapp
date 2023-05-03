@@ -15,7 +15,7 @@
 
 <% filter_links ||= !render_ranking %>
 
-<% table_classes = "table table-sm break-words max-w-full" %>
+<% table_classes = "table table-sm table-striped break-words max-w-full" %>
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
 <% table_classes += " hide_header" if hide_header %>
 
@@ -36,12 +36,10 @@
             <%= sortable "user_id", skip_sortable: skip_sortable %>
           </th>
         <% end %>
-        <th class="hidden lg:table-cell">
-          Rating
-        </th>
         <th class="">
           <%= sortable "display_name", "Article", skip_sortable: skip_sortable %>
         </th>
+        <th class="hidden lg:table-cell">Rating</th>
       </tr>
     </thead>
     <tbody>
@@ -68,19 +66,8 @@
 
             <td class="hidden lg:table-cell">
               <small class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
-              <% if render_user %>
-                <small class="inline lg:hidden less-strong">
-                  <% if private_user && !show_private_user %>
-                    private
-                  <% elsif rating.user.blank? %>
-                    missing
-                  <% else %>
-                    <%= link_to rating.user.username, ratings_path(sortable_params.merge(user: rating.user.username_slug)) %>
-                  <% end %>
-                </small>
-              <% end %>
               <% if rating.user_id == current_user&.id %>
-                <small class="ml-1"><%= link_to "edit", edit_rating_path(rating) %></small>
+                <small class=""><%= link_to "edit", edit_rating_path(rating) %></small>
               <% end %>
             </td>
             <% if render_user %>
@@ -96,22 +83,33 @@
                 </small>
               </td>
             <% end %>
-            <td class="hidden lg:table-cell less-strong">
-              <span class="ml-2">
-                <%= agreement_display(rating.agreement, link: filter_links) %>
-                <%= quality_display(rating.quality, link: filter_links) %>
-                <%= learned_something_display(rating.learned_something?, link: filter_links) %>
-                <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
-                <%= not_understood_display(rating.not_understood?, link: filter_links) %>
-                <%= not_finished_display(rating.not_finished?, link: filter_links) %>
-                <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
-              </span>
-            </td>
+
             <td class="max-w-lg lg:max-w-2xl lg:w-rWidth">
-              <%= rating_display(rating) %>
-              <span class="block lg:hidden mt-1 max-w-md maxWScreen">
+              <!-- max-w-md maxWScreen -->
+              <% if rating.missing_url? || rating.citation.blank? %>
                 <%= rating_display(rating) %>
-                <span class="ml-2">
+              <% else %>
+                <%= render partial: "/shared/citation", locals: {citation: rating.citation} %>
+              <% end %>
+
+
+              <span class="block lg:hidden mt-2">
+                <small class="mr-1">Rated <span class="convertTime"><%= l(rating.created_at, format: :convert_time) %></small>
+                <% if render_user %>
+                  <small class="mr-1">
+                    <% if private_user && !show_private_user %>
+                      private
+                    <% elsif rating.user.blank? %>
+                      missing
+                    <% else %>
+                      <%= link_to rating.user.username, ratings_path(sortable_params.merge(user: rating.user.username_slug)) %>
+                    <% end %>
+                  </small>
+                <% end %>
+                <% if rating.user_id == current_user&.id %>
+                  <small class="mr-1 less-strong"><%= link_to "edit rating", edit_rating_path(rating) %></small>
+                <% end %>
+                <span class="">
                   <%= agreement_display(rating.agreement, link: filter_links) %>
                   <%= quality_display(rating.quality, link: filter_links) %>
                   <%= learned_something_display(rating.learned_something?, link: filter_links) %>
@@ -120,6 +118,18 @@
                   <%= not_finished_display(rating.not_finished?, link: filter_links) %>
                   <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
                 </span>
+              </span>
+            </td>
+
+            <td class="hidden lg:table-cell less-strong">
+              <span class="">
+                <%= agreement_display(rating.agreement, link: filter_links) %>
+                <%= quality_display(rating.quality, link: filter_links) %>
+                <%= learned_something_display(rating.learned_something?, link: filter_links) %>
+                <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
+                <%= not_understood_display(rating.not_understood?, link: filter_links) %>
+                <%= not_finished_display(rating.not_finished?, link: filter_links) %>
+                <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
               </span>
             </td>
           <% end %>

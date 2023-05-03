@@ -28,7 +28,7 @@
             <%= link_to l(rating.created_at, format: :convert_time), admin_rating_path(rating), class: "convertTime" %>
           </td>
           <td class="max-w-md maxWScreen">
-            <% rating_text = "missing url" if rating.display_name.blank? || rating.display_name == "missing url" %>
+            <% rating_text = "missing url" if rating.missing_url? %>
             <% rating_text ||= rating.display_name %>
             <%= link_to rating_text, admin_citation_path(rating.citation), class: "mr-1" %>
             <small class="inline-block less-strong mr-1">
