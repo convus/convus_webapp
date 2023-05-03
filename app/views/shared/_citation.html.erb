@@ -1,4 +1,22 @@
-<h4 class="text-lg" style=""><%= link_to citation.title, citation.url, class: "no-underline hover:underline" %></h4>
+<h4 class="text-lg leading-5 mb-1" style=""><%= link_to citation.title, citation.url, class: "no-underline hover:underline" %></h4>
 <% if citation.description.present? %>
-  <p><%= citation.description %></p>
+  <p class="leading-5 mb-1"><%= citation.description %></p>
 <% end %>
+<p class="leading-5 mb-1 text-gray-500 text-sm">
+  <% if citation.published_at.present? %>
+    <span class="convertTime skipTimeTitle mr-2" title="Published at"><%= l(citation.published_at, format: :convert_time) %></span>
+  <% end %>
+  <% if citation.authors.present? %>
+    <span class="mr-2"><%= citation.authors.join(", ") %></span>
+  <% end %>
+  <span class="mr-2"><%= citation.publisher_name %></span>
+  <% if citation.paywall %>
+    <span class="-ml-1 mr-2">($)</span>
+  <% end %>
+  <% if citation.word_count.present? %>
+    <span class="mr-2">
+      <%= number_with_delimiter(citation.word_count_rough) %>
+      words
+    </span>
+  <% end %>
+</p>

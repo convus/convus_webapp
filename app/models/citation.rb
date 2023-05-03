@@ -127,6 +127,18 @@ class Citation < ApplicationRecord
     publisher&.name
   end
 
+  def word_count_rough
+    return nil if word_count.blank?
+    return 200 if word_count < 250
+    return 500 if word_count < 600
+    return 1000 if word_count < 1500
+    if word_count < 10_000
+      (word_count/1000.0).round * 1000
+    else
+      (word_count/5000.0).round * 5000
+    end
+  end
+
   def topics_string=(val)
     topic_ids = Topic.friendly_find_all(val&.split(",")).map(&:id)
     if topic_ids.blank?

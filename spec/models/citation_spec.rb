@@ -210,4 +210,48 @@ RSpec.describe Citation, type: :model do
       end
     end
   end
+
+  describe "word_count_rough" do
+    let(:citation) { Citation.new(word_count: word_count) }
+    let(:word_count) { nil }
+    it "returns nil" do
+      expect(citation.word_count_rough).to be_nil
+    end
+    context "120" do
+      let(:word_count) { 120 }
+      it "returns expected" do
+        expect(citation.word_count_rough).to eq 200
+      end
+    end
+    context "550" do
+      let(:word_count) { 553 }
+      it "returns expected" do
+        expect(citation.word_count_rough).to eq 500
+      end
+    end
+    context "959" do
+      let(:word_count) { 959 }
+      it "returns expected" do
+        expect(citation.word_count_rough).to eq 1000
+      end
+    end
+    context "1333" do
+      let(:word_count) { 1333 }
+      it "returns expected" do
+        expect(citation.word_count_rough).to eq 1000
+      end
+    end
+    context "5323" do
+      let(:word_count) { 5323 }
+      it "returns expected" do
+        expect(citation.word_count_rough).to eq 5000
+      end
+    end
+    context "23323" do
+      let(:word_count) { 22_493 }
+      it "returns expected" do
+        expect(citation.word_count_rough).to eq 20_000
+      end
+    end
+  end
 end
