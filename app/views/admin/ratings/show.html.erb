@@ -89,7 +89,7 @@
           <tr>
             <td>Topics matching</td>
             <td>
-              <% metadata_attributes[:topic_names] do |topic| %>
+              <% metadata_attributes[:topic_names]&.each do |topic| %>
                 <span class="block"><%= topic %></span>
               <% end %>
             </td>

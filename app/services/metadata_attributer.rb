@@ -79,12 +79,12 @@ class MetadataAttributer
   end
 
   def self.metadata_topic_names(rating_metadata, json_ld)
-    topics = json_ld&.dig("keywords") || []
+    topics = array_or_split(json_ld&.dig("keywords"))
 
     topics += array_or_split(prop_or_name_content(rating_metadata, "news_keywords"))
     topics += array_or_split(prop_or_name_content(rating_metadata, "keywords"))
 
-    topics.flatten.uniq.map { |auth| html_decode(auth) }.uniq.sort
+    topics.flatten.uniq.map { |auth| html_decode(auth) }.compact.uniq.sort
   end
 
   # Needs to get the 'rel' attribute
