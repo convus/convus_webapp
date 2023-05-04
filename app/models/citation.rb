@@ -176,7 +176,6 @@ class Citation < ApplicationRecord
   def missing_meta_attrs
     attributes.slice(*COUNTED_META_ATTRS)
       .map { |attr, val| val.present? ? nil : attr }.compact
-
   end
 
   def set_calculated_attributes
