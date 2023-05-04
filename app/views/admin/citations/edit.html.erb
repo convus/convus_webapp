@@ -1,6 +1,13 @@
 <%= content_for :main_wrapper_class, "container-padded" %>
 <div class="large-width-container">
   <h1 class="standard-top-offset mb-4">Edit Citation</h1>
+  <p class="mb-3">
+    Missing metadata: <%= missing_meta_count(@citation) %>
+    <% missing_meta = @citation.missing_meta_attrs %>
+    <% if missing_meta.count > 0 && missing_meta.count < Citation::COUNTED_META_ATTRS.count %>
+      <small class="less-strong">(<%= @citation.missing_meta_attrs.join(", ") %>)</small class="text-sm">
+    <% end %>
+  </p>
   <%= form_with(model: @citation, url: admin_citation_url(@citation), method: :patch, class: "pb-2") do |f| %>
     <%= render partial: "/shared/errors", locals: {obj: @citation, name: "Citation"} %>
     <div class="row sm:grid-cols-2">
@@ -98,7 +105,10 @@
         <p>By: <%= rating.user&.username %></p>
         <p>at: <%= link_to l(rating.created_at, format: :convert_time), admin_rating_path(rating), class: "convertTime" %></p>
 
-        <div class="code-small"><%= pretty_print_json(rating.citation_metadata_attributes) %></div>
+        <div class="code-small">
+          <%# skipping canonical_url for now, because it's just noise %>
+          <%= pretty_print_json(rating.citation_metadata_attributes.except(:canonical_url)) %>
+        </div>
       </div>
     <% end %>
   </div>

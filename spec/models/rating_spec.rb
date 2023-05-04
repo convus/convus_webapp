@@ -133,6 +133,7 @@ RSpec.describe Rating, type: :model do
     let(:rating) { Rating.new }
     it "is missing url" do
       expect(rating.calculated_display_name).to eq "missing url"
+      expect(rating.missing_url?).to be_truthy
     end
     context "with submitted_url" do
       let(:rating) { FactoryBot.create(:rating, submitted_url: "https://en.wikipedia.org/wiki/Protocol_Buffers/") }

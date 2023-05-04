@@ -193,6 +193,13 @@ RSpec.describe Citation, type: :model do
     end
   end
 
+  describe "authors_rendered" do
+    let(:citation) { Citation.new(authors: ["Sally", "Contributors to Wikimedia projects"]) }
+    it "skips wikimedia" do
+      expect(citation.authors_rendered).to eq(["Sally"])
+    end
+  end
+
   describe "references_filepath" do
     let(:url) { "https://www.youtube.com/watch?v=5u9s8m8uaO4" }
     let!(:citation) { Citation.find_or_create_for_url(url) }

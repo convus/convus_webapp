@@ -1,4 +1,6 @@
 class Citation < ApplicationRecord
+  COUNTED_META_ATTRS = (MetadataAttributer::ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).map(&:to_s).freeze
+
   belongs_to :publisher
 
   has_many :ratings
@@ -86,6 +88,10 @@ class Citation < ApplicationRecord
       Slugifyer.filename_slugify(pretty_url.gsub(host, ""))].join("/")
   end
 
+  def self.authors_rendered(arr)
+    arr&.reject { |a| a.match?(/Contributors to Wikimedia projects/i) } || []
+  end
+
   def url_components
     url_components_json&.with_indifferent_access || {}
   end
@@ -105,6 +111,10 @@ class Citation < ApplicationRecord
 
   def authors_str=(val)
     self.authors = val.split(/\n+/).reject(&:blank?)
+  end
+
+  def authors_rendered
+    self.class.authors_rendered(authors)
   end
 
   def published_at_in_zone=(val)
@@ -161,6 +171,11 @@ class Citation < ApplicationRecord
 
   def references_filepath
     "#{references_folder}/#{references_filename}"
+  end
+
+  def missing_meta_attrs
+    attributes.slice(*COUNTED_META_ATTRS)
+      .map { |attr, val| val.present? ? nil : attr }.compact
   end
 
   def set_calculated_attributes
