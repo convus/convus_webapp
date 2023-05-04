@@ -28,6 +28,6 @@ class Admin::RatingsController < Admin::BaseController
   end
 
   def find_rating
-    @rating = Rating.find_by_id(params[:id])
+    @rating = Rating.find(params[:id])
   end
 end

@@ -32,6 +32,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           paywall: false,
           publisher_name: "The New Yorker",
           title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+          topic_names: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "web"],
           word_count: 2_040
         }
       end
@@ -42,9 +43,10 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(publisher.base_word_count).to eq 100
         expect(rating.metadata_at).to be_within(1).of Time.current
         expect(rating.citation_metadata.count).to eq 33
+        expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_attrs.except(:published_updated_at), match_time_within: 1)
         instance.perform(citation.id)
         citation.reload
-        expect_attrs_to_match_hash(citation, metadata_attrs)
+        expect_attrs_to_match_hash(citation, metadata_attrs.except(:topic_names))
         # Updates publisher
         expect(publisher.reload.name).to eq "The New Yorker"
         expect(publisher.name_assigned?).to be_truthy
@@ -57,7 +59,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           instance.perform(citation.id)
           citation.reload
           # TODO: better handle on paywall!
-          expect_attrs_to_match_hash(citation, metadata_attrs.except(:publisher_name, :paywall))
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:publisher_name, :paywall, :topic_names))
           # It doesn't re-update the publisher
           expect(publisher.reload.name).to eq "Cool publisher"
         end
@@ -87,6 +89,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
             canonical_url: nil,
             paywall: false,
             publisher_name: "New Yorked",
+            topic_names: [],
             word_count: 186
           }
         end
@@ -96,7 +99,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect_hashes_to_match(rating_older.citation_metadata_attributes, target_older, match_time_within: 1)
           instance.perform(citation.id)
           citation.reload
-          expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at))
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at, :topic_names))
         end
       end
     end
@@ -113,6 +116,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           paywall: true,
           publisher_name: "National Review",
           title: "How the Private Sector Is Shaping the Future of Nuclear Energy",
+          topic_names: ["NRPLUS Member Articles", "Nuclear Power", "Premium Content", "section: Article", "topic: Capital Matters", "topic: Energy & Environment", "topic: The Economy"],
           word_count: 9_949
         }
       end
@@ -123,7 +127,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(metadata_attrs[:published_at]).to be > metadata_attrs[:published_updated_at]
         instance.perform(citation.id)
         citation.reload
-        expect_attrs_to_match_hash(citation, metadata_attrs.merge(published_updated_at: nil), match_time_within: 1)
+        expect_attrs_to_match_hash(citation, metadata_attrs.merge(published_updated_at: nil).except(:topic_names), match_time_within: 1)
         # Updates publisher
         expect(publisher.reload.name).to eq "National Review"
         expect(publisher.name_assigned?).to be_truthy

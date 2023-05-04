@@ -20,7 +20,7 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     if new_attributes[:published_updated_at].present? && new_attributes[:published_at].present?
       new_attributes[:published_updated_at] = nil if new_attributes[:published_updated_at] <= new_attributes[:published_at]
     end
-    citation.update(new_attributes.except(:publisher_name))
+    citation.update(new_attributes.except(:publisher_name, :topic_names))
 
     if new_attributes[:publisher_name].present? && !citation.publisher.name_assigned?
       citation.publisher.update(name: new_attributes[:publisher_name])

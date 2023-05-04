@@ -2,7 +2,7 @@ require "commonmarker"
 
 class MetadataAttributer
   ATTR_KEYS = %i[authors canonical_url description paywall published_at published_updated_at
-    publisher_name title word_count].freeze
+    publisher_name title topic_names word_count].freeze
   RAISE_FOR_DUPES = false
 
   def self.from_rating(rating)
@@ -78,6 +78,15 @@ class MetadataAttributer
     html_decode(publisher)
   end
 
+  def self.metadata_topic_names(rating_metadata, json_ld)
+    topics = json_ld&.dig("keywords") || []
+
+    topics += array_or_split(prop_or_name_content(rating_metadata, "news_keywords"))
+    topics += array_or_split(prop_or_name_content(rating_metadata, "keywords"))
+
+    topics.flatten.uniq.map { |auth| html_decode(auth) }.uniq.sort
+  end
+
   # Needs to get the 'rel' attribute
   def self.metadata_canonical_url(rating_metadata, json_ld)
     canonical_url = json_ld&.dig("url")
@@ -150,5 +159,11 @@ class MetadataAttributer
       &.gsub(" ", " ")
       &.gsub(/\s+/, " ") # normalize spaces
     result.blank? ? nil : result
+  end
+
+  def self.array_or_split(str)
+    return [] if str.blank?
+    return str if str.is_a?(Array)
+    str.split(",")
   end
 end

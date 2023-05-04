@@ -80,7 +80,19 @@
         <tbody>
           <tr>
             <td>Authors rendered</td>
-            <td><%= Citation.authors_rendered(metadata_attributes[:authors]) %></td>
+            <td>
+              <% Citation.authors_rendered(metadata_attributes[:authors]).each do |author| %>
+                <span class="block"><%= author %></span>
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <td>Topics matching</td>
+            <td>
+              <% metadata_attributes[:topic_names] do |topic| %>
+                <span class="block"><%= topic %></span>
+              <% end %>
+            </td>
           </tr>
         </tbody>
       </table>

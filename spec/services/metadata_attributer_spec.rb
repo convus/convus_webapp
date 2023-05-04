@@ -29,6 +29,7 @@ RSpec.describe MetadataAttributer do
           word_count: 2_040,
           paywall: false,
           title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+          topic_names: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "web"],
           publisher_name: "The New Yorker"
         }
       end
@@ -51,6 +52,7 @@ RSpec.describe MetadataAttributer do
           word_count: 26578,
           paywall: false,
           title: "Audrey Tang on what we can learn from Taiwan’s experiments with how to do democracy",
+          topic_names: [],
           publisher_name: "80,000 Hours"
         }
       end
@@ -75,6 +77,7 @@ RSpec.describe MetadataAttributer do
           word_count: 2938,
           paywall: false,
           title: "Tim Federle - Wikipedia",
+          topic_names: [],
           publisher_name: "Wikimedia Foundation, Inc."
         }
       end
@@ -162,6 +165,9 @@ RSpec.describe MetadataAttributer do
         expect(subject.metadata_description(metadata, {})).to eq target
       end
     end
+  end
+
+  describe "metadata_topics" do
   end
 
   describe "remove publisher from title" do
