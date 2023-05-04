@@ -139,7 +139,7 @@ class MetadataAttributer
 
   def self.html_decode(str)
     return nil if str.blank?
-    result =  result = Nokogiri::HTML.parse(str).text&.strip
+    result = Nokogiri::HTML.parse(str).text&.strip
       &.gsub(/\[…\]/, "...") # Replace a weird issue
       &.gsub(" ", " ")
       &.gsub(/\s+/, " ") # normalize spaces
