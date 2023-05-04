@@ -140,9 +140,9 @@ RSpec.describe MetadataAttributer do
       let(:json_ld) { {"author" => {"name" => ["Jennifer Ludden", "Marisa Peñaloza"], "@type" => "Person"}} }
       let(:target) { ["Jennifer Ludden", "Marisa Peñaloza"] }
       it "returns authors names" do
-        expect(described_class.text_or_name_prop(json_ld["author"])).to eq target
+        expect(subject.text_or_name_prop(json_ld["author"])).to eq target
         # Full author parsing
-        expect(described_class.metadata_authors({}, json_ld)).to eq target
+        expect(subject.metadata_authors({}, json_ld)).to eq target
       end
     end
   end
@@ -152,29 +152,38 @@ RSpec.describe MetadataAttributer do
       let(:metadata) { [{"property" => "description", "content" => "I'm baby copper mug wolf fingerstache, echo park try-hard 8-bit freegan chartreuse sus deep v gastropub offal. Man braid iceland DSA, adaptogen air plant mustache next level. DSA twee 8-bit crucifix tumblr venmo. Street art four loko brunch iceland lumbersexual gatekeep, flexitarian single-origin coffee pickled everyday carry pabst. Trust fund 3 wolf moon mumblecore, man braid letterpress keytar cardigan praxis craft beer roof party whatever twee taxidermy. Gatekeep normcore meditation distillery, jianbing shaman viral."}] }
       let(:target) { "I'm baby copper mug wolf fingerstache, echo park try-hard 8-bit freegan chartreuse sus deep v gastropub offal. Man braid iceland DSA, adaptogen air plant mustache next level. DSA twee 8-bit crucifix tumblr venmo. Street art four loko brunch iceland lumbersexual gatekeep, flexitarian single-origin coffee pickled everyday carry pabst. Trust fund 3 wolf moon mumblecore, man braid letterpress keytar cardigan praxis craft beer roof party whatever twee taxidermy. Gatekeep normcore meditation..." }
       it "returns authors names" do
-        expect(described_class.metadata_description(metadata, {})).to eq target
+        expect(subject.metadata_description(metadata, {})).to eq target
       end
     end
     context "description entity encoding" do
       let(:metadata) { [{"property" => "description", "content" => "Cool String&nbsp;here [&hellip;]"}] }
       let(:target) { "Cool String here ..." }
       it "returns authors names" do
-        expect(described_class.metadata_description(metadata, {})).to eq target
+        expect(subject.metadata_description(metadata, {})).to eq target
+      end
+    end
+  end
+
+  describe "remove publisher from title" do
+    context "national review" do
+      let(:title) { "How the Private Sector Is Shaping the Future of Nuclear Energy | National Review" }
+      it "removes publisher" do
+        expect(subject.title_without_publisher(title, "National Review")).to eq "How the Private Sector Is Shaping the Future of Nuclear Energy"
       end
     end
   end
 
   describe "html_decode" do
     it "removes entities" do
-      expect(described_class.html_decode("Cool String&nbsp;here [&hellip;]")).to eq "Cool String here ..."
-      expect(described_class.html_decode("Cool String&amp;here ")).to eq "Cool String&here"
-      expect(described_class.html_decode("Cool String&amp;here ")).to eq "Cool String&here"
+      expect(subject.html_decode("Cool String&nbsp;here [&hellip;]")).to eq "Cool String here ..."
+      expect(subject.html_decode("Cool String&amp;here ")).to eq "Cool String&here"
+      expect(subject.html_decode("Cool String&amp;here ")).to eq "Cool String&here"
     end
     it "returns nil for nbsp" do
-      expect(described_class.html_decode(" &nbsp;")).to be_nil
+      expect(subject.html_decode(" &nbsp;")).to be_nil
     end
     it "strips tags" do
-      expect(described_class.html_decode("<p>Stuff  </p>")).to eq "Stuff"
+      expect(subject.html_decode("<p>Stuff  </p>")).to eq "Stuff"
     end
   end
 end

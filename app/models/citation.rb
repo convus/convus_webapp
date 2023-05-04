@@ -87,7 +87,7 @@ class Citation < ApplicationRecord
   end
 
   def self.authors_rendered(arr)
-    arr.reject { |a| a.match?(/Contributors to Wikimedia projects/i) } || []
+    arr&.reject { |a| a.match?(/Contributors to Wikimedia projects/i) } || []
   end
 
   def url_components

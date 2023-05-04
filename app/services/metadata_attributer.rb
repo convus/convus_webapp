@@ -14,9 +14,15 @@ class MetadataAttributer
       [attrib, val]
     end.compact.to_h
 
+    attrs[:title] = title_without_publisher(attrs[:title], attrs[:publisher_name])
     attrs[:word_count] = metadata_word_count(rating_metadata, json_ld, rating.publisher.base_word_count)
 
     attrs
+  end
+
+  def self.title_without_publisher(title, publisher)
+    return title if publisher.blank?
+    title.gsub(/ (\W|_) #{publisher}\z/i, "")
   end
 
   def self.metadata_authors(rating_metadata, json_ld)

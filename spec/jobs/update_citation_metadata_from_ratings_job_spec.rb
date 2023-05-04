@@ -28,11 +28,11 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           published_at: Time.at(1682713348),
           published_updated_at: nil,
           description: "Jonathan Blitzer writes about the House Republican’s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy’s weakened position as Speaker.",
-          canonical_url: nil,
+          canonical_url: "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy",
           paywall: false,
           publisher_name: "The New Yorker",
           title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
-          word_count: 2_037
+          word_count: 2_040
         }
       end
       it "parses" do
@@ -109,7 +109,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           published_at: Time.at(1600252259),
           published_updated_at: Time.at(1600246002),
           description: "Last week’s groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America.",
-          canonical_url: nil,
+          canonical_url: "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/",
           paywall: true,
           publisher_name: "National Review",
           title: "How the Private Sector Is Shaping the Future of Nuclear Energy",
@@ -117,6 +117,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         }
       end
       it "parses" do
+        expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
         expect_hashes_to_match(rating.citation_metadata_attributes, metadata_attrs, match_time_within: 1)
         # This is an erroneous published at date!
         expect(metadata_attrs[:published_at]).to be > metadata_attrs[:published_updated_at]
