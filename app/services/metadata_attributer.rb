@@ -30,9 +30,9 @@ class MetadataAttributer
   end
 
   def self.metadata_title(rating_metadata, json_ld)
-    # I think the longer the better, for now...
-    title = json_ld&.dig("headline")
-    title ||= prop_or_name_content(rating_metadata, "og:title")
+    title = prop_or_name_content(rating_metadata, "og:title")
+    title ||= json_ld&.dig("name")
+    title ||= json_ld&.dig("headline")
     title ||= prop_or_name_content(rating_metadata, "twitter:title")
     html_decode(title)
   end
@@ -74,7 +74,7 @@ class MetadataAttributer
 
   # Needs to get the 'rel' attribute
   def self.metadata_canonical_url(rating_metadata, json_ld)
-    canonical_url = json_ld&.dig("og:")
+    canonical_url = json_ld&.dig("url")
     canonical_url ||= json_ld_graph(json_ld, "WebPage", "url")
     canonical_url ||= prop_or_name_content(rating_metadata, "canonical")
     canonical_url ||= prop_or_name_content(rating_metadata, "og:url")

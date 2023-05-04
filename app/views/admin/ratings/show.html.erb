@@ -67,12 +67,23 @@
         </tbody>
       </table>
     </div>
+    <% metadata_attributes = @rating.citation_metadata_attributes %>
     <div class="col">
       <h3>Citation metadata attributes:</h3>
       <div class="code-small">
         <%# skipping canonical_url for now, because it's just noise %>
-        <%= pretty_print_json(@rating.citation_metadata_attributes.except(:canonical_url)) %>
+        <%= pretty_print_json(metadata_attributes.except(:canonical_url)) %>
       </div>
+    </div>
+    <div class="col mt-2 sm:mt-7">
+      <table class="table-list">
+        <tbody>
+          <tr>
+            <td>Authors rendered</td>
+            <td><%= Citation.authors_rendered(metadata_attributes[:authors]) %></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

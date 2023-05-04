@@ -6,8 +6,8 @@
   <% if citation.published_at.present? %>
     <span class="convertTime skipTimeTitle mr-2" title="Published at"><%= l(citation.published_at, format: :convert_time) %></span>
   <% end %>
-  <% if citation.authors.present? %>
-    <span class="mr-2"><%= citation.authors.join(", ") %></span>
+  <% if citation.authors_rendered.any? %>
+    <span class="mr-2"><%= citation.authors_rendered.join(", ") %></span>
   <% end %>
   <span class="mr-2"><%= citation.publisher_name %></span>
   <% if citation.paywall %>

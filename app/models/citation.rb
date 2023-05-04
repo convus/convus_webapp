@@ -86,6 +86,10 @@ class Citation < ApplicationRecord
       Slugifyer.filename_slugify(pretty_url.gsub(host, ""))].join("/")
   end
 
+  def self.authors_rendered(arr)
+    arr.reject { |a| a.match?(/Contributors to Wikimedia projects/i) } || []
+  end
+
   def url_components
     url_components_json&.with_indifferent_access || {}
   end
@@ -105,6 +109,10 @@ class Citation < ApplicationRecord
 
   def authors_str=(val)
     self.authors = val.split(/\n+/).reject(&:blank?)
+  end
+
+  def authors_rendered
+    self.class.authors_rendered(authors)
   end
 
   def published_at_in_zone=(val)

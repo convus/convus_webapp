@@ -7,7 +7,7 @@ RSpec.describe MetadataAttributer do
     def expect_matching_attributes(rating_metadata, json_ld, metadata_attrs)
       expect(subject.metadata_authors(rating_metadata, json_ld)).to eq(metadata_attrs[:authors])
       expect(subject.metadata_published_at(rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_at].to_i
-      expect(subject.metadata_published_updated_at(rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_updated_at].to_i
+      expect(subject.metadata_published_updated_at(rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_updated_at]&.to_i
       expect(subject.metadata_description(rating_metadata, json_ld)).to eq metadata_attrs[:description]
       expect(subject.metadata_canonical_url(rating_metadata, json_ld)).to eq metadata_attrs[:canonical_url]
       expect(subject.metadata_word_count(rating_metadata, json_ld, 100)).to eq metadata_attrs[:word_count]
@@ -58,6 +58,28 @@ RSpec.describe MetadataAttributer do
         json_ld = subject.json_ld_hash(rating.citation_metadata)
 
         expect(described_class.json_ld_graph(json_ld, "WebPage", "datePublished")).to eq "2022-02-02T22:43:27+00:00"
+
+        expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
+      end
+    end
+    context "wikipedia" do
+      let(:citation_metadata_str) { '[{"charset":"UTF-8"},{"content":"","name":"ResourceLoaderDynamicStyles"},{"content":"MediaWiki 1.41.0-wmf.6","name":"generator"},{"content":"origin","name":"referrer"},{"content":"origin-when-crossorigin","name":"referrer"},{"content":"origin-when-cross-origin","name":"referrer"},{"content":"max-image-preview:standard","name":"robots"},{"content":"telephone=no","name":"format-detection"},{"content":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Tim_Federle.jpg","property":"og:image"},{"content":"1200","property":"og:image:width"},{"content":"1800","property":"og:image:height"},{"content":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Tim_Federle.jpg","property":"og:image"},{"content":"800","property":"og:image:width"},{"content":"1200","property":"og:image:height"},{"content":"640","property":"og:image:width"},{"content":"960","property":"og:image:height"},{"content":"width=1000","name":"viewport"},{"content":"Tim Federle - Wikipedia","property":"og:title"},{"content":"website","property":"og:type"},{"property":"mw:PageProp/toc"},{"json_ld":["{\"@context\":\"https:\\/\\/schema.org\",\"@type\":\"Article\",\"name\":\"Tim Federle\",\"url\":\"https:\\/\\/en.wikipedia.org\\/wiki\\/Tim_Federle\",\"sameAs\":\"http:\\/\\/www.wikidata.org\\/entity\\/Q7803484\",\"mainEntity\":\"http:\\/\\/www.wikidata.org\\/entity\\/Q7803484\",\"author\":{\"@type\":\"Organization\",\"name\":\"Contributors to Wikimedia projects\"},\"publisher\":{\"@type\":\"Organization\",\"name\":\"Wikimedia Foundation, Inc.\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/www.wikimedia.org\\/static\\/images\\/wmf-hor-googpub.png\"}},\"datePublished\":\"2009-05-19T08:04:49Z\",\"dateModified\":\"2023-04-29T16:38:28Z\",\"image\":\"https:\\/\\/upload.wikimedia.org\\/wikipedia\\/commons\\/8\\/8d\\/Tim_Federle.jpg\",\"headline\":\"American actor\"}","{\"@context\":\"https:\\/\\/schema.org\",\"@type\":\"Article\",\"name\":\"Tim Federle\",\"url\":\"https:\\/\\/en.wikipedia.org\\/wiki\\/Tim_Federle\",\"sameAs\":\"http:\\/\\/www.wikidata.org\\/entity\\/Q7803484\",\"mainEntity\":\"http:\\/\\/www.wikidata.org\\/entity\\/Q7803484\",\"author\":{\"@type\":\"Organization\",\"name\":\"Contributors to Wikimedia projects\"},\"publisher\":{\"@type\":\"Organization\",\"name\":\"Wikimedia Foundation, Inc.\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/www.wikimedia.org\\/static\\/images\\/wmf-hor-googpub.png\"}},\"datePublished\":\"2009-05-19T08:04:49Z\",\"dateModified\":\"2023-04-29T16:38:28Z\",\"image\":\"https:\\/\\/upload.wikimedia.org\\/wikipedia\\/commons\\/8\\/8d\\/Tim_Federle.jpg\",\"headline\":\"American actor\"}"]},{"word_count":3038}]' }
+      let(:submitted_url) { "https://en.wikipedia.org/wiki/Tim_Federle" }
+      let(:metadata_attrs) do
+        {
+          authors: ["Contributors to Wikimedia projects"],
+          published_at: Time.at(1242720289), # 2009-05-19
+          published_updated_at: Time.at(1682786308),
+          description: nil,
+          canonical_url: "https://en.wikipedia.org/wiki/Tim_Federle",
+          word_count: 2938,
+          paywall: false,
+          title: "Tim Federle - Wikipedia",
+          publisher_name: "Wikimedia Foundation, Inc."
+        }
+      end
+      it "returns target" do
+        json_ld = subject.json_ld_hash(rating.citation_metadata)
 
         expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
       end
