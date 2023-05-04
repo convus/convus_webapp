@@ -13,6 +13,7 @@ class MetadataAttributer
       val = send("metadata_#{attrib}", rating_metadata, json_ld)
       [attrib, val]
     end.compact.to_h
+
     attrs[:word_count] = metadata_word_count(rating_metadata, json_ld, rating.publisher.base_word_count)
 
     attrs
@@ -25,7 +26,7 @@ class MetadataAttributer
     end
     authors ||= prop_or_name_content(rating_metadata, "article:author")
     authors ||= prop_or_name_content(rating_metadata, "author")
-    Array(authors)
+    Array(authors).map { |auth| html_decode(auth) }
   end
 
   def self.metadata_title(rating_metadata, json_ld)
@@ -33,7 +34,7 @@ class MetadataAttributer
     title = json_ld&.dig("headline")
     title ||= prop_or_name_content(rating_metadata, "og:title")
     title ||= prop_or_name_content(rating_metadata, "twitter:title")
-    title
+    html_decode(title)
   end
 
   def self.metadata_description(rating_metadata, json_ld)
@@ -42,17 +43,22 @@ class MetadataAttributer
     descriptions << prop_or_name_content(rating_metadata, "og:description")
     descriptions << prop_or_name_content(rating_metadata, "twitter:description")
     descriptions << prop_or_name_content(rating_metadata, "description")
-    descriptions.reject(&:blank?).max_by(&:length)
+    description = descriptions.reject(&:blank?).max_by(&:length)
+    html_decode(description&.truncate(500, separator: " "))
   end
 
   def self.metadata_published_at(rating_metadata, json_ld)
     time = json_ld&.dig("datePublished")
+    time ||= json_ld_graph(json_ld, "WebPage", "datePublished")
+
     time ||= prop_or_name_content(rating_metadata, "article:published_time")
     TranzitoUtils::TimeParser.parse(time)
   end
 
   def self.metadata_published_updated_at(rating_metadata, json_ld)
     time = json_ld&.dig("dateModified")
+    time ||= json_ld_graph(json_ld, "WebPage", "dateModified")
+
     time ||= prop_or_name_content(rating_metadata, "article:modified_time")
     TranzitoUtils::TimeParser.parse(time)
   end
@@ -63,12 +69,16 @@ class MetadataAttributer
       publisher = text_or_name_prop(ld_publisher)
     end
     publisher ||= prop_or_name_content(rating_metadata, "og:site_name")
-    publisher
+    html_decode(publisher)
   end
 
   # Needs to get the 'rel' attribute
   def self.metadata_canonical_url(rating_metadata, json_ld)
-    prop_or_name_content(rating_metadata, "canonical")
+    canonical_url = json_ld&.dig("og:")
+    canonical_url ||= json_ld_graph(json_ld, "WebPage", "url")
+    canonical_url ||= prop_or_name_content(rating_metadata, "canonical")
+    canonical_url ||= prop_or_name_content(rating_metadata, "og:url")
+    canonical_url
   end
 
   def self.metadata_paywall(rating_metadata, json_ld)
@@ -83,8 +93,8 @@ class MetadataAttributer
     if article_body.present?
       # New Yorker returns as markdown and adds some +++'s in there
       article_body = CommonMarker.render_doc(article_body.gsub(/\++/, ""), :DEFAULT).to_html
-      article_body = ActionController::Base.helpers.strip_tags(article_body).strip
-      return article_body.split(/\s+/).length
+      article_body = html_decode(article_body)
+      return article_body&.split(/\s+/)&.length
     end
     word_count = rating_metadata.detect { |i| i["word_count"].present? }&.dig("word_count")
     return nil if word_count.blank? || word_count < 100
@@ -117,5 +127,22 @@ class MetadataAttributer
       attrs.merge!(data)
     end
     attrs
+  end
+
+  # The json_ld graph contains useful information!
+  def self.json_ld_graph(json_ld, graph_type, prop = nil)
+    graph = json_ld&.dig("@graph")
+    return nil if graph.blank?
+    graph_item = graph.detect { |item| item["@type"] == graph_type }
+    prop.blank? ? graph_item : graph_item[prop]
+  end
+
+  def self.html_decode(str)
+    return nil if str.blank?
+    result =  result = Nokogiri::HTML.parse(str).text&.strip
+      &.gsub(/\[…\]/, "...") # Replace a weird issue
+      &.gsub(" ", " ")
+      &.gsub(/\s+/, " ") # normalize spaces
+    result.blank? ? nil : result
   end
 end
