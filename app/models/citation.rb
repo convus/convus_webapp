@@ -1,4 +1,6 @@
 class Citation < ApplicationRecord
+  COUNTED_META_ATTRS = (MetadataAttributer::ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).map(&:to_s).freeze
+
   belongs_to :publisher
 
   has_many :ratings
@@ -169,6 +171,12 @@ class Citation < ApplicationRecord
 
   def references_filepath
     "#{references_folder}/#{references_filename}"
+  end
+
+  def missing_meta_attrs
+    attributes.slice(*COUNTED_META_ATTRS)
+      .map { |attr, val| val.present? ? nil : attr }.compact
+
   end
 
   def set_calculated_attributes

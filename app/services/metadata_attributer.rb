@@ -21,7 +21,7 @@ class MetadataAttributer
   end
 
   def self.title_without_publisher(title, publisher)
-    return title if publisher.blank?
+    return title if publisher.blank? || title.blank?
     title.gsub(/ (\W|_) #{publisher}\z/i, "")
   end
 
