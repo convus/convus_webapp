@@ -30,10 +30,10 @@ class Admin::RatingsController < Admin::BaseController
     ratings = searched_ratings(Rating) # in RateSearchable
 
     if sort_column == "meta"
-      ratings = sort_direction == "desc" ? ratings.metadata_present : ratings.metadata_blank
+      ratings = (sort_direction == "desc") ? ratings.metadata_present : ratings.metadata_blank
     end
 
-    actual_sort_column = sort_column == "meta" ? "created_at" : sort_column
+    actual_sort_column = (sort_column == "meta") ? "created_at" : sort_column
     ratings
       .reorder("ratings.#{actual_sort_column} #{sort_direction}")
   end
