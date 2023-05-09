@@ -167,7 +167,19 @@ RSpec.describe MetadataAttributer do
     end
   end
 
-  describe "metadata_topics" do
+  describe "metadata_topic_names" do
+    let(:metadata_keywords) { [{"name" => "keywords", "itemid" => "#keywords", "content" => "Donald Trump,  Chris Christie, Republican primary"}] }
+    let(:target) { ["Chris Christie", "Donald Trump", "Republican primary"] }
+    it "returns topics" do
+      expect(subject.metadata_topic_names(metadata_keywords, {})).to eq target
+    end
+    context "news keywords" do
+      let(:metadata_news) { [{"name" => "news_keywords", "content" => "Donald Trump, Chris Christie, Republican primary"}] }
+      it "returns topics" do
+        expect(subject.metadata_topic_names(metadata_news, {})).to eq target
+        expect(subject.metadata_topic_names(metadata_news + metadata_keywords, {})).to eq target
+      end
+    end
   end
 
   describe "remove publisher from title" do
