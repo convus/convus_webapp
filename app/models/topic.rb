@@ -75,6 +75,14 @@ class Topic < ApplicationRecord
       arr.flatten.map { |s| friendly_find(s) }.compact
     end
 
+    def friendly_find_all_parentless(arr = nil)
+      topics = friendly_find_all(arr)
+      topic_ids = topics.pluck(:id)
+      topics.reject do |topic|
+        topic.child_relations.where(child_id: topic_ids).limit(1).any?
+      end
+    end
+
     def admin_search(str)
       where("name ILIKE ?", "%#{str.strip}%")
     end

@@ -2,8 +2,11 @@ require "commonmarker"
 
 class MetadataAttributer
   ATTR_KEYS = %i[authors canonical_url description keywords paywall published_at
-    published_updated_at publisher_name title word_count].freeze
-  RAISE_FOR_DUPES = false
+    published_updated_at publisher_name title topics_string word_count].freeze
+  COUNTED_ATTR_KEYS = (ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).freeze
+  # I was originally worried about duplicate JSON-LD keys causing issues.
+  # So far, they haven't seemed to - if they do, this can be switched back on
+  RAISE_FOR_DUPES = false #
 
   class << self
     def from_rating(rating)
@@ -11,15 +14,16 @@ class MetadataAttributer
       return {} if rating_metadata.blank?
       json_ld = json_ld_hash(rating_metadata)
 
-      attrs = (ATTR_KEYS - %i[word_count]).map do |attrib|
+      attrs = (ATTR_KEYS - %i[word_count topics_string]).map do |attrib|
         val = send("metadata_#{attrib}", rating_metadata, json_ld)
         [attrib, val]
       end.compact.to_h
 
       attrs[:title] = title_without_publisher(attrs[:title], attrs[:publisher_name])
-
-      attrs[:topic_names] = keyword_or_text_topic_names(attrs)
       attrs[:word_count] = metadata_word_count(rating_metadata, json_ld, rating.publisher.base_word_count)
+
+      attrs[:topics_string] = keyword_or_text_topic_names(attrs).join(",")
+      attrs[:topics_string] = nil if attrs[:topics_string].blank?
 
       attrs
     end
@@ -33,10 +37,8 @@ class MetadataAttributer
 
     def keyword_or_text_topic_names(attrs)
       if attrs[:keywords].any?
-        Topic.friendly_find_all(attrs[:keywords]).pluck(:name)
+        Topic.friendly_find_all_parentless(attrs[:keywords]).pluck(:name)
       else
-        str = attrs[:description].presence || attrs[:title]
-        []
         # Run through every topic to find matches in the str
         # Issues with this:
         # - rating.citation_metadata_attributes < calling that becomes (potentially) a big operation
@@ -45,6 +47,7 @@ class MetadataAttributer
         #   but... this becomes slow
         # Possible solution: store the output from_rating in rating.citation_metadata
         #  (making it a hash, putting the raw stuff in e.g. raw: [metadata])
+        [] # attrs[:description].presence || attrs[:title]
       end
     end
 

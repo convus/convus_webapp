@@ -9,9 +9,7 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     skipped_attributes = citation.manually_updated_attributes.map(&:to_sym)
     new_attributes = MetadataAttributer::ATTR_KEYS.map do |attrib|
       next if skipped_attributes.include?(attrib)
-      # unless attrib == :publisher_name # Always get publisher_name
-      #   next if citation.send(attrib).present? && !override
-      # end
+
       # returns first value that matches, only process the first that's required
       val = citation_metadata_attributes.lazy.filter_map { |cma| cma[attrib] }.first
       val.present? ? [attrib, val] : nil

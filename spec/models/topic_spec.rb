@@ -267,10 +267,12 @@ RSpec.describe Topic, type: :model do
       end
     end
     context "distant" do
-      let(:grandparent) { FactoryBot.create(:topic, name: "computers") }
-      it "removes the grandparent" do
+      let(:grandparent) { FactoryBot.create(:topic, name: "computer") }
+      before do
         TopicRelation.create(parent: grandparent, child: parent, direct: true)
         TopicRelation.create(parent: grandparent, child: topic)
+      end
+      it "removes the grandparent" do
         expect(grandparent.reload.children.pluck(:id)).to match_array([parent.id, topic.id])
         expect(topic.reload.parents.pluck(:id)).to eq([grandparent.id])
         topic.update(parents_string: "programming, Computers")
@@ -281,6 +283,17 @@ RSpec.describe Topic, type: :model do
         expect(topic.direct_parents.pluck(:id)).to eq([parent.id])
         topic.update(parents_string: ",,")
         expect(topic.reload.parents.pluck(:id)).to eq([])
+      end
+      describe "friendly_find_all_parentless" do
+        it "returns expected" do
+          TopicRelation.create(parent: parent, child: topic)
+          expect(topic.reload.parents.pluck(:id)).to match_array([parent.id, grandparent.id])
+          # Test friendly_find_all_parentless
+          expect(Topic.friendly_find("Computer")&.id).to eq grandparent.id
+          expect(Topic.friendly_find_all_parentless(["Computer", "Ruby on rails\n"]).pluck(:id)).to eq([topic.id])
+          expect(Topic.friendly_find_all_parentless(["Computer", "programming", "Ruby on rails\n"]).pluck(:id)).to eq([topic.id])
+          expect(Topic.friendly_find_all_parentless(["Computer", "programming\n"]).pluck(:id)).to eq([parent.id])
+        end
       end
     end
   end
