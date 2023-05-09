@@ -5,13 +5,13 @@ RSpec.describe MetadataAttributer do
   describe "from_rating" do
     let(:rating) { FactoryBot.create(:rating, submitted_url: submitted_url, citation_metadata_str: citation_metadata_str) }
     def expect_matching_attributes(rating_metadata, json_ld, metadata_attrs)
-      expect(subject.metadata_authors(rating_metadata, json_ld)).to eq(metadata_attrs[:authors])
-      expect(subject.metadata_published_at(rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_at].to_i
-      expect(subject.metadata_published_updated_at(rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_updated_at]&.to_i
-      expect(subject.metadata_description(rating_metadata, json_ld)).to eq metadata_attrs[:description]
-      expect(subject.metadata_canonical_url(rating_metadata, json_ld)).to eq metadata_attrs[:canonical_url]
-      expect(subject.metadata_word_count(rating_metadata, json_ld, 100)).to eq metadata_attrs[:word_count]
-      expect(subject.metadata_paywall(rating_metadata, json_ld)).to be_falsey
+      expect(subject.send(:metadata_authors, rating_metadata, json_ld)).to eq(metadata_attrs[:authors])
+      expect(subject.send(:metadata_published_at, rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_at].to_i
+      expect(subject.send(:metadata_published_updated_at, rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_updated_at]&.to_i
+      expect(subject.send(:metadata_description, rating_metadata, json_ld)).to eq metadata_attrs[:description]
+      expect(subject.send(:metadata_canonical_url, rating_metadata, json_ld)).to eq metadata_attrs[:canonical_url]
+      expect(subject.send(:metadata_word_count, rating_metadata, json_ld, 100)).to eq metadata_attrs[:word_count]
+      expect(subject.send(:metadata_paywall, rating_metadata, json_ld)).to be_falsey
 
       expect_hashes_to_match(subject.from_rating(rating), metadata_attrs, match_time_within: 1)
     end
@@ -34,7 +34,7 @@ RSpec.describe MetadataAttributer do
         }
       end
       it "returns target" do
-        json_ld = subject.json_ld_hash(rating.citation_metadata)
+        json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
 
         expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
       end
@@ -57,9 +57,9 @@ RSpec.describe MetadataAttributer do
         }
       end
       it "returns target" do
-        json_ld = subject.json_ld_hash(rating.citation_metadata)
+        json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
 
-        expect(described_class.json_ld_graph(json_ld, "WebPage", "datePublished")).to eq "2022-02-02T22:43:27+00:00"
+        expect(subject.send(:json_ld_graph, json_ld, "WebPage", "datePublished")).to eq "2022-02-02T22:43:27+00:00"
 
         expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
       end
@@ -82,7 +82,7 @@ RSpec.describe MetadataAttributer do
         }
       end
       it "returns target" do
-        json_ld = subject.json_ld_hash(rating.citation_metadata)
+        json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
 
         expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
       end
@@ -93,13 +93,13 @@ RSpec.describe MetadataAttributer do
     let(:rating_metadata) { [{"json_ld" => values}] }
     let(:values) { [{"url" => "https://www.example.com"}] }
     it "returns json_ld" do
-      expect(subject.json_ld_hash(rating_metadata)).to eq(values.first)
+      expect(subject.send(:json_ld_hash, rating_metadata)).to eq(values.first)
     end
     # There are lots of times where there are multiple. Not erroring until this becomes a problem
     # context "multiple json_ld items" do
     #   it "raises" do
     #     expect {
-    #       subject.json_ld_hash(rating_metadata + rating_metadata)
+    #       subject.send(:json_ld_hash, rating_metadata + rating_metadata)
     #     }.to raise_error(/multiple/i)
     #   end
     # end
@@ -107,14 +107,14 @@ RSpec.describe MetadataAttributer do
     #   let(:values) { [{"url" => "https://www.example.com"}, {"url" => "https://www.example.com"}] }
     #   it "raises" do
     #     expect {
-    #       subject.json_ld_hash(rating_metadata + rating_metadata)
+    #       subject.send(:json_ld_hash, rating_metadata + rating_metadata)
     #     }.to raise_error(/multiple/i)
     #   end
     # end
     context "multiple json_ld values" do
       let(:values) { [{"url" => "https://www.example.com"}, {"@type" => "OtherThing"}] }
       it "reduces" do
-        expect(subject.json_ld_hash(rating_metadata)).to eq({"url" => "https://www.example.com", "@type" => "OtherThing"})
+        expect(subject.send(:json_ld_hash, rating_metadata)).to eq({"url" => "https://www.example.com", "@type" => "OtherThing"})
       end
     end
     context "more dataexample" do
@@ -133,7 +133,7 @@ RSpec.describe MetadataAttributer do
         }
       end
       it "raises" do
-        expect(subject.json_ld_hash(rating_metadata)).to eq target
+        expect(subject.send(:json_ld_hash, rating_metadata)).to eq target
       end
     end
   end
@@ -143,9 +143,9 @@ RSpec.describe MetadataAttributer do
       let(:json_ld) { {"author" => {"name" => ["Jennifer Ludden", "Marisa Peñaloza"], "@type" => "Person"}} }
       let(:target) { ["Jennifer Ludden", "Marisa Peñaloza"] }
       it "returns authors names" do
-        expect(subject.text_or_name_prop(json_ld["author"])).to eq target
+        expect(subject.send(:text_or_name_prop, json_ld["author"])).to eq target
         # Full author parsing
-        expect(subject.metadata_authors({}, json_ld)).to eq target
+        expect(subject.send(:metadata_authors, {}, json_ld)).to eq target
       end
     end
   end
@@ -155,14 +155,14 @@ RSpec.describe MetadataAttributer do
       let(:metadata) { [{"property" => "description", "content" => "I'm baby copper mug wolf fingerstache, echo park try-hard 8-bit freegan chartreuse sus deep v gastropub offal. Man braid iceland DSA, adaptogen air plant mustache next level. DSA twee 8-bit crucifix tumblr venmo. Street art four loko brunch iceland lumbersexual gatekeep, flexitarian single-origin coffee pickled everyday carry pabst. Trust fund 3 wolf moon mumblecore, man braid letterpress keytar cardigan praxis craft beer roof party whatever twee taxidermy. Gatekeep normcore meditation distillery, jianbing shaman viral."}] }
       let(:target) { "I'm baby copper mug wolf fingerstache, echo park try-hard 8-bit freegan chartreuse sus deep v gastropub offal. Man braid iceland DSA, adaptogen air plant mustache next level. DSA twee 8-bit crucifix tumblr venmo. Street art four loko brunch iceland lumbersexual gatekeep, flexitarian single-origin coffee pickled everyday carry pabst. Trust fund 3 wolf moon mumblecore, man braid letterpress keytar cardigan praxis craft beer roof party whatever twee taxidermy. Gatekeep normcore meditation..." }
       it "returns authors names" do
-        expect(subject.metadata_description(metadata, {})).to eq target
+        expect(subject.send(:metadata_description, metadata, {})).to eq target
       end
     end
     context "description entity encoding" do
       let(:metadata) { [{"property" => "description", "content" => "Cool String&nbsp;here [&hellip;]"}] }
       let(:target) { "Cool String here ..." }
       it "returns authors names" do
-        expect(subject.metadata_description(metadata, {})).to eq target
+        expect(subject.send(:metadata_description, metadata, {})).to eq target
       end
     end
   end
@@ -171,13 +171,13 @@ RSpec.describe MetadataAttributer do
     let(:metadata_keywords) { [{"name" => "keywords", "itemid" => "#keywords", "content" => "Donald Trump,  Chris Christie, Republican primary"}] }
     let(:target) { ["Chris Christie", "Donald Trump", "Republican primary"] }
     it "returns topics" do
-      expect(subject.metadata_topic_names(metadata_keywords, {})).to eq target
+      expect(subject.send(:metadata_topic_names, metadata_keywords, {})).to eq target
     end
     context "news keywords" do
       let(:metadata_news) { [{"name" => "news_keywords", "content" => "Donald Trump, Chris Christie, Republican primary"}] }
       it "returns topics" do
-        expect(subject.metadata_topic_names(metadata_news, {})).to eq target
-        expect(subject.metadata_topic_names(metadata_news + metadata_keywords, {})).to eq target
+        expect(subject.send(:metadata_topic_names, metadata_news, {})).to eq target
+        expect(subject.send(:metadata_topic_names, metadata_news + metadata_keywords, {})).to eq target
       end
     end
   end
@@ -186,22 +186,22 @@ RSpec.describe MetadataAttributer do
     context "national review" do
       let(:title) { "How the Private Sector Is Shaping the Future of Nuclear Energy | National Review" }
       it "removes publisher" do
-        expect(subject.title_without_publisher(title, "National Review")).to eq "How the Private Sector Is Shaping the Future of Nuclear Energy"
+        expect(subject.send(:title_without_publisher, title, "National Review")).to eq "How the Private Sector Is Shaping the Future of Nuclear Energy"
       end
     end
   end
 
   describe "html_decode" do
     it "removes entities" do
-      expect(subject.html_decode("Cool String&nbsp;here [&hellip;]")).to eq "Cool String here ..."
-      expect(subject.html_decode("Cool String&amp;here ")).to eq "Cool String&here"
-      expect(subject.html_decode("Cool String&amp;here ")).to eq "Cool String&here"
+      expect(subject.send(:html_decode, "Cool String&nbsp;here [&hellip;]")).to eq "Cool String here ..."
+      expect(subject.send(:html_decode, "Cool String&amp;here ")).to eq "Cool String&here"
+      expect(subject.send(:html_decode, "Cool String&amp;here ")).to eq "Cool String&here"
     end
     it "returns nil for nbsp" do
-      expect(subject.html_decode(" &nbsp;")).to be_nil
+      expect(subject.send(:html_decode, " &nbsp;")).to be_nil
     end
     it "strips tags" do
-      expect(subject.html_decode("<p>Stuff  </p>")).to eq "Stuff"
+      expect(subject.send(:html_decode, "<p>Stuff  </p>")).to eq "Stuff"
     end
   end
 end

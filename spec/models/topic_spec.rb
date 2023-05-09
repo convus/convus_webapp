@@ -175,7 +175,7 @@ RSpec.describe Topic, type: :model do
         topic = Topic.find_or_create_for_name(name)
         expect(topic.id).to be_present
         expect(Topic.friendly_find("Conspiracy Theory")&.id).to be_blank
-        expect(Topic.friendly_find_plural("Conspiracy Theory")&.id).to eq topic.id
+        expect(Topic.send(:friendly_find_plural, "Conspiracy Theory")&.id).to eq topic.id
         new_topic = Topic.find_or_create_for_name("Conspiracy Theory", update_attrs: true)
         expect(new_topic.id).to eq topic.id
         expect(new_topic.reload.name).to eq "Conspiracy Theory"

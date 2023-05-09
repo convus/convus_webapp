@@ -30,67 +30,69 @@ class Topic < ApplicationRecord
 
   attr_accessor :skip_update_associations, :skip_distant_children
 
-  def self.without_parent
-    select { |t| t.parents.limit(1).none? }
-  end
-
-  def self.slugify(str = nil)
-    Slugifyer.slugify_and(str)
-  end
-
-  # Overrides FriendlyFindable
-  def self.friendly_find_slug(str = nil)
-    return nil if str.blank?
-    slug = slugify(str)
-    # Find by singular before find_by_previous, so it doesn't revert update
-    find_by_slug(slug) || find_by_singular(slug) || find_by_previous_slug(slug)
-  end
-
-  def self.find_by_singular(str)
-    singular = str.singularize
-    return nil if singular == str
-    result = find_by_slug(singular)
-    @found_singular = result.present?
-    result
-  end
-
-  # This is only used for create, not in normal friendly_find
-  def self.friendly_find_plural(str)
-    result = find_by_slug(slugify(str&.pluralize))
-    @found_plural = result.present?
-    result
-  end
-
-  def self.find_or_create_for_name(name, attrs = {update_attrs: false})
-    @found_plural, @found_singular = false, false
-    existing = friendly_find(name) || friendly_find_plural(name)
-    if existing.present?
-      if attrs[:update_attrs]
-        # Don't update if the new name is a plural (or unchanged)
-        if !@found_singular && existing.name != name.strip
-          if @found_plural
-            existing.name = name
-          elsif name.match("&") && existing.name.match?(/\band\b/i) && !existing.name.match("&")
-            # Don't switch to "&" if existing uses "and"
-          else
-            existing.name = name
-          end
-        end
-        existing.update(attrs.except(:update_attrs))
-      end
-      existing
-    else
-      create(attrs.except(:update_attrs).merge(name: name))
+  class << self
+    def without_parent
+      select { |t| t.parents.limit(1).none? }
     end
-  end
 
-  def self.friendly_find_all(arr = nil)
-    return [] if arr.blank?
-    arr.flatten.map { |s| friendly_find(s) }.compact
-  end
+    def slugify(str = nil)
+      Slugifyer.slugify_and(str)
+    end
 
-  def self.admin_search(str)
-    where("name ILIKE ?", "%#{str.strip}%")
+    # Overrides FriendlyFindable
+    def friendly_find_slug(str = nil)
+      return nil if str.blank?
+      slug = slugify(str)
+      # Find by singular before find_by_previous, so it doesn't revert update
+      find_by_slug(slug) || find_by_singular(slug) || find_by_previous_slug(slug)
+    end
+
+    def find_by_singular(str)
+      singular = str.singularize
+      return nil if singular == str
+      result = find_by_slug(singular)
+      @found_singular = result.present?
+      result
+    end
+    def find_or_create_for_name(name, attrs = {update_attrs: false})
+      @found_plural, @found_singular = false, false
+      existing = friendly_find(name) || friendly_find_plural(name)
+      if existing.present?
+        if attrs[:update_attrs]
+          # Don't update if the new name is a plural (or unchanged)
+          if !@found_singular && existing.name != name.strip
+            if @found_plural
+              existing.name = name
+            elsif name.match("&") && existing.name.match?(/\band\b/i) && !existing.name.match("&")
+              # Don't switch to "&" if existing uses "and"
+            else
+              existing.name = name
+            end
+          end
+          existing.update(attrs.except(:update_attrs))
+        end
+        existing
+      else
+        create(attrs.except(:update_attrs).merge(name: name))
+      end
+    end
+
+    def friendly_find_all(arr = nil)
+      return [] if arr.blank?
+      arr.flatten.map { |s| friendly_find(s) }.compact
+    end
+
+    def admin_search(str)
+      where("name ILIKE ?", "%#{str.strip}%")
+    end
+
+    private
+    # This is only used for create, not in normal friendly_find
+    def friendly_find_plural(str)
+      result = find_by_slug(slugify(str&.pluralize))
+      @found_plural = result.present?
+      result
+    end
   end
 
   def to_param
