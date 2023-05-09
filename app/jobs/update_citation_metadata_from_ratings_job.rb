@@ -7,7 +7,8 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
       .map(&:citation_metadata_attributes)
 
     skipped_attributes = citation.manually_updated_attributes.map(&:to_sym)
-    new_attributes = MetadataAttributer::ATTR_KEYS.map do |attrib|
+
+    new_attributes = (MetadataAttributer::ATTR_KEYS - [:keywords]).map do |attrib|
       next if skipped_attributes.include?(attrib)
 
       # returns first value that matches, only process the first that's required

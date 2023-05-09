@@ -32,7 +32,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           paywall: false,
           publisher_name: "The New Yorker",
           title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
-          topic_names: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "web"],
+          keywords: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "u.s. presidents", "web"],
           word_count: 2_040
         }
       end
@@ -46,10 +46,22 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_attrs.except(:published_updated_at), match_time_within: 1)
         instance.perform(citation.id)
         citation.reload
-        expect_attrs_to_match_hash(citation, metadata_attrs.except(:topic_names))
+        expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
         # Updates publisher
         expect(publisher.reload.name).to eq "The New Yorker"
         expect(publisher.name_assigned?).to be_truthy
+      end
+      context "topics present" do
+        let!(:topic1) { Topic.find_or_create_for_name("U.S. President") }
+        let!(:topic2) { Topic.find_or_create_for_name("Joe Biden", parents_string: "U.S. presidents") }
+        let(:metadata_with_topics) { metadata_attrs.merge(topics_string: "Joe Biden") }
+        it "assigns topics" do
+          expect(topic1.reload.children.pluck(:id)).to eq([topic2.id])
+          expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_with_topics.except(:published_updated_at), match_time_within: 1)
+          instance.perform(citation.id)
+          citation.reload
+          expect_attrs_to_match_hash(citation, metadata_with_topics.except(:keywords))
+        end
       end
       context "already assigned" do
         let(:initial_attrs) { {authors: "z", published_at: Time.current, description: "c", word_count: 33, published_updated_at: Time.current, paywall: true} }
@@ -59,7 +71,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           instance.perform(citation.id)
           citation.reload
           # TODO: better handle on paywall!
-          expect_attrs_to_match_hash(citation, metadata_attrs.except(:publisher_name, :paywall, :topic_names))
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:publisher_name, :paywall, :keywords))
           # It doesn't re-update the publisher
           expect(publisher.reload.name).to eq "Cool publisher"
         end
@@ -89,7 +101,8 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
             canonical_url: nil,
             paywall: false,
             publisher_name: "New Yorked",
-            topic_names: [],
+            keywords: [],
+            topics_string: nil,
             word_count: 186
           }
         end
@@ -99,7 +112,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect_hashes_to_match(rating_older.citation_metadata_attributes, target_older, match_time_within: 1)
           instance.perform(citation.id)
           citation.reload
-          expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at, :topic_names))
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at, :keywords))
         end
       end
     end
@@ -116,7 +129,8 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           paywall: true,
           publisher_name: "National Review",
           title: "How the Private Sector Is Shaping the Future of Nuclear Energy",
-          topic_names: ["NRPLUS Member Articles", "Nuclear Power", "Premium Content", "section: Article", "topic: Capital Matters", "topic: Energy & Environment", "topic: The Economy"],
+          keywords: ["NRPLUS Member Articles", "Nuclear Power", "Premium Content", "section: Article", "topic: Capital Matters", "topic: Energy & Environment", "topic: The Economy"],
+          topics_string: nil,
           word_count: 9_949
         }
       end
@@ -127,7 +141,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(metadata_attrs[:published_at]).to be > metadata_attrs[:published_updated_at]
         instance.perform(citation.id)
         citation.reload
-        expect_attrs_to_match_hash(citation, metadata_attrs.merge(published_updated_at: nil).except(:topic_names), match_time_within: 1)
+        expect_attrs_to_match_hash(citation, metadata_attrs.merge(published_updated_at: nil).except(:keywords), match_time_within: 1)
         # Updates publisher
         expect(publisher.reload.name).to eq "National Review"
         expect(publisher.name_assigned?).to be_truthy
