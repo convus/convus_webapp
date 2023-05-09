@@ -87,10 +87,10 @@
             </td>
           </tr>
           <tr>
-            <td>Metadata Keywords</td>
+            <td>Metadata Topic Names</td>
             <td>
-              <% metadata_attributes[:keywords]&.each do |keyword| %>
-                <span class="block"><%= keyword %></span>
+              <% metadata_attributes[:topics_string]&.split(",") do |topic_name| %>
+                <span class="block"><%= topic_name %></span>
               <% end %>
             </td>
           </tr>

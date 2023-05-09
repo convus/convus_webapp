@@ -29,6 +29,6 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
 
   # TODO: Order by version, then submission
   def ordered_ratings(citation)
-    citation.ratings.metadata_present.order(metadata_at: :desc)
+    citation.ratings.metadata_present.order(version_integer: :desc, metadata_at: :desc)
   end
 end

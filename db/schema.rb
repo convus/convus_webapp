@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_01_163602) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_09_230814) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -118,6 +118,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_01_163602) do
     t.jsonb "citation_metadata"
     t.boolean "not_finished", default: false
     t.datetime "metadata_at"
+    t.integer "version_integer"
     t.index ["citation_id"], name: "index_ratings_on_citation_id"
     t.index ["user_id"], name: "index_ratings_on_user_id"
   end

@@ -44,7 +44,8 @@ class Rating < ApplicationRecord
   scope :not_finished, -> { where(not_finished: true) }
   scope :account_public, -> { where(account_public: true) }
   scope :account_private, -> { where(account_public: false) }
-  scope :metadata_present, -> { where.not("length(citation_metadata::text) <= 2") }
+  scope :metadata_present, -> { where("length(citation_metadata::text) > 2") }
+  scope :metadata_blank, -> { where("length(citation_metadata::text) <= 2").or(where(citation_metadata: nil)) }
 
   attr_accessor :skip_rating_created_event, :skip_topics_job
 
@@ -201,6 +202,7 @@ class Rating < ApplicationRecord
     self.account_public = calculated_account_public?
     self.citation_metadata = [] if citation_metadata.blank?
     self.metadata_at = nil if citation_metadata.blank?
+    self.version_integer = calculated_version_integer
   end
 
   def perform_rating_created_event_job
@@ -224,6 +226,13 @@ class Rating < ApplicationRecord
   end
 
   private
+
+  def calculated_version_integer
+    return 0 unless source.present?
+    ints = source.split("-").last&.split(".")
+    return 1 unless ints.count == 3
+    ints[0].to_i * 10_000 + ints[1].to_i * 100 + ints[2].to_i
+  end
 
   def calculated_account_public?
     user.present? && user.account_public?

@@ -148,4 +148,21 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
       end
     end
   end
+
+  describe "ordered_ratings" do
+    let(:metadata_str) { '[{"name":"author","content":"Cool person"}]' }
+    let!(:rating1) { FactoryBot.create(:rating, source: "safari_extension-0.8.1", citation_metadata_str: metadata_str) }
+    let(:url) { rating1.submitted_url }
+    let!(:rating2) { FactoryBot.create(:rating, submitted_url: url, source: "safari_extension-0.7.0", citation_metadata_str: metadata_str) }
+    let!(:rating3) { FactoryBot.create(:rating, submitted_url: url, source: "safari_extension-0.8.1", citation_metadata_str: metadata_str) }
+    let!(:rating4) { FactoryBot.create(:rating, submitted_url: url, source: "safari_extension-0.9.0") }
+    let(:citation) { rating1.citation }
+    it "returns in expected order" do
+      rating1.update_column :metadata_at, Time.current - 2.days
+      rating3.update_column :metadata_at, Time.current - 3.days
+      expect(rating2.reload.metadata_at).to be_within(5).of Time.current
+      expect(citation.reload.ratings.pluck(:id)).to match_array([rating1.id, rating2.id, rating3.id, rating4.id])
+      expect(instance.ordered_ratings(citation).pluck(:id)).to eq([rating1.id, rating3.id, rating2.id])
+    end
+  end
 end
