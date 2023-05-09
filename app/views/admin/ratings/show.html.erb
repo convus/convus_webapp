@@ -72,7 +72,7 @@
       <h3>Citation metadata attributes:</h3>
       <div class="code-small">
         <%# skipping canonical_url for now, because it's just noise %>
-        <%= pretty_print_json(metadata_attributes.except(:canonical_url)) %>
+        <%= pretty_print_json(metadata_attributes.except(:canonical_url, :keywords)) %>
       </div>
     </div>
     <div class="col mt-2 sm:mt-7">
@@ -87,10 +87,10 @@
             </td>
           </tr>
           <tr>
-            <td>Metadata Topics matching</td>
+            <td>Metadata Keywords</td>
             <td>
-              <% metadata_attributes[:topic_names]&.each do |topic| %>
-                <span class="block"><%= topic %></span>
+              <% metadata_attributes[:keywords]&.each do |keyword| %>
+                <span class="block"><%= keyword %></span>
               <% end %>
             </td>
           </tr>

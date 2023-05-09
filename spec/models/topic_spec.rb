@@ -180,7 +180,7 @@ RSpec.describe Topic, type: :model do
         expect(new_topic.id).to eq topic.id
         expect(new_topic.reload.name).to eq "Conspiracy Theory"
         expect(new_topic.slug).to eq "conspiracy-theory"
-        expect(Topic.find_by_singular("conspiracy-theories")&.id).to eq topic.id
+        expect(Topic.send(:find_by_singular, "conspiracy-theories")&.id).to eq topic.id
         expect(Topic.friendly_find(name)&.id).to eq new_topic.id
         expect(topic.reload.name).to eq "Conspiracy Theory"
         # Doesn't update back to plural

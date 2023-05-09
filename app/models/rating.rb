@@ -50,34 +50,36 @@ class Rating < ApplicationRecord
 
   delegate :publisher, to: :citation, allow_nil: true
 
-  def self.quality_humanized(str)
-    return nil if str.blank?
-    if str.to_sym == :quality_med
-      "medium"
-    else
-      str.to_s.gsub("quality_", "")
+  class << self
+    def quality_humanized(str)
+      return nil if str.blank?
+      if str.to_sym == :quality_med
+        "medium"
+      else
+        str.to_s.gsub("quality_", "")
+      end
     end
-  end
 
-  def self.find_or_build_for(attrs)
-    citation = Citation.find_or_create_for_url(attrs[:submitted_url], attrs[:citation_title])
-    rating = where(user_id: attrs[:user_id], citation_id: citation.id).first || Rating.new
-    rating.attributes = attrs
-    rating
-  end
+    def find_or_build_for(attrs)
+      citation = Citation.find_or_create_for_url(attrs[:submitted_url], attrs[:citation_title])
+      rating = where(user_id: attrs[:user_id], citation_id: citation.id).first || Rating.new
+      rating.attributes = attrs
+      rating
+    end
 
-  def self.matching_topics(topic_ids)
-    joins(:rating_topics).where(rating_topics: {topic_id: Array(topic_ids)})
-  end
+    def matching_topics(topic_ids)
+      joins(:rating_topics).where(rating_topics: {topic_id: Array(topic_ids)})
+    end
 
-  def self.normalize_search_string(str)
-    (str || "").strip.gsub(/\s+/, " ")
-  end
+    def normalize_search_string(str)
+      (str || "").strip.gsub(/\s+/, " ")
+    end
 
-  def self.display_name_search(str = nil)
-    str = normalize_search_string(str)
-    return all if str.blank?
-    where("display_name ILIKE ?", "%#{str}%")
+    def display_name_search(str = nil)
+      str = normalize_search_string(str)
+      return all if str.blank?
+      where("display_name ILIKE ?", "%#{str}%")
+    end
   end
 
   def edit_title?

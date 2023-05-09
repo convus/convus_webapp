@@ -47,13 +47,6 @@ class Topic < ApplicationRecord
       find_by_slug(slug) || find_by_singular(slug) || find_by_previous_slug(slug)
     end
 
-    def find_by_singular(str)
-      singular = str.singularize
-      return nil if singular == str
-      result = find_by_slug(singular)
-      @found_singular = result.present?
-      result
-    end
     def find_or_create_for_name(name, attrs = {update_attrs: false})
       @found_plural, @found_singular = false, false
       existing = friendly_find(name) || friendly_find_plural(name)
@@ -87,6 +80,15 @@ class Topic < ApplicationRecord
     end
 
     private
+
+    def find_by_singular(str)
+      singular = str.singularize
+      return nil if singular == str
+      result = find_by_slug(singular)
+      @found_singular = result.present?
+      result
+    end
+
     # This is only used for create, not in normal friendly_find
     def friendly_find_plural(str)
       result = find_by_slug(slugify(str&.pluralize))

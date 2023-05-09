@@ -29,7 +29,8 @@ RSpec.describe MetadataAttributer do
           word_count: 2_040,
           paywall: false,
           title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
-          topic_names: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "web"],
+          topic_names: [],
+          keywords: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "web"],
           publisher_name: "The New Yorker"
         }
       end
@@ -37,6 +38,18 @@ RSpec.describe MetadataAttributer do
         json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
 
         expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
+      end
+      context "with topics" do
+        let!(:topic1) { Topic.find_or_create_for_name("Joe Biden") }
+        let!(:topic2) { Topic.find_or_create_for_name("U.S. Budget") }
+        let(:topic_names) { ["Joe Biden", "U.S. Budget"] }
+        it "returns target" do
+          json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
+
+          expect(subject.send(:keyword_or_text_topic_names, metadata_attrs[:keywords], rating.citation_metadata, json_ld)).to eq(topic_names)
+
+          expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs.merge(topic_names: topic_names))
+        end
       end
     end
     context "80000 hours" do
@@ -52,6 +65,7 @@ RSpec.describe MetadataAttributer do
           word_count: 26578,
           paywall: false,
           title: "Audrey Tang on what we can learn from Taiwan’s experiments with how to do democracy",
+          keywords: [],
           topic_names: [],
           publisher_name: "80,000 Hours"
         }
@@ -62,6 +76,18 @@ RSpec.describe MetadataAttributer do
         expect(subject.send(:json_ld_graph, json_ld, "WebPage", "datePublished")).to eq "2022-02-02T22:43:27+00:00"
 
         expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
+      end
+      context "with topics" do
+        let!(:topic1) { Topic.find_or_create_for_name("Taiwan") }
+        let!(:topic2) { Topic.find_or_create_for_name("Democracy") }
+        let(:topic_names) { ["Democracy", "Taiwan"] }
+        it "returns target" do
+          json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
+
+          expect(subject.send(:keyword_or_text_topic_names, metadata_attrs)).to eq(topic_names)
+
+          expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs.merge(topic_names: topic_names))
+        end
       end
     end
     context "wikipedia" do
@@ -77,6 +103,7 @@ RSpec.describe MetadataAttributer do
           word_count: 2938,
           paywall: false,
           title: "Tim Federle - Wikipedia",
+          keywords: [],
           topic_names: [],
           publisher_name: "Wikimedia Foundation, Inc."
         }
@@ -167,17 +194,17 @@ RSpec.describe MetadataAttributer do
     end
   end
 
-  describe "metadata_topic_names" do
+  describe "metadata_keywords" do
     let(:metadata_keywords) { [{"name" => "keywords", "itemid" => "#keywords", "content" => "Donald Trump,  Chris Christie, Republican primary"}] }
     let(:target) { ["Chris Christie", "Donald Trump", "Republican primary"] }
     it "returns topics" do
-      expect(subject.send(:metadata_topic_names, metadata_keywords, {})).to eq target
+      expect(subject.send(:metadata_keywords, metadata_keywords, {})).to eq target
     end
     context "news keywords" do
       let(:metadata_news) { [{"name" => "news_keywords", "content" => "Donald Trump, Chris Christie, Republican primary"}] }
       it "returns topics" do
-        expect(subject.send(:metadata_topic_names, metadata_news, {})).to eq target
-        expect(subject.send(:metadata_topic_names, metadata_news + metadata_keywords, {})).to eq target
+        expect(subject.send(:metadata_keywords, metadata_news, {})).to eq target
+        expect(subject.send(:metadata_keywords, metadata_news + metadata_keywords, {})).to eq target
       end
     end
   end

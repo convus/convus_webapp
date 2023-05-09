@@ -1,8 +1,8 @@
 require "commonmarker"
 
 class MetadataAttributer
-  ATTR_KEYS = %i[authors canonical_url description paywall published_at published_updated_at
-    publisher_name title topic_names word_count].freeze
+  ATTR_KEYS = %i[authors canonical_url description keywords paywall published_at
+    published_updated_at publisher_name title word_count].freeze
   RAISE_FOR_DUPES = false
 
   class << self
@@ -10,12 +10,15 @@ class MetadataAttributer
       rating_metadata = rating.citation_metadata
       return {} if rating_metadata.blank?
       json_ld = json_ld_hash(rating_metadata)
-      attrs = (ATTR_KEYS - [:word_count]).map do |attrib|
+
+      attrs = (ATTR_KEYS - %i[word_count]).map do |attrib|
         val = send("metadata_#{attrib}", rating_metadata, json_ld)
         [attrib, val]
       end.compact.to_h
 
       attrs[:title] = title_without_publisher(attrs[:title], attrs[:publisher_name])
+
+      attrs[:topic_names] = keyword_or_text_topic_names(attrs)
       attrs[:word_count] = metadata_word_count(rating_metadata, json_ld, rating.publisher.base_word_count)
 
       attrs
@@ -26,6 +29,23 @@ class MetadataAttributer
     def title_without_publisher(title, publisher)
       return title if publisher.blank? || title.blank?
       title.gsub(/ (\W|_) #{publisher}\z/i, "")
+    end
+
+    def keyword_or_text_topic_names(attrs)
+      if attrs[:keywords].any?
+        Topic.friendly_find_all(attrs[:keywords]).pluck(:name)
+      else
+        str = attrs[:description].presence || attrs[:title]
+        []
+        # Run through every topic to find matches in the str
+        # Issues with this:
+        # - rating.citation_metadata_attributes < calling that becomes (potentially) a big operation
+        # - every time that a topic is added, all the metadata topics need to be recalculated
+        # - I want to be able to "see the work" from this and from other things (which is why I added the keywords key)
+        #   but... this becomes slow
+        # Possible solution: store the output from_rating in rating.citation_metadata
+        #  (making it a hash, putting the raw stuff in e.g. raw: [metadata])
+      end
     end
 
     def metadata_authors(rating_metadata, json_ld)
@@ -81,12 +101,13 @@ class MetadataAttributer
       html_decode(publisher)
     end
 
-    def metadata_topic_names(rating_metadata, json_ld)
+    def metadata_keywords(rating_metadata, json_ld)
       topics = array_or_split(json_ld&.dig("keywords"))
 
       topics += array_or_split(prop_or_name_content(rating_metadata, "news_keywords"))
       topics += array_or_split(prop_or_name_content(rating_metadata, "keywords"))
 
+      # I think uniq is slow, but faster than html_decode - so run it before html_decode
       topics.flatten.uniq.map { |auth| html_decode(auth) }.compact.uniq.sort
     end
 
