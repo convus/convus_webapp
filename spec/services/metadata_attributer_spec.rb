@@ -5,13 +5,13 @@ RSpec.describe MetadataAttributer do
   describe "from_rating" do
     let(:rating) { FactoryBot.create(:rating, submitted_url: submitted_url, citation_metadata_str: citation_metadata_str) }
     def expect_matching_attributes(rating_metadata, json_ld, metadata_attrs)
-      expect(subject.metadata_authors(rating_metadata, json_ld)).to eq(metadata_attrs[:authors])
-      expect(subject.metadata_published_at(rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_at].to_i
-      expect(subject.metadata_published_updated_at(rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_updated_at]&.to_i
-      expect(subject.metadata_description(rating_metadata, json_ld)).to eq metadata_attrs[:description]
-      expect(subject.metadata_canonical_url(rating_metadata, json_ld)).to eq metadata_attrs[:canonical_url]
-      expect(subject.metadata_word_count(rating_metadata, json_ld, 100)).to eq metadata_attrs[:word_count]
-      expect(subject.metadata_paywall(rating_metadata, json_ld)).to be_falsey
+      expect(subject.send(:metadata_authors, rating_metadata, json_ld)).to eq(metadata_attrs[:authors])
+      expect(subject.send(:metadata_published_at, rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_at].to_i
+      expect(subject.send(:metadata_published_updated_at, rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_updated_at]&.to_i
+      expect(subject.send(:metadata_description, rating_metadata, json_ld)).to eq metadata_attrs[:description]
+      expect(subject.send(:metadata_canonical_url, rating_metadata, json_ld)).to eq metadata_attrs[:canonical_url]
+      expect(subject.send(:metadata_word_count, rating_metadata, json_ld, 100)).to eq metadata_attrs[:word_count]
+      expect(subject.send(:metadata_paywall, rating_metadata, json_ld)).to be_falsey
 
       expect_hashes_to_match(subject.from_rating(rating), metadata_attrs, match_time_within: 1)
     end
@@ -29,13 +29,30 @@ RSpec.describe MetadataAttributer do
           word_count: 2_040,
           paywall: false,
           title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+          topics_string: nil,
+          keywords: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "u.s. presidents", "web"],
           publisher_name: "The New Yorker"
         }
       end
       it "returns target" do
-        json_ld = subject.json_ld_hash(rating.citation_metadata)
+        json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
 
         expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
+      end
+      context "with topics" do
+        let!(:topic1) { Topic.find_or_create_for_name("Joe Biden") }
+        let!(:topic2) { Topic.find_or_create_for_name("U.S. Budget") }
+        let!(:topic3) { Topic.find_or_create_for_name("U.S. President") }
+        let(:topic_names) { ["Joe Biden", "U.S. Budget"] }
+        it "returns target" do
+          topic1.update(parents_string: "U.S. presidents")
+          expect(topic3.reload.children.pluck(:id)).to eq([topic1.id])
+          json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
+
+          expect(subject.send(:keyword_or_text_topic_names, metadata_attrs)).to eq(topic_names)
+
+          expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs.merge(topics_string: topic_names.join(",")))
+        end
       end
     end
     context "80000 hours" do
@@ -51,16 +68,31 @@ RSpec.describe MetadataAttributer do
           word_count: 26578,
           paywall: false,
           title: "Audrey Tang on what we can learn from Taiwan’s experiments with how to do democracy",
+          keywords: [],
+          topics_string: nil,
           publisher_name: "80,000 Hours"
         }
       end
       it "returns target" do
-        json_ld = subject.json_ld_hash(rating.citation_metadata)
+        json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
 
-        expect(described_class.json_ld_graph(json_ld, "WebPage", "datePublished")).to eq "2022-02-02T22:43:27+00:00"
+        expect(subject.send(:json_ld_graph, json_ld, "WebPage", "datePublished")).to eq "2022-02-02T22:43:27+00:00"
 
         expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
       end
+      # TODO: fallback to description & title to get the topics
+      # context "with topics" do
+      #   let!(:topic1) { Topic.find_or_create_for_name("Taiwan") }
+      #   let!(:topic2) { Topic.find_or_create_for_name("Democracy") }
+      #   let(:topic_names) { ["Democracy", "Taiwan"] }
+      #   it "returns target" do
+      #     json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
+
+      #     expect(subject.send(:keyword_or_text_topic_names, metadata_attrs)).to eq(topic_names)
+
+      #     expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs.merge(topic_names: topic_names))
+      #   end
+      # end
     end
     context "wikipedia" do
       let(:citation_metadata_str) { '[{"charset":"UTF-8"},{"content":"","name":"ResourceLoaderDynamicStyles"},{"content":"MediaWiki 1.41.0-wmf.6","name":"generator"},{"content":"origin","name":"referrer"},{"content":"origin-when-crossorigin","name":"referrer"},{"content":"origin-when-cross-origin","name":"referrer"},{"content":"max-image-preview:standard","name":"robots"},{"content":"telephone=no","name":"format-detection"},{"content":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Tim_Federle.jpg","property":"og:image"},{"content":"1200","property":"og:image:width"},{"content":"1800","property":"og:image:height"},{"content":"https://upload.wikimedia.org/wikipedia/commons/8/8d/Tim_Federle.jpg","property":"og:image"},{"content":"800","property":"og:image:width"},{"content":"1200","property":"og:image:height"},{"content":"640","property":"og:image:width"},{"content":"960","property":"og:image:height"},{"content":"width=1000","name":"viewport"},{"content":"Tim Federle - Wikipedia","property":"og:title"},{"content":"website","property":"og:type"},{"property":"mw:PageProp/toc"},{"json_ld":["{\"@context\":\"https:\\/\\/schema.org\",\"@type\":\"Article\",\"name\":\"Tim Federle\",\"url\":\"https:\\/\\/en.wikipedia.org\\/wiki\\/Tim_Federle\",\"sameAs\":\"http:\\/\\/www.wikidata.org\\/entity\\/Q7803484\",\"mainEntity\":\"http:\\/\\/www.wikidata.org\\/entity\\/Q7803484\",\"author\":{\"@type\":\"Organization\",\"name\":\"Contributors to Wikimedia projects\"},\"publisher\":{\"@type\":\"Organization\",\"name\":\"Wikimedia Foundation, Inc.\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/www.wikimedia.org\\/static\\/images\\/wmf-hor-googpub.png\"}},\"datePublished\":\"2009-05-19T08:04:49Z\",\"dateModified\":\"2023-04-29T16:38:28Z\",\"image\":\"https:\\/\\/upload.wikimedia.org\\/wikipedia\\/commons\\/8\\/8d\\/Tim_Federle.jpg\",\"headline\":\"American actor\"}","{\"@context\":\"https:\\/\\/schema.org\",\"@type\":\"Article\",\"name\":\"Tim Federle\",\"url\":\"https:\\/\\/en.wikipedia.org\\/wiki\\/Tim_Federle\",\"sameAs\":\"http:\\/\\/www.wikidata.org\\/entity\\/Q7803484\",\"mainEntity\":\"http:\\/\\/www.wikidata.org\\/entity\\/Q7803484\",\"author\":{\"@type\":\"Organization\",\"name\":\"Contributors to Wikimedia projects\"},\"publisher\":{\"@type\":\"Organization\",\"name\":\"Wikimedia Foundation, Inc.\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https:\\/\\/www.wikimedia.org\\/static\\/images\\/wmf-hor-googpub.png\"}},\"datePublished\":\"2009-05-19T08:04:49Z\",\"dateModified\":\"2023-04-29T16:38:28Z\",\"image\":\"https:\\/\\/upload.wikimedia.org\\/wikipedia\\/commons\\/8\\/8d\\/Tim_Federle.jpg\",\"headline\":\"American actor\"}"]},{"word_count":3038}]' }
@@ -75,11 +107,13 @@ RSpec.describe MetadataAttributer do
           word_count: 2938,
           paywall: false,
           title: "Tim Federle - Wikipedia",
+          keywords: [],
+          topics_string: nil,
           publisher_name: "Wikimedia Foundation, Inc."
         }
       end
       it "returns target" do
-        json_ld = subject.json_ld_hash(rating.citation_metadata)
+        json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
 
         expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
       end
@@ -90,13 +124,13 @@ RSpec.describe MetadataAttributer do
     let(:rating_metadata) { [{"json_ld" => values}] }
     let(:values) { [{"url" => "https://www.example.com"}] }
     it "returns json_ld" do
-      expect(subject.json_ld_hash(rating_metadata)).to eq(values.first)
+      expect(subject.send(:json_ld_hash, rating_metadata)).to eq(values.first)
     end
     # There are lots of times where there are multiple. Not erroring until this becomes a problem
     # context "multiple json_ld items" do
     #   it "raises" do
     #     expect {
-    #       subject.json_ld_hash(rating_metadata + rating_metadata)
+    #       subject.send(:json_ld_hash, rating_metadata + rating_metadata)
     #     }.to raise_error(/multiple/i)
     #   end
     # end
@@ -104,14 +138,14 @@ RSpec.describe MetadataAttributer do
     #   let(:values) { [{"url" => "https://www.example.com"}, {"url" => "https://www.example.com"}] }
     #   it "raises" do
     #     expect {
-    #       subject.json_ld_hash(rating_metadata + rating_metadata)
+    #       subject.send(:json_ld_hash, rating_metadata + rating_metadata)
     #     }.to raise_error(/multiple/i)
     #   end
     # end
     context "multiple json_ld values" do
       let(:values) { [{"url" => "https://www.example.com"}, {"@type" => "OtherThing"}] }
       it "reduces" do
-        expect(subject.json_ld_hash(rating_metadata)).to eq({"url" => "https://www.example.com", "@type" => "OtherThing"})
+        expect(subject.send(:json_ld_hash, rating_metadata)).to eq({"url" => "https://www.example.com", "@type" => "OtherThing"})
       end
     end
     context "more dataexample" do
@@ -130,7 +164,7 @@ RSpec.describe MetadataAttributer do
         }
       end
       it "raises" do
-        expect(subject.json_ld_hash(rating_metadata)).to eq target
+        expect(subject.send(:json_ld_hash, rating_metadata)).to eq target
       end
     end
   end
@@ -140,9 +174,9 @@ RSpec.describe MetadataAttributer do
       let(:json_ld) { {"author" => {"name" => ["Jennifer Ludden", "Marisa Peñaloza"], "@type" => "Person"}} }
       let(:target) { ["Jennifer Ludden", "Marisa Peñaloza"] }
       it "returns authors names" do
-        expect(subject.text_or_name_prop(json_ld["author"])).to eq target
+        expect(subject.send(:text_or_name_prop, json_ld["author"])).to eq target
         # Full author parsing
-        expect(subject.metadata_authors({}, json_ld)).to eq target
+        expect(subject.send(:metadata_authors, {}, json_ld)).to eq target
       end
     end
   end
@@ -152,14 +186,29 @@ RSpec.describe MetadataAttributer do
       let(:metadata) { [{"property" => "description", "content" => "I'm baby copper mug wolf fingerstache, echo park try-hard 8-bit freegan chartreuse sus deep v gastropub offal. Man braid iceland DSA, adaptogen air plant mustache next level. DSA twee 8-bit crucifix tumblr venmo. Street art four loko brunch iceland lumbersexual gatekeep, flexitarian single-origin coffee pickled everyday carry pabst. Trust fund 3 wolf moon mumblecore, man braid letterpress keytar cardigan praxis craft beer roof party whatever twee taxidermy. Gatekeep normcore meditation distillery, jianbing shaman viral."}] }
       let(:target) { "I'm baby copper mug wolf fingerstache, echo park try-hard 8-bit freegan chartreuse sus deep v gastropub offal. Man braid iceland DSA, adaptogen air plant mustache next level. DSA twee 8-bit crucifix tumblr venmo. Street art four loko brunch iceland lumbersexual gatekeep, flexitarian single-origin coffee pickled everyday carry pabst. Trust fund 3 wolf moon mumblecore, man braid letterpress keytar cardigan praxis craft beer roof party whatever twee taxidermy. Gatekeep normcore meditation..." }
       it "returns authors names" do
-        expect(subject.metadata_description(metadata, {})).to eq target
+        expect(subject.send(:metadata_description, metadata, {})).to eq target
       end
     end
     context "description entity encoding" do
       let(:metadata) { [{"property" => "description", "content" => "Cool String&nbsp;here [&hellip;]"}] }
       let(:target) { "Cool String here ..." }
       it "returns authors names" do
-        expect(subject.metadata_description(metadata, {})).to eq target
+        expect(subject.send(:metadata_description, metadata, {})).to eq target
+      end
+    end
+  end
+
+  describe "metadata_keywords" do
+    let(:metadata_keywords) { [{"name" => "keywords", "itemid" => "#keywords", "content" => "Donald Trump,  Chris Christie, Republican primary"}] }
+    let(:target) { ["Chris Christie", "Donald Trump", "Republican primary"] }
+    it "returns topics" do
+      expect(subject.send(:metadata_keywords, metadata_keywords, {})).to eq target
+    end
+    context "news keywords" do
+      let(:metadata_news) { [{"name" => "news_keywords", "content" => "Donald Trump, Chris Christie, Republican primary"}] }
+      it "returns topics" do
+        expect(subject.send(:metadata_keywords, metadata_news, {})).to eq target
+        expect(subject.send(:metadata_keywords, metadata_news + metadata_keywords, {})).to eq target
       end
     end
   end
@@ -168,22 +217,22 @@ RSpec.describe MetadataAttributer do
     context "national review" do
       let(:title) { "How the Private Sector Is Shaping the Future of Nuclear Energy | National Review" }
       it "removes publisher" do
-        expect(subject.title_without_publisher(title, "National Review")).to eq "How the Private Sector Is Shaping the Future of Nuclear Energy"
+        expect(subject.send(:title_without_publisher, title, "National Review")).to eq "How the Private Sector Is Shaping the Future of Nuclear Energy"
       end
     end
   end
 
   describe "html_decode" do
     it "removes entities" do
-      expect(subject.html_decode("Cool String&nbsp;here [&hellip;]")).to eq "Cool String here ..."
-      expect(subject.html_decode("Cool String&amp;here ")).to eq "Cool String&here"
-      expect(subject.html_decode("Cool String&amp;here ")).to eq "Cool String&here"
+      expect(subject.send(:html_decode, "Cool String&nbsp;here [&hellip;]")).to eq "Cool String here ..."
+      expect(subject.send(:html_decode, "Cool String&amp;here ")).to eq "Cool String&here"
+      expect(subject.send(:html_decode, "Cool String&amp;here ")).to eq "Cool String&here"
     end
     it "returns nil for nbsp" do
-      expect(subject.html_decode(" &nbsp;")).to be_nil
+      expect(subject.send(:html_decode, " &nbsp;")).to be_nil
     end
     it "strips tags" do
-      expect(subject.html_decode("<p>Stuff  </p>")).to eq "Stuff"
+      expect(subject.send(:html_decode, "<p>Stuff  </p>")).to eq "Stuff"
     end
   end
 end

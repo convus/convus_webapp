@@ -254,4 +254,30 @@ RSpec.describe Rating, type: :model do
       expect(Rating.display_name_search("cool ").pluck(:id)).to match_array([rating1.id, rating3.id])
     end
   end
+
+  describe "calculated_version_integer" do
+    let(:rating) { Rating.new(source: source) }
+    let(:source) { nil }
+    it "is integer" do
+      expect(rating.send(:calculated_version_integer)).to eq 0
+    end
+    context "safari_extension" do
+      let(:source) { "safari_extension" }
+      it "is integer" do
+        expect(rating.send(:calculated_version_integer)).to eq 1
+      end
+    end
+    context "chrome_extension-0.8.1" do
+      let(:source) { "chrome_extension-0.8.1" }
+      it "is integer" do
+        expect(rating.send(:calculated_version_integer)).to eq 801
+      end
+    end
+    context "chrome_extension-0.8.1" do
+      let(:source) { "chrome_extension-1.8.12" }
+      it "is integer" do
+        expect(rating.send(:calculated_version_integer)).to eq 10812
+      end
+    end
+  end
 end

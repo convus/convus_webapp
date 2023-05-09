@@ -21,75 +21,77 @@ class Citation < ApplicationRecord
 
   attr_accessor :timezone, :manually_updating
 
-  def self.find_for_url(str, url: nil, url_components: nil)
-    url ||= normalized_url(str)
-    return nil if url.blank?
-    existing = where("url ILIKE ?", url).first
-    return existing if existing.present?
-    url_components ||= url_to_components(url, normalized: true)
-    matching_url_components(url_components).first
-  end
-
-  def self.find_or_create_for_url(str, title = nil)
-    url = normalized_url(str)
-    return nil if url.blank?
-    url_components = url_to_components(url, normalized: true)
-    existing = find_for_url(str, url: url, url_components: url_components)
-    if existing.present?
-      existing.update(title: title) if existing.title.blank? && title.present?
-      return existing
+  class << self
+    def find_for_url(str, url: nil, url_components: nil)
+      url ||= normalized_url(str)
+      return nil if url.blank?
+      existing = where("url ILIKE ?", url).first
+      return existing if existing.present?
+      url_components ||= url_to_components(url, normalized: true)
+      matching_url_components(url_components).first
     end
-    create(url: url, url_components_json: url_components, title: title)
-  end
 
-  def self.matching_url_components(url_components)
-    # TODO: fallback match path case insensitive
-    matches = where("url_components_json ->> 'host' = ?", url_components[:host])
-    matches = if url_components[:path].blank?
-      matches.where("url_components_json ->> 'path' IS NULL")
-    else
-      matches.where("url_components_json ->> 'path' = ?", url_components[:path])
+    def find_or_create_for_url(str, title = nil)
+      url = normalized_url(str)
+      return nil if url.blank?
+      url_components = url_to_components(url, normalized: true)
+      existing = find_for_url(str, url: url, url_components: url_components)
+      if existing.present?
+        existing.update(title: title) if existing.title.blank? && title.present?
+        return existing
+      end
+      create(url: url, url_components_json: url_components, title: title)
     end
-    if Publisher.remove_query?(url_components[:host])
-      matches # Query is just ignored!
-    elsif url_components[:query].blank?
-      matches.where("url_components_json ->> 'query' IS NULL")
-    else
-      matches.where("url_components_json -> 'query' = ?", url_components[:query].to_json)
+
+    def matching_url_components(url_components)
+      # TODO: fallback match path case insensitive
+      matches = where("url_components_json ->> 'host' = ?", url_components[:host])
+      matches = if url_components[:path].blank?
+        matches.where("url_components_json ->> 'path' IS NULL")
+      else
+        matches.where("url_components_json ->> 'path' = ?", url_components[:path])
+      end
+      if Publisher.remove_query?(url_components[:host])
+        matches # Query is just ignored!
+      elsif url_components[:query].blank?
+        matches.where("url_components_json ->> 'query' IS NULL")
+      else
+        matches.where("url_components_json -> 'query' = ?", url_components[:query].to_json)
+      end
     end
-  end
 
-  def self.normalized_url(str, remove_query = false)
-    UrlCleaner.normalized_url(str, remove_query: remove_query)
-  end
-
-  def self.url_to_components(str, normalized: false)
-    str = normalized ? str.downcase : normalized_url(str)&.downcase
-    return {} if str.blank?
-    parsed_uri = URI.parse(str)
-    # if scheme is missing, parse fails to pull out the host sometimes
-    if parsed_uri.host.blank? && !str.start_with?(/http/i)
-      parsed_uri = URI.parse("http://#{str}")
+    def normalized_url(str, remove_query = false)
+      UrlCleaner.normalized_url(str, remove_query: remove_query)
     end
-    host = parsed_uri.host&.gsub(/\Awww\./i, "") # remove www.
-    path = parsed_uri.path.gsub(/\/\z/, "") # remove trailing /
-    query = UrlCleaner.query_hash(parsed_uri.query)
-    {
-      host: host&.downcase,
-      path: path.blank? ? nil : path,
-      query: query
-    }.with_indifferent_access
-  end
 
-  def self.references_filepath(str)
-    host = url_to_components(str)[:host]
-    pretty_url = UrlCleaner.pretty_url(str, remove_query: Publisher.remove_query?(host))
-    [Slugifyer.filename_slugify(host),
-      Slugifyer.filename_slugify(pretty_url.gsub(host, ""))].join("/")
-  end
+    def url_to_components(str, normalized: false)
+      str = normalized ? str.downcase : normalized_url(str)&.downcase
+      return {} if str.blank?
+      parsed_uri = URI.parse(str)
+      # if scheme is missing, parse fails to pull out the host sometimes
+      if parsed_uri.host.blank? && !str.start_with?(/http/i)
+        parsed_uri = URI.parse("http://#{str}")
+      end
+      host = parsed_uri.host&.gsub(/\Awww\./i, "") # remove www.
+      path = parsed_uri.path.gsub(/\/\z/, "") # remove trailing /
+      query = UrlCleaner.query_hash(parsed_uri.query)
+      {
+        host: host&.downcase,
+        path: path.blank? ? nil : path,
+        query: query
+      }.with_indifferent_access
+    end
 
-  def self.authors_rendered(arr)
-    arr&.reject { |a| a.match?(/Contributors to Wikimedia projects/i) } || []
+    def references_filepath(str)
+      host = url_to_components(str)[:host]
+      pretty_url = UrlCleaner.pretty_url(str, remove_query: Publisher.remove_query?(host))
+      [Slugifyer.filename_slugify(host),
+        Slugifyer.filename_slugify(pretty_url.gsub(host, ""))].join("/")
+    end
+
+    def authors_rendered(arr)
+      arr&.reject { |a| a.match?(/Contributors to Wikimedia projects/i) } || []
+    end
   end
 
   def url_components

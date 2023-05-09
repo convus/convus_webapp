@@ -17,7 +17,15 @@
           <% end %>
         </th>
         <th>Version</th>
-        <th>Meta?</th>
+        <% if display_dev_info? %>
+          <th class="only-dev-visible">
+            <%= sortable "version_integer", "Version #", skip_sortable: skip_sortable %>
+          </th>
+        <% end %>
+        <th>
+          <%= sortable "meta", "Meta?", skip_sortable: skip_sortable %>
+        </th>
+        <th>Keywords?</th>
       </tr>
     </thead>
     <tbody>
@@ -48,8 +56,17 @@
           <td>
             <small><%= rating.source %></small>
           </td>
+          <% if display_dev_info? %>
+            <td>
+              <small><%= rating.version_integer %></small>
+
+            </td>
+          <% end %>
           <td class="table-cell-check">
             <%= check_mark if rating.metadata_present? %>
+          </td>
+          <td class="table-cell-check">
+            <%= check_mark if rating.citation_metadata_attributes[:keywords]&.any? %>
           </td>
         </tr>
       <% end %>

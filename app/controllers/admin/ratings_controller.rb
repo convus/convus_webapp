@@ -7,8 +7,7 @@ class Admin::RatingsController < Admin::BaseController
   def index
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @ratings = searched_ratings(Rating) # in RateSearchable
-      .reorder("ratings.#{sort_column} #{sort_direction}")
+    @ratings = admin_searched_ratings
       .includes(:citation, :topics, :user).page(page).per(@per_page)
   end
 
@@ -24,10 +23,22 @@ class Admin::RatingsController < Admin::BaseController
   private
 
   def sortable_columns
-    %w[created_at user_id display_name]
+    %w[created_at user_id display_name version_integer meta]
+  end
+
+  def admin_searched_ratings
+    ratings = searched_ratings(Rating) # in RateSearchable
+
+    if sort_column == "meta"
+      ratings = (sort_direction == "desc") ? ratings.metadata_present : ratings.metadata_blank
+    end
+
+    actual_sort_column = (sort_column == "meta") ? "created_at" : sort_column
+    ratings
+      .reorder("ratings.#{actual_sort_column} #{sort_direction}")
   end
 
   def find_rating
-    @rating = Rating.find_by_id(params[:id])
+    @rating = Rating.find(params[:id])
   end
 end

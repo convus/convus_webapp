@@ -44,40 +44,43 @@ class Rating < ApplicationRecord
   scope :not_finished, -> { where(not_finished: true) }
   scope :account_public, -> { where(account_public: true) }
   scope :account_private, -> { where(account_public: false) }
-  scope :metadata_present, -> { where.not("length(citation_metadata::text) <= 2") }
+  scope :metadata_present, -> { where("length(citation_metadata::text) > 2") }
+  scope :metadata_blank, -> { where("length(citation_metadata::text) <= 2").or(where(citation_metadata: nil)) }
 
   attr_accessor :skip_rating_created_event, :skip_topics_job
 
   delegate :publisher, to: :citation, allow_nil: true
 
-  def self.quality_humanized(str)
-    return nil if str.blank?
-    if str.to_sym == :quality_med
-      "medium"
-    else
-      str.to_s.gsub("quality_", "")
+  class << self
+    def quality_humanized(str)
+      return nil if str.blank?
+      if str.to_sym == :quality_med
+        "medium"
+      else
+        str.to_s.gsub("quality_", "")
+      end
     end
-  end
 
-  def self.find_or_build_for(attrs)
-    citation = Citation.find_or_create_for_url(attrs[:submitted_url], attrs[:citation_title])
-    rating = where(user_id: attrs[:user_id], citation_id: citation.id).first || Rating.new
-    rating.attributes = attrs
-    rating
-  end
+    def find_or_build_for(attrs)
+      citation = Citation.find_or_create_for_url(attrs[:submitted_url], attrs[:citation_title])
+      rating = where(user_id: attrs[:user_id], citation_id: citation.id).first || Rating.new
+      rating.attributes = attrs
+      rating
+    end
 
-  def self.matching_topics(topic_ids)
-    joins(:rating_topics).where(rating_topics: {topic_id: Array(topic_ids)})
-  end
+    def matching_topics(topic_ids)
+      joins(:rating_topics).where(rating_topics: {topic_id: Array(topic_ids)})
+    end
 
-  def self.normalize_search_string(str)
-    (str || "").strip.gsub(/\s+/, " ")
-  end
+    def normalize_search_string(str)
+      (str || "").strip.gsub(/\s+/, " ")
+    end
 
-  def self.display_name_search(str = nil)
-    str = normalize_search_string(str)
-    return all if str.blank?
-    where("display_name ILIKE ?", "%#{str}%")
+    def display_name_search(str = nil)
+      str = normalize_search_string(str)
+      return all if str.blank?
+      where("display_name ILIKE ?", "%#{str}%")
+    end
   end
 
   def edit_title?
@@ -199,6 +202,7 @@ class Rating < ApplicationRecord
     self.account_public = calculated_account_public?
     self.citation_metadata = [] if citation_metadata.blank?
     self.metadata_at = nil if citation_metadata.blank?
+    self.version_integer = calculated_version_integer
   end
 
   def perform_rating_created_event_job
@@ -222,6 +226,13 @@ class Rating < ApplicationRecord
   end
 
   private
+
+  def calculated_version_integer
+    return 0 unless source.present?
+    ints = source.split("-").last&.split(".")
+    return 1 unless ints.count == 3
+    ints[0].to_i * 10_000 + ints[1].to_i * 100 + ints[2].to_i
+  end
 
   def calculated_account_public?
     user.present? && user.account_public?

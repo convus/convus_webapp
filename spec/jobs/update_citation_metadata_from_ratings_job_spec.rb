@@ -32,6 +32,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           paywall: false,
           publisher_name: "The New Yorker",
           title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+          keywords: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "u.s. presidents", "web"],
           word_count: 2_040
         }
       end
@@ -42,12 +43,25 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(publisher.base_word_count).to eq 100
         expect(rating.metadata_at).to be_within(1).of Time.current
         expect(rating.citation_metadata.count).to eq 33
+        expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_attrs.except(:published_updated_at), match_time_within: 1)
         instance.perform(citation.id)
         citation.reload
-        expect_attrs_to_match_hash(citation, metadata_attrs)
+        expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
         # Updates publisher
         expect(publisher.reload.name).to eq "The New Yorker"
         expect(publisher.name_assigned?).to be_truthy
+      end
+      context "topics present" do
+        let!(:topic1) { Topic.find_or_create_for_name("U.S. President") }
+        let!(:topic2) { Topic.find_or_create_for_name("Joe Biden", parents_string: "U.S. presidents") }
+        let(:metadata_with_topics) { metadata_attrs.merge(topics_string: "Joe Biden") }
+        it "assigns topics" do
+          expect(topic1.reload.children.pluck(:id)).to eq([topic2.id])
+          expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_with_topics.except(:published_updated_at), match_time_within: 1)
+          instance.perform(citation.id)
+          citation.reload
+          expect_attrs_to_match_hash(citation, metadata_with_topics.except(:keywords))
+        end
       end
       context "already assigned" do
         let(:initial_attrs) { {authors: "z", published_at: Time.current, description: "c", word_count: 33, published_updated_at: Time.current, paywall: true} }
@@ -57,7 +71,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           instance.perform(citation.id)
           citation.reload
           # TODO: better handle on paywall!
-          expect_attrs_to_match_hash(citation, metadata_attrs.except(:publisher_name, :paywall))
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:publisher_name, :paywall, :keywords))
           # It doesn't re-update the publisher
           expect(publisher.reload.name).to eq "Cool publisher"
         end
@@ -87,6 +101,8 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
             canonical_url: nil,
             paywall: false,
             publisher_name: "New Yorked",
+            keywords: [],
+            topics_string: nil,
             word_count: 186
           }
         end
@@ -96,7 +112,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect_hashes_to_match(rating_older.citation_metadata_attributes, target_older, match_time_within: 1)
           instance.perform(citation.id)
           citation.reload
-          expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at))
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at, :keywords))
         end
       end
     end
@@ -113,6 +129,8 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           paywall: true,
           publisher_name: "National Review",
           title: "How the Private Sector Is Shaping the Future of Nuclear Energy",
+          keywords: ["NRPLUS Member Articles", "Nuclear Power", "Premium Content", "section: Article", "topic: Capital Matters", "topic: Energy & Environment", "topic: The Economy"],
+          topics_string: nil,
           word_count: 9_949
         }
       end
@@ -123,11 +141,28 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(metadata_attrs[:published_at]).to be > metadata_attrs[:published_updated_at]
         instance.perform(citation.id)
         citation.reload
-        expect_attrs_to_match_hash(citation, metadata_attrs.merge(published_updated_at: nil), match_time_within: 1)
+        expect_attrs_to_match_hash(citation, metadata_attrs.merge(published_updated_at: nil).except(:keywords), match_time_within: 1)
         # Updates publisher
         expect(publisher.reload.name).to eq "National Review"
         expect(publisher.name_assigned?).to be_truthy
       end
+    end
+  end
+
+  describe "ordered_ratings" do
+    let(:metadata_str) { '[{"name":"author","content":"Cool person"}]' }
+    let!(:rating1) { FactoryBot.create(:rating, source: "safari_extension-0.8.1", citation_metadata_str: metadata_str) }
+    let(:url) { rating1.submitted_url }
+    let!(:rating2) { FactoryBot.create(:rating, submitted_url: url, source: "safari_extension-0.7.0", citation_metadata_str: metadata_str) }
+    let!(:rating3) { FactoryBot.create(:rating, submitted_url: url, source: "safari_extension-0.8.1", citation_metadata_str: metadata_str) }
+    let!(:rating4) { FactoryBot.create(:rating, submitted_url: url, source: "safari_extension-0.9.0") }
+    let(:citation) { rating1.citation }
+    it "returns in expected order" do
+      rating1.update_column :metadata_at, Time.current - 2.days
+      rating3.update_column :metadata_at, Time.current - 3.days
+      expect(rating2.reload.metadata_at).to be_within(5).of Time.current
+      expect(citation.reload.ratings.pluck(:id)).to match_array([rating1.id, rating2.id, rating3.id, rating4.id])
+      expect(instance.ordered_ratings(citation).pluck(:id)).to eq([rating1.id, rating3.id, rating2.id])
     end
   end
 end

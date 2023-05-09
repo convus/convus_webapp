@@ -91,12 +91,13 @@ RSpec.describe base_url, type: :request do
         end
         context "updating" do
           let!(:rating) { Rating.create(user: current_user, citation_metadata: [{something: "ccc"}], submitted_url: ratings_with_citation_metadata[:submitted_url]) }
+          let(:ratings_update_params) { ratings_with_citation_metadata.merge(timezone: "America/Los_Angeles") }
           it "updates" do
             expect(rating).to be_valid
             expect(Rating.count).to eq 1
             expect(rating.reload.citation_metadata).to eq([{"something" => "ccc"}])
             expect(rating.created_at.to_date).to eq Time.current.to_date
-            post base_url, params: ratings_with_citation_metadata.to_json,
+            post base_url, params: ratings_update_params.to_json,
               headers: json_headers.merge(
                 "HTTP_ORIGIN" => "*",
                 "Authorization" => "Bearer #{current_user.api_token}"
