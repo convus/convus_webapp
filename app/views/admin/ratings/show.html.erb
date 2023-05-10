@@ -101,9 +101,9 @@
 </div>
 
 <div class="large-width-container">
-  <h3 class="mt-5">Full Metadata:</h3>
+  <h3 class="mt-5">Raw Metadata:</h3>
   <% if @rating.metadata_present? %>
-    <div class="code-small"><%= pretty_print_json(@rating.citation_metadata) %></div>
+    <div class="code-small"><%= pretty_print_json(@rating.citation_metadata_raw) %></div>
   <% else %>
     No metadata
   <% end %>

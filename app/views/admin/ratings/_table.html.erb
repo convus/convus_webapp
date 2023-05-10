@@ -59,14 +59,17 @@
           <% if display_dev_info? %>
             <td>
               <small><%= rating.version_integer %></small>
-
             </td>
           <% end %>
           <td class="table-cell-check">
             <%= check_mark if rating.metadata_present? %>
           </td>
           <td class="table-cell-check">
-            <%= check_mark if rating.metadata_attributes[:keywords]&.any? %>
+            <% if rating.metadata_attributes[:keywords]&.any? %>
+              <%= check_mark %>
+            <% elsif rating.metadata_unprocessed? %>
+              <small class="text-error">unprocessed</small>
+            <% end %>
           </td>
         </tr>
       <% end %>
