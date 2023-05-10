@@ -49,8 +49,8 @@ class Rating < ApplicationRecord
   scope :account_private, -> { where(account_public: false) }
   scope :metadata_present, -> { where("length(citation_metadata::text) > 2") }
   scope :metadata_blank, -> { where("length(citation_metadata::text) <= 2").or(where(citation_metadata: nil)) }
-  scope :metadata_processed, -> { where("citation_metadata ->> 'attrs' IS NOT NULL") }
-  scope :metadata_unprocessed, -> { metadata_present.where("citation_metadata ->> 'attrs' IS NULL") }
+  scope :metadata_processed, -> { where("citation_metadata ->> '#{ATTRS_KEY}' IS NOT NULL") }
+  scope :metadata_unprocessed, -> { metadata_present.where("citation_metadata ->> '#{ATTRS_KEY}' IS NULL") }
 
   attr_accessor :skip_rating_created_event, :skip_topics_job
 

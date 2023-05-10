@@ -9,8 +9,8 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     new_attributes = (MetadataAttributer::ATTR_KEYS - [:keywords]).map do |attrib|
       next if skipped_attributes.include?(attrib)
 
-      # returns first value that matches, only processing the first that's required
-      val = metadata_attributes.lazy.filter_map { |cma| cma[attrib] }.first
+      # returns first value that matches, only loading the first that matches
+      val = metadata_attributes.lazy.filter_map { |cma| cma[attrib].presence }.first
       val.present? ? [attrib, val] : nil
     end.compact.to_h
 
