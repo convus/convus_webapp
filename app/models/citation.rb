@@ -1,5 +1,5 @@
 class Citation < ApplicationRecord
-  COUNTED_META_ATTRS = (MetadataAttributer::ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).map(&:to_s).freeze
+  COUNTED_META_ATTRS = MetadataAttributer::COUNTED_ATTR_KEYS.map(&:to_s).freeze
 
   belongs_to :publisher
 

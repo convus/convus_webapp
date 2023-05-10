@@ -20,8 +20,10 @@ RSpec.describe Rating, type: :model do
         it "has the topics" do
           expect(rating.reload.topic_names).to eq(["something", "other", "things"])
           expect(rating.topics.count).to eq 3
-          expect(rating.citation_metadata).to eq([])
+          expect(rating.citation_metadata).to eq({})
           expect(rating.metadata_present?).to be_falsey
+          expect(rating.metadata_processed?).to be_falsey
+          expect(rating.metadata_unprocessed?).to be_falsey
           expect(Rating.metadata_present.pluck(:id)).to eq([])
         end
       end
@@ -191,14 +193,16 @@ RSpec.describe Rating, type: :model do
     it "assigns metadata_at" do
       expect(rating.metadata_present?).to be_falsey
       rating.citation_metadata_str = '[{"something": "aaaa"}]'
-      expect(rating.citation_metadata).to eq([{"something" => "aaaa"}])
+      expect(rating.citation_metadata).to eq({"raw" => [{"something" => "aaaa"}]})
       expect(rating.metadata_at).to be_within(1).of Time.current
       expect(rating.metadata_present?).to be_truthy
+      expect(rating.metadata_processed?).to be_falsey
+      expect(rating.metadata_unprocessed?).to be_truthy
     end
     context "empty hash" do
       let(:rating) { FactoryBot.create(:rating, citation_metadata_str: "{}") }
       it "assigns to []" do
-        expect(rating.reload.citation_metadata).to eq([])
+        expect(rating.reload.citation_metadata).to eq({})
         expect(rating.metadata_present?).to be_falsey
         expect(Rating.metadata_present.pluck(:id)).to eq([])
       end
@@ -206,13 +210,34 @@ RSpec.describe Rating, type: :model do
     context "create" do
       let(:rating) { FactoryBot.create(:rating, citation_metadata_str: '[{"ff": "zzz"}]') }
       it "assigns metadata_at, blanks if blanked" do
-        expect(rating.reload.citation_metadata).to eq([{"ff" => "zzz"}])
+        expect(rating.reload.citation_metadata).to eq({"raw" => [{"ff" => "zzz"}]})
         expect(rating.metadata_at).to be_within(1).of Time.current
         expect(Rating.metadata_present.pluck(:id)).to eq([rating.id])
         rating.update(citation_metadata_str: "null")
-        expect(rating.reload.citation_metadata).to eq([])
+        expect(rating.reload.citation_metadata).to eq({})
         expect(rating.metadata_at).to be_blank
         expect(Rating.metadata_present.pluck(:id)).to eq([])
+      end
+    end
+  end
+
+  describe "set_metadata_attributes!" do
+    context "author present" do
+      let(:rating) { FactoryBot.create(:rating, citation_metadata_str: '[{"name":"author","content":"Cool"}]') }
+      it "assigns" do
+        expect(rating.reload.metadata_present?).to be_truthy
+        expect(rating.metadata_processed?).to be_falsey
+        expect(rating.metadata_unprocessed?).to be_truthy
+        expect(rating.citation_metadata_raw).to eq([{"name" => "author", "content" => "Cool"}])
+        expect(rating.metadata_attributes).to eq({})
+        expect(Rating.metadata_processed.pluck(:id)).to eq([])
+        expect(Rating.metadata_unprocessed.pluck(:id)).to eq([rating.id])
+        rating.set_metadata_attributes!
+        expect(rating.reload.metadata_processed?).to be_truthy
+        expect(rating.metadata_unprocessed?).to be_falsey
+        expect(rating.metadata_attributes.reject { |_k, v| v.blank? }).to eq({authors: ["Cool"]})
+        expect(Rating.metadata_processed.pluck(:id)).to eq([rating.id])
+        expect(Rating.metadata_unprocessed.pluck(:id)).to eq([])
       end
     end
   end

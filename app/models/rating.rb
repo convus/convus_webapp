@@ -1,6 +1,9 @@
 class Rating < ApplicationRecord
   include CreatedDateable
 
+  RAW_KEY = "raw".freeze
+  ATTRS_KEY = "attrs".freeze
+
   AGREEMENT_ENUM = {
     neutral: 0,
     disagree: 1,
@@ -46,6 +49,8 @@ class Rating < ApplicationRecord
   scope :account_private, -> { where(account_public: false) }
   scope :metadata_present, -> { where("length(citation_metadata::text) > 2") }
   scope :metadata_blank, -> { where("length(citation_metadata::text) <= 2").or(where(citation_metadata: nil)) }
+  scope :metadata_processed, -> { where("citation_metadata ->> '#{ATTRS_KEY}' IS NOT NULL") }
+  scope :metadata_unprocessed, -> { metadata_present.where("citation_metadata ->> '#{ATTRS_KEY}' IS NULL") }
 
   attr_accessor :skip_rating_created_event, :skip_topics_job
 
@@ -131,7 +136,8 @@ class Rating < ApplicationRecord
   end
 
   def citation_metadata_str=(val)
-    self.citation_metadata = MetadataParser.parse_string(val)
+    m_values = MetadataParser.parse_string(val)
+    self.citation_metadata = m_values.any? ? {RAW_KEY => m_values} : {}
     self.metadata_at = Time.current if citation_metadata.present?
     citation_metadata
   end
@@ -184,6 +190,32 @@ class Rating < ApplicationRecord
     citation_metadata.present?
   end
 
+  def metadata_blank?
+    !metadata_present?
+  end
+
+  def metadata_processed?
+    citation_metadata&.key?(ATTRS_KEY)
+  end
+
+  def metadata_unprocessed?
+    metadata_present? && !metadata_processed?
+  end
+
+  def citation_metadata_raw
+    citation_metadata&.dig(RAW_KEY) || []
+  end
+
+  def metadata_attributes
+    (citation_metadata&.dig(ATTRS_KEY) || {}).symbolize_keys
+  end
+
+  # This is called first in UpdateCitationMetadataFromRatingsJob
+  def set_metadata_attributes!
+    new_attrs = MetadataAttributer.from_rating(self)
+    update_column :citation_metadata, citation_metadata.merge(ATTRS_KEY => new_attrs)
+  end
+
   def missing_url?
     display_name.blank? || display_name == "missing url"
   end
@@ -200,7 +232,7 @@ class Rating < ApplicationRecord
     self.topics_text = nil if topics_text.blank?
     self.error_quotes = nil if error_quotes.blank?
     self.account_public = calculated_account_public?
-    self.citation_metadata = [] if citation_metadata.blank?
+    self.citation_metadata = {} if citation_metadata_raw.blank?
     self.metadata_at = nil if citation_metadata.blank?
     self.version_integer = calculated_version_integer
   end
@@ -219,10 +251,6 @@ class Rating < ApplicationRecord
   def calculated_display_name
     citation&.title.presence || citation_title.presence ||
       citation&.display_name || "missing url"
-  end
-
-  def citation_metadata_attributes
-    MetadataAttributer.from_rating(self)
   end
 
   private
