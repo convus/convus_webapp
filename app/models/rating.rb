@@ -213,7 +213,7 @@ class Rating < ApplicationRecord
   # This is called first in UpdateCitationMetadataFromRatingsJob
   def set_metadata_attributes!
     new_attrs = MetadataAttributer.from_rating(self)
-    self.update_column :citation_metadata, citation_metadata.merge(ATTRS_KEY => new_attrs)
+    update_column :citation_metadata, citation_metadata.merge(ATTRS_KEY => new_attrs)
   end
 
   def missing_url?

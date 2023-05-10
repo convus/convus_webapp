@@ -228,7 +228,7 @@ RSpec.describe Rating, type: :model do
         expect(rating.reload.metadata_present?).to be_truthy
         expect(rating.metadata_processed?).to be_falsey
         expect(rating.metadata_unprocessed?).to be_truthy
-        expect(rating.citation_metadata_raw).to eq([{"name" => "author","content" => "Cool"}])
+        expect(rating.citation_metadata_raw).to eq([{"name" => "author", "content" => "Cool"}])
         expect(rating.metadata_attributes).to eq({})
         expect(Rating.metadata_processed.pluck(:id)).to eq([])
         expect(Rating.metadata_unprocessed.pluck(:id)).to eq([rating.id])
