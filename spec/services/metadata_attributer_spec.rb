@@ -35,9 +35,9 @@ RSpec.describe MetadataAttributer do
         }
       end
       it "returns target" do
-        json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
+        json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
 
-        expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
+        expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs)
       end
       context "with topics" do
         let!(:topic1) { Topic.find_or_create_for_name("Joe Biden") }
@@ -47,11 +47,11 @@ RSpec.describe MetadataAttributer do
         it "returns target" do
           topic1.update(parents_string: "U.S. presidents")
           expect(topic3.reload.children.pluck(:id)).to eq([topic1.id])
-          json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
+          json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
 
           expect(subject.send(:keyword_or_text_topic_names, metadata_attrs)).to eq(topic_names)
 
-          expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs.merge(topics_string: topic_names.join(",")))
+          expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs.merge(topics_string: topic_names.join(",")))
         end
       end
     end
@@ -74,11 +74,11 @@ RSpec.describe MetadataAttributer do
         }
       end
       it "returns target" do
-        json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
+        json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
 
         expect(subject.send(:json_ld_graph, json_ld, "WebPage", "datePublished")).to eq "2022-02-02T22:43:27+00:00"
 
-        expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
+        expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs)
       end
       # TODO: fallback to description & title to get the topics
       # context "with topics" do
@@ -86,11 +86,11 @@ RSpec.describe MetadataAttributer do
       #   let!(:topic2) { Topic.find_or_create_for_name("Democracy") }
       #   let(:topic_names) { ["Democracy", "Taiwan"] }
       #   it "returns target" do
-      #     json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
+      #     json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
 
       #     expect(subject.send(:keyword_or_text_topic_names, metadata_attrs)).to eq(topic_names)
 
-      #     expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs.merge(topic_names: topic_names))
+      #     expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs.merge(topic_names: topic_names))
       #   end
       # end
     end
@@ -113,9 +113,9 @@ RSpec.describe MetadataAttributer do
         }
       end
       it "returns target" do
-        json_ld = subject.send(:json_ld_hash, rating.citation_metadata)
+        json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
 
-        expect_matching_attributes(rating.citation_metadata, json_ld, metadata_attrs)
+        expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs)
       end
     end
   end

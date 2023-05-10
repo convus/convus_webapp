@@ -10,7 +10,7 @@ class MetadataAttributer
 
   class << self
     def from_rating(rating)
-      rating_metadata = rating.citation_metadata
+      rating_metadata = rating.citation_metadata_raw
       return {} if rating_metadata.blank?
       json_ld = json_ld_hash(rating_metadata)
 
@@ -41,7 +41,7 @@ class MetadataAttributer
       else
         # Run through every topic to find matches in the str
         # Issues with this:
-        # - rating.citation_metadata_attributes < calling that becomes (potentially) a big operation
+        # - rating.metadata_attributes < calling that becomes (potentially) a big operation
         # - every time that a topic is added, all the metadata topics need to be recalculated
         # - I want to be able to "see the work" from this and from other things (which is why I added the keywords key)
         #   but... this becomes slow

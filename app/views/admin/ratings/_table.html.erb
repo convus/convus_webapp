@@ -66,7 +66,7 @@
             <%= check_mark if rating.metadata_present? %>
           </td>
           <td class="table-cell-check">
-            <%= check_mark if rating.citation_metadata_attributes[:keywords]&.any? %>
+            <%= check_mark if rating.metadata_attributes[:keywords]&.any? %>
           </td>
         </tr>
       <% end %>

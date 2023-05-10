@@ -55,7 +55,7 @@ RSpec.describe base_url, type: :request do
       )
       rating = Rating.last
       expect_rating_matching_params(json_result, target_response, rating)
-      expect(rating.citation_metadata).to eq([])
+      expect(rating.citation_metadata).to eq({})
     end
     context "rating unwrapped" do
       include_context :test_csrf_token
@@ -69,7 +69,7 @@ RSpec.describe base_url, type: :request do
 
         rating = Rating.last
         expect_rating_matching_params(json_result, target_response, rating)
-        expect(rating.citation_metadata).to eq([])
+        expect(rating.citation_metadata).to eq({})
       end
       context "metadata" do
         let(:citation_metadata) do
@@ -87,15 +87,15 @@ RSpec.describe base_url, type: :request do
 
           rating = Rating.last
           expect_rating_matching_params(json_result, target_response, rating)
-          expect(rating.citation_metadata).to eq citation_metadata.as_json
+          expect(rating.citation_metadata_raw).to eq citation_metadata.as_json
         end
         context "updating" do
-          let!(:rating) { Rating.create(user: current_user, citation_metadata: [{something: "ccc"}], submitted_url: ratings_with_citation_metadata[:submitted_url]) }
+          let!(:rating) { Rating.create(user: current_user, citation_metadata_str: '[{"something": "ccc"}]', submitted_url: ratings_with_citation_metadata[:submitted_url]) }
           let(:ratings_update_params) { ratings_with_citation_metadata.merge(timezone: "America/Los_Angeles") }
           it "updates" do
             expect(rating).to be_valid
             expect(Rating.count).to eq 1
-            expect(rating.reload.citation_metadata).to eq([{"something" => "ccc"}])
+            expect(rating.reload.citation_metadata_raw).to eq([{"something" => "ccc"}])
             expect(rating.created_at.to_date).to eq Time.current.to_date
             post base_url, params: ratings_update_params.to_json,
               headers: json_headers.merge(
@@ -109,7 +109,7 @@ RSpec.describe base_url, type: :request do
             expect(current_user.kudos_events.count).to eq 1
             expect(current_user.kudos_events.created_today.count).to eq 1
             expect_rating_matching_params(json_result, target_response, rating)
-            expect(rating.citation_metadata).to eq citation_metadata.as_json
+            expect(rating.citation_metadata_raw).to eq citation_metadata.as_json
           end
         end
       end

@@ -42,7 +42,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(publisher.name_assigned?).to be_falsey
         expect(publisher.base_word_count).to eq 100
         expect(rating.metadata_at).to be_within(1).of Time.current
-        expect(rating.citation_metadata.count).to eq 33
+        expect(rating.citation_metadata_raw.count).to eq 33
         expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_attrs.except(:published_updated_at), match_time_within: 1)
         instance.perform(citation.id)
         citation.reload
@@ -109,7 +109,11 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         it "parses but is overridden" do
           expect(rating.citation_id).to eq rating_older.citation_id
           rating_older.update(metadata_at: Time.current - 4.hours)
-          expect_hashes_to_match(rating_older.citation_metadata_attributes, target_older, match_time_within: 1)
+          # Process the ratings
+          rating.set_metadata_attributes!
+          rating_older.set_metadata_attributes!
+          expect_hashes_to_match(rating_older.reload.metadata_attributes, target_older, match_time_within: 1)
+
           instance.perform(citation.id)
           citation.reload
           expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at, :keywords))
@@ -136,10 +140,10 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
       end
       it "parses" do
         expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
-        expect_hashes_to_match(rating.citation_metadata_attributes, metadata_attrs, match_time_within: 1)
         # This is an erroneous published at date!
         expect(metadata_attrs[:published_at]).to be > metadata_attrs[:published_updated_at]
         instance.perform(citation.id)
+        expect_hashes_to_match(rating.reload.metadata_attributes, metadata_attrs, match_time_within: 1)
         citation.reload
         expect_attrs_to_match_hash(citation, metadata_attrs.merge(published_updated_at: nil).except(:keywords), match_time_within: 1)
         # Updates publisher
