@@ -68,7 +68,7 @@
             <% if rating.metadata_attributes[:keywords]&.any? %>
               <%= check_mark %>
             <% elsif rating.metadata_unprocessed? %>
-              <small class="text-error">unprocessed</small>
+              <small class="block text-left text-error">unprocessed</small>
             <% end %>
           </td>
         </tr>

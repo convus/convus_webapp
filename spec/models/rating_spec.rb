@@ -192,12 +192,14 @@ RSpec.describe Rating, type: :model do
     let(:rating) { Rating.new }
     it "assigns metadata_at" do
       expect(rating.metadata_present?).to be_falsey
-      rating.citation_metadata_str = '[{"something": "aaaa"}]'
+      metadata_string = '[{"something": "aaaa"}]'
+      rating.citation_metadata_str = metadata_string
       expect(rating.citation_metadata).to eq({"raw" => [{"something" => "aaaa"}]})
       expect(rating.metadata_at).to be_within(1).of Time.current
       expect(rating.metadata_present?).to be_truthy
       expect(rating.metadata_processed?).to be_falsey
       expect(rating.metadata_unprocessed?).to be_truthy
+      expect(rating.citation_metadata_str).to eq metadata_string.gsub(": ", ":")
     end
     context "empty hash" do
       let(:rating) { FactoryBot.create(:rating, citation_metadata_str: "{}") }

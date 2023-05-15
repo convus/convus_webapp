@@ -20,6 +20,9 @@ RSpec.describe Citation, type: :model do
       # Even if the query has an empty value, it's still a separate URL
       expect(Citation.url_to_components("http://example.CONVUS.orG?something=#ancho")).to eq url_components.merge(query: {something: ""}.with_indifferent_access)
       expect(Citation.find_for_url("http://example.CONVUS.orG?something=#ancho")&.id).to be_blank
+
+      expect(Citation.friendly_find("http://example.convus.org#anchorrr")&.id).to eq citation.id
+      expect(Citation.friendly_find(" #{citation.id} ")&.id).to eq citation.id
     end
   end
 

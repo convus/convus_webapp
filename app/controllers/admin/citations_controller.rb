@@ -19,13 +19,20 @@ class Admin::CitationsController < Admin::BaseController
   end
 
   def update
-    @citation.manually_updating = true
-    if @citation.update(permitted_params)
-      @citation.ratings.each { |r| update_citation_rating_topics(@citation, r) }
-      flash[:success] = "Citation updated"
-      redirect_to admin_citations_path, status: :see_other
+    if TranzitoUtils::Normalize.boolean(params[:update_citation_metadata_from_ratings])
+      # Perform inline, so you see if there is an error
+      UpdateCitationMetadataFromRatingsJob.new.perform(@citation.id)
+      flash[:success] = "Rating metadata reprocessed"
+      redirect_back(fallback_location: edit_admin_citation_path(@citation.id), status: :see_other)
     else
-      render :edit, status: :see_other
+      @citation.manually_updating = true
+      if @citation.update(permitted_params)
+        @citation.ratings.each { |r| update_citation_rating_topics(@citation, r) }
+        flash[:success] = "Citation updated"
+        redirect_to admin_citations_path, status: :see_other
+      else
+        render :edit, status: :see_other
+      end
     end
   end
 

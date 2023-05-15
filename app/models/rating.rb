@@ -143,7 +143,7 @@ class Rating < ApplicationRecord
   end
 
   def citation_metadata_str
-    citation_metadata.to_json
+    citation_metadata_raw.to_json
   end
 
   # reconciliation makes the topics match, skip loading

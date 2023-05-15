@@ -1,9 +1,18 @@
 class UpdateCitationMetadataFromRatingsJob < ApplicationJob
   sidekiq_options retry: 1
 
+  def self.ordered_ratings(citation)
+    # Process any unprocessed ratings. This is where processing happens normally
+    citation.ratings.metadata_unprocessed.each { |r| r.set_metadata_attributes! }
+    citation.reload
+    # Then, return in order
+    Rating.metadata_present.where(citation_id: citation.id)
+      .order(version_integer: :desc, metadata_at: :desc)
+  end
+
   def perform(id)
     citation = Citation.find(id)
-    metadata_attributes = ordered_ratings(citation).map(&:metadata_attributes)
+    metadata_attributes = self.class.ordered_ratings(citation).map(&:metadata_attributes)
 
     skipped_attributes = citation.manually_updated_attributes.map(&:to_sym)
     new_attributes = (MetadataAttributer::ATTR_KEYS - [:keywords]).map do |attrib|
@@ -15,7 +24,9 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     end.compact.to_h
 
     if new_attributes[:published_updated_at].present? && new_attributes[:published_at].present?
-      new_attributes[:published_updated_at] = nil if new_attributes[:published_updated_at] <= new_attributes[:published_at]
+      if new_attributes[:published_updated_at] <= new_attributes[:published_at]
+        new_attributes[:published_updated_at] = nil
+      end
     end
     citation.update(new_attributes.except(:publisher_name))
 
@@ -23,12 +34,5 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
       citation.publisher.update(name: new_attributes[:publisher_name])
     end
     citation
-  end
-
-  def ordered_ratings(citation)
-    # Process any unprocessed ratings. This is where processing happens normally
-    citation.ratings.metadata_unprocessed.each { |c| c.set_metadata_attributes! }
-    # Then, return in order
-    citation.reload.ratings.metadata_present.order(version_integer: :desc, metadata_at: :desc)
   end
 end

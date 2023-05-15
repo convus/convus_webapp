@@ -1,4 +1,6 @@
 <%= content_for :main_wrapper_class, "container-padded" %>
+<% ratings = @citation.ratings %>
+
 <div class="large-width-container">
   <h1 class="standard-top-offset mb-4">Edit Citation</h1>
   <p class="mb-3">
@@ -90,21 +92,30 @@
   <% end %>
 
   <h2 class="standard-top-offset mb-2">
-    <%= admin_number_display(@citation.ratings.count) %>
-    <%= "Rating".pluralize(@citation.ratings.count) %>
+    <%= admin_number_display(ratings.count) %>
+    <%= "Rating".pluralize(ratings.count) %>
+    <% if ratings.count > 10 %>
+      <small>first 10 shown, <%= link_to "see all", admin_ratings_path(search_citation_id: @citation.id) %></small>
+    <% end %>
+    <%= button_to "reprocess ratings", admin_citation_path(@citation.to_param, update_citation_metadata_from_ratings: true), method: :patch, class: "link text-sm text-primary" %>
   </h2>
 </div>
 
-<% ratings = @citation.ratings.reorder(created_at: :desc).limit(20) %>
-<%= render partial: "/admin/ratings/table", locals: {ratings: ratings, skip_sortable: true} %>
+<%= render partial: "/admin/ratings/table", locals: {ratings: ratings.limit(10), skip_sortable: true} %>
 
-<div class="large-width-container">
-  <div class="row sm:grid-cols-2 divide-x">
+<% ratings_ordered = UpdateCitationMetadataFromRatingsJob.ordered_ratings(@citation) %>
+<% if ratings_ordered.count > 10 %>
+  <h3></h3>
+<% end %>
+<div class="large-width-container mb-6">
+  <div class="row sm:grid-cols-2">
     <% ratings.each do |rating| %>
-      <div class="col my-2">
-        <p>By: <%= rating.user&.username %></p>
-        <p>at: <%= link_to l(rating.created_at, format: :convert_time), admin_rating_path(rating), class: "convertTime" %></p>
+      <div class="col mt-4 mr-2 py-2 border-gray-200 border">
+        <p>
+          <%= link_to l(rating.created_at, format: :convert_time), admin_rating_path(rating), class: "convertTime" %>
+          by: <%= rating.user&.username %>
 
+        </p>
         <div class="code-small">
           <%# skipping canonical_url for now, because it's just noise %>
           <%= pretty_print_json(rating.metadata_attributes.except(:canonical_url)) %>

@@ -166,7 +166,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
       rating3.update_column :metadata_at, Time.current - 3.days
       expect(rating2.reload.metadata_at).to be_within(5).of Time.current
       expect(citation.reload.ratings.pluck(:id)).to match_array([rating1.id, rating2.id, rating3.id, rating4.id])
-      expect(instance.ordered_ratings(citation).pluck(:id)).to eq([rating1.id, rating3.id, rating2.id])
+      expect(described_class.ordered_ratings(citation).pluck(:id)).to eq([rating1.id, rating3.id, rating2.id])
     end
   end
 end
