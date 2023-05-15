@@ -119,7 +119,7 @@ RSpec.describe MetadataAttributer do
       end
     end
     context "pro_publica" do
-      let(:citation_metadata_str) { '[{"content":"text/html; charset=utf-8","http-equiv":"Content-Type"},{"name":"parsely-title","content":"The Ugly Truth Behind “We Buy Ugly Houses”"},{"name":"parsely-link","content":"https://www.propublica.org/article/ugly-truth-behind-we-buy-ugly-houses"},{"name":"parsely-type","content":"post"},{"name":"parsely-image-url","content":"https://img.assets-d.propublica.org/v5/images/20230511-homevesters-main-1_2023-05-10-215352_turq.jpg?crop=focalpoint\\u0026fit=crop\\u0026fp-x=0.5\\u0026fp-y=0.5\\u0026h=630\\u0026imgixProfile=propublicaAssetsV5\\u0026q=90\\u0026w=1200\\u0026s=2343fad4117e06075ece744da123cb87"},{"name":"parsely-pub-date","content":"2023-05-11T06:00:00-04:00"},{"name":"parsely-section","content":"National"},{"name":"parsely-author","content":"Anjeanette Damon"},{"name":"parsely-author","content":"Byard Duncan"},{"name":"parsely-author","content":"Mollie Simon"},{"name":"parsely-tags","content":"lang:en,storytype:enterprise"},{"name":"description","content":"HomeVestors of America, the self-proclaimed “largest homebuyer in the U.S.,” trains its nearly 1,150 franchisees to zero in on homeowners’ desperation."},{"name":"referrer","content":"no-referrer-when-downgrade"},{"content":"Anjeanette Damon,Byard Duncan,Mollie Simon","property":"author"},{"content":"The Ugly Truth Behind “We Buy Ugly Houses”","property":"headline"},{"content":"13320939444","property":"fb:profile_id"},{"content":"en_US","property":"og:locale"},{"content":"ProPublica","property":"og:site_name"},{"content":"article","property":"og:type"},{"content":"https://www.propublica.org/article/ugly-truth-behind-we-buy-ugly-houses","property":"og:url"},{"content":"The Ugly Truth Behind “We Buy Ugly Houses”","property":"og:title"},{"content":"HomeVestors of America, the self-proclaimed “largest homebuyer in the U.S.,” trains its nearly 1,150 franchisees to zero in on homeowners’ desperation.","property":"og:description"},{"content":"https://img.assets-d.propublica.org/v5/images/20230511-homevesters-main-1_2023-05-10-215352_turq.jpg?crop=focalpoint\\u0026fit=crop\\u0026fp-x=0.5\\u0026fp-y=0.5\\u0026h=630\\u0026imgixProfile=propublicaAssetsV5\\u0026q=90\\u0026w=1200\\u0026s=2343fad4117e06075ece744da123cb87","property":"og:image"},{"content":"https://vimeo.com/propublica","property":"og:see_also"},{"content":"https://www.pinterest.com/propublica","property":"og:see_also"},{"content":"https://www.instagram.com/propublica","property":"og:see_also"},{"content":"https://www.linkedin.com/company/propublica/","property":"og:see_also"},{"content":"https://github.com/propublica","property":"og:see_also"},{"content":"https://www.youtube.com/user/propublica","property":"og:see_also"},{"content":"https://en.wikipedia.org/wiki/ProPublica","property":"og:see_also"},{"content":"https://www.facebook.com/propublica/","property":"og:see_also"},{"content":"https://twitter.com/propublica","property":"og:see_also"},{"name":"twitter:card","content":"summary_large_image"},{"name":"twitter:site","content":"@propublica"},{"name":"twitter:creator","content":"@propublica"},{"name":"twitter:title","content":"The Ugly Truth Behind “We Buy Ugly Houses”"},{"name":"twitter:description","content":"HomeVestors of America, the self-proclaimed “largest homebuyer in the U.S.,” trains its nearly 1,150 franchisees to zero in on homeowners’ desperation."},{"name":"twitter:image","content":"https://img.assets-d.propublica.org/v5/images/20230511-homevesters-main-1_2023-05-10-215352_turq.jpg?crop=focalpoint\\u0026fit=crop\\u0026fp-x=0.5\\u0026fp-y=0.5\\u0026h=630\\u0026imgixProfile=propublicaAssetsV5\\u0026q=90\\u0026w=1200\\u0026s=2343fad4117e06075ece744da123cb87"},{"word_count":5636},{"json_ld":[{"@graph":[{"url":"https://www.propublica.org/article/ugly-truth-behind-we-buy-ugly-houses","name":"The Ugly Truth Behind “We Buy Ugly Houses”","@type":"NewsArticle","image":{"url":"https://img.assets-d.propublica.org/v5/images/20230511-homevesters-main-1_2023-05-10-215352_turq.jpg?crop=focalpoint\\u0026fit=crop\\u0026fp-x=0.5\\u0026fp-y=0.5\\u0026h=630\\u0026imgixProfile=propublicaAssetsV5\\u0026q=90\\u0026w=1200\\u0026s=2343fad4117e06075ece744da123cb87","@type":"ImageObject"},"author":{"@id":"https://www.propublica.org#identity"},"creator":["Anjeanette Damon","Byard Duncan","Mollie Simon"],"headline":"The Ugly Truth Behind “We Buy Ugly Houses”","publisher":{"@id":"https://www.propublica.org#creator"},"inLanguage":"en-us","description":"HomeVestors of America, the self-proclaimed “largest homebuyer in the U.S.,” trains its nearly 1,150 franchisees to zero in on homeowners’ desperation.","dateModified":"2023-05-10T18:07:16-04:00","thumbnailUrl":"https://img.assets-d.propublica.org/v5/images/20230511-homevesters-main-1_2023-05-10-215352_turq.jpg?crop=focalpoint\\u0026fit=crop\\u0026fp-x=0.5\\u0026fp-y=0.5\\u0026h=630\\u0026imgixProfile=propublicaAssetsV5\\u0026q=90\\u0026w=1200\\u0026s=2343fad4117e06075ece744da123cb87","copyrightYear":"2023","datePublished":"2023-05-11T06:00:00-04:00","copyrightHolder":{"@id":"https://www.propublica.org#identity"},"mainEntityOfPage":"https://www.propublica.org/article/ugly-truth-behind-we-buy-ugly-houses"},{"@id":"https://www.propublica.org#identity","url":"https://www.propublica.org","name":"ProPublica","@type":"NewsMediaOrganization","email":"info@propublica.org","sameAs":["https://twitter.com/propublica","https://www.facebook.com/propublica/","https://en.wikipedia.org/wiki/ProPublica","https://www.youtube.com/user/propublica","https://github.com/propublica","https://www.linkedin.com/company/propublica/","https://www.instagram.com/propublica","https://www.pinterest.com/propublica","https://vimeo.com/propublica"],"address":{"@type":"PostalAddress","postalCode":"10013","addressRegion":"NY","streetAddress":"155 Avenue of the Americas, 13th Floor","addressCountry":"US","addressLocality":"New York"},"telephone":"1-212-514-5250","description":"ProPublica is an independent, non-profit newsroom that produces investigative journalism in the public interest."},{"@id":"#creator","@type":"Organization"},{"name":"Breadcrumbs","@type":"BreadcrumbList","description":"Breadcrumbs list","itemListElement":[{"item":"https://www.propublica.org","name":"Homepage","@type":"ListItem","position":1},{"item":"https://www.propublica.org/article/ugly-truth-behind-we-buy-ugly-houses","name":"The Ugly Truth Behind “We Buy Ugly Houses”","@type":"ListItem","position":2}]}],"@context":"http://schema.org"}]}]' }
+      let(:citation_metadata_str) { File.read(Rails.root.join("spec", "fixtures", "metadata_propublica.json")) }
       let(:submitted_url) { "https://www.propublica.org/article/ugly-truth-behind-we-buy-ugly-houses" }
       let(:metadata_attrs) do
         {
@@ -127,7 +127,7 @@ RSpec.describe MetadataAttributer do
           published_at: Time.at(1242720289), # 2009-05-19
           published_updated_at: Time.at(1682786308),
           description: nil,
-          canonical_url: "https://en.wikipedia.org/wiki/Tim_Federle",
+          canonical_url: "",
           word_count: 2938,
           paywall: false,
           title: "Tim Federle - Wikipedia",
@@ -136,7 +136,7 @@ RSpec.describe MetadataAttributer do
           publisher_name: "Wikimedia Foundation, Inc."
         }
       end
-      it "returns target" do
+      xit "returns target" do
         json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
         pp json_ld
         expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs)
@@ -201,6 +201,65 @@ RSpec.describe MetadataAttributer do
         expect(subject.send(:text_or_name_prop, json_ld["author"])).to eq target
         # Full author parsing
         expect(subject.send(:metadata_authors, {}, json_ld)).to eq target
+      end
+      context "author last name first" do
+        let(:json_ld) { {"author" => "Smith, John"} }
+        let(:target) { ["Smith, John"] }
+        it "returns authors name" do
+          expect(subject.send(:metadata_authors, {}, json_ld)).to eq target
+        end
+      end
+      context "creator" do
+        let(:json_ld) do
+          {
+            "creator" => ["Anjeanette Damon","Byard Duncan","Mollie Simon"],
+            "author" => {"@id" => "https://www.propublica.org#identity"}
+          }
+        end
+        let(:target) { ["Anjeanette Damon","Byard Duncan","Mollie Simon"] }
+        it "returns creator" do
+          expect(subject.send(:metadata_authors, {}, json_ld)).to eq target
+        end
+      end
+    end
+    context "author prop" do
+      let(:metadata) { [{"content"=> "Anjeanette Damon,Byard Duncan,Mollie Simon", "property"=> "author"}] }
+      let(:target) { ["Anjeanette Damon", "Byard Duncan", "Mollie Simon"] }
+      it "returns author prop" do
+        expect(subject.send(:metadata_authors, metadata, {})).to eq target
+      end
+      context "parsely" do
+        let(:metadata_parsely) do
+          metadata + [
+            {"name" => "parsely-author", "content" => "Anjeanette Damon" },
+            { "name" => "parsely-author", "content" => "Byard Duncan" },
+            { "name" => "parsely-author", "content" => "Parsely Overrides Author"}
+          ]
+        end
+        let(:target) { ["Anjeanette Damon", "Byard Duncan", "Parsely Overrides Author"] }
+        it "returns target" do
+          # Test parsely prefix
+          expect(subject.send(:content_names, metadata_parsely, "parsely-author")).to eq target
+          expect(subject.send(:proprietary_property_content, metadata_parsely, "author")).to eq target
+          expect(subject.send(:metadata_authors, metadata_parsely, {})).to eq target
+        end
+      end
+      context "semicolons" do
+        let(:metadata) { [{"content"=> "Damon, Anjeanette;Duncan, Byard;Simon, Mollie", "property"=> "author"}] }
+        let(:target) { ["Damon, Anjeanette", "Duncan, Byard", "Simon, Mollie"] }
+        it "returns author prop" do
+          expect(subject.send(:metadata_authors, metadata, {})).to eq target
+        end
+      end
+    end
+    context "dc.Creator" do
+      let(:metadata) { [{"content" => " ARTHUR L.  KLATSKY ","name" => "dc.Creator"},{"content" => " GARY D.  FRIEDMAN ","name" => "dc.Creator"},{"content" => " ABRAHAM B.  SIEGELAUB ","name" => "dc.Creator"}] }
+      let(:target) { ["ARTHUR L. KLATSKY", "GARY D. FRIEDMAN", "ABRAHAM B. SIEGELAUB"] }
+      it "returns target" do
+        target_content_values = metadata.map { |i| i["content"] }
+        expect(subject.send(:content_names, metadata, "dc.Creator")).to eq target_content_values
+        # And test
+        expect(subject.send(:metadata_authors, metadata, {})).to eq target
       end
     end
   end

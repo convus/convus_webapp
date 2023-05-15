@@ -1,10 +1,12 @@
 class UpdateCitationMetadataFromRatingsJob < ApplicationJob
   sidekiq_options retry: 1
 
-  def self.ordered_ratings(citation)
-    # Process any unprocessed ratings. This is where processing happens normally
-    citation.ratings.metadata_unprocessed.each { |r| r.set_metadata_attributes! }
-    citation.reload
+  def self.ordered_ratings(citation, skip_reprocess: false)
+    unless skip_reprocess
+      # Process any unprocessed ratings. This is where processing happens normally
+      citation.ratings.metadata_unprocessed.each { |r| r.set_metadata_attributes! }
+      citation.reload
+    end
     # Then, return in order
     Rating.metadata_present.where(citation_id: citation.id)
       .order(version_integer: :desc, metadata_at: :desc)

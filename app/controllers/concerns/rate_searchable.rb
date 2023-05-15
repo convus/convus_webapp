@@ -1,4 +1,4 @@
-module RatingSearchable
+module RateSearchable
   extend ActiveSupport::Concern
 
   def searched_ratings(ratings)

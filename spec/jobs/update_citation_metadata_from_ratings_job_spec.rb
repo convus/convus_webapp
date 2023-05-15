@@ -139,6 +139,10 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         }
       end
       it "parses" do
+        # Verify it's unprocessed, and that it skips processing with skip_reprocess
+        expect(rating.metadata_unprocessed?).to be_truthy
+        expect(described_class.ordered_ratings(rating, skip_reprocess: true).pluck(:id)).to eq([])
+
         expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
         # This is an erroneous published at date!
         expect(metadata_attrs[:published_at]).to be > metadata_attrs[:published_updated_at]

@@ -4,9 +4,10 @@ class MetadataAttributer
   ATTR_KEYS = %i[authors canonical_url description keywords paywall published_at
     published_updated_at publisher_name title topics_string word_count].freeze
   COUNTED_ATTR_KEYS = (ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).freeze
+  PROPRIETARY_TAGS = ["sailthru.", "parsely-", "dc."].freeze
   # I was originally worried about duplicate JSON-LD keys causing issues.
   # So far, they haven't seemed to - if they do, this can be switched back on
-  RAISE_FOR_DUPES = false #
+  RAISE_FOR_DUPES = false
 
   class << self
     def from_rating(rating)
@@ -25,6 +26,25 @@ class MetadataAttributer
       attrs[:topics_string] = keyword_or_text_topic_names(attrs).join(",")
       attrs[:topics_string] = nil if attrs[:topics_string].blank?
 
+      attrs
+    end
+
+    # Non-private method for diagnostics
+    def json_ld_hash(rating_metadata)
+      json_lds = rating_metadata.select { |m| m.key?("json_ld") }
+      return nil if json_lds.blank?
+      if json_lds.count > 1 && RAISE_FOR_DUPES
+        raise "Multiple json_ld elements: #{json_lds.map(&:keys)}"
+      end
+      attrs = {}
+      json_lds.first.values.flatten.each do |data|
+        next if data["@type"] == "BreadcrumbList"
+        dupe_keys = (attrs.keys & data.keys)
+        if dupe_keys.any? && RAISE_FOR_DUPES
+          raise "duplicate key: #{dupe_keys}"
+        end
+        attrs.merge!(data)
+      end
       attrs
     end
 
@@ -54,10 +74,24 @@ class MetadataAttributer
     def metadata_authors(rating_metadata, json_ld)
       ld_authors = json_ld&.dig("author")
       if ld_authors.present?
-        authors = [ld_authors].flatten.map { |a| text_or_name_prop(a) }.flatten.uniq
+        authors = [ld_authors].flatten.map { |a| text_or_name_prop(a) }.flatten.compact.uniq
+        # if no authors, try the creator!
+        if authors.blank?
+          ld_creators = json_ld&.dig("creator")
+          authors = [ld_creators].flatten.map { |a| text_or_name_prop(a) }.flatten.compact.uniq
+        end
+        authors = nil if authors.none?
       end
+      authors ||= proprietary_property_content(rating_metadata, "author")
       authors ||= prop_or_name_content(rating_metadata, "article:author")
       authors ||= prop_or_name_content(rating_metadata, "author")
+      if authors.is_a?(String)
+        if authors.match?(";") # If there is a semicolon, split on that
+          authors = authors.split(";")
+        elsif authors.match?(/,.*,/) # Otherwise, if there is more than one comma, split on commas
+          authors = authors.split(",")
+        end
+      end
       Array(authors).map { |auth| html_decode(auth) }
     end
 
@@ -148,27 +182,27 @@ class MetadataAttributer
       item&.dig("content")
     end
 
+    # Just used by proprietary_property_content
+    def content_names(rating_metadata, prop_name)
+      pp rating_metadata, rating_metadata.select { |i| i["name"] == prop_name }
+      items = rating_metadata.select { |i| i["name"] == prop_name }
+        .map { |i| i.dig("content") }.compact
+      items.blank? ? nil : items
+    end
+
+    def proprietary_property_content(rating_metadata, prop_or_name)
+      PROPRIETARY_TAGS.map do |proprietary|
+        if proprietary == "dc."
+          prop_or_name = prop_or_name == "author" ? "Creator" : prop_or_name.titleize
+        end
+        pp "#{proprietary}#{prop_or_name}"
+        prop_or_name_content(rating_metadata, "#{proprietary}#{prop_or_name}", multiple: true)
+      end.compact.first
+    end
+
     # Useful for JSON-LD
     def text_or_name_prop(str_or_hash)
       str_or_hash.is_a?(Hash) ? str_or_hash["name"] : str_or_hash
-    end
-
-    def json_ld_hash(rating_metadata)
-      json_lds = rating_metadata.select { |m| m.key?("json_ld") }
-      return nil if json_lds.blank?
-      if json_lds.count > 1 && RAISE_FOR_DUPES
-        raise "Multiple json_ld elements: #{json_lds.map(&:keys)}"
-      end
-      attrs = {}
-      json_lds.first.values.flatten.each do |data|
-        next if data["@type"] == "BreadcrumbList"
-        dupe_keys = (attrs.keys & data.keys)
-        if dupe_keys.any? && RAISE_FOR_DUPES
-          raise "duplicate key: #{dupe_keys}"
-        end
-        attrs.merge!(data)
-      end
-      attrs
     end
 
     # The json_ld graph contains useful information!

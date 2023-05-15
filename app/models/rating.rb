@@ -206,6 +206,10 @@ class Rating < ApplicationRecord
     citation_metadata&.dig(RAW_KEY) || []
   end
 
+  def metadata_json_ld
+    @metadata_json_ld ||= MetadataAttributer.json_ld_hash(citation_metadata_raw)
+  end
+
   def metadata_attributes
     (citation_metadata&.dig(ATTRS_KEY) || {}).symbolize_keys
   end
