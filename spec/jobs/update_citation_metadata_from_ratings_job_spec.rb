@@ -28,7 +28,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           published_at: Time.at(1682713348),
           published_updated_at: nil,
           description: "Jonathan Blitzer writes about the House Republican’s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy’s weakened position as Speaker.",
-          canonical_url: "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy",
+          canonical_url: nil,
           paywall: false,
           publisher_name: "The New Yorker",
           title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
@@ -64,14 +64,15 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         end
       end
       context "already assigned" do
-        let(:initial_attrs) { {authors: "z", published_at: Time.current, description: "c", word_count: 33, published_updated_at: Time.current, paywall: true} }
+        let(:time) { Time.current }
+        let(:initial_attrs) { {authors: "z", published_at: Time.current, description: "c", word_count: 33, published_updated_at: time, paywall: true} }
         it "updates" do
           citation.update(initial_attrs)
           publisher.update(name: "Cool publisher")
           instance.perform(citation.id)
           citation.reload
           # TODO: better handle on paywall!
-          expect_attrs_to_match_hash(citation, metadata_attrs.except(:publisher_name, :paywall, :keywords))
+          expect_attrs_to_match_hash(citation, metadata_attrs.merge(published_updated_at: time).except(:publisher_name, :paywall, :keywords))
           # It doesn't re-update the publisher
           expect(publisher.reload.name).to eq "Cool publisher"
         end
@@ -122,12 +123,12 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
     end
     context "national review" do
       let(:citation_metadata_str) { File.read(Rails.root.join("spec", "fixtures", "metadata_national_review.json")) }
-      let(:submitted_url) { "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/" }
+      let(:submitted_url) { "https://www.nationalreview.com/2020/09/different-url-here" }
       let(:metadata_attrs) do
         {
           authors: ["Christopher Barnard"],
           published_at: Time.at(1600252259),
-          published_updated_at: Time.at(1600246002),
+          published_updated_at: nil,
           description: "Last week’s groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America.",
           canonical_url: "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/",
           paywall: true,
@@ -144,8 +145,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(described_class.ordered_ratings(rating, skip_reprocess: true).pluck(:id)).to eq([])
 
         expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
-        # This is an erroneous published at date!
-        expect(metadata_attrs[:published_at]).to be > metadata_attrs[:published_updated_at]
+
         instance.perform(citation.id)
         expect_hashes_to_match(rating.reload.metadata_attributes, metadata_attrs, match_time_within: 1)
         citation.reload

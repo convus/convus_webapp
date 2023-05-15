@@ -25,11 +25,6 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
       val.present? ? [attrib, val] : nil
     end.compact.to_h
 
-    if new_attributes[:published_updated_at].present? && new_attributes[:published_at].present?
-      if new_attributes[:published_updated_at] <= new_attributes[:published_at]
-        new_attributes[:published_updated_at] = nil
-      end
-    end
     citation.update(new_attributes.except(:publisher_name))
 
     if new_attributes[:publisher_name].present? && !citation.publisher.name_assigned?

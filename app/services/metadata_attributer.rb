@@ -10,7 +10,7 @@ class MetadataAttributer
   RAISE_FOR_DUPES = false
 
   class << self
-    def from_rating(rating)
+    def from_rating(rating, skip_clean_attrs: false)
       rating_metadata = rating.citation_metadata_raw
       return {} if rating_metadata.blank?
       json_ld = json_ld_hash(rating_metadata)
@@ -20,16 +20,15 @@ class MetadataAttributer
         [attrib, val]
       end.compact.to_h
 
-      attrs[:title] = title_without_publisher(attrs[:title], attrs[:publisher_name])
       attrs[:word_count] = metadata_word_count(rating_metadata, json_ld, rating.publisher.base_word_count)
 
       attrs[:topics_string] = keyword_or_text_topic_names(attrs).join(",")
       attrs[:topics_string] = nil if attrs[:topics_string].blank?
 
-      attrs
+      skip_clean_attrs ? attrs : clean_attrs(rating, attrs)
     end
 
-    # Non-private method for diagnostics
+    # Non-private method for messing around in the console
     def json_ld_hash(rating_metadata)
       json_lds = rating_metadata.select { |m| m.key?("json_ld") }
       return nil if json_lds.blank?
@@ -49,6 +48,22 @@ class MetadataAttributer
     end
 
     private
+
+    def clean_attrs(rating, attrs)
+      attrs[:title] = title_without_publisher(attrs[:title], attrs[:publisher_name])
+
+      # Don't include canonical URL unless it's different, to reduce confusion
+      if rating.submitted_url_normalized == attrs[:canonical_url]
+        attrs[:canonical_url] = nil
+      end
+
+      # Don't include published_updated_at, if it's equal or before published_at
+      if attrs[:published_updated_at].present? && attrs[:published_at].present?
+        attrs[:published_updated_at] = nil if attrs[:published_updated_at] <= attrs[:published_at]
+      end
+
+      attrs
+    end
 
     def title_without_publisher(title, publisher)
       return title if publisher.blank? || title.blank?
@@ -109,6 +124,7 @@ class MetadataAttributer
       descriptions << prop_or_name_content(rating_metadata, "og:description")
       descriptions << prop_or_name_content(rating_metadata, "twitter:description")
       descriptions << prop_or_name_content(rating_metadata, "description")
+      descriptions << prop_or_name_content(rating_metadata, "description")
       description = descriptions.reject(&:blank?).max_by(&:length)
       html_decode(description&.truncate(500, separator: " "))
     end
@@ -117,6 +133,7 @@ class MetadataAttributer
       time = json_ld&.dig("datePublished")
       time ||= json_ld_graph(json_ld, "WebPage", "datePublished")
 
+      time ||= proprietary_property_content(rating_metadata, "published_time")
       time ||= prop_or_name_content(rating_metadata, "article:published_time")
       TranzitoUtils::TimeParser.parse(time)
     end
@@ -178,25 +195,28 @@ class MetadataAttributer
     end
 
     def prop_or_name_content(rating_metadata, prop_or_name)
-      item = rating_metadata.detect { |i| i["property"] == prop_or_name || i["name"] == prop_or_name }
-      item&.dig("content")
+      rating_metadata.detect { |i| i["property"] == prop_or_name || i["name"] == prop_or_name }
+        &.dig("content")
     end
 
-    # Just used by proprietary_property_content
-    def content_names(rating_metadata, prop_name)
-      pp rating_metadata, rating_metadata.select { |i| i["name"] == prop_name }
-      items = rating_metadata.select { |i| i["name"] == prop_name }
+    # only used by proprietary_property_content
+    def prop_name_contents(rating_metadata, prop_name)
+      items = rating_metadata.select { |i| i["name"]&.downcase == prop_name }
         .map { |i| i.dig("content") }.compact
       items.blank? ? nil : items
     end
 
+    PROPRIETARY_RENAMES = {
+      "dc." => {"author" => "creator", "published_time" => "date"},
+      "sailthru." => {"published_time" => "date"},
+      "parsely-" => {"published_time" => "pub-date"}
+    }.freeze
+
     def proprietary_property_content(rating_metadata, prop_or_name)
       PROPRIETARY_TAGS.map do |proprietary|
-        if proprietary == "dc."
-          prop_or_name = prop_or_name == "author" ? "Creator" : prop_or_name.titleize
-        end
-        pp "#{proprietary}#{prop_or_name}"
-        prop_or_name_content(rating_metadata, "#{proprietary}#{prop_or_name}", multiple: true)
+        rename = PROPRIETARY_RENAMES.dig(proprietary, prop_or_name).presence
+        # pp prop_or_name, rename
+        prop_name_contents(rating_metadata, "#{proprietary}#{rename || prop_or_name}")
       end.compact.first
     end
 

@@ -131,6 +131,22 @@ RSpec.describe Rating, type: :model do
     end
   end
 
+  describe "submitted_url_normalized" do
+    let(:publisher) { Publisher.new(remove_query: false) }
+    let(:citation) { Citation.new(publisher: publisher) }
+    let(:submitted_url) { "https://example.com?something=true#anchoooor" }
+    let(:rating) { Rating.new(submitted_url: submitted_url, citation: citation) }
+    it "returns normalized" do
+      expect(rating.submitted_url_normalized).to eq "https://example.com?something=true"
+    end
+    context "remove_query true" do
+      let(:publisher) { Publisher.new(remove_query: true) }
+      it "returns normalized" do
+        expect(rating.submitted_url_normalized).to eq "https://example.com"
+      end
+    end
+  end
+
   describe "display_name" do
     let(:rating) { Rating.new }
     it "is missing url" do

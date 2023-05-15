@@ -4,6 +4,7 @@ RSpec.describe MetadataAttributer do
   let(:subject) { described_class }
   describe "from_rating" do
     let(:rating) { FactoryBot.create(:rating, submitted_url: submitted_url, citation_metadata_str: citation_metadata_str) }
+    let(:target_normalized) { metadata_attrs.merge(canonical_url: nil) }
     def expect_matching_attributes(rating_metadata, json_ld, metadata_attrs)
       expect(subject.send(:metadata_authors, rating_metadata, json_ld)).to eq(metadata_attrs[:authors])
       expect(subject.send(:metadata_published_at, rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_at].to_i
@@ -13,7 +14,9 @@ RSpec.describe MetadataAttributer do
       expect(subject.send(:metadata_word_count, rating_metadata, json_ld, 100)).to eq metadata_attrs[:word_count]
       expect(subject.send(:metadata_paywall, rating_metadata, json_ld)).to be_falsey
 
-      expect_hashes_to_match(subject.from_rating(rating), metadata_attrs, match_time_within: 1)
+      expect_hashes_to_match(subject.from_rating(rating, skip_clean_attrs: true), metadata_attrs, match_time_within: 1)
+
+      expect_hashes_to_match(subject.from_rating(rating), target_normalized, match_time_within: 1)
     end
 
     context "new yorker" do
@@ -34,6 +37,7 @@ RSpec.describe MetadataAttributer do
           publisher_name: "The New Yorker"
         }
       end
+      let(:target_normalized) { metadata_attrs.merge(canonical_url: nil, published_updated_at: nil) }
       it "returns target" do
         json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
 
@@ -44,6 +48,8 @@ RSpec.describe MetadataAttributer do
         let!(:topic2) { Topic.find_or_create_for_name("U.S. Budget") }
         let!(:topic3) { Topic.find_or_create_for_name("U.S. President") }
         let(:topic_names) { ["Joe Biden", "U.S. Budget"] }
+        let(:target_metadata) { metadata_attrs.merge(topics_string: topic_names.join(",")) }
+        let(:target_normalized) { target_metadata.merge(canonical_url: nil, published_updated_at: nil) }
         it "returns target" do
           topic1.update(parents_string: "U.S. presidents")
           expect(topic3.reload.children.pluck(:id)).to eq([topic1.id])
@@ -51,7 +57,7 @@ RSpec.describe MetadataAttributer do
 
           expect(subject.send(:keyword_or_text_topic_names, metadata_attrs)).to eq(topic_names)
 
-          expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs.merge(topics_string: topic_names.join(",")))
+          expect_matching_attributes(rating.citation_metadata_raw, json_ld, target_metadata)
         end
       end
     end
@@ -73,10 +79,14 @@ RSpec.describe MetadataAttributer do
           publisher_name: "80,000 Hours"
         }
       end
+      let(:target_normalized) { metadata_attrs }
       it "returns target" do
         json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
 
         expect(subject.send(:json_ld_graph, json_ld, "WebPage", "datePublished")).to eq "2022-02-02T22:43:27+00:00"
+
+        expect(rating.submitted_url).to eq submitted_url
+        expect(rating.submitted_url_normalized).to eq submitted_url.chop
 
         expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs)
       end
@@ -127,7 +137,7 @@ RSpec.describe MetadataAttributer do
           published_at: Time.at(1242720289), # 2009-05-19
           published_updated_at: Time.at(1682786308),
           description: nil,
-          canonical_url: "",
+          canonical_url: "https://www.propublica.org/article/ugly-truth-behind-we-buy-ugly-houses",
           word_count: 2938,
           paywall: false,
           title: "Tim Federle - Wikipedia",
@@ -136,6 +146,7 @@ RSpec.describe MetadataAttributer do
           publisher_name: "Wikimedia Foundation, Inc."
         }
       end
+      let(:target_normalized) { metadata_attrs.merge(canonical_url: nil, published_updated_at: nil) }
       xit "returns target" do
         json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
         pp json_ld
@@ -193,6 +204,19 @@ RSpec.describe MetadataAttributer do
     end
   end
 
+  describe "clean_attrs" do
+    let(:rating) { Rating.new(submitted_url: "https://example.com") }
+    let(:target_empty) { MetadataAttributer::ATTR_KEYS.map { |k| [k, nil] }.to_h }
+
+    context "published_updated_at before published_at" do
+      let(:time) { Time.current - 1.day }
+      let(:attrs) { target_empty.merge(published_updated_at: Time.current - 1.week, published_at: time) }
+      it "removes published_updated_at" do
+        expect_hashes_to_match(subject.send(:clean_attrs, rating, attrs), target_empty.merge(published_at: time))
+      end
+    end
+  end
+
   describe "metadata_authors" do
     context "json_ld authors" do
       let(:json_ld) { {"author" => {"name" => ["Jennifer Ludden", "Marisa Peñaloza"], "@type" => "Person"}} }
@@ -212,18 +236,18 @@ RSpec.describe MetadataAttributer do
       context "creator" do
         let(:json_ld) do
           {
-            "creator" => ["Anjeanette Damon","Byard Duncan","Mollie Simon"],
+            "creator" => ["Anjeanette Damon", "Byard Duncan", "Mollie Simon"],
             "author" => {"@id" => "https://www.propublica.org#identity"}
           }
         end
-        let(:target) { ["Anjeanette Damon","Byard Duncan","Mollie Simon"] }
+        let(:target) { ["Anjeanette Damon", "Byard Duncan", "Mollie Simon"] }
         it "returns creator" do
           expect(subject.send(:metadata_authors, {}, json_ld)).to eq target
         end
       end
     end
     context "author prop" do
-      let(:metadata) { [{"content"=> "Anjeanette Damon,Byard Duncan,Mollie Simon", "property"=> "author"}] }
+      let(:metadata) { [{"content" => "Anjeanette Damon,Byard Duncan,Mollie Simon", "property" => "author"}] }
       let(:target) { ["Anjeanette Damon", "Byard Duncan", "Mollie Simon"] }
       it "returns author prop" do
         expect(subject.send(:metadata_authors, metadata, {})).to eq target
@@ -231,21 +255,21 @@ RSpec.describe MetadataAttributer do
       context "parsely" do
         let(:metadata_parsely) do
           metadata + [
-            {"name" => "parsely-author", "content" => "Anjeanette Damon" },
-            { "name" => "parsely-author", "content" => "Byard Duncan" },
-            { "name" => "parsely-author", "content" => "Parsely Overrides Author"}
+            {"name" => "parsely-author", "content" => "Anjeanette Damon"},
+            {"name" => "parsely-author", "content" => "Byard Duncan"},
+            {"name" => "parsely-author", "content" => "Parsely Overrides Author"}
           ]
         end
         let(:target) { ["Anjeanette Damon", "Byard Duncan", "Parsely Overrides Author"] }
         it "returns target" do
           # Test parsely prefix
-          expect(subject.send(:content_names, metadata_parsely, "parsely-author")).to eq target
+          expect(subject.send(:prop_name_contents, metadata_parsely, "parsely-author")).to eq target
           expect(subject.send(:proprietary_property_content, metadata_parsely, "author")).to eq target
           expect(subject.send(:metadata_authors, metadata_parsely, {})).to eq target
         end
       end
       context "semicolons" do
-        let(:metadata) { [{"content"=> "Damon, Anjeanette;Duncan, Byard;Simon, Mollie", "property"=> "author"}] }
+        let(:metadata) { [{"content" => "Damon, Anjeanette;Duncan, Byard;Simon, Mollie", "property" => "author"}] }
         let(:target) { ["Damon, Anjeanette", "Duncan, Byard", "Simon, Mollie"] }
         it "returns author prop" do
           expect(subject.send(:metadata_authors, metadata, {})).to eq target
@@ -253,11 +277,11 @@ RSpec.describe MetadataAttributer do
       end
     end
     context "dc.Creator" do
-      let(:metadata) { [{"content" => " ARTHUR L.  KLATSKY ","name" => "dc.Creator"},{"content" => " GARY D.  FRIEDMAN ","name" => "dc.Creator"},{"content" => " ABRAHAM B.  SIEGELAUB ","name" => "dc.Creator"}] }
+      let(:metadata) { [{"content" => " ARTHUR L.  KLATSKY ", "name" => "dc.Creator"}, {"content" => " GARY D.  FRIEDMAN ", "name" => "dc.Creator"}, {"content" => " ABRAHAM B.  SIEGELAUB ", "name" => "dc.Creator"}] }
       let(:target) { ["ARTHUR L. KLATSKY", "GARY D. FRIEDMAN", "ABRAHAM B. SIEGELAUB"] }
       it "returns target" do
         target_content_values = metadata.map { |i| i["content"] }
-        expect(subject.send(:content_names, metadata, "dc.Creator")).to eq target_content_values
+        expect(subject.send(:prop_name_contents, metadata, "dc.creator")).to eq target_content_values
         # And test
         expect(subject.send(:metadata_authors, metadata, {})).to eq target
       end
@@ -305,6 +329,16 @@ RSpec.describe MetadataAttributer do
     end
   end
 
+  describe "metadata_published_at" do
+    context "parsely" do
+      let(:metadata) { [{"name" => "parsely-pub-date", "content" => "2023-05-11T06:00:00-04:00"}] }
+      let(:target) { Time.at(1683799200) }
+      it "returns target" do
+        expect(subject.send(:metadata_published_at, metadata, {})).to be_within(5).of(target)
+      end
+    end
+  end
+
   describe "html_decode" do
     it "removes entities" do
       expect(subject.send(:html_decode, "Cool String&nbsp;here [&hellip;]")).to eq "Cool String here ..."
@@ -317,5 +351,8 @@ RSpec.describe MetadataAttributer do
     it "strips tags" do
       expect(subject.send(:html_decode, "<p>Stuff  </p>")).to eq "Stuff"
     end
+  end
+
+  describe "canonical_url_submitted?" do
   end
 end

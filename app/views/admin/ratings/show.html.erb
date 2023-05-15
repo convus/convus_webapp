@@ -69,10 +69,12 @@
     </div>
     <% metadata_attributes = @rating.metadata_attributes %>
     <div class="col">
-      <h3>Citation metadata attributes:</h3>
+      <h3>
+        Citation metadata attributes
+        <%= button_to "reprocess rating", admin_rating_path(@rating.to_param, set_metadata_attributes: true), method: :patch, class: "link text-sm text-primary" %>
+      </h3>
       <div class="code-small">
-        <%# skipping canonical_url for now, because it's just noise %>
-        <%= pretty_print_json(metadata_attributes.except(:canonical_url, :keywords)) %>
+        <%= pretty_print_json(metadata_attributes) %>
       </div>
     </div>
     <div class="col mt-2 sm:mt-7">

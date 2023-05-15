@@ -230,6 +230,10 @@ class Rating < ApplicationRecord
     self.display_name = calculated_display_name
   end
 
+  def submitted_url_normalized
+    UrlCleaner.normalized_url(submitted_url, remove_query: publisher&.remove_query?)
+  end
+
   def set_calculated_attributes
     self.timezone = nil if timezone.blank?
     self.created_date ||= self.class.date_in_timezone(created_at, timezone)
