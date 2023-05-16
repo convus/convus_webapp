@@ -70,11 +70,17 @@ class MetadataJsonLdParser
 
     def type_values(values)
       # pp "#{values&.to_s&.truncate(100)}"
+      values = val_or_first_item(values)
+      [val_or_first_item(values["@type"]), values]
+    end
+
+    # IDK why they wrap some values in arrays! Just deal with it
+    def val_or_first_item(values)
       if values.is_a?(Array)
         raise "Array with multiple values: #{values}" if values.count > 1
         values = values.first
       end
-      [values["@type"], values]
+      values
     end
 
     def publisher_name(publisher, json_ld_content)
