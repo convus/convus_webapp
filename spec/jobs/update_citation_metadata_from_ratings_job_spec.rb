@@ -25,7 +25,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
       let(:metadata_attrs) do
         {
           authors: ["Jonathan Blitzer"],
-          published_at: Time.at(1682713348),
+          published_at: 1682713348,
           published_updated_at: nil,
           description: "Jonathan Blitzer writes about the House Republican’s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy’s weakened position as Speaker.",
           canonical_url: nil,
@@ -43,7 +43,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         expect(publisher.base_word_count).to eq 100
         expect(rating.metadata_at).to be_within(1).of Time.current
         expect(rating.citation_metadata_raw.count).to eq 33
-        expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_attrs.except(:published_updated_at), match_time_within: 1)
+        expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
         instance.perform(citation.id)
         citation.reload
         expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
@@ -96,8 +96,8 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         let(:target_older) do
           {
             authors: ["Condé Nast"],
-            published_at: Time.at(1674937348),
-            published_updated_at: Time.at(1677615748),
+            published_at: 1674937348,
+            published_updated_at: 1677615748,
             description: "Earlier.",
             canonical_url: nil,
             paywall: false,
@@ -127,7 +127,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
       let(:metadata_attrs) do
         {
           authors: ["Christopher Barnard"],
-          published_at: Time.at(1600252259),
+          published_at: 1600252259,
           published_updated_at: nil,
           description: "Last week’s groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America.",
           canonical_url: "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/",
@@ -149,7 +149,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         instance.perform(citation.id)
         expect_hashes_to_match(rating.reload.metadata_attributes, metadata_attrs, match_time_within: 1)
         citation.reload
-        expect_attrs_to_match_hash(citation, metadata_attrs.merge(published_updated_at: nil).except(:keywords), match_time_within: 1)
+        expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords), match_time_within: 1)
         # Updates publisher
         expect(publisher.reload.name).to eq "National Review"
         expect(publisher.name_assigned?).to be_truthy

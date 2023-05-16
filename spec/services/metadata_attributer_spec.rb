@@ -25,8 +25,8 @@ RSpec.describe MetadataAttributer do
       let(:metadata_attrs) do
         {
           authors: ["Jonathan Blitzer"],
-          published_at: Time.at(1682713348),
-          published_updated_at: Time.at(1682713348),
+          published_at: 1682713348,
+          published_updated_at: 1682713348,
           description: "Jonathan Blitzer writes about the House Republican’s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy’s weakened position as Speaker.",
           canonical_url: "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy",
           word_count: 2_040,
@@ -102,8 +102,8 @@ RSpec.describe MetadataAttributer do
       let(:metadata_attrs) do
         {
           authors: ["Contributors to Wikimedia projects"],
-          published_at: Time.at(1242720289), # 2009-05-19
-          published_updated_at: Time.at(1682786308),
+          published_at: 1242720289, # 2009-05-19
+          published_updated_at: 1682786308,
           description: nil,
           canonical_url: "https://en.wikipedia.org/wiki/Tim_Federle",
           word_count: 2938,
@@ -124,8 +124,8 @@ RSpec.describe MetadataAttributer do
       let(:metadata_attrs) do
         {
           authors: ["Anjeanette Damon", "Byard Duncan", "Mollie Simon"],
-          published_at: Time.at(1683799200), # 2023-05-11 03:00:00
-          published_updated_at: Time.at(1683756436), # 2023-05-10 15:07
+          published_at: 1683799200, # 2023-05-11 03:00:00
+          published_updated_at: 1683756436, # 2023-05-10 15:07
           description: "HomeVestors of America, the self-proclaimed “largest homebuyer in the U.S.,” trains its nearly 1,150 franchisees to zero in on homeowners’ desperation.",
           canonical_url: "https://www.propublica.org/article/ugly-truth-behind-we-buy-ugly-houses",
           word_count: 5536,
@@ -271,7 +271,7 @@ RSpec.describe MetadataAttributer do
   describe "metadata_published_at" do
     context "parsely" do
       let(:metadata) { [{"name" => "parsely-pub-date", "content" => "2023-05-11T06:00:00-04:00"}] }
-      let(:target) { Time.at(1683799200) }
+      let(:target) { 1683799200 }
       it "returns target" do
         expect(subject.send(:metadata_published_at, metadata, {})).to be_within(5).of(target)
       end

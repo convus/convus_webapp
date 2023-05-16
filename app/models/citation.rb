@@ -33,7 +33,7 @@ class Citation < ApplicationRecord
       matching_url_components(url_components).first
     end
 
-    # Override method from FriendlyFindable to avoid
+    # Override method from FriendlyFindable to avoid confusion
     def slugify(str = nil)
       raise "Citation doesn't have a slug"
     end

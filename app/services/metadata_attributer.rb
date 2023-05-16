@@ -3,6 +3,7 @@ require "commonmarker"
 class MetadataAttributer
   ATTR_KEYS = %i[authors canonical_url description keywords paywall published_at
     published_updated_at publisher_name title topics_string word_count].freeze
+  TIME_KEYS = %i[published_at published_updated_at].freeze
   COUNTED_ATTR_KEYS = (ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).freeze
   PROPRIETARY_TAGS = ["sailthru.", "parsely-", "dc."].freeze
 
@@ -109,19 +110,17 @@ class MetadataAttributer
 
     def metadata_published_at(rating_metadata, json_ld)
       time = json_ld&.dig("datePublished")
-      # time ||= json_ld_graph(json_ld, "WebPage", "datePublished")
 
       time ||= proprietary_property_content(rating_metadata, "published_time")
       time ||= prop_or_name_content(rating_metadata, "article:published_time")
-      TranzitoUtils::TimeParser.parse(time)
+      TranzitoUtils::TimeParser.parse(time)&.to_i # timestamp for ease of comparison
     end
 
     def metadata_published_updated_at(rating_metadata, json_ld)
       time = json_ld&.dig("dateModified")
-      # time ||= json_ld_graph(json_ld, "WebPage", "dateModified")
 
       time ||= prop_or_name_content(rating_metadata, "article:modified_time")
-      TranzitoUtils::TimeParser.parse(time)
+      TranzitoUtils::TimeParser.parse(time)&.to_i # timestamp for ease of comparison
     end
 
     def metadata_publisher_name(rating_metadata, json_ld)

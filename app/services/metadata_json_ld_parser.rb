@@ -69,7 +69,6 @@ class MetadataJsonLdParser
     end
 
     def type_values(values)
-      # pp "#{values&.to_s&.truncate(100)}"
       values = val_or_first_item(values)
       [val_or_first_item(values["@type"]), values]
     end

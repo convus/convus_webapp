@@ -22,7 +22,10 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
 
       # returns first value that matches, only loading the first that matches
       val = metadata_attributes.lazy.filter_map { |cma| cma[attrib].presence }.first
-      val.present? ? [attrib, val] : nil
+      next nil if val.blank?
+      # Convert time into time
+      val = Time.at(val) if MetadataAttributer::TIME_KEYS.include?(attrib)
+      [attrib, val]
     end.compact.to_h
 
     citation.update(new_attributes.except(:publisher_name))
