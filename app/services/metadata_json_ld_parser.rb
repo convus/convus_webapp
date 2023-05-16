@@ -19,32 +19,28 @@ class MetadataJsonLdParser
 
   class << self
     def parse(rating_metadata)
-      attrs = {}
+      # attrs = {}
       json_ld_hash = content_hash(rating_metadata)
       # if json_ld_content
       # json_ld_content.first.values.flatten.each do |data|
-      json_ld_content.each do |data|
-        # next if data["@type"] == "BreadcrumbList"
+      # json_ld_content.each do |data|
+      #   # next if data["@type"] == "BreadcrumbList"
 
-        dupe_keys = (attrs.keys & data.keys)
-        # if dupe_keys.any? && RAISE_FOR_DUPES
-        #   raise "duplicate key: #{dupe_keys}"
-        # end
-        attrs.merge!(data)
-      end
-      attrs
+      #   dupe_keys = (attrs.keys & data.keys)
+      #   # if dupe_keys.any? && RAISE_FOR_DUPES
+      #   #   raise "duplicate key: #{dupe_keys}"
+      #   # end
+      #   attrs.merge!(data)
+      # end
+      # attrs
     end
 
     def content_hash(rating_metadata)
-      r = content_key_value(rating_metadata)
-      pp r
+      key_values = content_key_value(content(rating_metadata))
+      # pp "CKV: #{key_values}"
       rhash = {}
-      content(rating_metadata).each do |values|
-        key = values["@type"]
-        if key.blank?
-          raise "Missing @type for #{values}"
-        end
-
+      key_values.each do |key, values|
+        raise "Missing @type for #{values}" if key.blank?
         # If there is a duplicate with the same values, it's fine, ignore
         if rhash[key].present? && rhash[key] != values
           raise "existing miss-matched values for key: #{key} - #{values}"
@@ -62,11 +58,12 @@ class MetadataJsonLdParser
 
     private
 
-    def content_key_value(rating_metadata)
-      pp rating_metadata
-      content(rating_metadata)&.map do |values|
+    def content_key_value(rating_metadata_content)
+      # pp rating_metadata.map { |k| k.to_s.truncate(30) }
+      rating_metadata_content&.map do |values|
+        # pp values&.to_s&.truncate(300) || 'nil'
         if values["@graph"].present?
-          content_key_value(values["@graph"])
+          return content_key_value(values["@graph"])
         else
           [(values["@type"] || "unknown"), values]
         end
