@@ -41,6 +41,12 @@ class Admin::TopicsController < Admin::BaseController
     end
   end
 
+  def destroy
+    @topic.destroy
+    flash[:success] = "Topic removed"
+    redirect_to admin_topics_path, status: :see_other
+  end
+
   private
 
   def sortable_columns
@@ -65,6 +71,6 @@ class Admin::TopicsController < Admin::BaseController
   end
 
   def find_topic
-    @topic = Topic.friendly_find(params[:id])
+    @topic = Topic.friendly_find!(params[:id])
   end
 end

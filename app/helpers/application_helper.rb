@@ -216,4 +216,22 @@ module ApplicationHelper
   def display_icon(str)
     image_tag("icons/#{str}_icon.svg", class: "w-4 inline-block")
   end
+
+  def topic_links(topics, html_opts = {}, url: nil, include_current_topics: false)
+    name_and_slugs ||= topics&.name_ordered&.pluck(:name, :slug)
+    return nil if name_and_slugs.blank?
+    html_opts[:class] ||= ""
+    if url.blank?
+      itopics = include_current_topics ? Array(sortable_params[:search_topics]) : [""]
+      url = self.url_for(sortable_params.merge(search_topics: itopics))
+    end
+    url = "#{url}?" unless url.match?(/\?/)
+
+    content_tag(:span, class: "topic_links") do
+      safe_join(name_and_slugs.map { |ns|
+        t_url = "#{url}&search_topics[]=#{ns[1]}"
+        link_to(ns[0], raw(t_url), html_opts)
+      }, ", ")
+    end
+  end
 end

@@ -26,12 +26,13 @@
     <% end %>
   </div>
 <% end %>
+
 <% render_period ||= false %>
-<% skip_pagination ||= false %>
 <% total_count ||= collection.total_count %>
 <% if render_period %>
   <%= render partial: "/shared/period_select", locals: {total_count: total_count} %>
 <% end %>
+<% skip_pagination ||= false %>
 <% unless skip_pagination %>
   <div class="row mt-4">
     <%= render partial: "tranzito_utils/pagination", locals: {collection: collection, name: viewing} %>

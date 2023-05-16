@@ -53,6 +53,34 @@ RSpec.describe base_url, type: :request do
       expect(assigns(:viewing_display_name)).to eq "all"
       expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
     end
+    context "additional search queries" do
+      let!(:topic1) { FactoryBot.create(:topic) }
+      let(:topic2) { FactoryBot.create(:topic) }
+      let(:topic3) { FactoryBot.create(:topic) }
+      it "renders with searches" do
+        get "#{base_url}?search_topics=#{topic1.slug}"
+        expect(response.code).to eq "200"
+        expect(assigns(:user_subject)&.id).to be_blank
+        expect(assigns(:viewing_display_name)).to eq "all"
+        expect(assigns(:current_topics)&.pluck(:id)).to eq([topic1.id])
+        expect(response).to render_template("ratings/index")
+        # It handles arrays
+        get "#{base_url}?search_topics[]=#{topic1.slug}&search_topics[]=#{topic2.slug}"
+        expect(response.code).to eq "200"
+        expect(assigns(:current_topics)&.pluck(:id)).to match_array([topic1.id, topic2.id])
+        expect(response).to render_template("ratings/index")
+        # It parses comma delineated
+        get "#{base_url}?search_topics=#{topic1.slug},#{topic2.id} "
+        expect(response.code).to eq "200"
+        expect(assigns(:current_topics)&.pluck(:id)).to match_array([topic1.id, topic2.id])
+        expect(response).to render_template("ratings/index")
+        # It parses new line delineated and commas
+        get base_url, params: {search_topics: "#{topic1.slug}\n #{topic2.id},#{topic3.slug} "}
+        expect(response.code).to eq "200"
+        expect(assigns(:current_topics)&.pluck(:id)).to match_array([topic1.id, topic2.id, topic3.id])
+        expect(response).to render_template("ratings/index")
+      end
+    end
     context "no user found" do
       it "raises" do
         expect {

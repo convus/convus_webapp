@@ -39,20 +39,23 @@ class ApplicationController < ActionController::Base
 
   def user_subject
     return @user_subject if defined?(@user_subject)
-    @user_subject = if params[:user] == "current_user"
+    user_param = params.permit(:user)[:user]
+    @user_subject = if user_param == "current_user"
       current_user
     else
-      User.friendly_find(params[:user])
+      User.friendly_find(user_param)
     end
   end
 
   def current_topics
-    return @current_topics if defined?(@searched_topics)
-    @current_topics = if params[:search_topics].blank?
+    return @current_topics if defined?(@current_topics)
+    # IDK a better way of handling permitting both string and array? This works...
+    t_param = params.permit(:search_topics, search_topics: [])[:search_topics]
+    @current_topics = if t_param.blank?
       []
     else
-      arr = params[:search_topics]
-      arr = arr.split("\n") unless arr.is_a?(Array)
+      arr = t_param
+      arr = arr.split(/[\n,\,]/) unless arr.is_a?(Array)
       Topic.friendly_find_all(arr)
     end
   end

@@ -1,5 +1,5 @@
 class Admin::RatingsController < Admin::BaseController
-  include RateSearchable
+  include RatingSearchable
   include TranzitoUtils::SortableTable
   before_action :set_period, only: [:index]
   before_action :find_rating, except: [:index]
@@ -38,7 +38,7 @@ class Admin::RatingsController < Admin::BaseController
   end
 
   def admin_searched_ratings
-    ratings = searched_ratings(Rating) # in RateSearchable
+    ratings = searched_ratings(Rating) # in RatingSearchable
 
     if sort_column == "meta"
       ratings = (sort_direction == "desc") ? ratings.metadata_present : ratings.metadata_blank

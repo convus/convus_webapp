@@ -77,6 +77,14 @@ RSpec.describe Topic, type: :model do
     end
   end
 
+  describe "doesn't have commas" do
+    let(:topic) { FactoryBot.build(:topic, name: "New topic, things") }
+    it "fails with comma" do
+      expect(topic).to_not be_valid
+      expect(topic.errors.full_messages).to eq(["Name can't contain commas"])
+    end
+  end
+
   describe "find_or_create_for" do
     let(:topic) { FactoryBot.create(:topic, name: "First topic we have") }
     it "finds the existing" do

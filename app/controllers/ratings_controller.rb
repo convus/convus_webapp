@@ -1,5 +1,5 @@
 class RatingsController < ApplicationController
-  include RateSearchable
+  include RatingSearchable
   include TranzitoUtils::SortableTable
   before_action :set_period, only: %i[index] # Actually, will want to set after assigning via
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
@@ -131,7 +131,7 @@ class RatingsController < ApplicationController
       @can_view_ratings = user_subject.account_public? || @viewing_current_user ||
         user_subject.follower_approved?(current_user)
     end
-    searched_ratings(viewed_ratings) # in RateSearchable
+    searched_ratings(viewed_ratings) # in RatingSearchable
   end
 
   def viewing_display_name
