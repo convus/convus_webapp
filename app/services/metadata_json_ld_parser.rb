@@ -11,19 +11,18 @@ class MetadataJsonLdParser
       json_ld_content ||= content_hash(rating_metadata)
       return nil if json_ld_content.blank?
       # If there are multiple KEY_PRIORITIES, merge over them
-      if (KEY_PRIORITY & json_ld_content.keys).count > 1
-        matching_keys = KEY_PRIORITY & json_ld_content.keys
-        parsed = {}
-        # I KNOW, reduce, I'm tired
-        matching_keys.reverse_each { |k| parsed.merge!(json_ld_content[k]) }
-        parsed["@type"] = matching_keys
+      matching_keys = if (KEY_PRIORITY & json_ld_content.keys).count > 1
+        KEY_PRIORITY & json_ld_content.keys
       else
-        # Try to pick the best primary key
-        primary_key = KEY_PRIORITY.detect { |k| json_ld_content.key?(k) } ||
-          json_ld_content.keys.first
-        # return the data for the best key
-        parsed = json_ld_content[primary_key]
+        # Otherwise, merge over the first JSON-LD object with the priorities
+        ((KEY_PRIORITY & json_ld_content.keys) + [json_ld_content.keys.first])
+          .flatten.uniq.compact
       end
+      # I KNOW, reduce, I'm tired
+      parsed = {}
+      matching_keys.reverse_each { |k| parsed.merge!(json_ld_content[k]) }
+      parsed["@type"] = (matching_keys.count == 1) ? matching_keys.first : matching_keys
+
       # set the publisher name
       parsed.merge("publisher" => publisher_name(parsed["publisher"], json_ld_content))
     end
