@@ -46,6 +46,18 @@ RSpec.describe base_url, type: :request do
       end
     end
 
+    describe "update" do
+      it "calls set_metadata_attributes!" do
+        Sidekiq::Worker.clear_all
+        expect_any_instance_of(Rating).to receive(:set_metadata_attributes!) { true }
+        patch "#{base_url}/#{rating.to_param}", params: {
+          set_metadata_attributes: true
+        }
+        expect(flash[:success]).to be_present
+        expect(UpdateCitationMetadataFromRatingsJob.jobs.count).to eq 1
+      end
+    end
+
     describe "destroy" do
       let(:rating) { FactoryBot.create(:rating_with_topic) }
       let(:citation) { rating.citation }

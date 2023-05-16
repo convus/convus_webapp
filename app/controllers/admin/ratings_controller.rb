@@ -14,6 +14,17 @@ class Admin::RatingsController < Admin::BaseController
   def show
   end
 
+  def update
+    if TranzitoUtils::Normalize.boolean(params[:set_metadata_attributes])
+      @rating.set_metadata_attributes!
+      UpdateCitationMetadataFromRatingsJob.perform_async(@rating.citation_id)
+      flash[:success] = "Rating metadata reprocessed"
+    else
+      flash[:error] = "Unknown update action!"
+    end
+    redirect_back(fallback_location: admin_rating_path(@rating.to_param), status: :see_other)
+  end
+
   def destroy
     @rating.destroy
     flash[:success] = "Rating deleted!"

@@ -3,7 +3,7 @@ module FriendlyFindable
 
   module ClassMethods
     def integer_str?(str)
-      str.is_a?(Integer) || str.match?(/\A\d+\z/)
+      str.is_a?(Integer) || str.strip.match?(/\A\d+\z/)
     end
 
     def friendly_find(str)

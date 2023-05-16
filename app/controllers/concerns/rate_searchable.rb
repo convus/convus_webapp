@@ -13,6 +13,11 @@ module RateSearchable
       @disagree_following = TranzitoUtils::Normalize.boolean(params[:search_disagree_following])
     end
     ratings = ratings.display_name_search(params[:query]) if params[:query].present?
+    # Add display for this
+    if params[:search_citation_id].present?
+      @searched_citation = Citation.friendly_find(params[:search_citation_id])
+      ratings = ratings.where(citation_id: @searched_citation.id)
+    end
 
     if TranzitoUtils::Normalize.boolean(params[:search_disagree])
       @search_agreement = "disagree"

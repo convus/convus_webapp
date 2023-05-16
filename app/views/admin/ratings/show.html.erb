@@ -69,10 +69,12 @@
     </div>
     <% metadata_attributes = @rating.metadata_attributes %>
     <div class="col">
-      <h3>Citation metadata attributes:</h3>
+      <h3>
+        Citation metadata attributes
+        <%= button_to "reprocess rating", admin_rating_path(@rating.to_param, set_metadata_attributes: true), method: :patch, class: "link text-sm text-primary" %>
+      </h3>
       <div class="code-small">
-        <%# skipping canonical_url for now, because it's just noise %>
-        <%= pretty_print_json(metadata_attributes.except(:canonical_url, :keywords)) %>
+        <%= pretty_print_json(metadata_attributes) %>
       </div>
     </div>
     <div class="col mt-2 sm:mt-7">
@@ -111,4 +113,25 @@
 
 <div class="mt-4">
   <%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true} %>
+</div>
+
+<div class="large-width-container mb-5 standard-top-offset">
+  <div class="row sm:grid-cols-2">
+    <div class="col">
+      <h3>
+        JSON-LD Parsed
+      </h3>
+      <div class="code-small">
+        <%= pretty_print_json(@rating.json_ld_parsed) %>
+      </div>
+    </div>
+    <div class="col">
+      <h3>
+        JSON-LD Full
+      </h3>
+      <div class="code-small">
+        <%= pretty_print_json(@rating.json_ld_content) %>
+      </div>
+    </div>
+  </div>
 </div>

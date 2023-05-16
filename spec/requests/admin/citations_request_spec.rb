@@ -100,6 +100,16 @@ RSpec.describe base_url, type: :request do
           expect(rating.reload.display_name).to eq "something"
         end
       end
+      context "update_citation_metadata_from_ratings" do
+        it "enqueues the job" do
+          Sidekiq::Worker.clear_all
+          expect_any_instance_of(UpdateCitationMetadataFromRatingsJob).to receive(:perform) { true }
+          patch "#{base_url}/#{citation.id}", params: {
+            update_citation_metadata_from_ratings: true
+          }
+          expect(flash[:success]).to be_present
+        end
+      end
       context "rating present" do
         let!(:rating) { FactoryBot.create(:rating, submitted_url: citation.url) }
         it "updates and enqueues reconciliation" do
@@ -110,6 +120,7 @@ RSpec.describe base_url, type: :request do
           expect(flash[:success]).to be_present
           expect(citation.reload.title).to eq "new title"
           expect(citation.topics.pluck(:id)).to eq([topic.id])
+          expect(UpdateCitationMetadataFromRatingsJob.jobs.count).to eq 0
           expect(ReconcileRatingTopicsJob.jobs.count).to eq 1
           ReconcileRatingTopicsJob.drain
           expect(rating.reload.topics.pluck(:id)).to eq([topic.id])

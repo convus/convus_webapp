@@ -3,32 +3,46 @@ require "commonmarker"
 class MetadataAttributer
   ATTR_KEYS = %i[authors canonical_url description keywords paywall published_at
     published_updated_at publisher_name title topics_string word_count].freeze
+  TIME_KEYS = %i[published_at published_updated_at].freeze
   COUNTED_ATTR_KEYS = (ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).freeze
-  # I was originally worried about duplicate JSON-LD keys causing issues.
-  # So far, they haven't seemed to - if they do, this can be switched back on
-  RAISE_FOR_DUPES = false #
+  PROPRIETARY_TAGS = ["sailthru.", "parsely-", "dc."].freeze
 
   class << self
-    def from_rating(rating)
+    def from_rating(rating, skip_clean_attrs: false)
       rating_metadata = rating.citation_metadata_raw
       return {} if rating_metadata.blank?
-      json_ld = json_ld_hash(rating_metadata)
+      json_ld = rating.json_ld_parsed
 
       attrs = (ATTR_KEYS - %i[word_count topics_string]).map do |attrib|
         val = send("metadata_#{attrib}", rating_metadata, json_ld)
         [attrib, val]
       end.compact.to_h
 
-      attrs[:title] = title_without_publisher(attrs[:title], attrs[:publisher_name])
       attrs[:word_count] = metadata_word_count(rating_metadata, json_ld, rating.publisher.base_word_count)
 
       attrs[:topics_string] = keyword_or_text_topic_names(attrs).join(",")
       attrs[:topics_string] = nil if attrs[:topics_string].blank?
 
-      attrs
+      skip_clean_attrs ? attrs : clean_attrs(rating, attrs)
     end
 
     private
+
+    def clean_attrs(rating, attrs)
+      attrs[:title] = title_without_publisher(attrs[:title], attrs[:publisher_name])
+
+      # Don't include canonical URL unless it's different, to reduce confusion
+      if rating.submitted_url_normalized == attrs[:canonical_url]
+        attrs[:canonical_url] = nil
+      end
+
+      # Don't include published_updated_at, if it's equal or before published_at
+      if attrs[:published_updated_at].present? && attrs[:published_at].present?
+        attrs[:published_updated_at] = nil if attrs[:published_updated_at] <= attrs[:published_at]
+      end
+
+      attrs
+    end
 
     def title_without_publisher(title, publisher)
       return title if publisher.blank? || title.blank?
@@ -54,10 +68,24 @@ class MetadataAttributer
     def metadata_authors(rating_metadata, json_ld)
       ld_authors = json_ld&.dig("author")
       if ld_authors.present?
-        authors = [ld_authors].flatten.map { |a| text_or_name_prop(a) }.flatten.uniq
+        authors = [ld_authors].flatten.map { |a| text_or_name_prop(a) }.flatten.compact.uniq
+        # if no authors, try the creator!
+        if authors.blank?
+          ld_creators = json_ld&.dig("creator")
+          authors = [ld_creators].flatten.map { |a| text_or_name_prop(a) }.flatten.compact.uniq
+        end
+        authors = nil if authors.none?
       end
+      authors ||= proprietary_property_content(rating_metadata, "author")
       authors ||= prop_or_name_content(rating_metadata, "article:author")
       authors ||= prop_or_name_content(rating_metadata, "author")
+      if authors.is_a?(String)
+        if authors.match?(";") # If there is a semicolon, split on that
+          authors = authors.split(";")
+        elsif authors.match?(/,.*,/) # Otherwise, if there is more than one comma, split on commas
+          authors = authors.split(",")
+        end
+      end
       Array(authors).map { |auth| html_decode(auth) }
     end
 
@@ -75,24 +103,24 @@ class MetadataAttributer
       descriptions << prop_or_name_content(rating_metadata, "og:description")
       descriptions << prop_or_name_content(rating_metadata, "twitter:description")
       descriptions << prop_or_name_content(rating_metadata, "description")
+      descriptions << prop_or_name_content(rating_metadata, "description")
       description = descriptions.reject(&:blank?).max_by(&:length)
       html_decode(description&.truncate(500, separator: " "))
     end
 
     def metadata_published_at(rating_metadata, json_ld)
       time = json_ld&.dig("datePublished")
-      time ||= json_ld_graph(json_ld, "WebPage", "datePublished")
 
+      time ||= proprietary_property_content(rating_metadata, "published_time")
       time ||= prop_or_name_content(rating_metadata, "article:published_time")
-      TranzitoUtils::TimeParser.parse(time)
+      TranzitoUtils::TimeParser.parse(time)&.to_i # timestamp for ease of comparison
     end
 
     def metadata_published_updated_at(rating_metadata, json_ld)
       time = json_ld&.dig("dateModified")
-      time ||= json_ld_graph(json_ld, "WebPage", "dateModified")
 
       time ||= prop_or_name_content(rating_metadata, "article:modified_time")
-      TranzitoUtils::TimeParser.parse(time)
+      TranzitoUtils::TimeParser.parse(time)&.to_i # timestamp for ease of comparison
     end
 
     def metadata_publisher_name(rating_metadata, json_ld)
@@ -117,7 +145,6 @@ class MetadataAttributer
     # Needs to get the 'rel' attribute
     def metadata_canonical_url(rating_metadata, json_ld)
       canonical_url = json_ld&.dig("url")
-      canonical_url ||= json_ld_graph(json_ld, "WebPage", "url")
       canonical_url ||= prop_or_name_content(rating_metadata, "canonical")
       canonical_url ||= prop_or_name_content(rating_metadata, "og:url")
       canonical_url
@@ -144,39 +171,34 @@ class MetadataAttributer
     end
 
     def prop_or_name_content(rating_metadata, prop_or_name)
-      item = rating_metadata.detect { |i| i["property"] == prop_or_name || i["name"] == prop_or_name }
-      item&.dig("content")
+      rating_metadata.detect { |i| i["property"] == prop_or_name || i["name"] == prop_or_name }
+        &.dig("content")
+    end
+
+    # only used by proprietary_property_content
+    def prop_name_contents(rating_metadata, prop_name)
+      items = rating_metadata.select { |i| i["name"]&.downcase == prop_name }
+        .map { |i| i.dig("content") }.compact
+      items.blank? ? nil : items
+    end
+
+    PROPRIETARY_RENAMES = {
+      "dc." => {"author" => "creator", "published_time" => "date"},
+      "sailthru." => {"published_time" => "date"},
+      "parsely-" => {"published_time" => "pub-date"}
+    }.freeze
+
+    def proprietary_property_content(rating_metadata, prop_or_name)
+      PROPRIETARY_TAGS.map do |proprietary|
+        rename = PROPRIETARY_RENAMES.dig(proprietary, prop_or_name).presence
+
+        prop_name_contents(rating_metadata, "#{proprietary}#{rename || prop_or_name}")
+      end.compact.first
     end
 
     # Useful for JSON-LD
     def text_or_name_prop(str_or_hash)
       str_or_hash.is_a?(Hash) ? str_or_hash["name"] : str_or_hash
-    end
-
-    def json_ld_hash(rating_metadata)
-      json_lds = rating_metadata.select { |m| m.key?("json_ld") }
-      return nil if json_lds.blank?
-      if json_lds.count > 1 && RAISE_FOR_DUPES
-        raise "Multiple json_ld elements: #{json_lds.map(&:keys)}"
-      end
-      attrs = {}
-      json_lds.first.values.flatten.each do |data|
-        next if data["@type"] == "BreadcrumbList"
-        dupe_keys = (attrs.keys & data.keys)
-        if dupe_keys.any? && RAISE_FOR_DUPES
-          raise "duplicate key: #{dupe_keys}"
-        end
-        attrs.merge!(data)
-      end
-      attrs
-    end
-
-    # The json_ld graph contains useful information!
-    def json_ld_graph(json_ld, graph_type, prop = nil)
-      graph = json_ld&.dig("@graph")
-      return nil if graph.blank?
-      graph_item = graph.detect { |item| item["@type"] == graph_type }
-      prop.blank? ? graph_item : graph_item[prop]
     end
 
     def html_decode(str)

@@ -143,7 +143,7 @@ class Rating < ApplicationRecord
   end
 
   def citation_metadata_str
-    citation_metadata.to_json
+    citation_metadata_raw.to_json
   end
 
   # reconciliation makes the topics match, skip loading
@@ -206,6 +206,15 @@ class Rating < ApplicationRecord
     citation_metadata&.dig(RAW_KEY) || []
   end
 
+  def json_ld_content
+    @json_ld_content ||= MetadataJsonLdParser.content_hash(citation_metadata_raw)
+  end
+
+  def json_ld_parsed
+    return nil if json_ld_content.blank?
+    MetadataJsonLdParser.parse({}, json_ld_content)
+  end
+
   def metadata_attributes
     (citation_metadata&.dig(ATTRS_KEY) || {}).symbolize_keys
   end
@@ -224,6 +233,10 @@ class Rating < ApplicationRecord
     self.citation_title = nil if citation_title.blank?
     self.citation = Citation.find_or_create_for_url(submitted_url, citation_title)
     self.display_name = calculated_display_name
+  end
+
+  def submitted_url_normalized
+    UrlCleaner.normalized_url(submitted_url, remove_query: publisher&.remove_query?)
   end
 
   def set_calculated_attributes

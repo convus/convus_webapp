@@ -1,4 +1,6 @@
 class Citation < ApplicationRecord
+  include FriendlyFindable
+
   COUNTED_META_ATTRS = MetadataAttributer::COUNTED_ATTR_KEYS.map(&:to_s).freeze
 
   belongs_to :publisher
@@ -29,6 +31,16 @@ class Citation < ApplicationRecord
       return existing if existing.present?
       url_components ||= url_to_components(url, normalized: true)
       matching_url_components(url_components).first
+    end
+
+    # Override method from FriendlyFindable to avoid confusion
+    def slugify(str = nil)
+      raise "Citation doesn't have a slug"
+    end
+
+    def friendly_find_slug(str)
+      return nil if str.blank?
+      find_for_url(str)
     end
 
     def find_or_create_for_url(str, title = nil)
