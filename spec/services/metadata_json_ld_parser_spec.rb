@@ -58,6 +58,38 @@ RSpec.describe MetadataJsonLdParser do
         expect(subject.parse(citation_metadata_raw, content_hash)).to eq target
       end
     end
+    context "grist" do
+      let(:citation_metadata_str) { '[{"name":"p:domain_verify","content":"c293daabda398bd8ceee45abea0b3201"},{"name":"description","content":"The US offers farm subsidies pretty heavily for some crops, but what began as a temporary measure gradually became more permanent."},{"content":"en_US","property":"og:locale"},{"content":"article","property":"og:type"},{"content":"Our crazy farm subsidies, explained","property":"og:title"},{"content":"The US offers farm subsidies pretty heavily for some crops, but what began as a temporary measure gradually became more permanent.","property":"og:description"},{"content":"https://grist.org/food/our-crazy-farm-subsidies-explained/","property":"og:url"},{"content":"Grist","property":"og:site_name"},{"content":"2015-04-20T09:00:23+00:00","property":"article:published_time"},{"content":"2021-09-21T16:51:12+00:00","property":"article:modified_time"},{"content":"https://grist.org/wp-content/uploads/2015/04/header3merged.jpg","property":"og:image"},{"content":"3200","property":"og:image:width"},{"content":"1600","property":"og:image:height"},{"content":"image/jpeg","property":"og:image:type"},{"name":"author","content":"Amelia Urry"},{"name":"twitter:card","content":"summary_large_image"},{"name":"twitter:title","content":"Our crazy farm subsidies, explained"},{"name":"twitter:label1","content":"Written by"},{"name":"twitter:data1","content":"Amelia Urry"},{"name":"twitter:label2","content":"Est. reading time"},{"name":"twitter:data2","content":"6 minutes"},{"content":"https://grist.org/food/our-crazy-farm-subsidies-explained/?ia_markup=1","property":"ia:markup_url"},{"name":"generator","content":"Site Kit by Google 1.99.0"},{"word_count":1685},{"json_ld":[{"@graph":[{"@id":"https://grist.org/food/our-crazy-farm-subsidies-explained/#article","@type":"Article","image":{"@id":"https://grist.org/food/our-crazy-farm-subsidies-explained/#primaryimage"},"author":[{"@id":"https://grist.org/#/schema/person/image/e78967fd0836f51884894d81e39d891a"}],"headline":"Our crazy farm subsidies, explained","isPartOf":{"@id":"https://grist.org/food/our-crazy-farm-subsidies-explained/"},"publisher":{"@id":"https://grist.org/#organization"},"wordCount":1191,"inLanguage":"en-US","dateModified":"2021-09-21T16:51:12+00:00","thumbnailUrl":"https://grist.org/wp-content/uploads/2015/04/header3merged.jpg","datePublished":"2015-04-20T09:00:23+00:00","articleSection":["Technology"],"mainEntityOfPage":{"@id":"https://grist.org/food/our-crazy-farm-subsidies-explained/"}},{"@id":"https://grist.org/food/our-crazy-farm-subsidies-explained/","url":"https://grist.org/food/our-crazy-farm-subsidies-explained/","name":"Here\'s how the crazy way the US provides farm subsidies works","@type":"WebPage","image":{"@id":"https://grist.org/food/our-crazy-farm-subsidies-explained/#primaryimage"},"author":[{"@id":"https://grist.org/#/schema/person/245b363c73aa4d1759144c46e2ecd3eb"}],"isPartOf":{"@id":"https://grist.org/#website"},"inLanguage":"en-US","description":"The US offers farm subsidies pretty heavily for some crops, but what began as a temporary measure gradually became more permanent.","dateModified":"2021-09-21T16:51:12+00:00","thumbnailUrl":"https://grist.org/wp-content/uploads/2015/04/header3merged.jpg","datePublished":"2015-04-20T09:00:23+00:00","potentialAction":[{"@type":"ReadAction","target":["https://grist.org/food/our-crazy-farm-subsidies-explained/"]}],"primaryImageOfPage":{"@id":"https://grist.org/food/our-crazy-farm-subsidies-explained/#primaryimage"}},{"@id":"https://grist.org/food/our-crazy-farm-subsidies-explained/#primaryimage","url":"https://grist.org/wp-content/uploads/2015/04/header3merged.jpg","@type":"ImageObject","width":3200,"height":1600,"contentUrl":"https://grist.org/wp-content/uploads/2015/04/header3merged.jpg","inLanguage":"en-US"},{"@id":"https://grist.org/#website","url":"https://grist.org/","name":"Grist","@type":"WebSite","publisher":{"@id":"https://grist.org/#organization"},"inLanguage":"en-US","description":"Climate. Justice. Solutions.","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://grist.org/?s={search_term_string}"},"query-input":"required name=search_term_string"}]},{"@id":"https://grist.org/#organization","url":"https://grist.org/","logo":{"@id":"https://grist.org/#/schema/logo/image/","url":"https://grist.org/wp-content/uploads/2021/03/Grist-Favicon.png","@type":"ImageObject","width":512,"height":512,"caption":"Grist","contentUrl":"https://grist.org/wp-content/uploads/2021/03/Grist-Favicon.png","inLanguage":"en-US"},"name":"Grist","@type":"Organization","image":{"@id":"https://grist.org/#/schema/logo/image/"}},[{"@id":"https://grist.org/#/schema/person/245b363c73aa4d1759144c46e2ecd3eb","name":"Amelia Urry","@type":"Person"}],{"@id":"https://grist.org/#/schema/person/image/e78967fd0836f51884894d81e39d891a","url":"https://grist.org/author/amelia-urry/","name":"Amelia Urry","@type":"Person","description":"Amelia Urry is Grist\'s associate editor of science and technology, and self-appointed poet-in-residence. Follow her on Twitter."}],"@context":"https://schema.org"},{"url":"http://grist.org/food/our-crazy-farm-subsidies-explained/","@type":"NewsArticle","image":{"url":"https://grist.org/wp-content/uploads/2015/04/header3merged.jpg","@type":"ImageObject"},"author":[{"name":"Amelia Urry","@type":"Person"}],"creator":["Amelia Urry"],"@context":"https://schema.org","headline":"Our crazy farm subsidies, explained","keywords":["technology","farm size matters"],"publisher":{"logo":"https://grist.org/wp-content/uploads/2022/05/grist-logo.png","name":"Grist","@type":"Organization"},"dateCreated":"2015-04-20T09:00:23Z","dateModified":"2021-09-21T16:51:12Z","thumbnailUrl":"https://grist.org/wp-content/uploads/2015/04/header3merged.jpg?w=1200","datePublished":"2015-04-20T09:00:23Z","articleSection":"Technology","mainEntityOfPage":{"@id":"http://grist.org/food/our-crazy-farm-subsidies-explained/","@type":"WebPage"}}]}]' }
+      let(:target) do
+        {"@id" => "https://grist.org/food/our-crazy-farm-subsidies-explained/",
+         "url" => "https://grist.org/food/our-crazy-farm-subsidies-explained/",
+         "name" => "Here's how the crazy way the US provides farm subsidies works",
+         "@type" => "WebPage",
+         "image" => {"@id" => "https://grist.org/food/our-crazy-farm-subsidies-explained/#primaryimage"},
+         "author" => [{"@id" => "https://grist.org/#/schema/person/245b363c73aa4d1759144c46e2ecd3eb"}],
+         "isPartOf" => {"@id" => "https://grist.org/#website"},
+         "inLanguage" => "en-US",
+         "description" => "The US offers farm subsidies pretty heavily for some crops, but what began as a temporary measure gradually became more permanent.",
+         "dateModified" => "2021-09-21T16:51:12+00:00",
+         "thumbnailUrl" => "https://grist.org/wp-content/uploads/2015/04/header3merged.jpg",
+         "datePublished" => "2015-04-20T09:00:23+00:00",
+         "potentialAction" => [{"@type" => "ReadAction", "target" => ["https://grist.org/food/our-crazy-farm-subsidies-explained/"]}],
+         "primaryImageOfPage" => {"@id" => "https://grist.org/food/our-crazy-farm-subsidies-explained/#primaryimage"},
+         "publisher" => "Grist"}
+      end
+      it "returns target" do
+        content_hash = subject.content_hash(citation_metadata_raw)
+        expect(content_hash.keys).to eq(%w[Article WebPage ImageObject WebSite Organization Person])
+
+        expect(subject.parse(citation_metadata_raw, content_hash)).to eq target
+      end
+    end
+    context "blank" do
+      let(:citation_metadata_str) { '[{"content":"Some Title","property":"og:title"}]' }
+      it "returns nil" do
+        expect(subject.parse(citation_metadata_raw)).to be_nil
+      end
+    end
   end
 
   describe "content_hash" do
@@ -79,9 +111,11 @@ RSpec.describe MetadataJsonLdParser do
         let(:values) { [{"@type" => "WebSite", "url" => "https://www.example.com"}, {"@type" => "WebSite", "url" => "DIFFERENT"}] }
         it "raises" do
           expect(subject.send(:content, rating_metadata)).to eq values
-          expect {
-            subject.content_hash(rating_metadata)
-          }.to raise_error(/different/i)
+          if MetadataJsonLdParser::RAISE_ON_DUPE
+            expect { subject.content_hash(rating_metadata) }.to raise_error(/different/i)
+          else
+            expect(subject.content_hash(rating_metadata)).to eq({"WebSite" => values.first})
+          end
         end
       end
       context "more values" do
