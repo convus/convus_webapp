@@ -1,5 +1,7 @@
 class MetadataJsonLdParser
   KEY_PRIORITY = %w[NewsArticle WebPage].freeze
+  PUBLISHER_KEY_PRIORITY = %w[NewsMediaOrganization Organization WebSite].freeze
+
   class << self
     # Currently, just returns the values from the primary key. Might get more sophisticated in the future
     def parse(rating_metadata, json_ld_content = nil)
@@ -8,7 +10,9 @@ class MetadataJsonLdParser
       primary_key = KEY_PRIORITY.detect { |k| json_ld_content.key?(k) } ||
         json_ld_content.keys.first
       # return the data for the best key
-      json_ld_content[primary_key]
+      parsed = json_ld_content[primary_key]
+      # set the publisher name
+      parsed.merge("publisher" => publisher_name(json_ld_content))
     end
 
     def content_hash(rating_metadata)
@@ -41,6 +45,17 @@ class MetadataJsonLdParser
           [(values["@type"] || "unknown"), values]
         end
       end
+    end
+
+    def publisher_name(json_ld_content)
+      p_name = json_ld_content["publisher"]
+      # return publisher, unless it's a hash without a name (e.g. {"@id"=>"https://..."})
+      if p_name.present?
+        return p_name if p_name.is_a?(String) || p_name["name"].present?
+      end
+
+      PUBLISHER_KEY_PRIORITY.lazy.filter_map { |k| json_ld_content.dig(k, "name") }
+        &.first
     end
   end
 end
