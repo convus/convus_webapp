@@ -39,9 +39,7 @@ RSpec.describe MetadataAttributer do
       end
       let(:target_normalized) { metadata_attrs.merge(canonical_url: nil, published_updated_at: nil) }
       it "returns target" do
-        json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
-
-        expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs)
+        expect_matching_attributes(rating.citation_metadata_raw, rating.json_ld_parsed, metadata_attrs)
       end
       context "with topics" do
         let!(:topic1) { Topic.find_or_create_for_name("Joe Biden") }
@@ -53,11 +51,10 @@ RSpec.describe MetadataAttributer do
         it "returns target" do
           topic1.update(parents_string: "U.S. presidents")
           expect(topic3.reload.children.pluck(:id)).to eq([topic1.id])
-          json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
 
           expect(subject.send(:keyword_or_text_topic_names, metadata_attrs)).to eq(topic_names)
 
-          expect_matching_attributes(rating.citation_metadata_raw, json_ld, target_metadata)
+          expect_matching_attributes(rating.citation_metadata_raw, rating.json_ld_parsed, target_metadata)
         end
       end
     end
@@ -81,14 +78,10 @@ RSpec.describe MetadataAttributer do
       end
       let(:target_normalized) { metadata_attrs }
       it "returns target" do
-        json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
-
-        expect(subject.send(:json_ld_graph, json_ld, "WebPage", "datePublished")).to eq "2022-02-02T22:43:27+00:00"
-
         expect(rating.submitted_url).to eq submitted_url
         expect(rating.submitted_url_normalized).to eq submitted_url.chop
 
-        expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs)
+        expect_matching_attributes(rating.citation_metadata_raw, rating.json_ld_parsed, metadata_attrs)
       end
       # TODO: fallback to description & title to get the topics
       # context "with topics" do
@@ -96,11 +89,9 @@ RSpec.describe MetadataAttributer do
       #   let!(:topic2) { Topic.find_or_create_for_name("Democracy") }
       #   let(:topic_names) { ["Democracy", "Taiwan"] }
       #   it "returns target" do
-      #     json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
-
       #     expect(subject.send(:keyword_or_text_topic_names, metadata_attrs)).to eq(topic_names)
 
-      #     expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs.merge(topic_names: topic_names))
+      #     expect_matching_attributes(rating.citation_metadata_raw, rating.json_ld_parsed, metadata_attrs.merge(topic_names: topic_names))
       #   end
       # end
     end
@@ -123,9 +114,7 @@ RSpec.describe MetadataAttributer do
         }
       end
       it "returns target" do
-        json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
-
-        expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs)
+        expect_matching_attributes(rating.citation_metadata_raw, rating.json_ld_parsed, metadata_attrs)
       end
     end
     context "pro_publica" do
@@ -134,72 +123,21 @@ RSpec.describe MetadataAttributer do
       let(:metadata_attrs) do
         {
           authors: ["Anjeanette Damon", "Byard Duncan", "Mollie Simon"],
-          published_at: Time.at(1242720289), # 2009-05-19
-          published_updated_at: Time.at(1682786308),
-          description: nil,
+          published_at: Time.at(1683799200), # 2023-05-11 03:00:00
+          published_updated_at: Time.at(1683756436), # 2023-05-10 15:07
+          description: "HomeVestors of America, the self-proclaimed “largest homebuyer in the U.S.,” trains its nearly 1,150 franchisees to zero in on homeowners’ desperation.",
           canonical_url: "https://www.propublica.org/article/ugly-truth-behind-we-buy-ugly-houses",
-          word_count: 2938,
+          word_count: 5536,
           paywall: false,
-          title: "Tim Federle - Wikipedia",
+          title: "The Ugly Truth Behind “We Buy Ugly Houses”",
           keywords: [],
           topics_string: nil,
-          publisher_name: "Wikimedia Foundation, Inc."
+          publisher_name: "ProPublica"
         }
       end
       let(:target_normalized) { metadata_attrs.merge(canonical_url: nil, published_updated_at: nil) }
-      xit "returns target" do
-        json_ld = subject.send(:json_ld_hash, rating.citation_metadata_raw)
-        pp json_ld
-        expect_matching_attributes(rating.citation_metadata_raw, json_ld, metadata_attrs)
-      end
-    end
-  end
-
-  describe "json_ld" do
-    let(:rating_metadata) { [{"json_ld" => values}] }
-    let(:values) { [{"url" => "https://www.example.com"}] }
-    it "returns json_ld" do
-      expect(subject.send(:json_ld_hash, rating_metadata)).to eq(values.first)
-    end
-    # There are lots of times where there are multiple. Not erroring until this becomes a problem
-    # context "multiple json_ld items" do
-    #   it "raises" do
-    #     expect {
-    #       subject.send(:json_ld_hash, rating_metadata + rating_metadata)
-    #     }.to raise_error(/multiple/i)
-    #   end
-    # end
-    # context "multiple matching values" do
-    #   let(:values) { [{"url" => "https://www.example.com"}, {"url" => "https://www.example.com"}] }
-    #   it "raises" do
-    #     expect {
-    #       subject.send(:json_ld_hash, rating_metadata + rating_metadata)
-    #     }.to raise_error(/multiple/i)
-    #   end
-    # end
-    context "multiple json_ld values" do
-      let(:values) { [{"url" => "https://www.example.com"}, {"@type" => "OtherThing"}] }
-      it "reduces" do
-        expect(subject.send(:json_ld_hash, rating_metadata)).to eq({"url" => "https://www.example.com", "@type" => "OtherThing"})
-      end
-    end
-    context "more dataexample" do
-      let(:values) { [{"url" => "https://example.com", "@type" => "NewsArticle", "image" => {"url" => "https://example.com/image.png", "@type" => "ImageObject", "width" => 2057, "height" => 1200}, "author" => ["John Doe"], "creator" => ["John Doe"], "hasPart" => [], "@context" => "http://schema.org", "headline" => "example title", "keywords" => ["topic: Cool Matters"]}, {"@type" => "BreadcrumbList", "@context" => "https://schema.org/"}] }
-      let(:target) do
-        {
-          "url" => "https://example.com",
-          "@type" => "NewsArticle",
-          "image" => {"url" => "https://example.com/image.png", "@type" => "ImageObject", "width" => 2057, "height" => 1200},
-          "author" => ["John Doe"],
-          "creator" => ["John Doe"],
-          "hasPart" => [],
-          "@context" => "http://schema.org",
-          "headline" => "example title",
-          "keywords" => ["topic: Cool Matters"]
-        }
-      end
-      it "raises" do
-        expect(subject.send(:json_ld_hash, rating_metadata)).to eq target
+      it "returns target" do
+        expect_matching_attributes(rating.citation_metadata_raw, rating.json_ld_parsed, metadata_attrs)
       end
     end
   end
@@ -351,8 +289,5 @@ RSpec.describe MetadataAttributer do
     it "strips tags" do
       expect(subject.send(:html_decode, "<p>Stuff  </p>")).to eq "Stuff"
     end
-  end
-
-  describe "canonical_url_submitted?" do
   end
 end

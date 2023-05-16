@@ -148,7 +148,7 @@ RSpec.describe MetadataJsonLdParser do
   describe "publisher_name" do
     let(:content_hash) { {"WebPage" => {"@type" => "WebPage", "name" => "EXAMPLE"}} }
     it "returns nil" do
-      expect(subject.send(:publisher_name, content_hash)).to be_nil
+      expect(subject.send(:publisher_name, nil, content_hash)).to be_nil
     end
     context "organization" do
       let(:content_hash) do
@@ -158,7 +158,7 @@ RSpec.describe MetadataJsonLdParser do
         }
       end
       it "returns organization name, " do
-        expect(subject.send(:publisher_name, content_hash)).to eq("EXAMPLE")
+        expect(subject.send(:publisher_name, nil, content_hash)).to eq("EXAMPLE")
       end
     end
   end

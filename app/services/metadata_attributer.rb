@@ -5,15 +5,12 @@ class MetadataAttributer
     published_updated_at publisher_name title topics_string word_count].freeze
   COUNTED_ATTR_KEYS = (ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).freeze
   PROPRIETARY_TAGS = ["sailthru.", "parsely-", "dc."].freeze
-  # I was originally worried about duplicate JSON-LD keys causing issues.
-  # So far, they haven't seemed to - if they do, this can be switched back on
-  RAISE_FOR_DUPES = false
 
   class << self
     def from_rating(rating, skip_clean_attrs: false)
       rating_metadata = rating.citation_metadata_raw
       return {} if rating_metadata.blank?
-      json_ld = json_ld_hash(rating_metadata)
+      json_ld = rating.json_ld_parsed
 
       attrs = (ATTR_KEYS - %i[word_count topics_string]).map do |attrib|
         val = send("metadata_#{attrib}", rating_metadata, json_ld)
@@ -26,25 +23,6 @@ class MetadataAttributer
       attrs[:topics_string] = nil if attrs[:topics_string].blank?
 
       skip_clean_attrs ? attrs : clean_attrs(rating, attrs)
-    end
-
-    # Non-private method for messing around in the console
-    def json_ld_hash(rating_metadata)
-      json_lds = rating_metadata.select { |m| m.key?("json_ld") }
-      return nil if json_lds.blank?
-      if json_lds.count > 1 && RAISE_FOR_DUPES
-        raise "Multiple json_ld elements: #{json_lds.map(&:keys)}"
-      end
-      attrs = {}
-      json_lds.first.values.flatten.each do |data|
-        next if data["@type"] == "BreadcrumbList"
-        dupe_keys = (attrs.keys & data.keys)
-        if dupe_keys.any? && RAISE_FOR_DUPES
-          raise "duplicate key: #{dupe_keys}"
-        end
-        attrs.merge!(data)
-      end
-      attrs
     end
 
     private
@@ -131,7 +109,7 @@ class MetadataAttributer
 
     def metadata_published_at(rating_metadata, json_ld)
       time = json_ld&.dig("datePublished")
-      time ||= json_ld_graph(json_ld, "WebPage", "datePublished")
+      # time ||= json_ld_graph(json_ld, "WebPage", "datePublished")
 
       time ||= proprietary_property_content(rating_metadata, "published_time")
       time ||= prop_or_name_content(rating_metadata, "article:published_time")
@@ -140,7 +118,7 @@ class MetadataAttributer
 
     def metadata_published_updated_at(rating_metadata, json_ld)
       time = json_ld&.dig("dateModified")
-      time ||= json_ld_graph(json_ld, "WebPage", "dateModified")
+      # time ||= json_ld_graph(json_ld, "WebPage", "dateModified")
 
       time ||= prop_or_name_content(rating_metadata, "article:modified_time")
       TranzitoUtils::TimeParser.parse(time)
@@ -168,7 +146,6 @@ class MetadataAttributer
     # Needs to get the 'rel' attribute
     def metadata_canonical_url(rating_metadata, json_ld)
       canonical_url = json_ld&.dig("url")
-      canonical_url ||= json_ld_graph(json_ld, "WebPage", "url")
       canonical_url ||= prop_or_name_content(rating_metadata, "canonical")
       canonical_url ||= prop_or_name_content(rating_metadata, "og:url")
       canonical_url
@@ -223,14 +200,6 @@ class MetadataAttributer
     # Useful for JSON-LD
     def text_or_name_prop(str_or_hash)
       str_or_hash.is_a?(Hash) ? str_or_hash["name"] : str_or_hash
-    end
-
-    # The json_ld graph contains useful information!
-    def json_ld_graph(json_ld, graph_type, prop = nil)
-      graph = json_ld&.dig("@graph")
-      return nil if graph.blank?
-      graph_item = graph.detect { |item| item["@type"] == graph_type }
-      prop.blank? ? graph_item : graph_item[prop]
     end
 
     def html_decode(str)

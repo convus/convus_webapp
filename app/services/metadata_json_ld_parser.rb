@@ -12,7 +12,7 @@ class MetadataJsonLdParser
       # return the data for the best key
       parsed = json_ld_content[primary_key]
       # set the publisher name
-      parsed.merge("publisher" => publisher_name(json_ld_content))
+      parsed.merge("publisher" => publisher_name(parsed["publisher"], json_ld_content))
     end
 
     def content_hash(rating_metadata)
@@ -47,11 +47,10 @@ class MetadataJsonLdParser
       end
     end
 
-    def publisher_name(json_ld_content)
-      p_name = json_ld_content["publisher"]
+    def publisher_name(publisher, json_ld_content)
       # return publisher, unless it's a hash without a name (e.g. {"@id"=>"https://..."})
-      if p_name.present?
-        return p_name if p_name.is_a?(String) || p_name["name"].present?
+      if publisher.present?
+        return publisher if publisher.is_a?(String) || publisher["name"].present?
       end
 
       PUBLISHER_KEY_PRIORITY.lazy.filter_map { |k| json_ld_content.dig(k, "name") }

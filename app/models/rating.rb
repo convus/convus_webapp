@@ -207,12 +207,12 @@ class Rating < ApplicationRecord
   end
 
   def json_ld_content
-    @json_ld_content ||= MetdataJsonLdParser.json_ld_content(citation_metadata_raw)
+    @json_ld_content ||= MetadataJsonLdParser.content_hash(citation_metadata_raw)
   end
 
   def json_ld_parsed
     return nil if json_ld_content.blank?
-    MetdataJsonLdParser.parse(json_ld_content)
+    MetadataJsonLdParser.parse({}, json_ld_content)
   end
 
   def metadata_attributes
