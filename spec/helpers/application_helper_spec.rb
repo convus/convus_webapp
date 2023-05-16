@@ -197,10 +197,10 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
     context "topics" do
       def topic_links_spanned(str)
-        "<span class=\"topic_links\">#{str}</span>"
+        "<span class=\"topic-links\">#{str}</span>"
       end
-      let(:target1) { "<a class=\"\" href=\"/?&search_topics[]=#{topic1.slug}\">#{topic1.name}</a>" }
-      let(:target2) { target1 + ", <a class=\"\" href=\"/?&search_topics[]=#{topic2.slug}\">#{topic2.name}</a>" }
+      let(:target1) { "<a class=\"\" href=\"/?&search_topics[]=#{topic1.slug}\">##{topic1.name}</a>" }
+      let(:target2) { target1 + " <a class=\"\" href=\"/?&search_topics[]=#{topic2.slug}\">##{topic2.name}</a>" }
       it "returns link" do
         expect(topic_links(Topic.where(id: [topic1.id]), url: root_path)).to eq topic_links_spanned(target1)
         expect(topic_links(Topic.where(id: [topic1.id, topic2.id]), url: root_path)).to eq topic_links_spanned(target2)

@@ -19,7 +19,7 @@ class Topic < ApplicationRecord
   has_many :direct_children, through: :direct_child_relations, source: :child
 
   validates_uniqueness_of :name, case_sensitive: false
-  validates :name, format: { without: /,/, message: "can't contain commas"}
+  validates :name, format: {without: /,/, message: "can't contain commas"}
   validate :slug_uniq_if_name_uniq
 
   before_validation :set_calculated_attributes

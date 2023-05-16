@@ -55,7 +55,7 @@ class ApplicationController < ActionController::Base
       []
     else
       arr = t_param
-      arr = arr.split(/[\n,\,]/) unless arr.is_a?(Array)
+      arr = arr.split(/[\n,]/) unless arr.is_a?(Array)
       Topic.friendly_find_all(arr)
     end
   end

@@ -1,15 +1,23 @@
 <h4 class="text-lg leading-5 mb-1" style=""><%= link_to citation.title, citation.url, class: "no-underline hover:underline" %></h4>
 <% if citation.description.present? %>
-  <p class="leading-5 mb-1"><%= citation.description %></p>
+  <p class="leading-5 mb-1">
+    <%= citation.description %>
+  </p>
 <% end %>
 <p class="leading-5 mb-1 text-gray-500 text-sm">
   <% if citation.published_at.present? %>
     <span class="convertTime skipTimeTitle mr-2" title="Published at"><%= l(citation.published_at, format: :convert_time) %></span>
   <% end %>
   <% if citation.authors_rendered.any? %>
-    <span class="mr-2"><%= citation.authors_rendered.join(", ") %></span>
+    <span class="mr-2">
+      <%= safe_join(citation.authors_rendered.map { |a|
+        link_to(a, url_for(sortable_params.merge(search_author: a)), class: "text-gray-500 no-underline")
+      }, ", ") %>
+    </span>
   <% end %>
-  <span class="mr-2"><%= citation.publisher_name %></span>
+  <span class="mr-2">
+    <%= link_to citation.publisher_name, sortable_params.merge(search_publisher: citation.publisher_name), class: "text-gray-500 no-underline" %>
+  </span>
   <% if citation.paywall %>
     <span class="-ml-1 mr-2">($)</span>
   <% end %>
@@ -19,5 +27,5 @@
       words
     </span>
   <% end %>
-  <%= topic_links(citation.topics) %>
 </p>
+<%= topic_links(citation.topics, {class: "text-gray-400"}) %>

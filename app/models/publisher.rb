@@ -1,4 +1,6 @@
 class Publisher < ApplicationRecord
+  include FriendlyFindable
+
   DEFAULT_REMOVE_QUERY_MATCHES = ["[^.].*substack.com"]
   BASE_WORD_COUNT = 100
 
@@ -44,6 +46,7 @@ class Publisher < ApplicationRecord
     @remove_query_enabled = remove_query_changed? && remove_query
     self.domain = domain&.downcase
     self.name ||= domain_to_name
+    self.slug = self.class.slugify(name)
     self.base_word_count ||= BASE_WORD_COUNT
   end
 
