@@ -192,7 +192,7 @@ class MetadataAttributer
     def proprietary_property_content(rating_metadata, prop_or_name)
       PROPRIETARY_TAGS.map do |proprietary|
         rename = PROPRIETARY_RENAMES.dig(proprietary, prop_or_name).presence
-        # pp prop_or_name, rename
+
         prop_name_contents(rating_metadata, "#{proprietary}#{rename || prop_or_name}")
       end.compact.first
     end

@@ -1,3 +1,6 @@
+# NOTE: So far, there aren't that many different types. Worth checking back in
+# json_ld_keys = Rating.metadata_present.map { |r| [r.id, r.json_ld_content&.keys] }.reject { |i| i[1].blank? }
+# json_ld_keys.map(&:last).flatten.uniq
 class MetadataJsonLdParser
   KEY_PRIORITY = %w[NewsArticle WebPage].freeze
   PUBLISHER_KEY_PRIORITY = %w[NewsMediaOrganization Organization WebSite].freeze

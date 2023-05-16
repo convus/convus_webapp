@@ -114,3 +114,24 @@
 <div class="mt-4">
   <%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true} %>
 </div>
+
+<div class="large-width-container mb-5 standard-top-offset">
+  <div class="row sm:grid-cols-2">
+    <div class="col">
+      <h3>
+        JSON-LD Parsed
+      </h3>
+      <div class="code-small">
+        <%= pretty_print_json(@rating.json_ld_parsed) %>
+      </div>
+    </div>
+    <div class="col">
+      <h3>
+        JSON-LD Full
+      </h3>
+      <div class="code-small">
+        <%= pretty_print_json(@rating.json_ld_content) %>
+      </div>
+    </div>
+  </div>
+</div>
