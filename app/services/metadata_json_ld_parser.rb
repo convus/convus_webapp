@@ -10,11 +10,20 @@ class MetadataJsonLdParser
     def parse(rating_metadata, json_ld_content = nil)
       json_ld_content ||= content_hash(rating_metadata)
       return nil if json_ld_content.blank?
-      # Try to pick the best primary key
-      primary_key = KEY_PRIORITY.detect { |k| json_ld_content.key?(k) } ||
-        json_ld_content.keys.first
-      # return the data for the best key
-      parsed = json_ld_content[primary_key]
+      # If there are multiple KEY_PRIORITIES, merge over them
+      if (KEY_PRIORITY & json_ld_content.keys).count > 1
+        matching_keys = KEY_PRIORITY & json_ld_content.keys
+        parsed = {}
+        # I KNOW, reduce, I'm tired
+        matching_keys.reverse_each { |k| parsed.merge!(json_ld_content[k]) }
+        parsed["@type"] = matching_keys
+      else
+        # Try to pick the best primary key
+        primary_key = KEY_PRIORITY.detect { |k| json_ld_content.key?(k) } ||
+          json_ld_content.keys.first
+        # return the data for the best key
+        parsed = json_ld_content[primary_key]
+      end
       # set the publisher name
       parsed.merge("publisher" => publisher_name(parsed["publisher"], json_ld_content))
     end
@@ -48,18 +57,25 @@ class MetadataJsonLdParser
     end
 
     def content_key_value(rating_metadata_content)
-      rating_metadata_content&.map do |values|
-        # pp "#{values&.to_s&.truncate(100)}"
-        if values.is_a?(Array)
-          raise "Array with multiple values: #{values}" if values.count > 1
-          values = values.first
-        end
+      return nil if rating_metadata_content.blank?
+      graph_values = []
+      rating_metadata_content.map do |values|
+        # I KNOW there is a better way to handle this with recursion, but FML
         if values["@graph"].present?
-          return content_key_value(values["@graph"])
-        else
-          [(values["@type"] || "unknown"), values]
+          values["@graph"].map { |gvalues| graph_values << type_values(gvalues) } # .flatten(1)
+          next
         end
+        type_values(values)
+      end.compact + graph_values
+    end
+
+    def type_values(values)
+      # pp "#{values&.to_s&.truncate(100)}"
+      if values.is_a?(Array)
+        raise "Array with multiple values: #{values}" if values.count > 1
+        values = values.first
       end
+      [values["@type"], values]
     end
 
     def publisher_name(publisher, json_ld_content)

@@ -66,7 +66,7 @@ RSpec.describe MetadataAttributer do
           authors: [],
           published_at: Time.at(1643841807), # 2022-02-02
           published_updated_at: Time.at(1671019995), #
-          description: nil,
+          description: "In 2014 Taiwan was rocked by mass protests against a proposed trade agreement with China that was about to be agreed without the usual Parliamentary hearings. Students invaded and took over the Parliament. But rather than chant slogans, instead they livestreamed their own parliamentary debate over the trade deal, allowing volunteers to speak both in favour and against. Instead of polarising the country more, this so-called 'Sunflower Student Movement' ultimately led to a bipartisan...",
           canonical_url: "https://80000hours.org/podcast/episodes/audrey-tang-what-we-can-learn-from-taiwan/",
           word_count: 26578,
           paywall: false,
