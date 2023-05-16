@@ -206,8 +206,13 @@ class Rating < ApplicationRecord
     citation_metadata&.dig(RAW_KEY) || []
   end
 
+  def json_ld_content
+    @json_ld_content ||= MetdataJsonLdParser.json_ld_content(citation_metadata_raw)
+  end
+
   def json_ld_parsed
-    MetdataJsonLdParser.parse(citation_metadata_raw)
+    return nil if json_ld_content.blank?
+    MetdataJsonLdParser.parse(json_ld_content)
   end
 
   def metadata_attributes

@@ -25,20 +25,21 @@ RSpec.describe MetadataJsonLdParser do
     let(:rating_metadata) { [{"json_ld" => values}] }
     let(:values) { [{"@type" => "WebSite", "url" => "https://www.example.com"}] }
     it "returns json_ld" do
-      expect(subject.content(rating_metadata)).to eq(values)
+      expect(subject.send(:content, rating_metadata)).to eq(values)
       expect(subject.content_hash(rating_metadata)).to eq({"WebSite" => values.first})
-      # expect(subject.parse(rating_metadata)).to eq(values.first)
+
+      expect(subject.parse(rating_metadata)).to eq(values.first)
     end
     # There are lots of times where there are multiple. Not erroring until this becomes a problem
     context "multiple json_ld items" do
       it "returns" do
-        expect(subject.content(rating_metadata + rating_metadata)).to eq(values + values)
+        expect(subject.send(:content, rating_metadata + rating_metadata)).to eq(values + values)
         expect(subject.content_hash(rating_metadata + rating_metadata)).to eq({"WebSite" => values.first})
       end
       context "different values" do
         let(:values) { [{"@type" => "WebSite", "url" => "https://www.example.com"}, {"@type" => "WebSite", "url" => "DIFFERENT"}] }
         it "raises" do
-          expect(subject.content(rating_metadata)).to eq values
+          expect(subject.send(:content, rating_metadata)).to eq values
           expect {
             subject.content_hash(rating_metadata)
           }.to raise_error(/different/i)
@@ -54,7 +55,7 @@ RSpec.describe MetadataJsonLdParser do
         end
         let(:target) { %w[WebSite Organization NewsArticle].zip(values).to_h }
         it "returns hash" do
-          expect(subject.content(rating_metadata)).to eq(values)
+          expect(subject.send(:content, rating_metadata)).to eq(values)
           expect(subject.content_hash(rating_metadata)).to eq target
         end
       end
@@ -79,26 +80,28 @@ RSpec.describe MetadataJsonLdParser do
          }}
       end
       it "returns" do
-        expect(subject.content(rating_metadata)).to eq target.values
+        expect(subject.send(:content, rating_metadata)).to eq target.values
         expect(subject.content_hash(rating_metadata)).to eq target
-        # expect(subject.parse(rating_metadata)).to eq target["NewsArticle"]
+
+        expect(subject.parse(rating_metadata)).to eq target["NewsArticle"]
       end
     end
     context "@graph" do
       let(:values) { {"@context" => "https://schema.org", "@graph" => graph} }
       let(:graph) do
         [
-          {"@type" => "WebPage", "@id" => "https://example.org"},
           {"@type" => "ImageObject", "inLanguage" => "en-US"},
           {"@type" => "BreadcrumbList"},
           {"@type" => "WebSite", "url" => "https://example.org/"},
           {"@type" => "Organization", "name" => "EXAMPLE"}
         ]
       end
-      let(:target) { %w[WebPage ImageObject BreadcrumbList WebSite Organization].zip(graph).to_h }
+      let(:target) { %w[ImageObject BreadcrumbList WebSite Organization].zip(graph).to_h }
       it "returns the graph" do
-        expect(subject.content(rating_metadata)).to eq([values])
+        expect(subject.send(:content, rating_metadata)).to eq([values])
         expect(subject.content_hash(rating_metadata)).to eq target
+
+        expect(subject.parse(rating_metadata)).to eq graph.first
       end
     end
   end
