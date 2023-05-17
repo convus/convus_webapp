@@ -84,7 +84,8 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
             publisher.update(name: "Cool publisher")
             instance.perform(citation.id)
             citation.reload
-            expect_attrs_to_match_hash(citation, initial_attrs)
+            expect_attrs_to_match_hash(citation, initial_attrs.except(:authors))
+            expect(citation.authors).to eq(["z"])
             # It doesn't re-update the publisher
             expect(publisher.reload.name).to eq "Cool publisher"
           end
