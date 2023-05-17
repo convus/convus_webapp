@@ -36,7 +36,7 @@
 <% if @can_view_ratings %>
   <div class="large-width-container pt-2 pl-4" data-controller="ratings-filter" id="ratingsFilter">
     <%= form_tag ratings_path, method: :get, id: "ratingsFilterForm" do %>
-      <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true, skip_user: true, skip_author: true, skip_publisher: true} %>
+      <%= render partial: "/shared/hidden_search_fields", locals: {skip_all_convus_params: true} %>
       <div class="flex flex-wrap">
         <%= label_tag :user_all, class: "form-control-radio flex-initial min-w-fit mr-2" do %>
           <%= radio_button_tag :user, "all", viewing_display_name == "all", class: "submitOnChange" %>
@@ -168,8 +168,9 @@
     <% end %>
   </div>
   <div class="large-width-container mt-4">
-    <%= render partial: "/shared/current_header", locals: {collection: @ratings} %>
-    <%#= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
+    <%# Currently, the radio buttons manage everything from the current_header. But this could change!
+    <%#= render partial: "/shared/current_header", locals: {collection: @ratings} %>
+    <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
   </div>
   <% hide_private_users = ["all", "other users"].include?(viewing_display_name) %>
   <% if @assigning %>

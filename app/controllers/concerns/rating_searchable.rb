@@ -28,7 +28,6 @@ module RatingSearchable
   end
 
   def citation_searches(ratings)
-    # Add display for this
     if p_params[:search_citation_id].present?
       @searched_citation = Citation.friendly_find(p_params[:search_citation_id])
       ratings = ratings.where(citation_id: @searched_citation.id)
