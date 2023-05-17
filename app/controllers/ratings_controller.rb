@@ -17,7 +17,7 @@ class RatingsController < ApplicationController
     @per_page = params[:per_page] || 50
 
     @ratings = viewable_ratings.reorder(order_scope_query)
-      .includes(:user, :citation)
+      .includes(:user) # viewable_ratings includes :citation
       .page(page).per(@per_page)
 
     @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.topic_id]

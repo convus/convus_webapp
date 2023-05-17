@@ -75,7 +75,7 @@ RSpec.describe base_url, type: :request do
         get "#{base_url}?per_page=1"
         expect(response.code).to eq "200"
         expect(response).to render_template("ratings/index")
-        expect(assigns(:ratings)&.pluck(:id)).to eq([[rating2.id, rating.id]])
+        expect(assigns(:ratings)&.pluck(:id)).to eq([rating2.id, rating.id])
         expect(assigns(:citations)&.pluck(:id)).to eq([citation.id])
 
         # It handles arrays
@@ -137,7 +137,7 @@ RSpec.describe base_url, type: :request do
         expect(response).to render_template("ratings/index")
         expect(assigns(:ratings_private)).to be_truthy
         expect(assigns(:can_view_ratings)).to be_falsey
-        expect(assigns(:ratings)&.pluck(:id)).to eq([[]])
+        expect(assigns(:ratings)&.pluck(:id)).to eq([])
         expect(response.body).to match("<meta name=\"description\" content=\"")
       end
     end
@@ -247,20 +247,20 @@ RSpec.describe base_url, type: :request do
           expect(response).to render_template("ratings/index")
           expect(assigns(:ratings_private)).to be_truthy
           expect(assigns(:can_view_ratings)).to be_truthy
-          expect(assigns(:ratings)&.pluck(:id)).to eq([[rating.id]])
+          expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
           expect(assigns(:assign_topics)).to be_nil
 
           get "#{base_url}?user=current_user"
           expect(assigns(:user_subject)&.id).to eq current_user.id
           expect(response).to render_template("ratings/index")
-          expect(assigns(:ratings)&.pluck(:id)).to eq([[rating.id]])
+          expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
 
           get "#{base_url}?user=cO0l-name&search_assign_topics=#{topic.slug}"
           expect(assigns(:current_user)&.id).to eq user_subject.id
           expect(response).to render_template("ratings/index")
           expect(assigns(:assign_topics)&.map(&:id)).to eq([topic.id])
           expect(TopicReview.primary&.id).to be_blank
-          expect(assigns(:ratings)&.pluck(:id)).to eq([[rating.id]])
+          expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
           # Also works without search_assign_topics, if it's the primary review topic
           topic_review = FactoryBot.create(:topic_review_active, topic: topic)
           expect(TopicReview.primary&.id).to eq topic_review.id
@@ -268,7 +268,7 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:current_user)&.id).to eq user_subject.id
           expect(response).to render_template("ratings/index")
           expect(assigns(:assign_topics)&.map(&:id)).to eq([topic.id])
-          expect(assigns(:ratings)&.pluck(:id)).to eq([[rating.id]])
+          expect(assigns(:ratings)&.pluck(:id)).to eq([rating.id])
         end
         context "user all and other" do
           it "renders" do
