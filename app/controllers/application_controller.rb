@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
   end
 
   def viewing_current_user?
-    (@user || user_subject) == current_user
+    @viewing_current_user || (@user || user_subject)&.id == current_user&.id
   end
 
   def current_topics

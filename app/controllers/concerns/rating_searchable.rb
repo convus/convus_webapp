@@ -3,13 +3,7 @@ module RatingSearchable
 
   def searched_ratings(ratings)
     ratings = ratings.joins(:citation)
-    if current_user.present? && !viewing_current_user?
-      @not_rated = TranzitoUtils::Normalize.boolean(p_params[:search_not_rated])
-      if @not_rated
-        ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
-      end
-      @disagree_following = TranzitoUtils::Normalize.boolean(p_params[:search_disagree_following])
-    end
+
     ratings = ratings.display_name_search(p_params[:query]) if p_params[:query].present?
     ratings = boolean_searches(ratings)
     ratings = citation_searches(ratings)
@@ -21,10 +15,21 @@ module RatingSearchable
   private
 
   def p_params
-    params.permit(:query, :search_agree, :search_changed_opinion, :search_citation_id,
-      :search_disagree, :search_disagree_following, :search_learned_something,
-      :search_not_finished, :search_not_rated, :search_not_understood, :search_quality_high,
-      :search_quality_low, :search_significant_factual_error)
+    params.permit(:query,
+      :search_agree,
+      :search_author,
+      :search_changed_opinion,
+      :search_citation_id,
+      :search_disagree,
+      :search_disagree_following,
+      :search_learned_something,
+      :search_not_finished,
+      :search_not_rated,
+      :search_not_understood,
+      :search_publisher,
+      :search_quality_high,
+      :search_quality_low,
+      :search_significant_factual_error)
   end
 
   def citation_searches(ratings)
@@ -35,19 +40,17 @@ module RatingSearchable
     if current_topics.present?
       ratings = ratings.merge(Citation.matching_topics(current_topics.map(&:id)))
     end
-    if params[:search_publisher].present?
-      @publisher = Publisher.friendly_find(params[:search_publisher])
+    if p_params[:search_publisher].present?
+      @publisher = Publisher.friendly_find(p_params[:search_publisher])
       ratings = ratings.merge(Citation.where(publisher_id: @publisher.id)) if @publisher.present?
     end
-    if params[:search_author].present?
-      @author = params[:search_author]
+    if p_params[:search_author].present?
+      @author = p_params[:search_author]
       ratings = ratings.merge(Citation.search_author(@author))
     end
-    if current_user.present? && !viewing_current_user?
-      @not_rated = TranzitoUtils::Normalize.boolean(p_params[:search_not_rated])
-      if @not_rated
-        ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
-      end
+    @not_rated = TranzitoUtils::Normalize.boolean(p_params[:search_not_rated])
+    if @not_rated && current_user.present? && !viewing_current_user?
+      ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
     end
     ratings
   end

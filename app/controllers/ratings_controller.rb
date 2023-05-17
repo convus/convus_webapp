@@ -133,6 +133,10 @@ class RatingsController < ApplicationController
       @can_view_ratings = user_subject.account_public? || viewing_current_user? ||
         user_subject.follower_approved?(current_user)
     end
+    # Not implemented yet, just shows a message
+    if current_user.present? && !viewing_current_user?
+      @disagree_following = TranzitoUtils::Normalize.boolean(p_params[:search_disagree_following])
+    end
     @viewable_ratings = searched_ratings(viewed_ratings) # in RatingSearchable
   end
 
