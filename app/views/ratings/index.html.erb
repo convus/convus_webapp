@@ -9,7 +9,7 @@
       <h1>
         Ratings by <%= user_subject.username %>
         <%# when there are search_params, add something to show that it's you %>
-        <% if @viewing_current_user %><small class="less-strong">(you)</small><% end %>
+        <% if viewing_current_user? %><small class="less-strong">(you)</small><% end %>
       </h1>
       <% if @ratings_private %>
         <h2 class="mt-4">
@@ -17,7 +17,7 @@
           <% if @can_view_ratings %>
             <small class="less-strong">
               (they're visible because
-              <% if @viewing_current_user %>it's your account<% else %>you follow them<% end %>)
+              <% if viewing_current_user? %>it's your account<% else %>you follow them<% end %>)
             </small>
           <% end %>
         </h2>
@@ -56,7 +56,7 @@
           <%= radio_button_tag :user, "following", viewing_display_name == "following", class: "submitOnChange" %>
           By people you follow
         <% end %>
-        <% if @viewing_single_user && !@viewing_current_user %>
+        <% if @viewing_single_user && !viewing_current_user? %>
           <%= label_tag "user_#{user_subject.username}", class: "form-control-radio flex-initial ml-2 min-w-fit" do %>
             <%= radio_button_tag :user, user_subject.username, true, class: "submitOnChange" %>
             By <%= user_subject.username %>
@@ -115,7 +115,7 @@
           <% end %>
         <% end %>
 
-        <% if current_user.present? && !@viewing_current_user %>
+        <% if current_user.present? && !viewing_current_user? %>
           <% if !@disagree_following || @not_rated %>
             <%= label_tag :search_not_rated, class: "form-control-check" do %>
               <%= check_box_tag :search_not_rated, true, @not_rated, class: "submitOnChange" %>
@@ -143,7 +143,7 @@
             <% if topic.id == primary_topic_id %><small class="less-strong">(current review topic)</small><% end %>
           </label>
         <% end %>
-        <% if primary_topic_review.present? && @viewing_current_user %>
+        <% if primary_topic_review.present? && viewing_current_user? %>
           <%= label_tag :search_topic_assignment, class: "form-control-check" do %>
             <%= check_box_tag :search_topic_assignment, true, @assigning, class: "submitOnChange" %>
             Choose which of your ratings are applicable to <%= topic_review_display(primary_topic_review) %>

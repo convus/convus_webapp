@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :display_dev_info?, :user_subject, :user_root_url, :controller_namespace,
     :current_topics, :primary_topic_review, :default_direction, :default_column,
-    :ratings_landing_url
+    :ratings_landing_url, :viewing_current_user?
 
   def append_info_to_payload(payload)
     super
@@ -45,6 +45,10 @@ class ApplicationController < ActionController::Base
     else
       User.friendly_find(user_param)
     end
+  end
+
+  def viewing_current_user?
+    (@user || user_subject) == current_user
   end
 
   def current_topics

@@ -21,7 +21,7 @@ class RatingsController < ApplicationController
       .page(page).per(@per_page)
 
     @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.topic_id]
-    set_rating_assigment_if_passed if @viewing_current_user
+    set_rating_assigment_if_passed if viewing_current_user?
     @action_display_name = viewing_display_name.titleize
   end
 
@@ -129,9 +129,8 @@ class RatingsController < ApplicationController
     else
       raise ActiveRecord::RecordNotFound if user_subject.blank?
       @viewing_single_user = true
-      @viewing_current_user = user_subject == current_user
       @ratings_private = user_subject.ratings_private?
-      @can_view_ratings = user_subject.account_public? || @viewing_current_user ||
+      @can_view_ratings = user_subject.account_public? || viewing_current_user? ||
         user_subject.follower_approved?(current_user)
     end
     @viewable_ratings = searched_ratings(viewed_ratings) # in RatingSearchable

@@ -3,7 +3,7 @@ module RatingSearchable
 
   def searched_ratings(ratings)
     ratings = ratings.joins(:citation)
-    if current_user.present? && !@viewing_current_user
+    if current_user.present? && !viewing_current_user?
       @not_rated = TranzitoUtils::Normalize.boolean(p_params[:search_not_rated])
       if @not_rated
         ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
@@ -32,11 +32,9 @@ module RatingSearchable
       @searched_citation = Citation.friendly_find(p_params[:search_citation_id])
       ratings = ratings.where(citation_id: @searched_citation.id)
     end
-
     if current_topics.present?
       ratings = ratings.merge(Citation.matching_topics(current_topics.map(&:id)))
     end
-
     if params[:search_publisher].present?
       @publisher = Publisher.friendly_find(params[:search_publisher])
       ratings = ratings.merge(Citation.where(publisher_id: @publisher.id)) if @publisher.present?
@@ -44,6 +42,12 @@ module RatingSearchable
     if params[:search_author].present?
       @author = params[:search_author]
       ratings = ratings.merge(Citation.search_author(@author))
+    end
+    if current_user.present? && !viewing_current_user?
+      @not_rated = TranzitoUtils::Normalize.boolean(p_params[:search_not_rated])
+      if @not_rated
+        ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
+      end
     end
     ratings
   end

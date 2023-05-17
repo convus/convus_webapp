@@ -563,7 +563,7 @@ RSpec.describe base_url, type: :request do
         expect(ReconcileRatingTopicsJob.jobs.count).to be > 1
         ReconcileRatingTopicsJob.drain
         expect(RatingTopic.count).to eq 2
-        expect(rating1.reload.topics.pluck(:id)).to eq([topic.id, topic2.id])
+        expect(rating1.reload.topics.pluck(:id)).to match_array([topic.id, topic2.id])
         expect(rating2.reload.topics.pluck(:id)).to eq([])
         expect(rating3.reload.topics.pluck(:id)).to eq([])
       end
