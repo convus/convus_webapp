@@ -202,8 +202,8 @@ RSpec.describe ApplicationHelper, type: :helper do
       let(:target1) { "<a class=\"\" href=\"/?&search_topics[]=#{topic1.slug}\">##{topic1.name}</a>" }
       let(:target2) { target1 + " <a class=\"\" href=\"/?&search_topics[]=#{topic2.slug}\">##{topic2.name}</a>" }
       it "returns link" do
-        expect(topic_links(Topic.where(id: [topic1.id]), url: root_path)).to eq topic_links_spanned(target1)
-        expect(topic_links(Topic.where(id: [topic1.id, topic2.id]), url: root_path)).to eq topic_links_spanned(target2)
+        expect(topic_links(Topic.where(id: [topic1.id]), url: root_path)).to eq target1
+        expect(topic_links(Topic.where(id: [topic1.id, topic2.id]), url: root_path)).to eq target2
       end
     end
   end

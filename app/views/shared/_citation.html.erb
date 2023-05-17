@@ -1,7 +1,10 @@
 <h4 class="text-lg leading-5 mb-1" style=""><%= link_to citation.title, citation.url, class: "no-underline hover:underline" %></h4>
-<% if citation.description.present? %>
+<% if citation.description.present? || citation.topics.present? %>
   <p class="leading-5 mb-1">
     <%= citation.description %>
+    <span class="text-sm text-gray-400 mb-1">
+      <%= topic_links(citation.topics, {class: "text-gray-400", include_current: true}) %>
+    </span>
   </p>
 <% end %>
 <p class="leading-5 mb-1 text-gray-500 text-sm">
@@ -28,4 +31,3 @@
     </span>
   <% end %>
 </p>
-<%= topic_links(citation.topics, {class: "text-gray-400", include_current: true}) %>

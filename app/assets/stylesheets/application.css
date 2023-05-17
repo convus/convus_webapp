@@ -16,8 +16,7 @@
 @import "sections/tranzito_utils.css";
 @import 'tailwindcss/utilities';
 
-/* Section/Page specific styles */
-@import "sections/ratings_index.css";
+/* Section/Page specific styles ... tbd */
 
 /*
   Use serif fonts for the body

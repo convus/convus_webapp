@@ -227,10 +227,8 @@ module ApplicationHelper
     end
     url = "#{url}?" unless url.match?(/\?/)
 
-    content_tag(:span, class: "topic-links") do
-      safe_join(name_and_slugs.map { |ns|
-        link_to("##{ns[0]}", raw("#{url}&search_topics[]=#{ns[1]}"), html_opts)
-      }, " ")
-    end
+    safe_join(name_and_slugs.map { |ns|
+      link_to("##{ns[0]}", raw("#{url}&search_topics[]=#{ns[1]}"), html_opts)
+    }, " ")
   end
 end
