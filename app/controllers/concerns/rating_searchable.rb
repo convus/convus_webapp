@@ -48,9 +48,10 @@ module RatingSearchable
       @author = p_params[:search_author]
       ratings = ratings.merge(Citation.search_author(@author))
     end
+
     @not_rated = TranzitoUtils::Normalize.boolean(p_params[:search_not_rated])
     if @not_rated && current_user.present? && !viewing_current_user?
-      ratings = ratings.where.not(citation_id: current_user.ratings.pluck(:citation_id))
+      ratings = ratings.where.not(citation_id: current_user.citations)
     end
     ratings
   end
