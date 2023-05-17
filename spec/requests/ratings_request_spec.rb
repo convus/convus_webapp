@@ -205,6 +205,21 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:ratings).pluck(:id)).to eq([])
           expect(assigns(:viewing_single_user)).to be_truthy
           expect(assigns(:viewing_display_name)).to eq user_subject.username
+          expect(assigns(:not_rated)).to be_falsey
+          # not_rated - somewhat tricky, worth testing
+          get "#{base_url}?search_not_rated=1"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("ratings/index")
+          expect(assigns(:can_view_ratings)).to be_truthy
+          expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
+          expect(assigns(:not_rated)).to be_truthy
+          # Rate the same url, make sure it isn't included
+          FactoryBot.create(:rating, user: current_user, submitted_url: rating.submitted_url)
+          get "#{base_url}?search_not_rated=True"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("ratings/index")
+          expect(assigns(:ratings).pluck(:id)).to eq([])
+          expect(assigns(:not_rated)).to be_truthy
         end
         context "approved" do
           let(:approved) { true }

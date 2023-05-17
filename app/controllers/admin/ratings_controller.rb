@@ -8,7 +8,7 @@ class Admin::RatingsController < Admin::BaseController
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
     @ratings = admin_searched_ratings
-      .includes(:citation, :topics, :user).page(page).per(@per_page)
+      .includes(:topics, :user).page(page).per(@per_page)
   end
 
   def show
