@@ -1,12 +1,12 @@
 <h1 class="mb-4">
-  <% if @viewing_current_user %>
+  <% if viewing_current_user? %>
     Users You follow
   <% else %>
     Users <%= link_to @user.username, ratings_path(user: @user) %> follows
   <% end %>
 </h1>
 <% skip_sortable = true %>
-<% update_links = @viewing_current_user %>
+<% update_links = viewing_current_user? %>
 <div class="full-screen-table">
   <table class="table table-sm">
     <thead class="sortable">

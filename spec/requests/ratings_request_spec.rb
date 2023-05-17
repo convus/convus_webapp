@@ -53,6 +53,54 @@ RSpec.describe base_url, type: :request do
       expect(assigns(:viewing_display_name)).to eq "all"
       expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
     end
+    context "additional search queries" do
+      let(:topic1) { FactoryBot.create(:topic) }
+      let(:topic2) { FactoryBot.create(:topic) }
+      let(:topic3) { FactoryBot.create(:topic) }
+      let!(:citation) { rating.citation }
+      let(:publisher) { FactoryBot.create(:publisher) }
+      let!(:rating2) { FactoryBot.create(:rating, :with_topic, topic: topic1, submitted_url: rating.submitted_url) }
+      it "renders with searches" do
+        expect(rating2.reload.topics.pluck(:id)).to eq([topic1.id])
+        expect(rating2.citation_id).to eq citation.id
+        CitationTopic.create(citation: citation, topic: topic1)
+        expect(citation.reload.topics.pluck(:id)).to eq([topic1.id])
+        get "#{base_url}?search_topics=#{topic1.slug}"
+        expect(response.code).to eq "200"
+        expect(assigns(:user_subject)&.id).to be_blank
+        expect(assigns(:viewing_display_name)).to eq "all"
+        expect(assigns(:current_topics)&.pluck(:id)).to eq([topic1.id])
+        expect(response).to render_template("ratings/index")
+        expect(assigns(:ratings)&.pluck(:id)).to match_array([rating.id, rating2.id])
+
+        # It handles arrays
+        get "#{base_url}?search_topics[]=#{topic1.slug}&search_topics[]=#{topic2.slug}"
+        expect(response.code).to eq "200"
+        expect(assigns(:current_topics)&.pluck(:id)).to match_array([topic1.id, topic2.id])
+        expect(response).to render_template("ratings/index")
+        # It parses comma delineated
+        get "#{base_url}?search_topics=#{topic1.slug},#{topic2.id} "
+        expect(response.code).to eq "200"
+        expect(assigns(:current_topics)&.pluck(:id)).to match_array([topic1.id, topic2.id])
+        expect(response).to render_template("ratings/index")
+        # It parses new line delineated and commas
+        get base_url, params: {search_topics: "#{topic1.slug}\n #{topic2.id},#{topic3.slug} "}
+        expect(response.code).to eq "200"
+        expect(assigns(:current_topics)&.pluck(:id)).to match_array([topic1.id, topic2.id, topic3.id])
+        expect(response).to render_template("ratings/index")
+        # It parses publisher and author
+        citation.update(authors_str: "John Snow\n")
+        expect(citation.reload.authors).to eq(["John Snow"])
+        expect(Citation.search_author("John Snow").pluck(:id)).to eq([citation.id])
+        get "#{base_url}/?&search_topics[]=#{topic1.slug}&search_topics[]=&search_publisher=#{publisher.name}&search_author=John+Snow"
+        expect(response.code).to eq "200"
+        expect(assigns(:current_topics)&.pluck(:id)).to eq([topic1.id])
+        expect(assigns(:publisher)&.id).to eq(publisher.id)
+        expect(assigns(:author)).to eq("John Snow")
+
+        expect(response).to render_template("ratings/index")
+      end
+    end
     context "no user found" do
       it "raises" do
         expect {
@@ -157,6 +205,21 @@ RSpec.describe base_url, type: :request do
           expect(assigns(:ratings).pluck(:id)).to eq([])
           expect(assigns(:viewing_single_user)).to be_truthy
           expect(assigns(:viewing_display_name)).to eq user_subject.username
+          expect(assigns(:not_rated)).to be_falsey
+          # not_rated - somewhat tricky, worth testing
+          get "#{base_url}?search_not_rated=1"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("ratings/index")
+          expect(assigns(:can_view_ratings)).to be_truthy
+          expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
+          expect(assigns(:not_rated)).to be_truthy
+          # Rate the same url, make sure it isn't included
+          FactoryBot.create(:rating, user: current_user, submitted_url: rating.submitted_url)
+          get "#{base_url}?search_not_rated=True"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("ratings/index")
+          expect(assigns(:ratings).pluck(:id)).to eq([])
+          expect(assigns(:not_rated)).to be_truthy
         end
         context "approved" do
           let(:approved) { true }
@@ -515,7 +578,7 @@ RSpec.describe base_url, type: :request do
         expect(ReconcileRatingTopicsJob.jobs.count).to be > 1
         ReconcileRatingTopicsJob.drain
         expect(RatingTopic.count).to eq 2
-        expect(rating1.reload.topics.pluck(:id)).to eq([topic.id, topic2.id])
+        expect(rating1.reload.topics.pluck(:id)).to match_array([topic.id, topic2.id])
         expect(rating2.reload.topics.pluck(:id)).to eq([])
         expect(rating3.reload.topics.pluck(:id)).to eq([])
       end

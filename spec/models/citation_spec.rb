@@ -200,6 +200,19 @@ RSpec.describe Citation, type: :model do
     let(:citation) { Citation.new(authors: ["Sally", "Contributors to Wikimedia projects"]) }
     it "skips wikimedia" do
       expect(citation.authors_rendered).to eq(["Sally"])
+      expect(Citation.normalize_author(citation.authors.last)).to eq citation.authors.last
+    end
+  end
+
+  describe "search_author" do
+    let(:citation) { FactoryBot.create(:citation, authors_str: "GEORGE Saunders\nMary Carr") }
+    it "finds with case insensitive" do
+      expect(citation.reload.authors).to eq(["GEORGE Saunders", "Mary Carr"])
+      expect(Citation.search_author("GEORGE Saunders")&.pluck(:id)).to eq([citation.id])
+      expect(Citation.search_author("Mary Carr")&.pluck(:id)).to eq([citation.id])
+      expect(Citation.search_author("Saunders")&.pluck(:id)).to eq([])
+      # Non-normalized
+      expect(Citation.search_author(" george  SAunders")&.pluck(:id)).to eq([citation.id])
     end
   end
 

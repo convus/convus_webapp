@@ -186,4 +186,25 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "topic_links" do
+    let(:topic1) { FactoryBot.create(:topic) }
+    let(:topic2) { FactoryBot.create(:topic) }
+    let(:topic3) { FactoryBot.create(:topic) }
+    it "returns nil" do
+      expect(topic_links(nil)).to be_nil
+      expect(topic_links(Topic.none)).to be_nil
+    end
+    context "topics" do
+      def topic_links_spanned(str)
+        "<span class=\"topic-links\">#{str}</span>"
+      end
+      let(:target1) { "<a class=\"\" href=\"/?&search_topics[]=#{topic1.slug}\">##{topic1.name}</a>" }
+      let(:target2) { target1 + " <a class=\"\" href=\"/?&search_topics[]=#{topic2.slug}\">##{topic2.name}</a>" }
+      it "returns link" do
+        expect(topic_links(Topic.where(id: [topic1.id]), url: root_path)).to eq target1
+        expect(topic_links(Topic.where(id: [topic1.id, topic2.id]), url: root_path)).to eq target2
+      end
+    end
+  end
 end

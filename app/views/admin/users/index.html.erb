@@ -1,4 +1,12 @@
-<h1 class="standard-top-offset mb-4">Admin users</h1>
+<h1 class="standard-top-offset mb-4">
+  Admin users
+  <% if display_dev_info? %>
+    <small class="less-strong only-dev-visible text-sm px-1">
+      current_user id:
+      <%= link_to current_user.id, edit_admin_user_path(current_user) %>
+    </small>
+  <% end %>
+</h1>
 <%= render partial: "/shared/current_header", locals: {collection: @users, render_period: true} %>
 
 <% skip_sortable ||= false %>

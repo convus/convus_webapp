@@ -106,5 +106,15 @@ RSpec.describe base_url, type: :request do
         end
       end
     end
+
+    describe "destroy" do
+      it "updates" do
+        expect(topic).to be_valid
+        expect {
+          delete "#{base_url}/#{topic.id}"
+        }.to change(Topic, :count).by(-1)
+        expect(flash[:success]).to be_present
+      end
+    end
   end
 end

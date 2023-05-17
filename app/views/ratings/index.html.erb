@@ -9,7 +9,7 @@
       <h1>
         Ratings by <%= user_subject.username %>
         <%# when there are search_params, add something to show that it's you %>
-        <% if @viewing_current_user %><small class="less-strong">(you)</small><% end %>
+        <% if viewing_current_user? %><small class="less-strong">(you)</small><% end %>
       </h1>
       <% if @ratings_private %>
         <h2 class="mt-4">
@@ -17,7 +17,7 @@
           <% if @can_view_ratings %>
             <small class="less-strong">
               (they're visible because
-              <% if @viewing_current_user %>it's your account<% else %>you follow them<% end %>)
+              <% if viewing_current_user? %>it's your account<% else %>you follow them<% end %>)
             </small>
           <% end %>
         </h2>
@@ -36,7 +36,7 @@
 <% if @can_view_ratings %>
   <div class="large-width-container pt-2 pl-4" data-controller="ratings-filter" id="ratingsFilter">
     <%= form_tag ratings_path, method: :get, id: "ratingsFilterForm" do %>
-      <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true, skip_user: true} %>
+      <%= render partial: "/shared/hidden_search_fields", locals: {skip_all_convus_params: true} %>
       <div class="flex flex-wrap">
         <%= label_tag :user_all, class: "form-control-radio flex-initial min-w-fit mr-2" do %>
           <%= radio_button_tag :user, "all", viewing_display_name == "all", class: "submitOnChange" %>
@@ -56,7 +56,7 @@
           <%= radio_button_tag :user, "following", viewing_display_name == "following", class: "submitOnChange" %>
           By people you follow
         <% end %>
-        <% if @viewing_single_user && !@viewing_current_user %>
+        <% if @viewing_single_user && !viewing_current_user? %>
           <%= label_tag "user_#{user_subject.username}", class: "form-control-radio flex-initial ml-2 min-w-fit" do %>
             <%= radio_button_tag :user, user_subject.username, true, class: "submitOnChange" %>
             By <%= user_subject.username %>
@@ -115,7 +115,7 @@
           <% end %>
         <% end %>
 
-        <% if current_user.present? && !@viewing_current_user %>
+        <% if current_user.present? && !viewing_current_user? %>
           <% if !@disagree_following || @not_rated %>
             <%= label_tag :search_not_rated, class: "form-control-check" do %>
               <%= check_box_tag :search_not_rated, true, @not_rated, class: "submitOnChange" %>
@@ -135,7 +135,7 @@
         <% end %>
         <%# Topics to render: current passed topics and primary review topic %>
         <% primary_topic_id = primary_topic_review&.topic_id %>
-        <% (current_topics + [primary_topic_review&.topic]).compact.uniq.each do |topic| %>
+        <% ([primary_topic_review&.topic] + current_topics).compact.uniq.each do |topic| %>
           <% checked = current_topics.include?(topic) %>
           <label class="form-control-check"><%# TODO: make this a functioning label_tag %>
             <%= check_box_tag "search_topics[]", topic.slug, checked, class: "submitOnChange" %>
@@ -143,10 +143,24 @@
             <% if topic.id == primary_topic_id %><small class="less-strong">(current review topic)</small><% end %>
           </label>
         <% end %>
-        <% if primary_topic_review.present? && @viewing_current_user %>
+        <% if primary_topic_review.present? && viewing_current_user? %>
           <%= label_tag :search_topic_assignment, class: "form-control-check" do %>
             <%= check_box_tag :search_topic_assignment, true, @assigning, class: "submitOnChange" %>
             Choose which of your ratings are applicable to <%= topic_review_display(primary_topic_review) %>
+          <% end %>
+        <% end %>
+
+        <%# Other links %>
+        <% if @publisher.present? %>
+          <%= label_tag :search_publisher, class: "form-control-check" do %>
+            <%= check_box_tag :search_publisher, @publisher.to_param, params[:search_publisher], class: "submitOnChange" %>
+            Only articles by <%= @publisher.name %>
+          <% end %>
+        <% end %>
+        <% if @author.present? %>
+          <%= label_tag :search_author, class: "form-control-check" do %>
+            <%= check_box_tag :search_author, @author, params[:search_author], class: "submitOnChange" %>
+            Only articles by <%= @author %>
           <% end %>
         <% end %>
       </div>
@@ -154,9 +168,9 @@
     <% end %>
   </div>
   <div class="large-width-container mt-4">
-    <div class="row">
-      <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
-    </div>
+    <%# Currently, the radio buttons manage everything from the current_header. But this could change!
+    <%#= render partial: "/shared/current_header", locals: {collection: @ratings} %>
+    <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
   </div>
   <% hide_private_users = ["all", "other users"].include?(viewing_display_name) %>
   <% if @assigning %>

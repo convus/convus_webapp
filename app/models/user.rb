@@ -7,6 +7,7 @@ class User < ApplicationRecord
     :recoverable, :rememberable, :validatable
 
   has_many :ratings
+  has_many :citations, through: :ratings
   has_many :events
   has_many :kudos_events
   has_many :user_followings, dependent: :destroy

@@ -1,37 +1,69 @@
 <%# NOTE: when you add new search_ params here, also add it to hidden_search_fields %>
 <% viewing ||= controller_name.humanize %>
-<% current_header_keys = %w[search_topics user_subject] %>
-<% header_present ||= (current_header_keys & params.keys).any? %>
+<% current_header_keys = %w[search_topics user_subject search_author search_publisher search_citation_id] %>
+<% header_present ||= (current_header_keys & params.keys).any? || current_topics.present? %>
 <% if header_present %>
   <div>
-    <% if current_topics.present? %>
+    <% skip_topics ||= false %>
+    <% if !skip_topics && current_topics.present? %>
       <p class="mb-2">
-        <%= viewing %> for
-        <strong><%= current_topics.map(&:name).to_sentence %></strong>
-        <small class="less-strong">
-          <%= viewing %> for
+        Viewing <%= viewing.downcase %> for
+        <%= topic_links(current_topics, name_and_slugs: current_topics.map {|t| [t.name, t.slug] }) %>
+        <em class="less-strong">
+          &ndash; view <%= viewing.downcase %> for
           <%= link_to "all topics", url_for(sortable_params.merge(search_topics: nil)) %>
-        </small>
+        </em>
       </p>
     <% end %>
     <% if user_subject.present? %>
       <p class="mb-2">
         <%= viewing %> for
         <strong><%= user_subject.username %></strong>
-        <small class="less-strong">
-          <%= viewing %> for
+        <em class="less-strong">
+          &ndash; view <%= viewing.downcase %> for
           <%= link_to "all users", url_for(sortable_params.merge(user: nil)) %>
-        </small>
+        </em>
+      </p>
+    <% end %>
+    <% if @searched_citation.present? %>
+      <p class="mb-2">
+        <%= viewing %> for
+        <strong><%= citation_display(@searched_citation) %></strong>
+        <em class="less-strong">
+          &ndash; view <%= viewing.downcase %> for
+          <%= link_to "all articles", url_for(sortable_params.merge(search_citation_id: nil)) %>
+        </em>
+      </p>
+    <% end %>
+    <% if @publisher.present? %>
+      <p class="mb-2">
+        <%= viewing %> for
+        <strong><%= @publisher.name %></strong>
+        <em class="less-strong">
+          &ndash; view <%= viewing.downcase %> for
+          <%= link_to "all publishers", url_for(sortable_params.merge(search_publisher: nil)) %>
+        </em>
+      </p>
+    <% end %>
+    <% if @author.present? %>
+      <p class="mb-2">
+        <%= viewing %> for
+        <strong><%= @author %></strong>
+        <em class="less-strong">
+          &ndash; view <%= viewing.downcase %> for
+          <%= link_to "all authors", url_for(sortable_params.merge(search_author: nil)) %>
+        </em>
       </p>
     <% end %>
   </div>
 <% end %>
+
 <% render_period ||= false %>
-<% skip_pagination ||= false %>
 <% total_count ||= collection.total_count %>
 <% if render_period %>
   <%= render partial: "/shared/period_select", locals: {total_count: total_count} %>
 <% end %>
+<% skip_pagination ||= false %>
 <% unless skip_pagination %>
   <div class="row mt-4">
     <%= render partial: "tranzito_utils/pagination", locals: {collection: collection, name: viewing} %>

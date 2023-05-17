@@ -94,11 +94,25 @@ class Citation < ApplicationRecord
       }.with_indifferent_access
     end
 
+    def matching_topics(topic_ids)
+      joins(:citation_topics).where(citation_topics: {topic_id: Array(topic_ids)})
+    end
+
     def references_filepath(str)
       host = url_to_components(str)[:host]
       pretty_url = UrlCleaner.pretty_url(str, remove_query: Publisher.remove_query?(host))
       [Slugifyer.filename_slugify(host),
         Slugifyer.filename_slugify(pretty_url.gsub(host, ""))].join("/")
+    end
+
+    # TODO: Fix "last name, first"
+    def normalize_author(str)
+      return nil if str.blank?
+      str.gsub(/\s+/, " ").strip
+    end
+
+    def search_author(str)
+      where("lower(authors::text)::jsonb @> lower(?)::jsonb", [normalize_author(str)].to_json)
     end
 
     def authors_rendered(arr)
@@ -196,7 +210,7 @@ class Citation < ApplicationRecord
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)
     self.url_components_json ||= self.class.url_to_components(url, normalized: true).except(:remove_query)
-    self.authors = [] if authors.blank?
+    self.authors = (Array(authors) || [])&.map { |a| self.class.normalize_author(a) }&.compact
     self.manually_updated_attributes = [] if manually_updated_attributes.blank?
     # If assigning publisher, remove query if required
     if publisher.blank?

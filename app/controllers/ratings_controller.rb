@@ -1,10 +1,10 @@
 class RatingsController < ApplicationController
-  include RateSearchable
+  include RatingSearchable
   include TranzitoUtils::SortableTable
   before_action :set_period, only: %i[index] # Actually, will want to set after assigning via
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
   before_action :find_and_authorize_rating, only: %i[edit update destroy]
-  helper_method :viewing_display_name
+  helper_method :viewing_display_name, :viewable_ratings
 
   def index
     if current_user.blank?
@@ -15,11 +15,13 @@ class RatingsController < ApplicationController
     end
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
+
     @ratings = viewable_ratings.reorder(order_scope_query)
-      .includes(:citation, :user).page(page).per(@per_page)
+      .includes(:user) # RatingSearchable joins :citation
+      .page(page).per(@per_page)
 
     @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.topic_id]
-    set_rating_assigment_if_passed if @viewing_current_user
+    set_rating_assigment_if_passed if viewing_current_user?
     @action_display_name = viewing_display_name.titleize
   end
 
@@ -120,18 +122,22 @@ class RatingsController < ApplicationController
   end
 
   def viewable_ratings
+    return @viewable_ratings if defined?(@viewable_ratings)
     if params[:user].blank? || multi_user_searches.include?(params[:user].downcase)
       @viewing_single_user = false
       @can_view_ratings = true
     else
       raise ActiveRecord::RecordNotFound if user_subject.blank?
       @viewing_single_user = true
-      @viewing_current_user = user_subject == current_user
       @ratings_private = user_subject.ratings_private?
-      @can_view_ratings = user_subject.account_public? || @viewing_current_user ||
+      @can_view_ratings = user_subject.account_public? || viewing_current_user? ||
         user_subject.follower_approved?(current_user)
     end
-    searched_ratings(viewed_ratings) # in RateSearchable
+    # Not implemented yet, just shows a message
+    if current_user.present? && !viewing_current_user?
+      @disagree_following = TranzitoUtils::Normalize.boolean(p_params[:search_disagree_following])
+    end
+    @viewable_ratings = searched_ratings(viewed_ratings) # in RatingSearchable
   end
 
   def viewing_display_name
