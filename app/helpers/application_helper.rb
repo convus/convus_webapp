@@ -217,7 +217,7 @@ module ApplicationHelper
     image_tag("icons/#{str}_icon.svg", class: "w-4 inline-block")
   end
 
-  def topic_links(topics, html_opts = {}, url: nil, include_current: false)
+  def topic_links(topics, html_opts = {}, name_and_slugs: nil, url: nil, include_current: false)
     name_and_slugs ||= topics&.name_ordered&.pluck(:name, :slug)
     return nil if name_and_slugs.blank?
     html_opts[:class] ||= ""

@@ -36,7 +36,7 @@
 <% if @can_view_ratings %>
   <div class="large-width-container pt-2 pl-4" data-controller="ratings-filter" id="ratingsFilter">
     <%= form_tag ratings_path, method: :get, id: "ratingsFilterForm" do %>
-      <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true, skip_user: true} %>
+      <%= render partial: "/shared/hidden_search_fields", locals: {skip_topics: true, skip_user: true, skip_author: true, skip_publisher: true} %>
       <div class="flex flex-wrap">
         <%= label_tag :user_all, class: "form-control-radio flex-initial min-w-fit mr-2" do %>
           <%= radio_button_tag :user, "all", viewing_display_name == "all", class: "submitOnChange" %>
@@ -135,7 +135,7 @@
         <% end %>
         <%# Topics to render: current passed topics and primary review topic %>
         <% primary_topic_id = primary_topic_review&.topic_id %>
-        <% (current_topics + [primary_topic_review&.topic]).compact.uniq.each do |topic| %>
+        <% ([primary_topic_review&.topic] + current_topics).compact.uniq.each do |topic| %>
           <% checked = current_topics.include?(topic) %>
           <label class="form-control-check"><%# TODO: make this a functioning label_tag %>
             <%= check_box_tag "search_topics[]", topic.slug, checked, class: "submitOnChange" %>
@@ -149,14 +149,27 @@
             Choose which of your ratings are applicable to <%= topic_review_display(primary_topic_review) %>
           <% end %>
         <% end %>
+
+        <%# Other links %>
+        <% if @publisher.present? %>
+          <%= label_tag :search_publisher, class: "form-control-check" do %>
+            <%= check_box_tag :search_publisher, @publisher.to_param, params[:search_publisher], class: "submitOnChange" %>
+            Only articles by <%= @publisher.name %>
+          <% end %>
+        <% end %>
+        <% if @author.present? %>
+          <%= label_tag :search_author, class: "form-control-check" do %>
+            <%= check_box_tag :search_author, @author, params[:search_author], class: "submitOnChange" %>
+            Only articles by <%= @author %>
+          <% end %>
+        <% end %>
       </div>
       <%= submit_tag "Update ratings", class: "btn mt-2 hiddenOnJs" %>
     <% end %>
   </div>
   <div class="large-width-container mt-4">
-    <div class="row">
-      <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
-    </div>
+    <%= render partial: "/shared/current_header", locals: {collection: @ratings} %>
+    <%#= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
   </div>
   <% hide_private_users = ["all", "other users"].include?(viewing_display_name) %>
   <% if @assigning %>

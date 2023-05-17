@@ -18,3 +18,13 @@
 <% unless skip_topics %>
   <%= hidden_field_tag :search_topics, params[:search_topics] %>
 <% end %>
+
+<% skip_publisher ||= false %>
+<% unless skip_publisher %>
+  <%= hidden_field_tag :search_publisher, params[:search_publisher] %>
+<% end %>
+
+<% skip_author ||= false %>
+<% unless skip_author %>
+  <%= hidden_field_tag :search_author, params[:search_author] %>
+<% end %>
