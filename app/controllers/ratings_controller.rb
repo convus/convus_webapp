@@ -4,7 +4,7 @@ class RatingsController < ApplicationController
   before_action :set_period, only: %i[index] # Actually, will want to set after assigning via
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
   before_action :find_and_authorize_rating, only: %i[edit update destroy]
-  helper_method :viewing_display_name
+  helper_method :viewing_display_name, :viewable_ratings
 
   def index
     if current_user.blank?
@@ -17,7 +17,7 @@ class RatingsController < ApplicationController
     @per_page = params[:per_page] || 50
 
     @ratings = viewable_ratings.reorder(order_scope_query)
-      .includes(:user) # viewable_ratings includes :citation
+      .includes(:user) # RatingSearchable joins :citation
       .page(page).per(@per_page)
 
     @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.topic_id]
@@ -122,6 +122,7 @@ class RatingsController < ApplicationController
   end
 
   def viewable_ratings
+    return @viewable_ratings if defined?(@viewable_ratings)
     if params[:user].blank? || multi_user_searches.include?(params[:user].downcase)
       @viewing_single_user = false
       @can_view_ratings = true
@@ -133,7 +134,7 @@ class RatingsController < ApplicationController
       @can_view_ratings = user_subject.account_public? || @viewing_current_user ||
         user_subject.follower_approved?(current_user)
     end
-    searched_ratings(viewed_ratings) # in RatingSearchable
+    @viewable_ratings = searched_ratings(viewed_ratings) # in RatingSearchable
   end
 
   def viewing_display_name

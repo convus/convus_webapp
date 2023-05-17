@@ -15,6 +15,8 @@
 
 <% filter_links ||= !render_ranking %>
 
+<% group_citation_ratings = !render_assign_topic && !render_ranking %>
+
 <% table_classes = "table table-sm table-striped break-words max-w-full" %>
 <% table_classes += " toggleChecksWrapper" if render_assign_topic %>
 <% table_classes += " hide_header" if hide_header %>
@@ -40,6 +42,7 @@
       <% rendered_ids = [] %>
       <% ratings.each_with_index do |rating, i| %>
         <% next if rendered_ids.include?(rating.citation_id) %>
+
         <tr>
           <%# special state for no ratings table that still needs to render something %>
           <% if rating.is_a?(String) %>
@@ -51,7 +54,6 @@
             <td class="hidden lg:table-cell max-w-lg lg:max-w-2xl lg:w-rWidth"><em class="less-strong"><%= rating %></em></td>
             <td colspan="<%= colspan %>"></td>
           <% else %>
-
             <% if render_assign_topic %>
               <td style="width: 2rem;"><%= check_box_tag "rating_id_#{rating.id}", true, rating.has_topic?(assign_topic), class: "toggleableCheck" %></td>
             <% elsif render_ranking %>
@@ -67,11 +69,17 @@
                 <%= render partial: "/shared/citation", locals: {citation: rating.citation} %>
               <% end %>
 
-              <%= render partial: "/shared/rating_row", locals: {rating: rating, render_user: render_user, filter_links: filter_links, hide_private_users: hide_private_users, shown_private_user_ids: shown_private_user_ids} %>
+              <%= render partial: "/shared/rating_row", locals: {rating: rating, render_user: render_user, filter_links: filter_links, hide_private_users: hide_private_users, shown_private_user_ids: shown_private_user_ids, wrapper_class: "mt-2"} %>
 
-              <% rendered_ids << rating.citation_id %>
+              <% if group_citation_ratings %>
+                <% rendered_ids << rating.citation_id %>
+                <% viewable_ratings.where(citation_id: rating.citation_id).where.not(id: rating.id).each do |o_rating| %>
+                  <%= render partial: "/shared/rating_row", locals: {rating: o_rating, render_user: render_user, filter_links: filter_links, hide_private_users: hide_private_users, shown_private_user_ids: shown_private_user_ids} %>
+                <% end %>
+              <% end %>
             </td>
           <% end %>
+
         </tr>
       <% end %>
     </tbody>

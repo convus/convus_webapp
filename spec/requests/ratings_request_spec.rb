@@ -63,20 +63,15 @@ RSpec.describe base_url, type: :request do
       it "renders with searches" do
         expect(rating2.reload.topics.pluck(:id)).to eq([topic1.id])
         expect(rating2.citation_id).to eq citation.id
+        CitationTopic.create(citation: citation, topic: topic1)
+        expect(citation.reload.topics.pluck(:id)).to eq([topic1.id])
         get "#{base_url}?search_topics=#{topic1.slug}"
         expect(response.code).to eq "200"
         expect(assigns(:user_subject)&.id).to be_blank
         expect(assigns(:viewing_display_name)).to eq "all"
         expect(assigns(:current_topics)&.pluck(:id)).to eq([topic1.id])
         expect(response).to render_template("ratings/index")
-        expect(assigns(:ratings)&.pluck(:id)).to eq([rating2.id])
-        # expect(assigns(:citations)&.pluck(:id)).to eq([citation.id])
-        # Try the grouping
-        get "#{base_url}?per_page=1"
-        expect(response.code).to eq "200"
-        expect(response).to render_template("ratings/index")
-        expect(assigns(:ratings)&.pluck(:id)).to eq([rating2.id, rating.id])
-        expect(assigns(:citations)&.pluck(:id)).to eq([citation.id])
+        expect(assigns(:ratings)&.pluck(:id)).to match_array([rating.id, rating2.id])
 
         # It handles arrays
         get "#{base_url}?search_topics[]=#{topic1.slug}&search_topics[]=#{topic2.slug}"

@@ -1,12 +1,14 @@
 <% private_user = render_user && hide_private_users && rating.account_private? %>
 <% show_private_user = private_user && shown_private_user_ids.include?(rating.user_id) %>
 
-<span class="block mt-2">
-  <small class="mr-1">
+<% wrapper_class ||= "" %>
+<span class="block <%= wrapper_class %>">
+  <small class="">
     Rated <span class="convertTime"><%= l(rating.created_at, format: :convert_time) %></span>
   </small>
   <% if render_user %>
     <small class="mr-1">
+      -
       <% if private_user && !show_private_user %>
         private
       <% elsif rating.user.blank? %>
