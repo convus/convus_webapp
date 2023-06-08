@@ -29,6 +29,6 @@ class LandingController < ApplicationController
   private
 
   def viewable_ratings
-    Rating.joins(:citation)
+    @viewable_ratings ||= Rating.joins(:citation)
   end
 end
