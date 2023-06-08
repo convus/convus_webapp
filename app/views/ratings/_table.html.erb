@@ -1,5 +1,6 @@
 <% ratings ||= @ratings %>
 <% skip_sortable ||= false %>
+<% skip_header ||= false %>
 
 <% render_user ||= false %>
 <% hide_private_users ||= false %>
@@ -24,19 +25,21 @@
 <%# large-width-container - but without x-padding on smaller screens %>
 <div class="mx-auto max-w-main-content ratings-table-wrapper">
   <table class="<%= table_classes %>">
-    <thead class="sortable">
-      <tr>
-        <% if render_assign_topic %>
-          <th><input type="checkbox" class="less-strong toggleChecks hiddenNoJs" value="true"></th>
-        <% elsif render_ranking %>
-          <th>Rank</th>
-        <% end %>
-        <th class="">
-          <%= sortable "created_at", "Rated", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
-          <%= sortable "display_name", "Article", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
-        </th>
-      </tr>
-    </thead>
+    <% unless skip_header %>
+      <thead class="sortable">
+        <tr>
+          <% if render_assign_topic %>
+            <th><input type="checkbox" class="less-strong toggleChecks hiddenNoJs" value="true"></th>
+          <% elsif render_ranking %>
+            <th>Rank</th>
+          <% end %>
+          <th class="">
+            <%= sortable "created_at", "Rated", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
+            <%= sortable "display_name", "Article", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
+          </th>
+        </tr>
+      </thead>
+    <% end %>
     <tbody>
       <%# This is a shitty hack %>
       <% rendered_ids = [] %>

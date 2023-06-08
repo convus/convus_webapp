@@ -1,6 +1,10 @@
 class LandingController < ApplicationController
+  helper_method :viewable_ratings
+
   def index
     @page_title = "Convus"
+    @ratings = Rating.joins(:citation).reorder("ratings.created_at desc")
+      .includes(:user).page(1).per(5)
   end
 
   def about
@@ -19,5 +23,11 @@ class LandingController < ApplicationController
   end
 
   def support
+  end
+
+  private
+
+  def viewable_ratings
+    @viewable_ratings ||= Rating.joins(:citation)
   end
 end
