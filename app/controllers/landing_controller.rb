@@ -4,8 +4,7 @@ class LandingController < ApplicationController
   def index
     @page_title = "Convus"
     @ratings = Rating.joins(:citation).reorder("ratings.created_at desc")
-      .includes(:user) # RatingSearchable joins :citation
-      .page(1).per(5)
+      .includes(:user).page(1).per(5)
   end
 
   def about
