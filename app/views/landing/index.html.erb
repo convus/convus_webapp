@@ -18,3 +18,9 @@
   <li class="mb-3">Choose which articles on the topic are the best</li>
 </ol>
 <p class="mb-3">Rating articles is fast&mdash;install the <%= link_to "app / browser extension", browser_extensions_path %> and give it a try.</p>
+
+<h2 class="standard-top-offset mb-4 text-xl">Recent Ratings</h2>
+
+<%= render partial: "/ratings/table", locals: {ratings: @ratings, render_user: true, hide_private_users: true, skip_sortable: true} %>
+
+<h4 class="mt-5"><%= link_to "... view more ratings", ratings_landing_url %></h4>
