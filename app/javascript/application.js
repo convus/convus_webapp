@@ -43,6 +43,40 @@ const setMaxWidths = () => {
   }
 }
 
+// Internal
+const elementsFromSelectorOrElements = (selOrEl) => {
+  if (typeof (selOrEl) === 'string') {
+    return document.querySelectorAll(selOrEl)
+  } else {
+    return [selOrEl].flat()
+  }
+}
+
+// toggle can be: [true, 'hide', 'show']
+const elementsCollapse = (selOrEl, toggle = true) => {
+  const els = elementsFromSelectorOrElements(selOrEl)
+  // log.trace(`toggling: ${toggle}`)
+  // If toggling, determine which direction to toggle
+  if (toggle === true) {
+    toggle = els[0]?.classList.contains('hidden') ? 'show' : 'hide'
+  }
+  // TODO: add animation functionality
+  if (toggle === 'show') {
+    els.forEach(el => el.classList.remove('hidden'))
+  } else {
+    els.forEach(el => el.classList.add('hidden'))
+  }
+}
+
+const expandSiblingsEllipse = (event) => {
+  event.preventDefault()
+  const target = event.currentTarget
+  const parent = target.parentElement
+  // WTF, failing to pass array in
+  parent.querySelectorAll('.hidden').forEach(el => elementsCollapse(el, 'show'))
+  elementsCollapse(target, 'hide')
+}
+
 document.addEventListener('turbo:load', () => {
   if (document.getElementById('timeSelectionBtnGroup')) {
     const periodSelector = new PeriodSelector()
@@ -66,4 +100,7 @@ document.addEventListener('turbo:load', () => {
   // When JS is enabled, some things should be hidden and some things should be shown
   document.querySelectorAll('.hiddenNoJs').forEach(el => el.classList.remove('hiddenNoJs'))
   document.querySelectorAll('.hiddenOnJs').forEach(el => el.classList.add('hidden'))
+
+  document.querySelectorAll('.expandSiblingsEllipse')
+    .forEach(el => el.addEventListener('click', expandSiblingsEllipse))
 })

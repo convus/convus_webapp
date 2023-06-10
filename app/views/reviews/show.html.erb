@@ -32,9 +32,9 @@
   <p>Email <a href="mailto:support@convus.org">support@convus.org</a> if you have questions</p>
 <% else %>
   <p class="mt-4 mb-4">
-    Check out articles that people have
+    Check out
     <%= link_to ratings_path(search_topics: @topic_review.topic_name) do %>
-      rated on <strong><%= @topic_review.topic_name %></strong>
+      articles that have been rated about <strong><%= @topic_review.topic_name %></strong>
     <% end %>.
   </p>
 
@@ -50,7 +50,10 @@
     <% elsif @topic_review_votes.blank? %>
       You haven't marked any ratings applicable to <strong><%= @topic_review.topic_name %></strong> yet.
     <% end %>
-    <%= link_to "Select your ratings", ratings_path(user: "current_user", search_assign_topics: @topic_review&.slug) %> that apply to this topic. Rank them here by dragging and dropping them (higher up on the list is better).
+    <%= link_to "Select your ratings", ratings_path(user: "current_user", search_assign_topics: @topic_review&.slug) %> that apply to this topic.
+  </p>
+  <p class="mt-2">
+    Rank your ratings on this page by dragging and dropping them (higher up is better).
   </p>
 <% end %>
 
