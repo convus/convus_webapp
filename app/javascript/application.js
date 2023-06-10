@@ -77,7 +77,6 @@ const expandSiblingsEllipse = (event) => {
   elementsCollapse(target, 'hide')
 }
 
-
 document.addEventListener('turbo:load', () => {
   if (document.getElementById('timeSelectionBtnGroup')) {
     const periodSelector = new PeriodSelector()
@@ -104,5 +103,4 @@ document.addEventListener('turbo:load', () => {
 
   document.querySelectorAll('.expandSiblingsEllipse')
     .forEach(el => el.addEventListener('click', expandSiblingsEllipse))
-
 })
