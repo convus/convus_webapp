@@ -38,7 +38,7 @@ module RatingSearchable
       ratings = ratings.where(citation_id: @searched_citation.id)
     end
     if current_topics.present?
-      ratings = ratings.merge(Citation.matching_topics(current_topics.map(&:id)))
+      ratings = ratings.merge(Citation.matching_topics(current_topics.map(&:id), include_children: true))
     end
     if p_params[:search_publisher].present?
       @publisher = Publisher.friendly_find(p_params[:search_publisher])

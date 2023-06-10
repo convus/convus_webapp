@@ -84,6 +84,10 @@ class Topic < ApplicationRecord
       end
     end
 
+    def child_ids_for_ids(ids)
+      TopicRelation.where(parent_id: ids).pluck(:child_id)
+    end
+
     def admin_search(str)
       where("name ILIKE ?", "%#{str.strip}%")
     end

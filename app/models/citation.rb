@@ -94,8 +94,10 @@ class Citation < ApplicationRecord
       }.with_indifferent_access
     end
 
-    def matching_topics(topic_ids)
-      joins(:citation_topics).where(citation_topics: {topic_id: Array(topic_ids)})
+    def matching_topics(topic_ids, include_children: false)
+      topic_ids = Array(topic_ids)
+      topic_ids += Topic.child_ids_for_ids(topic_ids) if include_children
+      joins(:citation_topics).where(citation_topics: {topic_id: topic_ids})
     end
 
     def references_filepath(str)
