@@ -22,9 +22,6 @@
         </span>
         <% rendered_text += author %>
       <% end %>
-      <%#= safe_join(citation.authors_rendered.map { |a|
-        link_to(a, url_for(sortable_params.merge(search_author: a)), class: "text-gray-500 no-underline")
-      }, ", ") %>
       <% if rendered_text.length > 50 %>
         <a href="#" class="expandSiblingsEllipse strong text-lg collapsible">...</a>
       <% end %>
