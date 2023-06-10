@@ -13,9 +13,21 @@
   <% end %>
   <% if citation.authors_rendered.any? %>
     <span class="mr-2">
-      <%= safe_join(citation.authors_rendered.map { |a|
+      <% authors_count = citation.authors_rendered.count - 1 %>
+      <% rendered_text = "" %>
+      <% citation.authors_rendered.each_with_index do |author, index| %>
+        <% collapsed = rendered_text.length > 50 %>
+        <span class="<%= collapsed ? 'collapsible hidden' : '' %>">
+          <%= link_to(author, url_for(sortable_params.merge(search_author: author)), class: "text-gray-500 no-underline") %><%= index < authors_count ? ", " : "" %>
+        </span>
+        <% rendered_text += author %>
+      <% end %>
+      <%#= safe_join(citation.authors_rendered.map { |a|
         link_to(a, url_for(sortable_params.merge(search_author: a)), class: "text-gray-500 no-underline")
       }, ", ") %>
+      <% if rendered_text.length > 50 %>
+        <a href="#" class="expandSiblingsEllipse strong text-lg collapsible">...</a>
+      <% end %>
     </span>
   <% end %>
   <span class="mr-2">
