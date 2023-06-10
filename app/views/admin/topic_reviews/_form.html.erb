@@ -7,10 +7,17 @@
   <div class="row sm:grid-cols-2">
     <div class="col">
       <div class="form-row">
-        <%= f.label :topic_name, "Topic" %>
-        <%= f.text_field :topic_name, class: "form-control", required: true %>
+        <%= f.label :display_name %>
+        <%= f.text_field :display_name, class: "form-control", required: true %>
       </div>
     </div>
+    <div class="col">
+      <div class="form-row">
+        <%= f.label :topic_name, "Topic" %>
+        <%= f.text_field :topic_name, value: (@topic_review.non_topic_name? ? @topic_review.topic_name : ""), class: "form-control", placeholder: "Leave blank unless different from display name" %>
+      </div>
+    </div>
+
   </div>
   <div class="row sm:grid-cols-2 mb-8">
     <div class="col">

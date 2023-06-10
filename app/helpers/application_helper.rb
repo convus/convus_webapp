@@ -185,7 +185,7 @@ module ApplicationHelper
   def topic_review_display(topic_obj, klass = nil)
     topic_obj = topic_obj.first if topic_obj.is_a?(Array) # TODO: fix this
     text = if topic_obj.is_a?(TopicReview)
-      topic_obj&.topic_name
+      topic_obj&.display_name
     elsif topic_obj.is_a?(Topic)
       topic_obj.name
     else

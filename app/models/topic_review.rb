@@ -11,12 +11,12 @@ class TopicReview < ApplicationRecord
 
   enum status: STATUS_ENUM
 
-  validates_presence_of :topic_name
+  validates_presence_of :display_name
 
   before_validation :set_calculated_attributes
   after_commit :update_associations
 
-  scope :name_ordered, -> { order(arel_table["topic_name"].lower) }
+  scope :name_ordered, -> { order(arel_table["display_name"].lower) }
   scope :active_but_ended, -> { active.where("end_at < ?", Time.current) }
   scope :pending_but_started, -> { pending.where("start_at < ?", Time.current) }
   scope :with_end_date, -> { where.not(end_at: nil) }
@@ -58,6 +58,10 @@ class TopicReview < ApplicationRecord
     end_at
   end
 
+  def non_topic_name?
+    topic_name != display_name
+  end
+
   def pending_but_started?
     pending? && start_at < Time.current && end_at > Time.current
   end
@@ -72,12 +76,14 @@ class TopicReview < ApplicationRecord
   end
 
   def set_calculated_attributes
+    self.topic_name = display_name if topic_name.blank?
     if topic_name_changed?
       # Skip update, trigger it manually after commit
       self.topic = Topic.find_or_create_for_name(topic_name, {skip_update_associations: true})
     end
     self.topic_name = topic&.name if topic.present?
-    self.slug = self.class.slugify(topic_name)
+    self.display_name ||= topic_name # Make it work if only topic_name is passed
+    self.slug = self.class.slugify(display_name)
     self.end_at ||= start_at + STANDARD_PERIOD if start_at.present?
     # Reverse the times if they should be reversed
     if start_at.present? && end_at.present? && end_at < start_at

@@ -86,7 +86,8 @@ class Admin::TopicReviewsController < Admin::BaseController
   end
 
   def permitted_params
-    params.require(:topic_review).permit(:topic_name, :timezone, :start_at_in_zone, :end_at_in_zone)
+    params.require(:topic_review).permit(:topic_name, :timezone, :display_name,
+      :start_at_in_zone, :end_at_in_zone)
   end
 
   def find_topic_review

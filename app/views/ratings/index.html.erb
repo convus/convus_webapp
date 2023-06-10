@@ -140,7 +140,7 @@
           <label class="form-control-check"><%# TODO: make this a functioning label_tag %>
             <%= check_box_tag "search_topics[]", topic.slug, checked, class: "submitOnChange" %>
             Only articles about <%= topic_review_display(topic) %>
-            <% if topic.id == primary_topic_id %><small class="less-strong">(current review topic)</small><% end %>
+            <% if topic.id == primary_topic_id %><small class="less-strong">(current topic)</small><% end %>
           </label>
         <% end %>
         <% if primary_topic_review.present? && viewing_current_user? %>

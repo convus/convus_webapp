@@ -52,9 +52,9 @@
           <%= active_link "Ratings", ratings_landing_url, class: "main-nav-link ml-2" %>
           <% if primary_topic_review.present? %>
             <% rank_active = controller_name == "reviews" && action_name == "show" && @topic_review&.id == primary_topic_review.id %>
-            <%= link_to review_path(primary_topic_review.slug), title: "Review #{primary_topic_review.topic_name}", class: "main-nav-link ml-2 #{rank_active ? 'active' : ''}" do %>
+            <%= link_to review_path(primary_topic_review.slug), title: "Review #{primary_topic_review.display_name}", class: "main-nav-link ml-2 #{rank_active ? 'active' : ''}" do %>
               Review<span class="hidden md:inline">:
-                <strong><%= primary_topic_review.topic_name %></strong>
+                <strong><%= primary_topic_review.display_name %></strong>
               </span>
             <% end %>
           <% end %>
