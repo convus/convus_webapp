@@ -31,14 +31,16 @@
 <% elsif @topic_review.pending? %>
   <p>Email <a href="mailto:support@convus.org">support@convus.org</a> if you have questions</p>
 <% else %>
-  <!-- <p class="mb-4">
-    Want help finding articles on <%= @topic_review.topic_name %>? Check out articles other people have
-    <%= link_to "rated on this topic", ratings_path(search_topics: @topic_review.slug) %> to get started.
-  </p> -->
+  <p class="mt-4 mb-4">
+    Check out articles that people have
+    <%= link_to ratings_path(search_topics: @topic_review.topic_name) do %>
+       rated on <strong><%= @topic_review.topic_name %></strong>
+    <% end %>.
+  </p>
 
-  <% if @topic_review_citations.recommended.any? %>
+<!--   <% if @topic_review_citations.recommended.any? %>
     <%= render partial: "/shared/citations_list", locals: {objects: @topic_review_citations.recommended, wrapper_class: "standard-top-offset", title: "Articles which users have recommended on this topic:", show_read: true} %>
-  <% end %>
+  <% end %> -->
 
   <hr class="mt-8">
 
@@ -46,9 +48,9 @@
     <% if current_user.blank? %>
       After you have rated some articles,
     <% elsif @topic_review_votes.blank? %>
-      You haven't marked any ratings applicable to <%= @topic_review.topic_name %> yet.
+      You haven't marked any ratings applicable to <strong><%= @topic_review.topic_name %></strong> yet.
     <% end %>
-    <%= link_to "Select your ratings", ratings_path(user: "current_user", search_assign_topics: @topic_review&.slug) %> that apply to this topic and rank them here.
+    <%= link_to "Select your ratings", ratings_path(user: "current_user", search_assign_topics: @topic_review&.slug) %> that apply to this topic. Rank them here by dragging and dropping them (higher up on the list is better).
   </p>
 <% end %>
 

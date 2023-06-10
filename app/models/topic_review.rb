@@ -83,7 +83,7 @@ class TopicReview < ApplicationRecord
     end
     self.topic_name = topic&.name if topic.present?
     self.display_name ||= topic_name # Make it work if only topic_name is passed
-    self.slug = self.class.slugify(topic_name)
+    self.slug = self.class.slugify(display_name)
     self.end_at ||= start_at + STANDARD_PERIOD if start_at.present?
     # Reverse the times if they should be reversed
     if start_at.present? && end_at.present? && end_at < start_at

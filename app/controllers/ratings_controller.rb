@@ -182,7 +182,7 @@ class RatingsController < ApplicationController
       @assigning = true
       @assign_topics = Array(topic)
     elsif params[:search_assign_topics].present?
-      topic = Topic.friendly_find(params[:search_assign_topics])
+      topic = Topic.friendly_find(params[:search_assign_topics]) || TopicReview.friendly_find(params[:search_assign_topics])&.topic
       return unless topic.present?
       @assign_topics = [topic]
       @assigning = true
