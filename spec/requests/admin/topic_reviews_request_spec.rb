@@ -96,7 +96,6 @@ RSpec.describe base_url, type: :request do
       it "updates" do
         expect(topic_review).to be_valid
         expect(topic_review.status).to eq "pending"
-        topic_id = topic_review.topic_id
         expect {
           patch "#{base_url}/#{topic_review.id}", params: {topic_review: valid_params}
         }.to change(Topic, :count).by 1

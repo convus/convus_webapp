@@ -34,11 +34,11 @@
   <p class="mt-4 mb-4">
     Check out articles that people have
     <%= link_to ratings_path(search_topics: @topic_review.topic_name) do %>
-       rated on <strong><%= @topic_review.topic_name %></strong>
+      rated on <strong><%= @topic_review.topic_name %></strong>
     <% end %>.
   </p>
 
-<!--   <% if @topic_review_citations.recommended.any? %>
+  <!--   <% if @topic_review_citations.recommended.any? %>
     <%= render partial: "/shared/citations_list", locals: {objects: @topic_review_citations.recommended, wrapper_class: "standard-top-offset", title: "Articles which users have recommended on this topic:", show_read: true} %>
   <% end %> -->
 
