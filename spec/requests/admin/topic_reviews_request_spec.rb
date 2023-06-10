@@ -10,7 +10,8 @@ RSpec.describe base_url, type: :request do
       topic_name: "Example topic",
       start_at_in_zone: form_formatted_time(start_at),
       end_at_in_zone: form_formatted_time(end_at),
-      timezone: "America/Bogota"
+      timezone: "America/Bogota",
+      display_name: "Questions about Example Topic"
     }
   end
 
@@ -91,13 +92,25 @@ RSpec.describe base_url, type: :request do
     end
 
     describe "update" do
+      let(:display_name) { "Questions about Example Topic" }
       it "updates" do
         expect(topic_review).to be_valid
         expect(topic_review.status).to eq "pending"
-        patch "#{base_url}/#{topic_review.id}", params: {topic_review: valid_params}
+        topic_id = topic_review.topic_id
+        expect {
+          patch "#{base_url}/#{topic_review.id}", params: {topic_review: valid_params}
+        }.to change(Topic, :count).by 1
         expect(flash[:success]).to be_present
         expect(topic_review.reload.topic_name).to eq "Example topic"
         expect(topic_review.status).to eq "active"
+        expect(topic_review.display_name).to eq display_name
+        expect {
+          patch "#{base_url}/#{topic_review.id}", params: {
+            topic_review: valid_params.merge(topic_name: " ")
+          }
+        }.to change(Topic, :count).by 1
+        expect(topic_review.reload.topic_name).to eq display_name
+        expect(topic_review.display_name).to eq display_name
       end
     end
 

@@ -13,8 +13,9 @@
           <small><%= sortable "updated_at", skip_sortable: skip_sortable %></small>
         </th>
         <th>
-          <%= sortable "topic_name", skip_sortable: skip_sortable %>
+          <%= sortable "display_name", skip_sortable: skip_sortable %>
         </th>
+        <th class="small">Topic</th>
         <th>
           Status
         </th>
@@ -38,7 +39,12 @@
             <small class="convertTime"><%= l(topic_review.updated_at, format: :convert_time) %></small>
           </td>
           <td>
-            <%= topic_review.topic_name %>
+            <%= topic_review.display_name %>
+          </td>
+          <td>
+            <% if topic_review.non_topic_name? %>
+              <%= topic_review.topic_name %>
+            <% end %>
           </td>
           <td>
             <%= topic_review.status %>

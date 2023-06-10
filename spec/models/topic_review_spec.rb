@@ -97,14 +97,16 @@ RSpec.describe TopicReview, type: :model do
       expect(topic_review.update(updated_at: Time.current)).to be_truthy
       expect(topic_review).to be_valid
       expect(topic_review.topic_name).to eq name
+      expect(topic_review.display_name).to eq name
     end
     context "create with name" do
-      let(:topic_review) { TopicReview.new(topic_name: "Some cool topic") }
+      let(:topic_review) { TopicReview.new(topic_name: "Some cool topic", display_name: "Other name") }
       it "creates a topic with the name if new, otherwise it assigns" do
         expect {
           expect(topic_review.save).to be_truthy
         }.to change(Topic, :count).by 1
         expect(topic_review.topic_name).to eq "Some cool topic"
+        expect(topic_review.display_name).to eq "Other name"
         topic = topic_review.topic
 
         expect {
@@ -125,6 +127,7 @@ RSpec.describe TopicReview, type: :model do
           topic.update(name: "Cool topic")
           expect(topic_review.reload.topic_id).to eq topic.id
           expect(topic_review.topic_name).to eq "Cool topic"
+          expect(topic_review.display_name).to eq "Other name"
         end
       end
     end
