@@ -16,6 +16,7 @@ class Admin::CitationsController < Admin::BaseController
   end
 
   def edit
+    @edit_published_date = TranzitoUtils::Normalize.boolean(params[:edit_published_date])
   end
 
   def update

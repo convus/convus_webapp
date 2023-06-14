@@ -56,20 +56,6 @@
     <div class="row sm:grid-cols-2">
       <div class="col">
         <div class="form-row">
-          <%= f.label :published_at %>
-          <%= f.datetime_local_field :published_at, class: "form-control" %>
-        </div>
-      </div>
-      <div class="col">
-        <div class="form-row">
-          <%= f.label :published_updated_at %>
-          <%= f.datetime_local_field :published_updated_at, class: "form-control" %>
-        </div>
-      </div>
-    </div>
-    <div class="row sm:grid-cols-2">
-      <div class="col">
-        <div class="form-row">
           <%= f.label :word_count %>
           <%= f.number_field :word_count, class: "form-control" %>
         </div>
@@ -85,6 +71,45 @@
           <%= f.label :paywall, class: "form-control-check" do %>
             <%= f.check_box :paywall %>
             Has a paywall
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="row sm:grid-cols-2 mt-2">
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :published_at do %>
+            Published at
+            <% if !@edit_published_date %>
+              <%= link_to "edit published at", url_for(edit_published_date: true), class: "less-strong", title: "iOS refuses to accept the date, also  shouldn't be edited unintentionally (to avoid messing up the timezone, etc)" %>
+            <% end %>
+          <% end %>
+          <% if @edit_published_date %>
+            <%= f.datetime_local_field :published_at, class: "form-control" %>
+          <% else %>
+            <p class="form-control bg-gray-100 cursor-not-allowed">
+              <% if @citation.published_at.present? %>
+                <span class="convertTime"><%= l(@citation.published_at, format: :convert_time) %></span>
+              <% else %>
+                <span class="less-strong">none</span>
+              <% end %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-row">
+          <%= f.label :published_updated_at %>
+          <% if @edit_published_date %>
+            <%= f.datetime_local_field :published_updated_at, class: "form-control" %>
+          <% else %>
+            <p class="form-control bg-gray-100 cursor-not-allowed">
+              <% if @citation.published_updated_at.present? %>
+                <span class="convertTime"><%= l(@citation.published_updated_at, format: :convert_time) %></span>
+              <% else %>
+                <span class="less-strong">none</span>
+              <% end %>
+            </p>
           <% end %>
         </div>
       </div>
