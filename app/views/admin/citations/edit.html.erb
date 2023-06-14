@@ -85,7 +85,8 @@
             <% end %>
           <% end %>
           <% if @edit_published_date %>
-            <%= f.datetime_local_field :published_at, class: "form-control" %>
+            <%= f.hidden_field :timezone, class: "hiddenFieldTimezone" %>
+            <%= f.datetime_local_field :published_at_in_zone, class: "form-control" %>
           <% else %>
             <p class="form-control bg-gray-100 cursor-not-allowed">
               <% if @citation.published_at.present? %>
@@ -101,7 +102,7 @@
         <div class="form-row">
           <%= f.label :published_updated_at %>
           <% if @edit_published_date %>
-            <%= f.datetime_local_field :published_updated_at, class: "form-control" %>
+            <%= f.datetime_local_field :published_updated_at_in_zone, class: "form-control" %>
           <% else %>
             <p class="form-control bg-gray-100 cursor-not-allowed">
               <% if @citation.published_updated_at.present? %>

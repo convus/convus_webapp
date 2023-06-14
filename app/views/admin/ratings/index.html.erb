@@ -21,4 +21,9 @@
 
   <%= render partial: "/shared/current_header", locals: {collection: @ratings, render_period: true} %>
 </div>
+
 <%= render partial: "/admin/ratings/table", locals: {ratings: @ratings} %>
+
+<div class="mt-4">
+  <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, skip_total: true} %>
+</div>
