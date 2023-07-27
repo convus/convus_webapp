@@ -42,7 +42,7 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
-on_worker_boot do
-  $prefab = $prefab.fork
-  $prefab.set_rails_loggers
-end
+# on_worker_boot do
+#   $prefab = $prefab.fork
+#   $prefab.set_rails_loggers
+# end
