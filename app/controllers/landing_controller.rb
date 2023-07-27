@@ -27,9 +27,9 @@ class LandingController < ApplicationController
 
   private
 
-  def render_count
-    $prefab.enabled?('more_ratings') ? 10 : 5
-  end
+  # def render_count
+  #   $prefab.enabled?('more_ratings') ? 10 : 5
+  # end
 
   def viewable_ratings
     @viewable_ratings ||= Rating.joins(:citation)
