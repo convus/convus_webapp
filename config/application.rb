@@ -40,6 +40,5 @@ module ConvusReviews
     config.generators.system_tests = nil
 
     $prefab = Prefab::Client.new
-    $prefab.set_rails_loggers
   end
 end
