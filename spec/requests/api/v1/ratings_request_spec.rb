@@ -208,4 +208,48 @@ RSpec.describe base_url, type: :request do
       end
     end
   end
+
+  describe "show" do
+    let(:default_attrs) do
+      {
+        agreement: "disagree",
+        quality: "quality_high",
+        changed_opinion: true,
+        significant_factual_error: true,
+        error_quotes: "Quote goes here",
+        topics_text: "A topic\n\nAnd another topic",
+        learned_something: true,
+        not_understood: true,
+        not_finished: true,
+      }
+    end
+    let(:url) { "https://en.m.wikipedia.org/wiki/Illegal_number" }
+    it "returns expected result" do
+      get base_url, params: {id: url}, headers: json_headers.merge(
+        "HTTP_ORIGIN" => "*",
+        "Authorization" => "Bearer #{current_user.api_token}"
+      )
+      expect(response.code).to eq "200"
+      expect(response.headers["access-control-allow-origin"]).to eq("*")
+      expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
+
+      expect(json_result).to eq({})
+    end
+    context "matching rating" do
+      let!(:rating) { FactoryBot.create(:rating, default_attrs.merge(user: current_user, submitted_url: url)) }
+      let(:target_response) { default_attrs.merge(citation_title: rating.citation_title) }
+      it "returns expected result" do
+        expect_attrs_to_match_hash(rating, target_response)
+        get base_url, params: {id: url}, headers: json_headers.merge(
+          "HTTP_ORIGIN" => "*",
+          "Authorization" => "Bearer #{current_user.api_token}"
+        )
+        expect(response.code).to eq "200"
+        expect(response.headers["access-control-allow-origin"]).to eq("*")
+        expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
+
+        expect_hashes_to_match(json_result, target_response)
+      end
+    end
+  end
 end

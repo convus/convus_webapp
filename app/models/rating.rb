@@ -66,6 +66,12 @@ class Rating < ApplicationRecord
       end
     end
 
+    def find_for_url(submitted_url, user_id)
+      citation = Citation.find_for_url(submitted_url)
+      return nil if citation.blank?
+      where(citation_id: citation.id, user_id: user_id).first
+    end
+
     def find_or_build_for(attrs)
       citation = Citation.find_or_create_for_url(attrs[:submitted_url], attrs[:citation_title])
       rating = where(user_id: attrs[:user_id], citation_id: citation.id).first || Rating.new

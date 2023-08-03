@@ -298,6 +298,31 @@ RSpec.describe Rating, type: :model do
     end
   end
 
+  describe "find_for_url" do
+    let(:url) { "https://example.com/cool-stuff?#someThing" }
+    it "doesn't create" do
+      expect(Rating.count).to eq 0
+      expect(Citation.count).to eq 0
+      expect(Rating.find_for_url(url, 12)&.id).to be_nil
+      expect(Rating.count).to eq 0
+      expect(Citation.count).to eq 0
+    end
+    context "rating exists" do
+      let!(:rating) { FactoryBot.create(:rating, submitted_url: url.gsub(/\?.+\z/, "")) }
+      let(:user) { rating.user }
+      let(:user2) { FactoryBot.create(:user) }
+      it "finds" do
+        expect(Citation.find_for_url(url)&.id).to eq rating.citation_id
+        expect(Rating.count).to eq 1
+        expect(Citation.count).to eq 1
+        expect(Rating.find_for_url(url, user.id)&.id).to eq rating.id
+        expect(Rating.find_for_url(url, user2.id)&.id).to be_nil
+        expect(Rating.count).to eq 1
+        expect(Citation.count).to eq 1
+      end
+    end
+  end
+
   describe "calculated_version_integer" do
     let(:rating) { Rating.new(source: source) }
     let(:source) { nil }
