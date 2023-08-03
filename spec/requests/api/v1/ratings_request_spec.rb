@@ -220,7 +220,7 @@ RSpec.describe base_url, type: :request do
         topics_text: "A topic\n\nAnd another topic",
         learned_something: true,
         not_understood: true,
-        not_finished: true,
+        not_finished: true
       }
     end
     let(:url) { "https://en.m.wikipedia.org/wiki/Illegal_number" }
