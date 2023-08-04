@@ -272,6 +272,14 @@ RSpec.describe base_url, type: :request do
         expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
 
         expect_hashes_to_match(json_result, target_response)
+
+        # URL encoded also works
+        get "#{base_url}/for_url?url=#{CGI.escape(url)}", headers: json_headers.merge(
+          "HTTP_ORIGIN" => "*",
+          "Authorization" => "Bearer #{current_user.api_token}"
+        )
+        expect(response.code).to eq "200"
+        expect_hashes_to_match(json_result, target_response)
       end
     end
   end
