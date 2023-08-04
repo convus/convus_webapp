@@ -4,6 +4,7 @@ module API
       before_action :ensure_current_user!
 
       def show
+        # NOTE: params[:id] is ignored
         rating = Rating.find_for_url(params[:url], current_user.id)
         render json: rating_serialized(rating)
       end
