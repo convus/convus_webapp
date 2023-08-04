@@ -18,12 +18,20 @@ class MetadataAttributer
         [attrib, val]
       end.compact.to_h
 
-      attrs[:word_count] = metadata_word_count(rating_metadata, json_ld, rating.publisher.base_word_count)
+      article_body = text_from_json_ld_article_body(json_ld&.dig("articleBody"))
+      attrs[:word_count] = metadata_word_count(article_body || rating.citation_text, rating_metadata, rating.publisher.base_word_count)
 
       attrs[:topics_string] = keyword_or_text_topic_names(attrs).join(",")
       attrs[:topics_string] = nil if attrs[:topics_string].blank?
 
       skip_clean_attrs ? attrs : clean_attrs(rating, attrs)
+    end
+
+    def text_from_json_ld_article_body(article_body)
+      return nil unless article_body.present?
+      # New Yorker returns as markdown and adds some +++'s in there
+      article_body = CommonMarker.render_doc(article_body.gsub(/\++/, ""), :DEFAULT).to_html
+      html_decode(article_body)
     end
 
     private
@@ -157,14 +165,8 @@ class MetadataAttributer
       false # TODO: include publisher
     end
 
-    def metadata_word_count(rating_metadata, json_ld, base_word_count)
-      article_body = json_ld&.dig("articleBody")
-      if article_body.present?
-        # New Yorker returns as markdown and adds some +++'s in there
-        article_body = CommonMarker.render_doc(article_body.gsub(/\++/, ""), :DEFAULT).to_html
-        article_body = html_decode(article_body)
-        return article_body&.split(/\s+/)&.length
-      end
+    def metadata_word_count(text, rating_metadata, base_word_count)
+      return text.split(/\s+/).length if text.present?
       word_count = rating_metadata.detect { |i| i["word_count"].present? }&.dig("word_count")
       return nil if word_count.blank? || word_count < 100
       word_count - base_word_count

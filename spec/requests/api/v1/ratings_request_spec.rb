@@ -112,6 +112,29 @@ RSpec.describe base_url, type: :request do
             expect(rating.citation_metadata_raw).to eq citation_metadata.as_json
           end
         end
+        context "with citation_text" do
+          let(:citation_metadata) do
+            [{something: "fff"}, {other: "ffff"}, {citation_text: "something here that goes on forever"}]
+          end
+          it "returns 200" do
+            expect(Rating.count).to eq 0
+            post base_url, params: ratings_with_citation_metadata.to_json,
+              headers: json_headers.merge(
+                "HTTP_ORIGIN" => "*",
+                "Authorization" => "Bearer #{current_user.api_token}"
+              )
+            expect(response.code).to eq "200"
+
+            rating = Rating.last
+            # Required to set the word_count
+            UpdateCitationMetadataFromRatingsJob.new.perform(rating.citation_id)
+            rating.reload
+            expect_rating_matching_params(json_result, target_response, rating)
+            expect(rating.citation_text).to eq "something here that goes on forever"
+            expect(rating.citation_metadata_raw).to eq citation_metadata[0, 2].as_json
+            expect(rating.metadata_attributes[:word_count]).to eq 6
+          end
+        end
       end
       context "default_attrs" do
         let(:rating_params) do
@@ -205,6 +228,50 @@ RSpec.describe base_url, type: :request do
         expect(response.code).to eq "400"
 
         expect_hashes_to_match(json_result, {message: ["Submitted url looks like an email inbox - which can't be shared"]})
+      end
+    end
+  end
+
+  describe "show" do
+    let(:default_attrs) do
+      {
+        agreement: "disagree",
+        quality: "quality_high",
+        changed_opinion: true,
+        significant_factual_error: true,
+        error_quotes: "Quote goes here",
+        topics_text: "A topic\n\nAnd another topic",
+        learned_something: true,
+        not_understood: true,
+        not_finished: true
+      }
+    end
+    let(:url) { "https://en.m.wikipedia.org/wiki/Illegal_number" }
+    it "returns expected result" do
+      get base_url, params: {id: url}, headers: json_headers.merge(
+        "HTTP_ORIGIN" => "*",
+        "Authorization" => "Bearer #{current_user.api_token}"
+      )
+      expect(response.code).to eq "200"
+      expect(response.headers["access-control-allow-origin"]).to eq("*")
+      expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
+
+      expect(json_result).to eq({})
+    end
+    context "matching rating" do
+      let!(:rating) { FactoryBot.create(:rating, default_attrs.merge(user: current_user, submitted_url: url)) }
+      let(:target_response) { default_attrs.merge(citation_title: rating.citation_title) }
+      it "returns expected result" do
+        expect_attrs_to_match_hash(rating, target_response)
+        get base_url, params: {id: url}, headers: json_headers.merge(
+          "HTTP_ORIGIN" => "*",
+          "Authorization" => "Bearer #{current_user.api_token}"
+        )
+        expect(response.code).to eq "200"
+        expect(response.headers["access-control-allow-origin"]).to eq("*")
+        expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
+
+        expect_hashes_to_match(json_result, target_response)
       end
     end
   end
