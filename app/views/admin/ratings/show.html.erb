@@ -58,6 +58,7 @@
               <%= changed_opinion_display(@rating.changed_opinion?) %>
               <%= significant_factual_error_display(@rating.significant_factual_error?) %>
               <%= not_finished_display(@rating.not_finished?) %>
+              <%= not_understood_display(@rating.not_understood?) %>
             </td>
           </tr>
           <tr>
@@ -100,6 +101,21 @@
       </table>
     </div>
   </div>
+</div>
+
+<% best_text = @rating.citation_text_best %>
+<div class="large-width-container">
+  <h3 class="mt-5">
+    Citation text:
+    <% if best_text.present? %>
+      <small><%= admin_number_display(best_text.length) %> characters</small>
+    <% end %>
+  </h3>
+  <% if best_text.present? %>
+    <code class="text-xs block bg-gray-100 p-1 h-80 overflow-scroll"><%= best_text %></code>
+  <% else %>
+    No citation text
+  <% end %>
 </div>
 
 <div class="large-width-container">

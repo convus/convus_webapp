@@ -216,6 +216,7 @@ RSpec.describe Rating, type: :model do
       expect(rating.metadata_processed?).to be_falsey
       expect(rating.metadata_unprocessed?).to be_truthy
       expect(rating.citation_metadata_str).to eq metadata_string.gsub(": ", ":")
+      expect(rating.citation_text).to be_blank
     end
     context "empty hash" do
       let(:rating) { FactoryBot.create(:rating, citation_metadata_str: "{}") }
@@ -223,6 +224,20 @@ RSpec.describe Rating, type: :model do
         expect(rating.reload.citation_metadata).to eq({})
         expect(rating.metadata_present?).to be_falsey
         expect(Rating.metadata_present.pluck(:id)).to eq([])
+      end
+    end
+    context "citation_text" do
+      let(:metadata_raw) { [{something: "fff"}, {other: "ffff"}, {citation_text: "something here that goes on forever"}] }
+      it "removes citation_text element and assigns to citation_text" do
+        expect(rating.metadata_present?).to be_falsey
+        expect(rating.citation_text).to be_blank
+        rating.citation_metadata_str = metadata_raw.to_json
+        expect(rating.citation_metadata).to eq({raw: metadata_raw[0, 2]}.as_json)
+        expect(rating.metadata_at).to be_within(1).of Time.current
+        expect(rating.metadata_present?).to be_truthy
+        expect(rating.metadata_processed?).to be_falsey
+        expect(rating.metadata_unprocessed?).to be_truthy
+        expect(rating.citation_text).to eq metadata_raw.last[:citation_text]
       end
     end
     context "create" do
@@ -295,6 +310,31 @@ RSpec.describe Rating, type: :model do
       expect(Rating.display_name_search(" ARTIcle ").pluck(:id)).to match_array([rating1.id, rating2.id])
       expect(Rating.display_name_search("Another  article ").pluck(:id)).to match_array([rating2.id])
       expect(Rating.display_name_search("cool ").pluck(:id)).to match_array([rating1.id, rating3.id])
+    end
+  end
+
+  describe "find_for_url" do
+    let(:url) { "https://example.com/cool-stuff?#someThing" }
+    it "doesn't create" do
+      expect(Rating.count).to eq 0
+      expect(Citation.count).to eq 0
+      expect(Rating.find_for_url(url, 12)&.id).to be_nil
+      expect(Rating.count).to eq 0
+      expect(Citation.count).to eq 0
+    end
+    context "rating exists" do
+      let!(:rating) { FactoryBot.create(:rating, submitted_url: url.gsub(/\?.+\z/, "")) }
+      let(:user) { rating.user }
+      let(:user2) { FactoryBot.create(:user) }
+      it "finds" do
+        expect(Citation.find_for_url(url)&.id).to eq rating.citation_id
+        expect(Rating.count).to eq 1
+        expect(Citation.count).to eq 1
+        expect(Rating.find_for_url(url, user.id)&.id).to eq rating.id
+        expect(Rating.find_for_url(url, user2.id)&.id).to be_nil
+        expect(Rating.count).to eq 1
+        expect(Citation.count).to eq 1
+      end
     end
   end
 

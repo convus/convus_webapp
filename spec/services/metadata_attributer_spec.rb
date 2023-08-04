@@ -11,7 +11,8 @@ RSpec.describe MetadataAttributer do
       expect(subject.send(:metadata_published_updated_at, rating_metadata, json_ld)&.to_i).to be_within(1).of metadata_attrs[:published_updated_at]&.to_i
       expect(subject.send(:metadata_description, rating_metadata, json_ld)).to eq metadata_attrs[:description]
       expect(subject.send(:metadata_canonical_url, rating_metadata, json_ld)).to eq metadata_attrs[:canonical_url]
-      expect(subject.send(:metadata_word_count, rating_metadata, json_ld, 100)).to eq metadata_attrs[:word_count]
+      best_text = subject.text_from_json_ld_article_body(json_ld["articleBody"])
+      expect(subject.send(:metadata_word_count, best_text, rating_metadata, 100)).to eq metadata_attrs[:word_count]
       expect(subject.send(:metadata_paywall, rating_metadata, json_ld)).to be_falsey
 
       expect_hashes_to_match(subject.from_rating(rating, skip_clean_attrs: true), metadata_attrs, match_time_within: 1)

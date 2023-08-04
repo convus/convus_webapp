@@ -66,6 +66,12 @@ class Rating < ApplicationRecord
       end
     end
 
+    def find_for_url(submitted_url, user_id)
+      citation = Citation.find_for_url(submitted_url)
+      return nil if citation.blank?
+      where(citation_id: citation.id, user_id: user_id).first
+    end
+
     def find_or_build_for(attrs)
       citation = Citation.find_or_create_for_url(attrs[:submitted_url], attrs[:citation_title])
       rating = where(user_id: attrs[:user_id], citation_id: citation.id).first || Rating.new
@@ -137,7 +143,14 @@ class Rating < ApplicationRecord
 
   def citation_metadata_str=(val)
     m_values = MetadataParser.parse_string(val)
-    self.citation_metadata = m_values.any? ? {RAW_KEY => m_values} : {}
+    self.citation_metadata = if m_values.any?
+      # HACK HACK HACK!!! This removes the citation_text element and assigns the value
+      article_text = m_values.extract! { |meta_hash| meta_hash.keys == ["citation_text"] }
+      self.citation_text = article_text.first["citation_text"] if article_text.present?
+      {RAW_KEY => m_values}
+    else
+      {}
+    end
     self.metadata_at = Time.current if citation_metadata.present?
     citation_metadata
   end
@@ -217,6 +230,12 @@ class Rating < ApplicationRecord
 
   def metadata_attributes
     (citation_metadata&.dig(ATTRS_KEY) || {}).symbolize_keys
+  end
+
+  def citation_text_best
+    # I believe articleBody is better than our own scraped citation_text
+    MetadataAttributer.text_from_json_ld_article_body(json_ld_content&.dig("articleBody")) ||
+      citation_text
   end
 
   # This is called first in UpdateCitationMetadataFromRatingsJob
