@@ -149,8 +149,8 @@ class Rating < ApplicationRecord
       self.citation_text = article_text.first["citation_text"] if article_text.present?
       {RAW_KEY => m_values}
     else
-       {}
-     end
+      {}
+    end
     self.metadata_at = Time.current if citation_metadata.present?
     citation_metadata
   end
