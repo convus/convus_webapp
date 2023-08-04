@@ -248,7 +248,7 @@ RSpec.describe base_url, type: :request do
     end
     let(:url) { "https://en.m.wikipedia.org/wiki/Illegal_number" }
     it "returns expected result" do
-      get base_url, params: {id: url}, headers: json_headers.merge(
+      get "#{base_url}/for_url", params: {url: url}, headers: json_headers.merge(
         "HTTP_ORIGIN" => "*",
         "Authorization" => "Bearer #{current_user.api_token}"
       )
@@ -263,7 +263,7 @@ RSpec.describe base_url, type: :request do
       let(:target_response) { default_attrs.merge(citation_title: rating.citation_title) }
       it "returns expected result" do
         expect_attrs_to_match_hash(rating, target_response)
-        get base_url, params: {id: url}, headers: json_headers.merge(
+        get "#{base_url}/for_url", params: {url: url}, headers: json_headers.merge(
           "HTTP_ORIGIN" => "*",
           "Authorization" => "Bearer #{current_user.api_token}"
         )
@@ -271,6 +271,14 @@ RSpec.describe base_url, type: :request do
         expect(response.headers["access-control-allow-origin"]).to eq("*")
         expect(response.headers["access-control-allow-methods"]).to eq all_request_methods
 
+        expect_hashes_to_match(json_result, target_response)
+
+        # URL encoded also works
+        get "#{base_url}/for_url?url=#{CGI.escape(url)}", headers: json_headers.merge(
+          "HTTP_ORIGIN" => "*",
+          "Authorization" => "Bearer #{current_user.api_token}"
+        )
+        expect(response.code).to eq "200"
         expect_hashes_to_match(json_result, target_response)
       end
     end
