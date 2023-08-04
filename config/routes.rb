@@ -38,7 +38,7 @@ Rails.application.routes.draw do
         collection { get :status }
       end
       resources :reviews, only: [:create]
-      resources :ratings, only: [:create, :index]
+      resources :ratings, only: [:create, :show]
       resources :citations, only: %i[index show] do
         collection { post :filepath }
       end

@@ -248,7 +248,7 @@ RSpec.describe base_url, type: :request do
     end
     let(:url) { "https://en.m.wikipedia.org/wiki/Illegal_number" }
     it "returns expected result" do
-      get base_url, params: {id: url}, headers: json_headers.merge(
+      get "#{base_url}/for_url", params: {url: url}, headers: json_headers.merge(
         "HTTP_ORIGIN" => "*",
         "Authorization" => "Bearer #{current_user.api_token}"
       )
@@ -263,7 +263,7 @@ RSpec.describe base_url, type: :request do
       let(:target_response) { default_attrs.merge(citation_title: rating.citation_title) }
       it "returns expected result" do
         expect_attrs_to_match_hash(rating, target_response)
-        get base_url, params: {id: url}, headers: json_headers.merge(
+        get "#{base_url}/for_url", params: {url: url}, headers: json_headers.merge(
           "HTTP_ORIGIN" => "*",
           "Authorization" => "Bearer #{current_user.api_token}"
         )

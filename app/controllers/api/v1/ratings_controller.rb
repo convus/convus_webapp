@@ -3,8 +3,8 @@ module API
     class RatingsController < APIV1Controller
       before_action :ensure_current_user!
 
-      def index
-        rating = Rating.find_for_url(params[:id], current_user.id)
+      def show
+        rating = Rating.find_for_url(params[:url], current_user.id)
         render json: rating_serialized(rating)
       end
 
