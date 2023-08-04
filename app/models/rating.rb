@@ -144,12 +144,9 @@ class Rating < ApplicationRecord
   def citation_metadata_str=(val)
     m_values = MetadataParser.parse_string(val)
     self.citation_metadata = if m_values.any?
-      # HACK HACK HACK!!! This is surprising!
-      # The browser extension adds citation_text as the final element of metadata.
-      # Remove that element and assign citation_text to the rating
-      if m_values.last.is_a?(Hash) && m_values.last["citation_text"].present?
-        self.citation_text = m_values.delete_at(-1)["citation_text"]
-      end
+      # HACK HACK HACK!!! This removes the citation_text element and assigns the value
+      article_text = m_values.extract! { |meta_hash| meta_hash.keys == ["citation_text"] }
+      self.citation_text = article_text.first["citation_text"] if article_text.present?
       {RAW_KEY => m_values}
     else
        {}
@@ -233,6 +230,12 @@ class Rating < ApplicationRecord
 
   def metadata_attributes
     (citation_metadata&.dig(ATTRS_KEY) || {}).symbolize_keys
+  end
+
+  def citation_text_best
+    # I believe articleBody is better than our own scraped citation_text
+    MetadataAttributer.text_from_json_ld_article_body(json_ld_content&.dig("articleBody")) ||
+      citation_text
   end
 
   # This is called first in UpdateCitationMetadataFromRatingsJob

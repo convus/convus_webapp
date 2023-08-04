@@ -126,9 +126,13 @@ RSpec.describe base_url, type: :request do
             expect(response.code).to eq "200"
 
             rating = Rating.last
+            # Required to set the word_count
+            UpdateCitationMetadataFromRatingsJob.new.perform(rating.citation_id)
+            rating.reload
             expect_rating_matching_params(json_result, target_response, rating)
             expect(rating.citation_text).to eq "something here that goes on forever"
             expect(rating.citation_metadata_raw).to eq citation_metadata[0, 2].as_json
+            expect(rating.metadata_attributes[:word_count]).to eq 6
           end
         end
       end

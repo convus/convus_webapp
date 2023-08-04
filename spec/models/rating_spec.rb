@@ -232,7 +232,7 @@ RSpec.describe Rating, type: :model do
         expect(rating.metadata_present?).to be_falsey
         expect(rating.citation_text).to be_blank
         rating.citation_metadata_str = metadata_raw.to_json
-        expect(rating.citation_metadata).to eq({raw: metadata_raw[0,2]}.as_json)
+        expect(rating.citation_metadata).to eq({raw: metadata_raw[0, 2]}.as_json)
         expect(rating.metadata_at).to be_within(1).of Time.current
         expect(rating.metadata_present?).to be_truthy
         expect(rating.metadata_processed?).to be_falsey
