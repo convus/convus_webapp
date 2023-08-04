@@ -143,7 +143,17 @@ class Rating < ApplicationRecord
 
   def citation_metadata_str=(val)
     m_values = MetadataParser.parse_string(val)
-    self.citation_metadata = m_values.any? ? {RAW_KEY => m_values} : {}
+    self.citation_metadata = if m_values.any?
+      # HACK HACK HACK!!! This is surprising!
+      # The browser extension adds citation_text as the final element of metadata.
+      # Remove that element and assign citation_text to the rating
+      if m_values.last.is_a?(Hash) && m_values.last["citation_text"].present?
+        self.citation_text = m_values.delete_at(-1)["citation_text"]
+      end
+      {RAW_KEY => m_values}
+    else
+       {}
+     end
     self.metadata_at = Time.current if citation_metadata.present?
     citation_metadata
   end

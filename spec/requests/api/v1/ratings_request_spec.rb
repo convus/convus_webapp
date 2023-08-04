@@ -112,6 +112,25 @@ RSpec.describe base_url, type: :request do
             expect(rating.citation_metadata_raw).to eq citation_metadata.as_json
           end
         end
+        context "with citation_text" do
+          let(:citation_metadata) do
+            [{something: "fff"}, {other: "ffff"}, {citation_text: "something here that goes on forever"}]
+          end
+          it "returns 200" do
+            expect(Rating.count).to eq 0
+            post base_url, params: ratings_with_citation_metadata.to_json,
+              headers: json_headers.merge(
+                "HTTP_ORIGIN" => "*",
+                "Authorization" => "Bearer #{current_user.api_token}"
+              )
+            expect(response.code).to eq "200"
+
+            rating = Rating.last
+            expect_rating_matching_params(json_result, target_response, rating)
+            expect(rating.citation_text).to eq "something here that goes on forever"
+            expect(rating.citation_metadata_raw).to eq citation_metadata[0, 2].as_json
+          end
+        end
       end
       context "default_attrs" do
         let(:rating_params) do

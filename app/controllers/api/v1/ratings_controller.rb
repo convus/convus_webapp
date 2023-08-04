@@ -45,7 +45,6 @@ module API
           .permit(:agreement,
             :changed_opinion,
             :citation_metadata_str,
-            :citation_text,
             :citation_title,
             :error_quotes,
             :learned_something,

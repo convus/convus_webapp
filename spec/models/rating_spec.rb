@@ -216,6 +216,7 @@ RSpec.describe Rating, type: :model do
       expect(rating.metadata_processed?).to be_falsey
       expect(rating.metadata_unprocessed?).to be_truthy
       expect(rating.citation_metadata_str).to eq metadata_string.gsub(": ", ":")
+      expect(rating.citation_text).to be_blank
     end
     context "empty hash" do
       let(:rating) { FactoryBot.create(:rating, citation_metadata_str: "{}") }
@@ -223,6 +224,20 @@ RSpec.describe Rating, type: :model do
         expect(rating.reload.citation_metadata).to eq({})
         expect(rating.metadata_present?).to be_falsey
         expect(Rating.metadata_present.pluck(:id)).to eq([])
+      end
+    end
+    context "citation_text" do
+      let(:metadata_raw) { [{something: "fff"}, {other: "ffff"}, {citation_text: "something here that goes on forever"}] }
+      it "removes citation_text element and assigns to citation_text" do
+        expect(rating.metadata_present?).to be_falsey
+        expect(rating.citation_text).to be_blank
+        rating.citation_metadata_str = metadata_raw.to_json
+        expect(rating.citation_metadata).to eq({raw: metadata_raw[0,2]}.as_json)
+        expect(rating.metadata_at).to be_within(1).of Time.current
+        expect(rating.metadata_present?).to be_truthy
+        expect(rating.metadata_processed?).to be_falsey
+        expect(rating.metadata_unprocessed?).to be_truthy
+        expect(rating.citation_text).to eq metadata_raw.last[:citation_text]
       end
     end
     context "create" do
