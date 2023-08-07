@@ -232,9 +232,13 @@ class Rating < ApplicationRecord
     (citation_metadata&.dig(ATTRS_KEY) || {}).symbolize_keys
   end
 
+  def metadata_attributes_with_citation_text
+    citation_text_best.present? ? metadata_attributes.merge(citation_text: citation_text_best) : metadata_attributes
+  end
+
   def citation_text_best
     # I believe articleBody is better than our own scraped citation_text
-    MetadataAttributer.text_from_json_ld_article_body(json_ld_content&.dig("articleBody")) ||
+    @citation_text_best ||= MetadataAttributer.text_from_json_ld_article_body(json_ld_content&.dig("articleBody")) ||
       citation_text
   end
 
@@ -262,6 +266,7 @@ class Rating < ApplicationRecord
     self.timezone = nil if timezone.blank?
     self.created_date ||= self.class.date_in_timezone(created_at, timezone)
     self.topics_text = nil if topics_text.blank?
+    self.citation_text = citation_text.blank? ? nil : citation_text.strip
     self.error_quotes = nil if error_quotes.blank?
     self.account_public = calculated_account_public?
     self.citation_metadata = {} if citation_metadata_raw.blank?

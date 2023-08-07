@@ -1,10 +1,11 @@
 require "commonmarker"
 
 class MetadataAttributer
-  ATTR_KEYS = %i[authors canonical_url description keywords paywall published_at
-    published_updated_at publisher_name title topics_string word_count].freeze
+  ATTR_KEYS = %i[authors canonical_url citation_text description keywords paywall
+    published_at published_updated_at publisher_name title topics_string word_count].freeze
   TIME_KEYS = %i[published_at published_updated_at].freeze
-  COUNTED_ATTR_KEYS = (ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).freeze
+  COUNTED_ATTR_KEYS = (ATTR_KEYS - %i[canonical_url citation_text published_updated_at
+    paywall publisher_name]).freeze
   PROPRIETARY_TAGS = ["sailthru.", "parsely-", "dc."].freeze
 
   class << self
@@ -13,11 +14,12 @@ class MetadataAttributer
       return {} if rating_metadata.blank?
       json_ld = rating.json_ld_parsed
 
-      attrs = (ATTR_KEYS - %i[word_count topics_string]).map do |attrib|
+      attrs = (ATTR_KEYS - %i[citation_text word_count topics_string]).map do |attrib|
         val = send("metadata_#{attrib}", rating_metadata, json_ld)
         [attrib, val]
       end.compact.to_h
 
+      # NOTE: This is a similar (but slightly different) implementation of Rating#citation_text_best
       article_body = text_from_json_ld_article_body(json_ld&.dig("articleBody"))
       attrs[:word_count] = metadata_word_count(article_body || rating.citation_text, rating_metadata, rating.publisher.base_word_count)
 
@@ -25,6 +27,12 @@ class MetadataAttributer
       attrs[:topics_string] = nil if attrs[:topics_string].blank?
 
       skip_clean_attrs ? attrs : clean_attrs(rating, attrs)
+    end
+
+    # Ignoring base_word_count, I don't think it's relevant in the new citation_text form.
+    # That could change though!
+    def text_best_word_count(citation_text_best)
+      citation_text_best.strip.split(/\s+/).length
     end
 
     def text_from_json_ld_article_body(article_body)
@@ -166,7 +174,7 @@ class MetadataAttributer
     end
 
     def metadata_word_count(text, rating_metadata, base_word_count)
-      return text.split(/\s+/).length if text.present?
+      return text_best_word_count(text) if text.present?
       word_count = rating_metadata.detect { |i| i["word_count"].present? }&.dig("word_count")
       return nil if word_count.blank? || word_count < 100
       word_count - base_word_count

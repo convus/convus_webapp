@@ -197,19 +197,20 @@ RSpec.describe Citation, type: :model do
   end
 
   describe "manually updated" do
-    let(:citation) { FactoryBot.create(:citation) }
+    let(:citation) { FactoryBot.create(:citation, citation_text: "The text") }
     it "assigns when manual_update" do
       citation.update(title: "ffff")
       expect(citation.title).to eq "ffff"
       expect(citation.manually_updated_attributes).to eq([])
-      citation.update(manually_updating: true, authors: ["zzzz"], title: "ffff")
+      citation.update(manually_updating: true, authors: ["zzzz"], title: "ffff", citation_text: "The new text")
       expect(citation.reload.authors).to eq(["zzzz"])
-      expect(citation.manually_updated_attributes).to eq(["authors"])
+      expect(citation.manually_updated_attributes).to eq(%w[authors citation_text])
       citation.manually_updating = false
       # Assigning it to blank removes it from manually_updated_attributes
-      citation.update(authors: "", title: "cccc")
+      citation.update(authors: "", title: "cccc", citation_text: " ")
       expect(citation.reload.authors).to eq([])
       expect(citation.manually_updated_attributes).to eq([])
+      expect(citation.citation_text).to be_nil
     end
   end
 

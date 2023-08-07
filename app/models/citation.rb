@@ -213,6 +213,7 @@ class Citation < ApplicationRecord
     self.url ||= self.class.normalized_url(url)
     self.url_components_json ||= self.class.url_to_components(url, normalized: true).except(:remove_query)
     self.authors = (Array(authors) || [])&.map { |a| self.class.normalize_author(a) }&.compact
+    self.citation_text = citation_text.blank? ? nil : citation_text.strip
     self.manually_updated_attributes = [] if manually_updated_attributes.blank?
     # If assigning publisher, remove query if required
     if publisher.blank?
@@ -235,6 +236,7 @@ class Citation < ApplicationRecord
     elsif manually_updating && @topics_change == "changed"
       current_m_attrs << "topics"
     end
+    current_m_attrs << "citation_text" if manually_updating && citation_text_changed?
     self.manually_updated_attributes = current_m_attrs.uniq.sort
   end
 

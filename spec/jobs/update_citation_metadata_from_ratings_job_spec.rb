@@ -63,6 +63,18 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect_attrs_to_match_hash(citation, metadata_with_topics.except(:keywords))
         end
       end
+      context "citation_text present" do
+        let(:citation_text) { "Some text goes here" }
+        before { rating.update(citation_text: citation_text) }
+        it "assigns topics" do
+          expect(citation.citation_text).to be_nil
+          instance.perform(citation.id)
+          citation.reload
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
+          expect(citation.citation_text).to eq citation_text
+          expect(citation.manually_updated_attributes).to eq([])
+        end
+      end
       context "already assigned" do
         let(:time) { Time.current }
         let(:initial_attrs) { {authors: "z", published_at: Time.current, description: "c", word_count: 33, published_updated_at: time, paywall: true} }
@@ -77,10 +89,11 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect(publisher.reload.name).to eq "Cool publisher"
         end
         context "manually_updated" do
+          before { rating.update(citation_text: "New citation text") }
           it "doesn't update" do
             citation.manually_updating = true
-            citation.update(initial_attrs)
-            expect(citation.reload.manually_updated_attributes).to eq(%w[authors description paywall published_at published_updated_at word_count])
+            citation.update(initial_attrs.merge(citation_text: "OG Text"))
+            expect(citation.reload.manually_updated_attributes).to eq(%w[authors citation_text description paywall published_at published_updated_at word_count])
             publisher.update(name: "Cool publisher")
             instance.perform(citation.id)
             citation.reload
@@ -88,12 +101,13 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
             expect(citation.authors).to eq(["z"])
             # It doesn't re-update the publisher
             expect(publisher.reload.name).to eq "Cool publisher"
+            expect(citation.citation_text).to eq "OG Text"
           end
         end
       end
       context "earlier metadata" do
         let(:older_string) { '[{"content":"New Yorked","property":"og:site_name"},{"name":"author","content":"Condé Nast"},{"content":"2023-01-28T20:22:28.267Z","property":"article:published_time"},{"content":"2023-02-28T20:22:28.267Z","property":"article:modified_time"},{"content":"Earlier.","property":"twitter:description"},{"word_count":286}]' }
-        let(:rating_older) { FactoryBot.create(:rating, submitted_url: submitted_url, citation_metadata_str: older_string) }
+        let(:rating_older) { FactoryBot.create(:rating, submitted_url: submitted_url, citation_metadata_str: older_string, citation_text: "Old text") }
         let(:target_older) do
           {
             authors: ["Condé Nast"],
@@ -105,9 +119,10 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
             publisher_name: "New Yorked",
             keywords: [],
             topics_string: nil,
-            word_count: 186
+            word_count: 2
           }
         end
+        before { rating.update(citation_text: "New citation text") }
         it "parses but is overridden" do
           expect(rating.citation_id).to eq rating_older.citation_id
           rating_older.update(metadata_at: Time.current - 4.hours)
@@ -119,6 +134,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           instance.perform(citation.id)
           citation.reload
           expect_attrs_to_match_hash(citation, metadata_attrs.except(:published_updated_at, :keywords))
+          expect(citation.citation_text).to eq "New citation text"
         end
       end
     end

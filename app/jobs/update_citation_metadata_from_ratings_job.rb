@@ -14,7 +14,8 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
 
   def perform(id)
     citation = Citation.find(id)
-    metadata_attributes = self.class.ordered_ratings(citation).map(&:metadata_attributes)
+    ratings = self.class.ordered_ratings(citation)
+    metadata_attributes = ratings.map(&:metadata_attributes_with_citation_text)
 
     skipped_attributes = citation.manually_updated_attributes.map(&:to_sym)
     new_attributes = (MetadataAttributer::ATTR_KEYS - [:keywords]).map do |attrib|

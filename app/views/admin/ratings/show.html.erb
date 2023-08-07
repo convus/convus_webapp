@@ -103,16 +103,18 @@
   </div>
 </div>
 
-<% best_text = @rating.citation_text_best %>
 <div class="large-width-container">
   <h3 class="mt-5">
     Citation text:
-    <% if best_text.present? %>
-      <small><%= admin_number_display(best_text.length) %> characters</small>
+    <% if @rating.citation_text_best.present? %>
+      <small>
+        <%= admin_number_display(@rating.citation_text_best.length) %> characters,
+        <%= admin_number_display(MetadataAttributer.text_best_word_count(@rating.citation_text_best)) %> words
+      </small>
     <% end %>
   </h3>
-  <% if best_text.present? %>
-    <code class="text-xs block bg-gray-100 p-1 h-80 overflow-scroll"><%= best_text %></code>
+  <% if @rating.citation_text_best.present? %>
+    <textarea class="form-control text-sm" rows=3><%= @rating.citation_text_best %></textarea>
   <% else %>
     No citation text
   <% end %>
