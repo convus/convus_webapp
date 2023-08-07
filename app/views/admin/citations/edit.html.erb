@@ -120,6 +120,12 @@
       <%= f.text_area :citation_text, class: "form-control text-sm", rows: 3 %>
     </div>
   <% end %>
+  <% if display_dev_info? %>
+    <div class="only-dev-visible">
+      <label class="small">Manually updated attributes:</label>
+      <code><%= @citation.manually_updated_attributes %></code>
+    </div>
+  <% end %>
 
   <h2 class="standard-top-offset mb-2">
     <%= admin_number_display(ratings.count) %>
