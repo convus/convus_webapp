@@ -29,6 +29,12 @@ class MetadataAttributer
       skip_clean_attrs ? attrs : clean_attrs(rating, attrs)
     end
 
+    # Ignoring base_word_count, I don't think it's relevant in the new citation_text form.
+    # That could change though!
+    def text_best_word_count(citation_text_best)
+      citation_text_best.strip.split(/\s+/).length
+    end
+
     def text_from_json_ld_article_body(article_body)
       return nil unless article_body.present?
       # New Yorker returns as markdown and adds some +++'s in there
@@ -168,7 +174,7 @@ class MetadataAttributer
     end
 
     def metadata_word_count(text, rating_metadata, base_word_count)
-      return text.split(/\s+/).length if text.present?
+      return text_best_word_count(text) if text.present?
       word_count = rating_metadata.detect { |i| i["word_count"].present? }&.dig("word_count")
       return nil if word_count.blank? || word_count < 100
       word_count - base_word_count

@@ -75,7 +75,7 @@
         </div>
       </div>
     </div>
-    <div class="row sm:grid-cols-2 mt-2">
+    <div class="row sm:grid-cols-2">
       <div class="col">
         <div class="form-row">
           <%= f.label :published_at do %>
@@ -114,6 +114,10 @@
           <% end %>
         </div>
       </div>
+    </div>
+    <div class="form-row">
+      <%= f.label :citation_text %>
+      <%= f.text_area :citation_text, class: "form-control text-sm", rows: 3 %>
     </div>
   <% end %>
 

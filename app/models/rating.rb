@@ -266,7 +266,7 @@ class Rating < ApplicationRecord
     self.timezone = nil if timezone.blank?
     self.created_date ||= self.class.date_in_timezone(created_at, timezone)
     self.topics_text = nil if topics_text.blank?
-    self.citation_text = nil if citation_text.blank?
+    self.citation_text = citation_text.blank? ? nil : citation_text.strip
     self.error_quotes = nil if error_quotes.blank?
     self.account_public = calculated_account_public?
     self.citation_metadata = {} if citation_metadata_raw.blank?
