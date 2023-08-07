@@ -84,7 +84,8 @@ RSpec.describe base_url, type: :request do
             description: "new description",
             canonical_url: "https://something.com",
             word_count: "2222",
-            paywall: "1"
+            paywall: "1",
+            citation_text: "some text here"
           }
         end
         let!(:rating) { FactoryBot.create(:rating, submitted_url: citation.url, citation_title: "Titled Here") }
@@ -94,10 +95,15 @@ RSpec.describe base_url, type: :request do
           patch "#{base_url}/#{citation.id}", params: {citation: metadata_params}
           expect(flash[:success]).to be_present
           citation.reload
-          expect_attrs_to_match_hash(citation, metadata_params.except(:authors_str))
+          matching_params = metadata_params.except(:authors_str, :published_at_in_zone, :published_updated_at_in_zone)
+          expect_attrs_to_match_hash(citation, metadata_params.except(:authors_str, :published_at_in_zone, :published_updated_at_in_zone))
           expect(citation.authors).to eq(["george", "Sally, Post", "Alix"])
+          expect(citation.published_at).to be_within(60).of published_at
+          expect(citation.published_updated_at).to be_within(60).of updated_at
           # Make sure rating is updated!
           expect(rating.reload.display_name).to eq "something"
+          target_keys = matching_params.keys.map(&:to_s) + %w[published_at published_updated_at authors]
+          expect(citation.manually_updated_attributes).to eq(target_keys.sort - ["timezone"])
         end
       end
       context "update_citation_metadata_from_ratings" do
