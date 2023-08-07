@@ -46,7 +46,7 @@ gem "propshaft" # For Assets Pipeline
 gem "jsbundling-rails" # required for new sourcemaps stuff
 gem "cssbundling-rails" # required for new sourcemaps stuff
 gem "importmap-rails", ">= 0.3.4" # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "hotwire-livereload" # Livereload! Not sure this is required, or that it works.
+gem "hotwire-livereload" # Livereload!
 gem "turbo-rails", ">= 0.7.11" # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem "stimulus-rails", ">= 0.4.0"
 gem "tranzito_utils" # For timeparser, sortable, etc
