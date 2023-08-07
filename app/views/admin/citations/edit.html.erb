@@ -131,12 +131,13 @@
 
 <%# skip reprocess, since we don't want to process inline %>
 <% ratings_ordered = UpdateCitationMetadataFromRatingsJob.ordered_ratings(@citation, skip_reprocess: true) %>
-<h2>
-  <%= admin_number_display(ratings_ordered.count) %>
-  <%= "Rating".pluralize(ratings_ordered.count) %>
-  <small>with metadata that can be parsed</small>
-</h2>
+
 <div class="large-width-container mb-6">
+  <h2 class="mt-4">
+    <%= admin_number_display(ratings_ordered.count) %>
+    <%= "Rating".pluralize(ratings_ordered.count) %>
+    <small>with metadata that can be parsed</small>
+  </h2>
   <div class="row sm:grid-cols-2">
     <% ratings_ordered.each do |rating| %>
       <div class="col mt-4 mr-2 py-2 border-gray-200 border">
