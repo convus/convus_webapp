@@ -235,6 +235,7 @@ class Citation < ApplicationRecord
     elsif manually_updating && @topics_change == "changed"
       current_m_attrs << "topics"
     end
+    current_m_attrs << "citation_text" if manually_updating && citation_text_changed?
     self.manually_updated_attributes = current_m_attrs.uniq.sort
   end
 

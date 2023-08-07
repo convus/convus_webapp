@@ -143,6 +143,7 @@ RSpec.describe base_url, type: :request do
             agreement: "neutral",
             quality: "quality_med",
             citation_title: "OG title",
+            citation_text: "",
             changed_opinion: "0",
             significant_factual_error: "0",
             error_quotes: "",
@@ -172,6 +173,7 @@ RSpec.describe base_url, type: :request do
           expect(rating.changed_opinion).to be_falsey
           expect(rating.not_understood).to be_falsey
           expect(rating.not_finished).to be_falsey
+          expect(rating.citation_text).to be_nil
           expect(rating.default_attrs?).to be_truthy
           expect(rating.citation).to be_present
           citation = rating.citation

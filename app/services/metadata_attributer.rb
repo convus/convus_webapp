@@ -1,10 +1,11 @@
 require "commonmarker"
 
 class MetadataAttributer
-  ATTR_KEYS = %i[authors canonical_url description keywords paywall published_at
-    published_updated_at publisher_name title topics_string word_count].freeze
+  ATTR_KEYS = %i[authors canonical_url citation_text description keywords paywall
+    published_at published_updated_at publisher_name title topics_string word_count].freeze
   TIME_KEYS = %i[published_at published_updated_at].freeze
-  COUNTED_ATTR_KEYS = (ATTR_KEYS - %i[canonical_url published_updated_at paywall publisher_name]).freeze
+  COUNTED_ATTR_KEYS = (ATTR_KEYS - %i[canonical_url citation_text published_updated_at
+    paywall publisher_name]).freeze
   PROPRIETARY_TAGS = ["sailthru.", "parsely-", "dc."].freeze
 
   class << self
@@ -13,11 +14,12 @@ class MetadataAttributer
       return {} if rating_metadata.blank?
       json_ld = rating.json_ld_parsed
 
-      attrs = (ATTR_KEYS - %i[word_count topics_string]).map do |attrib|
+      attrs = (ATTR_KEYS - %i[citation_text word_count topics_string]).map do |attrib|
         val = send("metadata_#{attrib}", rating_metadata, json_ld)
         [attrib, val]
       end.compact.to_h
 
+      # NOTE: This is a similar (but slightly different) implementation of Rating#citation_text_best
       article_body = text_from_json_ld_article_body(json_ld&.dig("articleBody"))
       attrs[:word_count] = metadata_word_count(article_body || rating.citation_text, rating_metadata, rating.publisher.base_word_count)
 

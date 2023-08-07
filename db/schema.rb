@@ -39,7 +39,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_07_165402) do
     t.integer "word_count"
     t.boolean "paywall", default: false
     t.jsonb "manually_updated_attributes"
-    t.text "text"
+    t.text "citation_text"
     t.index ["publisher_id"], name: "index_citations_on_publisher_id"
   end
 
