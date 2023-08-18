@@ -74,17 +74,21 @@ module ApplicationHelper
 
   def agreement_display(agreement = nil, link: false)
     return nil if agreement.blank?
-    if agreement.to_s == "neutral"
+    agreement = agreement.to_s
+    if agreement == "neutral"
       nil
     elsif link
-      # TODO: tests :/
-      u_params = {"search_disagree" => false, "search_agree" => false}
-      u_params["search_#{agreement}"] = !(@search_agreement == agreement)
+      u_params = if @search_agreement.to_s == agreement
+        {"search_disagree" => nil, "search_agree" => nil}
+      else
+        {"search_disagree" => false, "search_agree" => false}
+          .merge("search_#{agreement.to_s}" => true)
+      end
       link_to(display_icon(agreement),
-        url_for(sortable_params.merge(u_params)),
+        url_for_sortable_link_merge(link, u_params),
         title: agreement.to_s&.titleize)
     else
-      content_tag(:span, display_icon(agreement), title: agreement.to_s&.titleize)
+      content_tag(:span, display_icon(agreement), title: agreement&.titleize)
     end
   end
 
@@ -93,9 +97,10 @@ module ApplicationHelper
     str = Rating.quality_humanized(quality)
     return nil if str == "medium"
     if link
+      # TODO: tests :/
       link_target = params["search_quality_#{str}"].present? ? nil : true
       link_to(display_icon("quality_#{str}"),
-        url_for(sortable_params.merge("search_quality_#{str}" => link_target)),
+        url_for_sortable_link_merge(link, {"search_quality_#{str}" => link_target}),
         title: "#{str.titleize} Quality")
     else
       content_tag(:span, display_icon("quality_#{str}"), title: "#{str.titleize} Quality")
@@ -105,8 +110,9 @@ module ApplicationHelper
   def learned_something_display(learned_something, link: false)
     return nil unless learned_something
     if link
+      # TODO: tests :/
       link_to(display_icon("learned"),
-        url_for(sortable_params.merge(search_learned_something: !@search_learned_something)),
+        url_for_sortable_link_merge(link, {search_learned_something: !@search_learned_something}),
         title: "Learned something")
     else
       content_tag(:span, display_icon("learned"), title: "Learned something")
@@ -116,8 +122,9 @@ module ApplicationHelper
   def changed_opinion_display(changed_opinion, link: false)
     return nil unless changed_opinion
     if link
+      # TODO: tests :/
       link_to(display_icon("changed"),
-        url_for(sortable_params.merge(search_changed_opinion: !@search_changed_opinion)),
+        url_for_sortable_link_merge(link, {search_changed_opinion: !@search_changed_opinion}),
         title: "Changed opinion")
     else
       content_tag(:span, display_icon("changed"), title: "Changed opinion")
@@ -127,8 +134,9 @@ module ApplicationHelper
   def significant_factual_error_display(significant_factual_error, link: false)
     return nil unless significant_factual_error
     if link
+      # TODO: tests :/
       link_to(display_icon("error"),
-        url_for(sortable_params.merge(search_significant_factual_error: !@search_significant_factual_error)),
+        url_for_sortable_link_merge(link, {search_significant_factual_error: !@search_significant_factual_error}),
         title: "Factual error")
     else
       content_tag(:span, display_icon("error"), title: "Factual error")
@@ -138,8 +146,9 @@ module ApplicationHelper
   def not_understood_display(not_understood, link: false)
     return nil unless not_understood
     if link
+      # TODO: tests :/
       link_to(display_icon("not_understood"),
-        url_for(sortable_params.merge(search_not_understood: !@search_not_understood)),
+        url_for_sortable_link_merge(link, {search_not_understood: !@search_not_understood}),
         title: "Didn't understand")
     else
       content_tag(:span, display_icon("not_understood"), title: "Didn't understand")
@@ -149,8 +158,9 @@ module ApplicationHelper
   def not_finished_display(not_finished, link: false)
     return nil unless not_finished
     if link
+      # TODO: tests :/
       link_to(display_icon("not_finished"),
-        url_for(sortable_params.merge(search_not_finished: !@search_not_finished)),
+        url_for_sortable_link_merge(link, {search_not_finished: !@search_not_finished}),
         title: "Did not finish")
     else
       content_tag(:span, display_icon("not_finished"), title: "Did not finish")
@@ -230,5 +240,16 @@ module ApplicationHelper
     safe_join(name_and_slugs.map { |ns|
       link_to("##{ns[0]}", raw("#{url}&search_topics[]=#{ns[1]}"), html_opts)
     }, " ")
+  end
+
+  private
+
+  def url_for_sortable_link_merge(link, merge_params = {})
+    url_for(sortable_link_merge(link, merge_params))
+  end
+
+  def sortable_link_merge(link, merge_params = {})
+    sortable_url_for_params = link.is_a?(Hash) ? link.merge(sortable_params) : sortable_params
+    sortable_url_for_params.merge(merge_params.with_indifferent_access)
   end
 end

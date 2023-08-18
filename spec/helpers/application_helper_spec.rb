@@ -17,6 +17,32 @@ RSpec.describe ApplicationHelper, type: :helper do
       it "returns -" do
         expect(agreement_display(:agree)).to eq target
       end
+      context "link" do
+        let(:target) { "<a title=\"Agree\" href=\"/ratings?search_agree=true&amp;search_disagree=false\"><img class=\"w-4 inline-block\" src=\"/images/icons/agree_icon.svg\" /></a>" }
+        let(:target_no_agreement) { "<a title=\"Agree\" href=\"/ratings\"><img class=\"w-4 inline-block\" src=\"/images/icons/agree_icon.svg\" /></a>" }
+        it "returns with link" do
+          bp = {controller: "ratings", action: "index"}
+          expect(agreement_display("agree", link: bp)).to eq target
+          expect(agreement_display(:agree, link: bp.merge(search_agree: false, search_disagree: true))).to eq target
+          expect(agreement_display("agree", link: bp.merge(search_disagree: false))).to eq target
+          expect(agreement_display(:agree, link: bp.merge(search_disagree: true, search_agree: false))).to eq target
+          # Sam result if search_agreement == disagree
+          @search_agreement = :disagree
+          expect(agreement_display("agree", link: bp)).to eq target
+
+          # link has no search_agreement params:
+          @search_agreement = :agree
+          expect(agreement_display("agree", link: bp)).to eq target_no_agreement
+          expect(agreement_display(:agree, link: bp.merge(search_agree: true))).to eq target_no_agreement
+        end
+        # context "link: true" do
+        #   # TODO: need to stub current route I think? Not sure exactly what to do to make
+        #   # url_for() correctly pull the current controller_name and action_name in tests
+        #   it "returns with link" do
+        #     expect(agreement_display(:agree, link: true)).to eq target
+        #   end
+        # end
+      end
     end
   end
 
