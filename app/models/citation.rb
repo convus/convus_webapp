@@ -195,8 +195,8 @@ class Citation < ApplicationRecord
     new_ids.each { |i| citation_topics.build(topic_id: i) }
   end
 
-  def topics_string
-    topics.name_ordered.pluck(:name).join(", ")
+  def topics_string(delimiter = ", ")
+    topics.name_ordered.pluck(:name).join(delimiter)
   end
 
   def references_filepath

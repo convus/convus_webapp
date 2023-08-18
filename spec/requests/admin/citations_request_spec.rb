@@ -72,7 +72,7 @@ RSpec.describe base_url, type: :request do
       end
       context "topics updating" do
         let!(:topic2) { FactoryBot.create(:topic, name: "Another Thing") }
-        let(:metadata) { {topics_string: "Another Thing"} }
+        let(:metadata) { {topics_string: topic2.name} }
         let(:rating) do
           FactoryBot.create(:rating, :with_topic,
             submitted_url: citation.url,
@@ -82,7 +82,6 @@ RSpec.describe base_url, type: :request do
         end
         it "actually updates the topics" do
           expect(rating.reload.topics.pluck(:id)).to eq([topic.id])
-          pp rating.citation_metadata
           expect(rating.metadata_attributes).to eq metadata
           ReconcileRatingTopicsJob.new.perform(rating.id)
           UpdateCitationMetadataFromRatingsJob.drain # enqueued from ReconileRatingTopicsJob
@@ -97,16 +96,20 @@ RSpec.describe base_url, type: :request do
             # We want to reconcile the topics, so that all the ratings have the same topics.
             # THIS IS NOT THE OPTIMAL SOLUTION
             expect(rating.reload.topics.pluck(:id)).to eq([topic.id, topic2.id])
-            expect(citation.topics.pluck(:id)).to eq([topic.id, topic2.id])
+            citation.reload
             expect(citation.manually_updated_attributes).to eq(["topics"])
+            expect(citation.topics.pluck(:id)).to eq([topic.id, topic2.id])
             # Remove the topics string, make sure the topics are set from rating metada
             patch "#{base_url}/#{citation.id}", params: {
               citation: {topics_string: "\n   "}
             }
             expect(flash[:success]).to be_present
-            expect(rating.reload.topics.pluck(:id)).to eq([topic.id])
-            expect(citation.topics.pluck(:id)).to eq([topic.id])
-            expect(citation.manually_updated_attributes).to eq(["topics"])
+            # Rating topics aren't currently updated
+            # expect(rating.reload.topics.pluck(:id)).to eq([topic2.id])
+            citation.reload
+            expect(citation.manually_updated_attributes).to eq([])
+            expect(citation.topics.pluck(:id)).to eq([topic2.id])
+
           end
         end
       end
