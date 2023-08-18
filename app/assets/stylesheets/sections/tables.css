@@ -59,16 +59,24 @@
 .full-screen-table {
   @apply px-container-pad px-0 max-w-full;
 }
+
 /* override tranzito_utils styles */
 .convus-body .full-screen-table {
   @apply mx-0;
 }
 
-.large-width-container, .large-width-container-padded {
-  & .full-screen-table {
-    @apply max-lg:-mx-container-pad;
+/*
+  It would be amazing if we could remove the margins on padded containers
+  ...but with negative margins, 'max-width: 100%' isn't actually the full width of the screen.
+  So we have sections that are not wrapped in the padded containers
+
+  .large-width-container, .large-width-container-padded {
+    & .full-screen-table { @apply max-lg:-mx-container-pad; }
   }
-}
+  @media (max-width: 596px) {
+    .small-width-container-padded .remove-container-padding { @apply -mx-container-pad; }
+  }
+*/
 
 .sortable .sortable-link {
   @apply text-bodytext underline;
