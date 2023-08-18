@@ -1,0 +1,2 @@
+class CitationQuiz < ApplicationRecord
+end
