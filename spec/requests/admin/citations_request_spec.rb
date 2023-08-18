@@ -111,7 +111,6 @@ RSpec.describe base_url, type: :request do
             expect(citation.manually_updated_attributes).to eq([])
             expect(citation.manually_updated_at).to be_blank
             expect(citation.topics.pluck(:id)).to eq([topic2.id])
-
           end
         end
       end
