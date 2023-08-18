@@ -75,13 +75,16 @@
         </div>
       </div>
     </div>
-    <div class="row sm:grid-cols-2">
+    <div class="row sm:grid-cols-3">
       <div class="col">
         <div class="form-row">
           <%= f.label :published_at do %>
             Published at
             <% if !@edit_published_date %>
-              <%= link_to "edit published at", url_for(edit_published_date: true), class: "less-strong", title: "iOS refuses to accept the date, also  shouldn't be edited unintentionally (to avoid messing up the timezone, etc)" %>
+              <%= link_to "edit published at",
+                url_for(edit_published_date: true),
+                class: "less-strong sm:text-sm text-xs",
+                title: "iOS refuses to accept the date, also shouldn't be edited unintentionally (to avoid messing up the timezone, etc)" %>
             <% end %>
           <% end %>
           <% if @edit_published_date %>
@@ -112,6 +115,14 @@
               <% end %>
             </p>
           <% end %>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-row">
+          <label>Publisher</label>
+          <p class="form-control bg-gray-100">
+            <%= link_to @citation.publisher_name, admin_publisher_path(@citation.publisher_id) %>
+          </p>
         </div>
       </div>
     </div>
