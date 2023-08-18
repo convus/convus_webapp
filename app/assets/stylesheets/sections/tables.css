@@ -53,11 +53,21 @@
 }
 
 .full-screen-table-overflown {
-  @apply overflow-x-scroll -mx-container-pad px-0;
+  @apply overflow-x-scroll px-0;
 }
 
 .full-screen-table {
-  @apply px-container-pad max-lg:-mx-container-pad px-0; /* lg:px-container-pad;*/
+  @apply px-container-pad px-0 max-w-full;
+}
+/* override tranzito_utils styles */
+.convus-body .full-screen-table {
+  @apply mx-0;
+}
+
+.large-width-container, .large-width-container-padded {
+  & .full-screen-table {
+    @apply max-lg:-mx-container-pad;
+  }
 }
 
 .sortable .sortable-link {

@@ -25,6 +25,9 @@
   .small-width-container-padded {
     @apply px-container-pad;
   }
+  .small-width-container-padded .remove-container-padding {
+    @apply -mx-container-pad;
+  }
 }
 
 .standard-top-offset {
@@ -37,12 +40,14 @@ turbo-frame {
 
 /*
   Grid! Not positive this is the best way of handling (negative margins), but going for it
+
+  NOTE: 'display: block' because when the grid collapses (on xs screens), it overflows if 'display:grid'
 */
 
 .row {
-  @apply grid -mx-container-pad;
+  @apply block sm:grid -mx-container-pad;
 }
 
 .col {
-  @apply px-container-pad
+  @apply px-container-pad;
 }
