@@ -2,6 +2,10 @@
 <% show_private_user = private_user && shown_private_user_ids.include?(rating.user_id) %>
 
 <% wrapper_class ||= "" %>
+
+<%# NOTE: filter_link can be a boolean OR route hash (e.g. {controller: "ratings", action: "index"}) %>
+<% filter_link ||= false %>
+
 <span class="block <%= wrapper_class %>">
   <small class="">
     Rated <span class="convertTime"><%= l(rating.created_at, format: :convert_time) %></span>
@@ -22,12 +26,12 @@
     <small class="mr-1 less-strong"><%= link_to "edit rating", edit_rating_path(rating) %></small>
   <% end %>
   <span class="">
-    <%= agreement_display(rating.agreement, link: filter_links) %>
-    <%= quality_display(rating.quality, link: filter_links) %>
-    <%= learned_something_display(rating.learned_something?, link: filter_links) %>
-    <%= changed_opinion_display(rating.changed_opinion?, link: filter_links) %>
-    <%= not_understood_display(rating.not_understood?, link: filter_links) %>
-    <%= not_finished_display(rating.not_finished?, link: filter_links) %>
-    <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_links) %>
+    <%= agreement_display(rating.agreement, link: filter_link) %>
+    <%= quality_display(rating.quality, link: filter_link) %>
+    <%= learned_something_display(rating.learned_something?, link: filter_link) %>
+    <%= changed_opinion_display(rating.changed_opinion?, link: filter_link) %>
+    <%= not_understood_display(rating.not_understood?, link: filter_link) %>
+    <%= not_finished_display(rating.not_finished?, link: filter_link) %>
+    <%= significant_factual_error_display(rating.significant_factual_error?, link: filter_link) %>
   </span>
 </span>
