@@ -2,6 +2,10 @@
 <% show_private_user = private_user && shown_private_user_ids.include?(rating.user_id) %>
 
 <% wrapper_class ||= "" %>
+
+<%# NOTE: filter_link can be a boolean OR route hash (e.g. {controller: "ratings", action: "index"}) %>
+<% filter_link ||= false %>
+
 <span class="block <%= wrapper_class %>">
   <small class="">
     Rated <span class="convertTime"><%= l(rating.created_at, format: :convert_time) %></span>
