@@ -98,6 +98,7 @@ RSpec.describe base_url, type: :request do
             expect(rating.reload.topics.pluck(:id)).to eq([topic.id, topic2.id])
             citation.reload
             expect(citation.manually_updated_attributes).to eq(["topics"])
+            expect(citation.manually_updated_at).to be_within(1).of Time.now
             expect(citation.topics.pluck(:id)).to eq([topic.id, topic2.id])
             # Remove the topics string, make sure the topics are set from rating metada
             patch "#{base_url}/#{citation.id}", params: {
@@ -108,6 +109,7 @@ RSpec.describe base_url, type: :request do
             # expect(rating.reload.topics.pluck(:id)).to eq([topic2.id])
             citation.reload
             expect(citation.manually_updated_attributes).to eq([])
+            expect(citation.manually_updated_at).to be_blank
             expect(citation.topics.pluck(:id)).to eq([topic2.id])
 
           end
