@@ -25,9 +25,6 @@
   .small-width-container-padded {
     @apply px-container-pad;
   }
-  .small-width-container-padded .remove-container-padding {
-    @apply -mx-container-pad;
-  }
 }
 
 .standard-top-offset {
