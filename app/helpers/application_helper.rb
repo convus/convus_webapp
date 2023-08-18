@@ -82,7 +82,7 @@ module ApplicationHelper
         {"search_disagree" => nil, "search_agree" => nil}
       else
         {"search_disagree" => false, "search_agree" => false}
-          .merge("search_#{agreement.to_s}" => true)
+          .merge("search_#{agreement}" => true)
       end
       link_to(display_icon(agreement),
         url_for_sortable_link_merge(link, u_params),
