@@ -40,8 +40,8 @@ RSpec.describe ApplicationHelper, type: :helper do
           let(:target) { "<a title=\"Agree\" href=\"/ratings\"><img class=\"w-4 inline-block\" src=\"/images/icons/agree_icon.svg\" /></a>" }
           before { @search_agreement = :agree }
           it "returns with link with no agreement params" do
-            expect(agreement_display("agree", link: bp)).to eq target_no_agreement
-            expect(agreement_display(:agree, link: bp.merge(search_agree: true))).to eq target_no_agreement
+            expect(agreement_display("agree", link: bp)).to eq target
+            expect(agreement_display(:agree, link: bp.merge(search_agree: true))).to eq target
           end
         end
       end
