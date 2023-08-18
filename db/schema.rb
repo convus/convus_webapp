@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_07_165402) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_18_145247) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_07_165402) do
     t.boolean "paywall", default: false
     t.jsonb "manually_updated_attributes"
     t.text "citation_text"
+    t.datetime "manually_updated_at"
     t.index ["publisher_id"], name: "index_citations_on_publisher_id"
   end
 

@@ -54,6 +54,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
       context "topics present" do
         let!(:topic1) { Topic.find_or_create_for_name("U.S. President") }
         let!(:topic2) { Topic.find_or_create_for_name("Joe Biden", parents_string: "U.S. presidents") }
+        let!(:topic3) { Topic.find_or_create_for_name("Party") }
         let(:metadata_with_topics) { metadata_attrs.merge(topics_string: "Joe Biden") }
         it "assigns topics" do
           expect(topic1.reload.children.pluck(:id)).to eq([topic2.id])
@@ -61,6 +62,12 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           instance.perform(citation.id)
           citation.reload
           expect_attrs_to_match_hash(citation, metadata_with_topics.except(:keywords))
+          citation.update(topics_string: "\nParty\n", manually_updating: true)
+          expect(citation.reload.topics.pluck(:id)).to eq([topic3.id])
+          expect(citation.manually_updated_attributes).to eq(["topics"])
+          instance.perform(citation.id)
+          expect(citation.reload.topics.pluck(:id)).to eq([topic3.id])
+          expect_attrs_to_match_hash(citation, metadata_with_topics.except(:keywords, :topics_string))
         end
       end
       context "citation_text present" do

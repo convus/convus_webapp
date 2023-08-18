@@ -142,10 +142,12 @@ RSpec.describe Citation, type: :model do
         expect(citation.reload.topics.pluck(:id)).to eq([topic.id])
         expect(citation.topics_string).to eq "San Francisco"
         expect(citation.manually_updated_attributes).to eq(["topics"])
+        expect(citation.manually_updated_at).to be_within(1).of Time.now
         citation.manually_updating = false
-        citation.update(topics_string: "")
+        citation.update(topics_string: " ")
         expect(citation.reload.topics_string).to be_blank
         expect(citation.manually_updated_attributes).to eq([])
+        expect(citation.manually_updated_at).to be_blank
       end
       context "multiple, manually_updating" do
         let!(:topic2) { FactoryBot.create(:topic, name: "Housing") }

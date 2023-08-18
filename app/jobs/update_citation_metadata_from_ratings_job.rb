@@ -17,7 +17,7 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     ratings = self.class.ordered_ratings(citation)
     metadata_attributes = ratings.map(&:metadata_attributes_with_citation_text)
 
-    skipped_attributes = citation.manually_updated_attributes.map(&:to_sym)
+    skipped_attributes = skipped_attrs_for(citation)
     new_attributes = (MetadataAttributer::ATTR_KEYS - [:keywords]).map do |attrib|
       next if skipped_attributes.include?(attrib)
 
@@ -35,5 +35,12 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
       citation.publisher.update(name: new_attributes[:publisher_name])
     end
     citation
+  end
+
+  def skipped_attrs_for(citation)
+    skipped_attributes = citation.manually_updated_attributes.map(&:to_sym)
+    # Fix missmatch: metadata_attributes have topics_string, manually_updated_attributes has topics
+    skipped_attributes << :topics_string if skipped_attributes.include?(:topics)
+    skipped_attributes
   end
 end

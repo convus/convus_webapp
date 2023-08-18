@@ -28,6 +28,7 @@ class Admin::CitationsController < Admin::BaseController
     else
       @citation.manually_updating = true
       if @citation.update(permitted_params)
+        @citation.reload
         @citation.ratings.each { |r| update_citation_rating_topics(@citation, r) }
         flash[:success] = "Citation updated"
         redirect_to admin_citations_path, status: :see_other
@@ -70,6 +71,7 @@ class Admin::CitationsController < Admin::BaseController
 
   def update_citation_rating_topics(citation, rating)
     # Currently, citation topics are complicated to create backward
-    rating.add_topic(citation.reload.topics.pluck(:name))
+    # Force the ratings topics to match the citation topics. See the specs for explanation
+    rating.update(topics_text: citation.topics_string("\n"))
   end
 end
