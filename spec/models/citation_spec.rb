@@ -143,7 +143,7 @@ RSpec.describe Citation, type: :model do
         expect(citation.topics_string).to eq "San Francisco"
         expect(citation.manually_updated_attributes).to eq(["topics"])
         citation.manually_updating = false
-        citation.update(topics_string: "")
+        citation.update(topics_string: " ")
         expect(citation.reload.topics_string).to be_blank
         expect(citation.manually_updated_attributes).to eq([])
       end
