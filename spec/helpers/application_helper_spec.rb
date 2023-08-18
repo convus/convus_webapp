@@ -19,9 +19,8 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
       context "link" do
         let(:target) { "<a title=\"Agree\" href=\"/ratings?search_agree=true&amp;search_disagree=false\"><img class=\"w-4 inline-block\" src=\"/images/icons/agree_icon.svg\" /></a>" }
-        let(:target_no_agreement) { "<a title=\"Agree\" href=\"/ratings\"><img class=\"w-4 inline-block\" src=\"/images/icons/agree_icon.svg\" /></a>" }
+        let(:bp) { {controller: "ratings", action: "index"} }
         it "returns with link" do
-          bp = {controller: "ratings", action: "index"}
           expect(agreement_display("agree", link: bp)).to eq target
           expect(agreement_display(:agree, link: bp.merge(search_agree: false, search_disagree: true))).to eq target
           expect(agreement_display("agree", link: bp.merge(search_disagree: false))).to eq target
@@ -29,11 +28,14 @@ RSpec.describe ApplicationHelper, type: :helper do
           # Sam result if search_agreement == disagree
           @search_agreement = :disagree
           expect(agreement_display("agree", link: bp)).to eq target
-
-          # link has no search_agreement params:
-          @search_agreement = :agree
-          expect(agreement_display("agree", link: bp)).to eq target_no_agreement
-          expect(agreement_display(:agree, link: bp.merge(search_agree: true))).to eq target_no_agreement
+        end
+        context "matching search_agreement" do
+          let(:target) { "<a title=\"Agree\" href=\"/ratings\"><img class=\"w-4 inline-block\" src=\"/images/icons/agree_icon.svg\" /></a>" }
+          before { @search_agreement = :agree }
+          it "returns with link with no agreement params" do
+            expect(agreement_display("agree", link: bp)).to eq target_no_agreement
+            expect(agreement_display(:agree, link: bp.merge(search_agree: true))).to eq target_no_agreement
+          end
         end
         # context "link: true" do
         #   # TODO: need to stub current route I think? Not sure exactly what to do to make
