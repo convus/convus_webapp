@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Quiz, type: :model do
   describe "update_status_of_replaced_quizzes" do
