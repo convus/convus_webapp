@@ -63,11 +63,19 @@
           </tr>
           <tr>
             <td>Version</td>
-            <td><code><%= @rating.source %></code></td>
+            <td><code class="text-sm"><%= @rating.source %></code></td>
           </tr>
+          <tr>
+            <td>Topics</td>
+            <td>
+              <span class="text-sm less-strong"><%= @rating.topic_names.join(", ") %></span>
+            </td>
+          </tr>
+
         </tbody>
       </table>
     </div>
+
     <% metadata_attributes = @rating.metadata_attributes %>
     <div class="col">
       <h3>
