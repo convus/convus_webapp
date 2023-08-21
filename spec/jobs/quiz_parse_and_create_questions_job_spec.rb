@@ -16,6 +16,8 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
       it "returns early" do
         expect(instance).not_to receive(:parse_quiz_questions)
         instance.perform(quiz.id)
+        quiz.reload
+        expect(quiz.)
       end
     end
 
@@ -29,9 +31,5 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
         instance.perform(quiz.id)
       end
     end
-  end
-
-  describe "#parse_quiz_questions" do
-
   end
 end

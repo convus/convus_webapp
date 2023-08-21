@@ -64,22 +64,22 @@ RSpec.describe QuizParser::ClaudeInitial do
   end
 
   describe "parse_input_text" do
-    # it "blank input_text raises parser error" do
-    #   expect(quiz.input_text).to be_nil
-    #   expect {
-    #     instance.send(:parse_quiz_questions, quiz)
-    #   }.to raise_error(/true and false/)
-    # end
+    it "blank input_text raises parser error" do
+      expect(quiz.input_text).to be_nil
+      expect {
+        subject.send(:parse_input_text, quiz)
+      }.to raise_error(/No input_text/)
+    end
 
-    # context "valid single question claude_initial response" do
-    #   let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question Step 1\nTrue option: Step 1 True\nFalse option: Step 1 false\n\n" }
-    #   let(:target) { {question: "Question Step 1", correct: ["Step 1 True"], incorrect: ["Step 1 False"]} }
-    #   it "returns the parsed text" do
-    #     result = instance.send(:parse_quiz_questions, quiz)
-    #     expect(result.count).to eq 1
-    #     expect_hashes_to_match(result.first, target)
-    #   end
-    # end
+    context "valid single question claude_initial response" do
+      let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question Step 1\nTrue option: Step 1 True\nFalse option: Step 1 false\n\n" }
+      let(:target) { {question: "Question Step 1", correct: ["Step 1 True"], incorrect: ["Step 1 False"]} }
+      it "returns the parsed text" do
+        result = subject.send(:parse_input_text, quiz)
+        expect(result.count).to eq 1
+        expect_hashes_to_match(result.first, target)
+      end
+    end
 
     # context "valid multiple question claude_initial response" do
     #   let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question Step 1\nTrue option: Step 1 True\nFalse option: Step 1 false\nStep 2:  \nQuestion: Question Step 2\nTrue option: Step 2 True\nFalse option: Step 2 false\nStep 3:  \nQuestion: Question Step 3\nTrue option: Step 3 True\nFalse option: Step 3 false\nStep 4:\nQuestion: Question Step 4\nTrue option: Step 4 True\nFalse option: Step 4 false\nStep 5:  \nQuestion: Question Step 5\nTrue option: Step 5 True\nFalse option: Step 5 false" }
@@ -91,7 +91,7 @@ RSpec.describe QuizParser::ClaudeInitial do
     #     {question: "Question Step 5", correct: ["Step 5 True"], incorrect: ["Step 5 False"]}]
     #   end
     #   it "returns the parsed text" do
-    #     result = instance.send(:parse_quiz_questions, quiz)
+    #     result = subject.send(:parse_input_text, quiz)
     #     expect(result.count).to eq 5
     #     5.times do |i|
     #       expect_hashes_to_match(result[i], target[i])
@@ -107,7 +107,7 @@ RSpec.describe QuizParser::ClaudeInitial do
     #       {question: nil, correct: ["Step 3 true"], incorrect: ["Step 3 false"]}]
     #   end
     #   it "returns the parsed text" do
-    #     result = instance.send(:parse_quiz_questions, quiz)
+    #     result = subject.send(:parse_input_text, quiz)
     #     expect(result.count).to eq 1
     #     expect_hashes_to_match(result.first, target)
     #   end

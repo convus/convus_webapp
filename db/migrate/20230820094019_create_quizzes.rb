@@ -9,6 +9,7 @@ class CreateQuizzes < ActiveRecord::Migration[7.0]
 
       t.integer :version
 
+      t.text :prompt_text
       t.text :input_text
       t.integer :input_text_format
       t.text :input_text_parse_error

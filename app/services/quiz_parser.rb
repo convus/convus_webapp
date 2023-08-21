@@ -1,3 +1,3 @@
 module QuizParser
-  class QuizParserError < StandardError; end
+  class ParsingError < StandardError; end
 end

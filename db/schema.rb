@@ -114,6 +114,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_20_124941) do
     t.integer "kind"
     t.bigint "citation_id"
     t.integer "version"
+    t.text "prompt_text"
     t.text "input_text"
     t.integer "input_text_format"
     t.text "input_text_parse_error"
