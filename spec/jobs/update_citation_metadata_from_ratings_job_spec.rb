@@ -38,7 +38,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
       end
       it "parses" do
         expect(citation.url).to eq submitted_url.gsub("?utm_s=example", "")
-        expect(publisher.reload.name).to eq "newyorker"
+        expect(publisher.reload.name).to eq "newyorker.com"
         expect(publisher.name_assigned?).to be_falsey
         expect(publisher.base_word_count).to eq 100
         expect(rating.metadata_at).to be_within(1).of Time.current
