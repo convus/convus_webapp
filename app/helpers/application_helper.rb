@@ -234,12 +234,17 @@ module ApplicationHelper
     link_url = if url == "/admin/topics/"
       url
     else
-      if url.blank?
+      if url.is_a?(Hash)
+        url = url_for(url)
+      elsif url.blank?
         cparams = include_current ? Array(sortable_params[:search_topics]) : []
         url = url_for(sortable_params.merge(search_topics: cparams))
       end
-      url = "#{url}?" unless url.match?(/\?/)
-      "#{url}&search_topics[]="
+      if url.match?(/\?/)
+        "#{url}&search_topics[]="
+      else
+        "#{url}?search_topics[]="
+      end
     end
 
     safe_join(name_and_slugs.map { |ns|
