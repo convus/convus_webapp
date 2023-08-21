@@ -1,4 +1,5 @@
 <% skip_sortable ||= false %>
+
 <div class="full-screen-table">
   <table class="table table-sm table-striped thead-light max-w-full">
     <thead class="sortable">
@@ -17,7 +18,6 @@
             <%= sortable "url", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
           <% end %>
         </th>
-        <th>Topics</th>
         <th>Ratings</th>
         <th>Ratings w meta</th>
         <th>Missing meta #</th>
@@ -28,7 +28,7 @@
         <tr>
           <td>
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= citation.id %></code><% end %>
-            <%= link_to l(citation.created_at, format: :convert_time), edit_admin_citation_path(citation), class: "convertTime" %>
+            <span class="convertTime"><%= l(citation.created_at, format: :convert_time) %></span>
           </td>
           <% if render_updated_at %>
             <td>
@@ -36,15 +36,7 @@
             </td>
           <% end %>
           <td class="max-w-md maxWScreen">
-            <span class="break-words"><%= citation.title %></span>
-            <% if citation.url.present? %>
-              <small class="block">
-                <%= link_to citation.url.truncate(100), citation.url, title: citation.url %>
-              </small>
-            <% end %>
-          </td>
-          <td>
-            <small><%= citation.topics_string %></small>
+            <%= admin_citation_cell(citation) %>
           </td>
           <td><%= admin_number_display(citation.ratings.count) %></td>
           <td><%= admin_number_display(citation.ratings.metadata_present.count) %></td>

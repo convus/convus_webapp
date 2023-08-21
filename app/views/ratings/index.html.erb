@@ -168,8 +168,6 @@
     <% end %>
   </div>
   <div class="large-width-container mt-4">
-    <%# Currently, the radio buttons manage everything from the current_header. But this could change!
-    <%#= render partial: "/shared/current_header", locals: {collection: @ratings} %>
     <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
   </div>
   <% hide_private_users = ["all", "other users"].include?(viewing_display_name) %>

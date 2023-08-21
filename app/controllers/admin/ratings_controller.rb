@@ -38,7 +38,8 @@ class Admin::RatingsController < Admin::BaseController
   end
 
   def admin_searched_ratings
-    ratings = searched_ratings(Rating) # in RatingSearchable
+    ratings = user_subject.present? ? user_subject.ratings : Rating.none
+    ratings = searched_ratings(ratings) # in RatingSearchable
 
     if sort_column == "meta"
       ratings = (sort_direction == "desc") ? ratings.metadata_present : ratings.metadata_blank
