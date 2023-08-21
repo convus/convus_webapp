@@ -106,10 +106,10 @@ RSpec.describe QuizParser::ClaudeInitial do
       let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question Step 1\nTrue option: Step 1 True\nFalse option: Step 1 false\nStep 2:  \nQuestion: Question Step 2\nTrue option: Step 2 True\nFalse option: Step 2 false\nStep 3:  \nQuestion: Question Step 3\nTrue option: Step 3 True\nFalse option: Step 3 false\nStep 4:\nQuestion: Question Step 4\nTrue option: Step 4 True\nFalse option: Step 4 false\nStep 5:  \nQuestion: Question Step 5\nTrue option: Step 5 True\nFalse option: Step 5 false" }
       let(:target) do
         [{question: "Question Step 1", correct: ["Step 1 True"], incorrect: ["Step 1 false"]},
-        {question: "Question Step 2", correct: ["Step 2 True"], incorrect: ["Step 2 false"]},
-        {question: "Question Step 3", correct: ["Step 3 True"], incorrect: ["Step 3 false"]},
-        {question: "Question Step 4", correct: ["Step 4 True"], incorrect: ["Step 4 false"]},
-        {question: "Question Step 5", correct: ["Step 5 True"], incorrect: ["Step 5 false"]}]
+          {question: "Question Step 2", correct: ["Step 2 True"], incorrect: ["Step 2 false"]},
+          {question: "Question Step 3", correct: ["Step 3 True"], incorrect: ["Step 3 false"]},
+          {question: "Question Step 4", correct: ["Step 4 True"], incorrect: ["Step 4 false"]},
+          {question: "Question Step 5", correct: ["Step 5 True"], incorrect: ["Step 5 false"]}]
       end
       it "returns the parsed text" do
         result = subject.send(:parse_input_text, quiz)

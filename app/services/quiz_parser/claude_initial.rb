@@ -12,6 +12,7 @@ class QuizParser::ClaudeInitial
 
     private
 
+    # I don't love this, line by line parsing - but it works pretty well and I think it's flexible.
     def parse_input_text(quiz)
       if quiz.input_text.blank?
         raise QuizParser::ParsingError, "No input_text"
