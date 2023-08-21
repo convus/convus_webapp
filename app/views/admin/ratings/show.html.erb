@@ -78,7 +78,13 @@
         </tbody>
       </table>
     </div>
+  </div>
 
+  <div class="mt-4">
+    <%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true, skip_citation: true} %>
+  </div>
+
+  <div class="row sm:grid-cols-2 standard-top-offset">
     <% metadata_attributes = @rating.metadata_attributes %>
     <div class="col">
       <h3>
@@ -126,10 +132,6 @@
   <% else %>
     No citation text
   <% end %>
-
-  <div class="mt-8">
-    <%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true, skip_citation: true} %>
-  </div>
 
   <div class="row sm:grid-cols-2 standard-top-offset">
     <div class="col">

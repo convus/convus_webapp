@@ -1,15 +1,18 @@
 <% url_for_route ||= nil # specify a search path, otherwise uses current path %>
 <% url_for_route_params ||= url_for_route.present? ? Rails.application.routes.recognize_path(url_for_route) : {} %>
 <% sortable_url_for_params ||= url_for_route_params.merge(sortable_params) %>
+<% skip_title_and_description ||= false %>
 
-<h4 class="text-lg leading-5 mb-1" style=""><%= link_to citation.title, citation.url, class: "no-underline hover:underline" %></h4>
-<% if citation.description.present? || citation.topics.present? %>
-  <p class="leading-5 mb-1">
-    <%= citation.description %>
-    <span class="text-sm text-gray-400 mb-1">
-      <%= topic_links(citation.topics, {class: "text-gray-400", include_current: true}, url: sortable_url_for_params) %>
-    </span>
-  </p>
+<% unless skip_title_and_description # skipped by admin %>
+  <h4 class="text-lg leading-5 mb-1" style=""><%= link_to citation.title, citation.url, class: "no-underline hover:underline" %></h4>
+  <% if citation.description.present? || citation.topics.present? %>
+    <p class="leading-5 mb-1">
+      <%= citation.description %>
+      <span class="text-sm text-gray-400 mb-1">
+        <%= topic_links(citation.topics, {class: "text-sm text-gray-400", include_current: true}, url: sortable_url_for_params) %>
+      </span>
+    </p>
+  <% end %>
 <% end %>
 <p class="leading-5 mb-1 text-gray-500 text-sm">
   <% if citation.published_at.present? %>
