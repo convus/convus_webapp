@@ -46,7 +46,8 @@
             <td>Citation</td>
             <td>
               <%= link_to @rating.display_name, admin_citation_path(@rating.citation), class: "mr-2" %>
-              <%= link_to display_icon("link"), @rating.citation_url %>
+              <%= link_to display_icon("link"), @rating.citation_url, class: "mr-2" %>
+              <small class="less-strong"><%= link_to "submitted url", @rating.submitted_url %></small>
             </td>
           </tr>
           <tr>
@@ -68,14 +69,22 @@
           <tr>
             <td>Topics</td>
             <td>
-              <span class="text-sm less-strong"><%= @rating.topic_names.join(", ") %></span>
+              <span class="text-sm text-gray-400 mb-1">
+                <%= topic_links(@rating.topics, {class: "text-gray-400", include_current: true}, url: admin_ratings_path) %>
+              </span>
             </td>
           </tr>
 
         </tbody>
       </table>
     </div>
+  </div>
 
+  <div class="mt-4">
+    <%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true, skip_citation: true} %>
+  </div>
+
+  <div class="row sm:grid-cols-2 standard-top-offset">
     <% metadata_attributes = @rating.metadata_attributes %>
     <div class="col">
       <h3>
@@ -109,9 +118,6 @@
       </table>
     </div>
   </div>
-</div>
-
-<div class="large-width-container">
   <h3 class="mt-5">
     Citation text:
     <% if @rating.citation_text_best.present? %>
@@ -126,23 +132,8 @@
   <% else %>
     No citation text
   <% end %>
-</div>
 
-<div class="large-width-container">
-  <h3 class="mt-5">Raw Metadata:</h3>
-  <% if @rating.metadata_present? %>
-    <div class="code-small"><%= pretty_print_json(@rating.citation_metadata_raw) %></div>
-  <% else %>
-    No metadata
-  <% end %>
-</div>
-
-<div class="mt-4">
-  <%= render partial: "/admin/ratings/table", locals: {ratings: [@rating], skip_sortable: true} %>
-</div>
-
-<div class="large-width-container mb-5 standard-top-offset">
-  <div class="row sm:grid-cols-2">
+  <div class="row sm:grid-cols-2 standard-top-offset">
     <div class="col">
       <h3>
         JSON-LD Parsed
@@ -160,4 +151,14 @@
       </div>
     </div>
   </div>
+
+  <div class="standard-top-offset">
+    <h3 class="mt-5">Raw Metadata:</h3>
+    <% if @rating.metadata_present? %>
+      <div class="code-small"><%= pretty_print_json(@rating.citation_metadata_raw) %></div>
+    <% else %>
+      No metadata
+    <% end %>
+  </div>
+
 </div>

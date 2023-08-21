@@ -227,11 +227,18 @@ RSpec.describe ApplicationHelper, type: :helper do
       def topic_links_spanned(str)
         "<span class=\"topic-links\">#{str}</span>"
       end
-      let(:target1) { "<a class=\"\" href=\"/?&search_topics[]=#{topic1.slug}\">##{topic1.name}</a>" }
-      let(:target2) { target1 + " <a class=\"\" href=\"/?&search_topics[]=#{topic2.slug}\">##{topic2.name}</a>" }
+      let(:target1) { "<a class=\"\" href=\"/?search_topics[]=#{topic1.slug}\">##{topic1.name}</a>" }
+      let(:target2) { target1 + " <a class=\"\" href=\"/?search_topics[]=#{topic2.slug}\">##{topic2.name}</a>" }
+      let(:target3) { "<a class=\"\" href=\"/admin/topics/#{topic1.slug}\">##{topic1.name}</a>" }
+      let(:target4) { "<a class=\"\" href=\"/admin/citations?search_topics[]=#{topic1.slug}\">##{topic1.name}</a>" }
+      let(:target5) { "<a class=\"\" href=\"/admin?user=test&search_topics[]=#{topic1.slug}\">##{topic1.name}</a>" }
       it "returns link" do
         expect(topic_links(Topic.where(id: [topic1.id]), url: root_path)).to eq target1
         expect(topic_links(Topic.where(id: [topic1.id, topic2.id]), url: root_path)).to eq target2
+        expect(topic_links(Topic.where(id: [topic1.id]), url: "/admin/topics/")).to eq target3
+        expect(topic_links(Topic.where(id: [topic1.id]), url: {controller: "admin/citations", action: "index"})).to eq target4
+        # NOTE: Drops the /ratings, because root_to
+        expect(topic_links(Topic.where(id: [topic1.id]), url: {controller: "admin/ratings", action: "index", user: "test"})).to eq target5
       end
     end
   end

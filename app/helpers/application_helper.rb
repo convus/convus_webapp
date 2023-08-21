@@ -231,14 +231,24 @@ module ApplicationHelper
     name_and_slugs ||= topics&.name_ordered&.pluck(:name, :slug)
     return nil if name_and_slugs.blank?
     html_opts[:class] ||= ""
-    if url.blank?
-      cparams = include_current ? Array(sortable_params[:search_topics]) : []
-      url = url_for(sortable_params.merge(search_topics: cparams))
+    link_url = if url == "/admin/topics/"
+      url
+    else
+      if url.is_a?(Hash)
+        url = url_for(url)
+      elsif url.blank?
+        cparams = include_current ? Array(sortable_params[:search_topics]) : []
+        url = url_for(sortable_params.merge(search_topics: cparams))
+      end
+      if url.match?(/\?/)
+        "#{url}&search_topics[]="
+      else
+        "#{url}?search_topics[]="
+      end
     end
-    url = "#{url}?" unless url.match?(/\?/)
 
     safe_join(name_and_slugs.map { |ns|
-      link_to("##{ns[0]}", raw("#{url}&search_topics[]=#{ns[1]}"), html_opts)
+      link_to("##{ns[0]}", raw("#{link_url}#{ns[1]}"), html_opts)
     }, " ")
   end
 
