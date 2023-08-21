@@ -13,7 +13,7 @@ class Citation < ApplicationRecord
   has_many :topics_active, through: :active_citation_topics, source: :topic
   has_many :topic_review_citations
   has_many :topic_review_votes, through: :ratings
-  has_many :quizes
+  has_many :quizzes
 
   validates_presence_of :url
 
@@ -121,6 +121,10 @@ class Citation < ApplicationRecord
     def authors_rendered(arr)
       arr&.reject { |a| a.match?(/Contributors to Wikimedia projects/i) } || []
     end
+  end
+
+  def quiz_active
+    quizzes.active.last
   end
 
   def url_components

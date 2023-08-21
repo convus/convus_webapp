@@ -18,6 +18,8 @@ class Quiz < ApplicationRecord
   enum kind: KIND_ENUM
   enum input_text_format: INPUT_TEXT_FORMAT
 
+  self.implicit_order_column = :id
+
   belongs_to :citation
 
   has_many :quiz_questions
@@ -30,6 +32,10 @@ class Quiz < ApplicationRecord
 
   def self.current_statuses
     %i[pending active disabled].freeze
+  end
+
+  def self.integer_str?(str)
+    str.is_a?(Integer) || str.strip.match?(/\A\d+\z/)
   end
 
   def current?
@@ -46,7 +52,6 @@ class Quiz < ApplicationRecord
 
   def associated_quizzes
     self.class.where(citation_id: citation_id).where.not(id: id)
-      .order(:id)
   end
 
   def associated_quizzes_previous
@@ -54,7 +59,7 @@ class Quiz < ApplicationRecord
   end
 
   def associated_quizzes_current
-    associated_current = associated_quizzes.current.first
+    associated_current = associated_quizzes.current.last
     if current?
       return self if associated_current.blank? || associated_current.id < id
     end
