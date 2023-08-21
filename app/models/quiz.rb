@@ -38,6 +38,7 @@ class Quiz < ApplicationRecord
     self.status ||= :pending
     self.kind ||= :citation_quiz if citation_id.present?
     self.version ||= calculated_version
+    self.input_text = nil if input_text.blank?
     self.input_text_format ||= :claude_initial
   end
 

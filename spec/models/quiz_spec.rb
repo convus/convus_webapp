@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Quiz, type: :model do
   describe "update_status_of_replaced_quizzes" do
-    let(:quiz) { FactoryBot.create(:quiz) }
+    let(:quiz) { FactoryBot.create(:quiz, input_text: " ") }
     let(:citation) { quiz.citation }
     let(:quiz2) { FactoryBot.create(:quiz, citation: citation) }
     it "updates all the previous quizzes" do
@@ -12,6 +12,7 @@ RSpec.describe Quiz, type: :model do
       expect(quiz.source).to eq "admin_entry"
       expect(quiz.kind).to eq "citation_quiz"
       expect(quiz.input_text_format).to eq "claude_initial"
+      expect(quiz.input_text).to be_nil
       expect(quiz.current?).to be_truthy
       expect(quiz.associated_quizzes_current&.id).to eq quiz.id
 
