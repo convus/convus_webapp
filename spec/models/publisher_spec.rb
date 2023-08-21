@@ -9,14 +9,16 @@ RSpec.describe Publisher, type: :model do
   end
 
   describe "find_or_create_for_domain" do
-    let(:publisher) { Publisher.find_or_create_for_domain("theguardian.com") }
+    let(:publisher) { Publisher.find_or_create_for_domain("TheGuardian.com") }
     it "finds and creates" do
       expect(publisher).to be_valid
-      expect(publisher.name).to eq "theguardian"
+      expect(publisher.name).to eq "TheGuardian.com"
+      expect(publisher.domain).to eq "theguardian.com"
       expect(publisher.remove_query).to be_falsey
+      expect(publisher.name_assigned?).to be_falsey
       # It ignores passed name if there is a match
       expect(Publisher.find_or_create_for_domain("theguardian.com", name: "BBB")&.id).to eq publisher.id
-      expect(publisher.reload.name).to eq "theguardian"
+      expect(publisher.reload.name).to eq "TheGuardian.com"
     end
     context "passed name initially" do
       let(:publisher) { Publisher.find_or_create_for_domain("TheGuardian.com", name: "The Guardian", remove_query: true) }
@@ -28,13 +30,14 @@ RSpec.describe Publisher, type: :model do
         expect(Publisher.find_or_create_for_domain("theguardian.com")&.id).to eq publisher.id
         expect(publisher.reload.name).to eq "The Guardian"
         expect(publisher.remove_query).to be_truthy
+        expect(publisher.name_assigned?).to be_truthy
       end
     end
     context "subdomain" do
       let(:publisher) { Publisher.find_or_create_for_domain("epistemink.substack.com") }
       it "name doesn't remove subdomain" do
         expect(publisher).to be_valid
-        expect(publisher.name).to eq "epistemink.substack"
+        expect(publisher.name).to eq "epistemink.substack.com"
         # Because substack is default truthy
         expect(publisher.remove_query).to be_truthy
         expect(publisher.default_remove_query?).to be_truthy
@@ -52,14 +55,14 @@ RSpec.describe Publisher, type: :model do
     it "creates" do
       publisher = citation.reload.publisher
       expect(publisher.domain).to eq "politico.com"
-      expect(publisher.name).to eq "politico"
+      expect(publisher.name).to eq "politico.com"
       expect(publisher.remove_query).to be_falsey
     end
     context "publisher exists" do
       let!(:publisher) { Publisher.find_or_create_for_domain("politico.com") }
       it "associates" do
         expect(publisher.domain).to eq "politico.com"
-        expect(publisher.name).to eq "politico"
+        expect(publisher.name).to eq "politico.com"
         expect(publisher.remove_query).to be_falsey
         expect(citation.reload.publisher_id).to eq publisher.id
         expect(citation.url).to eq url
@@ -68,7 +71,7 @@ RSpec.describe Publisher, type: :model do
         let!(:publisher) { Publisher.find_or_create_for_domain("politico.com", remove_query: true) }
         it "associates and ignores query" do
           expect(publisher.domain).to eq "politico.com"
-          expect(publisher.name).to eq "politico"
+          expect(publisher.name).to eq "politico.com"
           expect(publisher.remove_query).to be_truthy
           expect(citation.reload.publisher_id).to eq publisher.id
           expect(citation.url).to eq url.gsub("?k=v", "")

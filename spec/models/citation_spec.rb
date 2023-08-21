@@ -142,7 +142,7 @@ RSpec.describe Citation, type: :model do
         expect(citation.reload.topics.pluck(:id)).to eq([topic.id])
         expect(citation.topics_string).to eq "San Francisco"
         expect(citation.manually_updated_attributes).to eq(["topics"])
-        expect(citation.manually_updated_at).to be_within(1).of Time.now
+        expect(citation.manually_updated_at).to be_within(1).of Time.current
         citation.manually_updating = false
         citation.update(topics_string: " ")
         expect(citation.reload.topics_string).to be_blank
@@ -250,6 +250,29 @@ RSpec.describe Citation, type: :model do
       it "returns target" do
         expect(citation.references_filepath).to eq target
         expect(Citation.references_filepath(url)).to eq target
+      end
+    end
+  end
+
+  describe "published_updated_at_with_fallback" do
+    let(:time) { Time.current }
+    let(:citation) { Citation.new(created_at: time) }
+    it "is created_at for citations without published_at" do
+      expect(citation.published_updated_at).to be_blank
+      expect(citation.published_at).to be_blank
+      expect(citation.published_updated_at_with_fallback).to be_within(1).of(time)
+      expect(Citation.new.published_updated_at_with_fallback).to be_within(1).of(Time.current)
+    end
+    context "published_at" do
+      let(:citation) { Citation.new(published_at: time, created_at: Time.current) }
+      it "is published_at" do
+        expect(citation.published_updated_at_with_fallback).to be_within(1).of(time)
+      end
+    end
+    context "published_updated_at" do
+      let(:citation) { Citation.new(published_updated_at: time, published_at: Time.current, created_at: Time.current) }
+      it "is published_updated_at" do
+        expect(citation.published_updated_at_with_fallback).to be_within(1).of(time)
       end
     end
   end

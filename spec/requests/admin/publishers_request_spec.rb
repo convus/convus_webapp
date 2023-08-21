@@ -55,7 +55,7 @@ RSpec.describe base_url, type: :request do
     describe "update" do
       let(:valid_params) { {name: "99 Percent Invisible", remove_query: true, base_word_count: "30"} }
       it "updates" do
-        expect(publisher.reload.name).to eq "99percentinvisible"
+        expect(publisher.reload.name).to eq "99percentinvisible.org"
         expect(publisher.remove_query).to be_falsey
         expect(publisher.base_word_count).to eq 100
         patch "#{base_url}/#{publisher.id}", params: {publisher: valid_params}

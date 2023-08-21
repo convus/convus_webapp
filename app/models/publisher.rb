@@ -26,12 +26,8 @@ class Publisher < ApplicationRecord
       create(domain: domain, name: name, remove_query: remove_query)
   end
 
-  def domain_to_name
-    domain&.gsub(/\.[^.]*\z/, "")
-  end
-
   def name_assigned?
-    name != domain_to_name
+    name&.downcase != domain&.downcase
   end
 
   def keep_query?
@@ -44,8 +40,8 @@ class Publisher < ApplicationRecord
 
   def set_calculated_attributes
     @remove_query_enabled = remove_query_changed? && remove_query
+    self.name ||= domain
     self.domain = domain&.downcase
-    self.name ||= domain_to_name
     self.slug = self.class.slugify(name)
     self.base_word_count ||= BASE_WORD_COUNT
   end

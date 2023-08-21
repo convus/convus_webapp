@@ -163,6 +163,10 @@ class Citation < ApplicationRecord
     published_updated_at
   end
 
+  def published_updated_at_with_fallback
+    published_updated_at || published_at || created_at || Time.current
+  end
+
   def publisher_name
     publisher&.name
   end
@@ -238,7 +242,7 @@ class Citation < ApplicationRecord
     end
     current_m_attrs << "citation_text" if manually_updating && citation_text_changed?
     self.manually_updated_attributes = current_m_attrs.uniq.sort
-    self.manually_updated_at = manually_updated_attributes.any? ? Time.now : nil
+    self.manually_updated_at = manually_updated_attributes.any? ? Time.current : nil
   end
 
   # Called if publisher updated with remove_query, in callback - so do a direct update
