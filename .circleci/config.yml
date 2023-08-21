@@ -49,6 +49,7 @@ jobs:
             curl -sSL "https://nodejs.org/download/release/v18.14.2/node-v18.14.2-linux-x64.tar.xz" | sudo tar --strip-components=2 -xJ -C /usr/local/bin/ node-v18.14.2-linux-x64/bin/node
             curl https://www.npmjs.com/install.sh | sudo bash
             sudo npm i -g corepack
+            yarn
       - run:
           name: "install bundler"
           command: gem install bundler
@@ -79,6 +80,7 @@ jobs:
             - public/packs
             - public/packs-test
             - tmp/cache/assets/sprockets
+            - ~/.yarn
             - ~/.cache/yarn
             - ~/.cache/bundle
       - run:
@@ -102,13 +104,13 @@ jobs:
                               --out test-results/rspec/rspec.xml \
                               --format progress \
                               -- ${TESTFILES}
-      # - run:
-      #     name: "Jest: Tests"
-      #     command: |
-      #       mkdir -p test-results/junit
-      #       yarn test --ci --runInBand --reporters=default --reporters=jest-junit
-      #     environment:
-      #       JEST_JUNIT_OUTPUT_DIR: "test-results/junit/"
+      - run:
+          name: "Jest: Tests"
+          command: |
+            mkdir -p test-results/junit
+            yarn test --ci --runInBand --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: "test-results/junit/"
       - store_test_results:
           path: test-results
       - store_artifacts:
