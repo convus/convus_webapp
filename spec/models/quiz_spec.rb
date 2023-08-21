@@ -11,6 +11,7 @@ RSpec.describe Quiz, type: :model do
       expect(quiz.version).to eq 1
       expect(quiz.source).to eq "admin_entry"
       expect(quiz.kind).to eq "citation_quiz"
+      expect(quiz.input_text_format).to eq "claude_initial"
       expect(quiz.current?).to be_truthy
       expect(quiz.associated_quizzes_current&.id).to eq quiz.id
 

@@ -6,26 +6,28 @@ class Quiz < ApplicationRecord
     disabled: 3
   }.freeze
 
-  SOURCE_ENUM = {
-    admin_entry: 0
-  }.freeze
+  SOURCE_ENUM = {admin_entry: 0}.freeze
 
   KIND_ENUM = {citation_quiz: 0}.freeze
+
+  INPUT_TEXT_FORMAT = {claude_initial: 0}.freeze
 
   enum status: STATUS_ENUM
   enum source: SOURCE_ENUM
   enum kind: KIND_ENUM
+  enum input_text_format: INPUT_TEXT_FORMAT
 
   belongs_to :citation
+
   has_many :quiz_questions
 
   before_validation :set_calculated_attributes
-  after_commit :update_status_of_replaced_quizzes, on: :create
+  after_commit :mark_quizzes_replaced_and_enqueue_parsing, on: :create
 
   scope :current, -> { where(status: current_statuses) }
 
   def self.current_statuses
-    %i[pending active disabled]
+    %i[pending active disabled].freeze
   end
 
   def current?
@@ -36,6 +38,7 @@ class Quiz < ApplicationRecord
     self.status ||= :pending
     self.kind ||= :citation_quiz if citation_id.present?
     self.version ||= calculated_version
+    self.input_text_format ||= :claude_initial
   end
 
   def associated_quizzes
@@ -51,8 +54,10 @@ class Quiz < ApplicationRecord
     current? ? self : associated_quizzes.current.first
   end
 
-  def update_status_of_replaced_quizzes
+  def mark_quizzes_replaced_and_enqueue_parsing
+    return true if associated_quizzes.where("id > ?", id).any?
     associated_quizzes_previous.update_all(status: :replaced)
+    QuizParseAndCreateQuestionsJob.perform_async(id)
   end
 
   private
