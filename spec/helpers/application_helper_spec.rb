@@ -239,7 +239,6 @@ RSpec.describe ApplicationHelper, type: :helper do
         expect(topic_links(Topic.where(id: [topic1.id]), url: {controller: "admin/citations", action: "index"})).to eq target4
         # NOTE: Drops the /ratings, because root_to
         expect(topic_links(Topic.where(id: [topic1.id]), url: {controller: "admin/ratings", action: "index", user: "test"})).to eq target5
-
       end
     end
   end

@@ -18,7 +18,7 @@ module AdminHelper
       concat(link_to(display_icon("link"), citation.url))
       concat(" ")
       concat(topic_links(citation.topics, {class: "text-sm text-gray-400", include_current: true}, url: filter_link))
-      concat(render partial: "/shared/citation", locals: {citation: citation, url_for_route: filter_link, skip_title_and_description: true})
+      concat(render(partial: "/shared/citation", locals: {citation: citation, url_for_route: filter_link, skip_title_and_description: true}))
     end
   end
 end
