@@ -22,7 +22,7 @@ RSpec.describe Quiz, type: :model do
       expect(quiz2.kind).to eq "citation_quiz"
 
       quiz.reload
-      expect(quiz.status).to eq "replaced"
+      expect(quiz.status).to eq "pending"
       expect(quiz.version).to eq 1
       expect(quiz.associated_quizzes_current&.id).to eq quiz2.id
     end

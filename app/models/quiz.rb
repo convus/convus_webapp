@@ -3,7 +3,8 @@ class Quiz < ApplicationRecord
     pending: 0,
     active: 1,
     replaced: 2,
-    disabled: 3
+    disabled: 3,
+    parse_errored: 4
   }.freeze
 
   SOURCE_ENUM = {admin_entry: 0}.freeze
@@ -20,6 +21,7 @@ class Quiz < ApplicationRecord
   belongs_to :citation
 
   has_many :quiz_questions
+  has_many :quiz_question_answers, through: :quiz_questions
 
   before_validation :set_calculated_attributes
   after_commit :mark_quizzes_replaced_and_enqueue_parsing, on: :create
@@ -52,12 +54,15 @@ class Quiz < ApplicationRecord
   end
 
   def associated_quizzes_current
-    current? ? self : associated_quizzes.current.first
+    associated_current = associated_quizzes.current.first
+    if current?
+      return self if associated_current.blank? || associated_current.id < id
+    end
+    associated_current
   end
 
   def mark_quizzes_replaced_and_enqueue_parsing
     return true if associated_quizzes.where("id > ?", id).any?
-    associated_quizzes_previous.update_all(status: :replaced)
     QuizParseAndCreateQuestionsJob.perform_async(id)
   end
 

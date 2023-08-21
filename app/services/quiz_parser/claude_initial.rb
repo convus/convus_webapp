@@ -1,6 +1,13 @@
 class QuizParser::ClaudeInitial
   class << self
     def parse(quiz)
+      parsed = parse_input_text(quiz)
+
+      # Add the opening question text
+      q1_text = [opening_question_text(quiz), parsed.first[:question]].reject(&:blank?)
+      parsed.first[:question] = q1_text.join(", ")
+
+      parsed
     end
 
     private
@@ -46,7 +53,6 @@ class QuizParser::ClaudeInitial
         result.last[current_key] << current_text
       end
     end
-
 
     def opening_question_text(quiz)
       citation = quiz.citation

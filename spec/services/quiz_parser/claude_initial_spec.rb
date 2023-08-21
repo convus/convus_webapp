@@ -9,40 +9,53 @@ RSpec.describe QuizParser::ClaudeInitial do
   let(:quiz) { FactoryBot.create(:quiz, input_text: input_text, citation: citation) }
   let(:input_text) { nil }
 
-  # describe "parse" do
-  #   let(:target) do
-  #     [
-  #       {
-  #         text: "According to a Publisher #{time_el}, Question One",
-  #         correct: ["Something true."],
-  #         incorrect: ["Something false."]
-  #       }, {
-  #         text: "Question Two",
-  #         correct: ["Something 2 true."],
-  #         incorrect: ["Something 2 false."]
-  #       }
-  #     ]
-  #   end
-  #   it "responds with target" do
-  #     expect(subject.parse(quiz)).to eq target
-  #   end
+  describe "parse" do
+    let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question One\nTrue option: Something True\nFalse option: Something false\nStep 2:  \nQuestion: Question two\nTrue option: Something 2 True\nFalse option: Something 2 false\n\n" }
+    let(:target) do
+      [
+        {
+          question: "According to <u>a Publisher</u> #{time_el}, Question One",
+          correct: ["Something True"],
+          incorrect: ["Something false"]
+        }, {
+          question: "Question two",
+          correct: ["Something 2 True"],
+          incorrect: ["Something 2 false"]
+        }
+      ]
+    end
+    it "responds with target" do
+      result = subject.parse(quiz)
+      expect(result.count).to eq 2
+      result.count.times do |i|
+        expect_hashes_to_match(result[i], target[i])
+      end
+    end
 
-  #   context "without questions" do
-  #     let(:target) do
-  #       [
-  #         {
-  #           text: "According to a Publisher #{time_el}"
-  #           correct: ["Something true."],
-  #           incorrect: ["Something false."]
-  #         }, {
-  #           text: nil,
-  #           correct: ["Something 2 true."],
-  #           incorrect: ["Something 2 false."]
-  #         }
-  #       ]
-  #     end
-  #   end
-  # end
+    context "without questions" do
+      let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nTrue option: Something True\nFalse option: Something false\nStep 2:  \nTrue option: Something 2 True\nFalse option: Something 2 false\n\n" }
+      let(:target) do
+        [
+          {
+            question: "According to <u>a Publisher</u> #{time_el}",
+            correct: ["Something True"],
+            incorrect: ["Something false"]
+          }, {
+            question: nil,
+            correct: ["Something 2 True"],
+            incorrect: ["Something 2 false"]
+          }
+        ]
+      end
+      it "responds with target" do
+        result = subject.parse(quiz)
+        expect(result.count).to eq 2
+        result.count.times do |i|
+          expect_hashes_to_match(result[i], target[i])
+        end
+      end
+    end
+  end
 
   describe "opening_question_text" do
     context "with no author" do
