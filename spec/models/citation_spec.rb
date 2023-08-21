@@ -184,17 +184,29 @@ RSpec.describe Citation, type: :model do
   describe "matching_topics" do
     let!(:topic2) { FactoryBot.create(:topic, name: "California") }
     let!(:topic1) { FactoryBot.create(:topic, name: "San Francisco", parents_string: "California") }
+    let!(:topic3) { FactoryBot.create(:topic, name: "Housing") }
     let!(:citation1) { FactoryBot.create(:citation, topics_string: "San Francisco") }
-    let!(:citation2) { FactoryBot.create(:citation, topics_string: "california") }
+    let!(:citation2) { FactoryBot.create(:citation, topics_string: "california, housing") }
+    let!(:citation3) { FactoryBot.create(:citation, topics_string: "San Francisco, Housing") }
     it "returns matching" do
       expect(citation1.topics.pluck(:id)).to eq([topic1.id])
-      expect(citation2.topics.pluck(:id)).to eq([topic2.id])
-      expect(Citation.matching_topics(topic1.id).pluck(:id)).to eq([citation1.id])
+      expect(citation2.topics.pluck(:id)).to match_array([topic2.id, topic3.id])
+      expect(citation3.topics.pluck(:id)).to match_array([topic1.id, topic3.id])
+      expect(Citation.matching_topics(topic1.id).pluck(:id)).to match_array([citation1.id, citation3.id])
       expect(Citation.matching_topics([topic2.id]).pluck(:id)).to eq([citation2.id])
+      expect(Citation.matching_topics([topic3.id]).pluck(:id)).to match_array([citation2.id, citation3.id])
       expect(Topic.child_ids_for_ids(topic1.id)).to eq([])
       expect(Topic.child_ids_for_ids(topic2.id)).to eq([topic1.id])
-      expect(Citation.matching_topics([topic1.id], include_children: true).pluck(:id)).to match_array([citation1.id])
-      expect(Citation.matching_topics([topic2.id], include_children: true).pluck(:id)).to match_array([citation1.id, citation2.id])
+      expect(Citation.matching_topics([topic1.id], include_children: true).pluck(:id)).to match_array([citation1.id, citation3.id])
+      expect(Citation.matching_topics([topic2.id], include_children: true).pluck(:id)).to match_array([citation1.id, citation2.id, citation3.id])
+      expect(Citation.matching_topics([topic1.id, topic3.id]).pluck(:id)).to match_array([citation1.id, citation2.id, citation3.id])
+
+      # TODO: Make searching multiple different topics make more sense.
+      # ALSO: need to handle include_children
+      # pp Citation.matching_topics([topic1.id, topic3.id]).to_sql
+      # pp Citation.matching_topics([topic1.id, topic3.id], match_all: true).to_sql
+      # AND query
+      # expect(Citation.matching_topics([topic1.id, topic3.id], match_all: true).pluck(:id)).to eq([citation3.id])
     end
   end
 

@@ -1,14 +1,17 @@
+<%# NOTE: THIS IS ONLY FOR Admin Views right now %>
+
 <%# NOTE: when you add new search_ params here, also add it to hidden_search_fields %>
 <% viewing ||= controller_name.humanize %>
-<% current_header_keys = %w[search_topics user_subject search_author search_publisher search_citation_id] %>
+<% current_header_keys = %w[search_topics user search_author search_publisher search_citation_id] %>
 <% header_present ||= (current_header_keys & params.keys).any? || current_topics.present? %>
+
 <% if header_present %>
   <div>
     <% skip_topics ||= false %>
     <% if !skip_topics && current_topics.present? %>
       <p class="mb-2">
         Viewing <%= viewing.downcase %> for
-        <%= topic_links(current_topics, name_and_slugs: current_topics.map {|t| [t.name, t.slug] }) %>
+        <%= topic_links(current_topics, name_and_slugs: current_topics.map {|t| [t.name, t.slug] }, url: "/admin/topics/") %>
         <em class="less-strong">
           &ndash; view <%= viewing.downcase %> for
           <%= link_to "all topics", url_for(sortable_params.merge(search_topics: nil)) %>
@@ -18,7 +21,7 @@
     <% if user_subject.present? %>
       <p class="mb-2">
         <%= viewing %> for
-        <strong><%= user_subject.username %></strong>
+        <strong><%= link_to user_subject.username, edit_admin_user_path(user_subject) %></strong>
         <em class="less-strong">
           &ndash; view <%= viewing.downcase %> for
           <%= link_to "all users", url_for(sortable_params.merge(user: nil)) %>
