@@ -1,5 +1,5 @@
 # To bump cache:
-# Increment & Replace: 'CACHE_V1' in this config
+# Increment & Replace: 'CACHE_V2' in this config
 
 version: 2
 jobs:
@@ -29,11 +29,11 @@ jobs:
       - restore_cache:
           keys:
             # This branch if available
-            - CACHE_V1-dep-{{ .Branch }}-
+            - CACHE_V2-dep-{{ .Branch }}-
             # Default branch if not
-            - CACHE_V1-dep-main-
+            - CACHE_V2-dep-main-
             # Any branch if there are none on the default branch - this should be unnecessary if you have your default branch configured correctly
-            - CACHE_V1-dep-
+            - CACHE_V2-dep-
 
       - run:
           name: install dockerize
@@ -55,21 +55,22 @@ jobs:
           name: "bundle gems"
           command: bundle install --path=vendor/bundle --jobs=4 --retry=3
       # So that we can compile assets, since we use node & yarn
-      - run:
-          name: "Yarn Install"
-          command: yarn install --cache-folder ~/.cache/yarn
+      # - run:
+      #     name: "Yarn Install"
+      #     command: yarn install --cache-folder ~/.cache/yarn
       - run:
           name: "Assets: precompile"
           command: |
             set -x
             node --version
+            yarn --version
             bundle exec rails assets:precompile assets:clean --trace
             rm -rf public/assets
       - run:
           name: "Wait for PostgreSQL to start"
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - save_cache:
-          key: CACHE_V1-dep-{{ .Branch }}-{{ epoch }}
+          key: CACHE_V2-dep-{{ .Branch }}-{{ epoch }}
           paths:
             - ./vendor/bundle
             - ~/.bundle
