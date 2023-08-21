@@ -10,14 +10,40 @@ class QuizParser::ClaudeInitial
         raise QuizParser::ParsingError, "No input_text"
       end
 
-      input_text_cleaned = quiz.input_text.gsub(/\nStep 1:/, "\n").strip
+      result = []
+      current_key = nil
+      current_text = nil
 
-      input_text_cleaned.split(/\nStep \d+:\n/).each_with_index.map do |question, i|
-        incorrect, correct = question.split(/\nfalse:/i)
-        if incorrect.blank? || correct.blank?
-          raise QuizParserError, "Question #{i} doesn't have both a true and false response"
+      quiz.input_text.split("\n").each do |line|
+        if line.match?(/\Astep \d+:/i)
+          update_result(result, current_key, current_text)
+          current_key = nil
+          result << {question: nil, correct: [], incorrect: []}
+        elsif result.any?
+          # ignore everything before the 'Step 1:', since there isn't a result yet
+          if line.match?(/\Aquestion:/i)
+            update_result(result, current_key, current_text)
+            current_key = :question
+            current_text = line.gsub(/\Aquestion:/i, "").strip
+          elsif line.match?(/\A((true)|(false))\s?(option)?:/i)
+            update_result(result, current_key, current_text)
+            current_key = line.match?(/\Atrue/i) ? :correct : :incorrect
+            # pp line, line.gsub(/\A((true)|(false))\s?(option)?:/i, "").strip
+            current_text = line.gsub(/\A((true)|(false))\s?(option)?:/i, "").strip
+          else
+            update_result(result, current_key, current_text)
+          end
         end
-        {correct: [correct.gsub(/\Atrue:/i, "").strip], incorrect: [incorrect.strip]}
+      end
+      update_result(result, current_key, current_text)
+      result
+    end
+
+    def update_result(result, current_key, current_text)
+      if current_key == :question
+        result.last[current_key] = current_text
+      elsif current_key.present?
+        result.last[current_key] << current_text
       end
     end
 
