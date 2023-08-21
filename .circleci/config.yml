@@ -48,6 +48,7 @@ jobs:
           command: |
             curl -sSL "https://nodejs.org/download/release/v18.14.2/node-v18.14.2-linux-x64.tar.xz" | sudo tar --strip-components=2 -xJ -C /usr/local/bin/ node-v18.14.2-linux-x64/bin/node
             curl https://www.npmjs.com/install.sh | sudo bash
+            npm i -g corepack
       - run:
           name: "install bundler"
           command: gem install bundler
