@@ -7,7 +7,7 @@ class Admin::QuizzesController < Admin::BaseController
     page = params[:page] || 1
     @per_page = params[:per_page] || 200
     @quizzes = searched_quizzes.reorder("quizzes.#{sort_column} #{sort_direction}")
-      .includes(:quiz_questions).page(page).per(@per_page)
+      .includes(:citation, :quiz_questions).page(page).per(@per_page)
   end
 
   def show
