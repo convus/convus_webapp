@@ -28,10 +28,9 @@ class QuizParser::ClaudeInitial
           elsif line.match?(/\A((true)|(false))\s?(option)?:/i)
             update_result(result, current_key, current_text)
             current_key = line.match?(/\Atrue/i) ? :correct : :incorrect
-            # pp line, line.gsub(/\A((true)|(false))\s?(option)?:/i, "").strip
             current_text = line.gsub(/\A((true)|(false))\s?(option)?:/i, "").strip
-          else
-            update_result(result, current_key, current_text)
+          elsif current_key.present?
+            update_result(result, current_key, line)
           end
         end
       end
@@ -40,6 +39,7 @@ class QuizParser::ClaudeInitial
     end
 
     def update_result(result, current_key, current_text)
+      return if current_key.blank? || current_text.blank?
       if current_key == :question
         result.last[current_key] = current_text
       elsif current_key.present?

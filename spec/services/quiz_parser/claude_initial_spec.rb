@@ -79,15 +79,14 @@ RSpec.describe QuizParser::ClaudeInitial do
         expect(result.count).to eq 1
         expect_hashes_to_match(result.first, target)
       end
-      # context "reversed order, extra white space" do
-      #   let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nFalse option:\n\nThe Step 1 false\nTrue option: The Step 1 True\nQuestion:\n\nThe Question Step 1\n\n" }
-      #   it "returns the parsed text" do
-      #     result = subject.send(:parse_input_text, quiz)
-      #     expect(result.count).to eq 1
-      #     pp result.first
-      #     expect_hashes_to_match(result.first, target)
-      #   end
-      # end
+      context "reversed order, extra white space" do
+        let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nFalse option:\n\nThe Step 1 false\nTrue option: The Step 1 True\nQuestion:\n\nThe Question Step 1\n\n" }
+        it "returns the parsed text" do
+          result = subject.send(:parse_input_text, quiz)
+          expect(result.count).to eq 1
+          expect_hashes_to_match(result.first, target)
+        end
+      end
     end
 
     context "valid multiple question claude_initial response" do
