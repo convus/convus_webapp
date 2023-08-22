@@ -40,10 +40,10 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def update
-    if true
-      # @quiz.update(permitted_params)
-      # flash[:success] = "New Quiz version created"
-      # redirect_to edit_admin_quiz_path(@quiz), status: :see_other
+    @quiz = Quiz.new(permitted_params)
+    if @quiz.save
+      flash[:success] = "New Quiz version created"
+      redirect_to edit_admin_quiz_path(@quiz), status: :see_other
     else
       render :edit, status: :see_other
     end
@@ -57,10 +57,6 @@ class Admin::QuizzesController < Admin::BaseController
 
   def searchable_statuses
     @searchable_statuses ||= Quiz.statuses.keys
-  end
-
-  def default_direction
-    "asc"
   end
 
   def searched_quizzes
@@ -85,12 +81,12 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def find_quiz
-    @quiz = if Citation.integer_str?(params[:id])
-      Quiz.find(params[:id])
+    if params[:citation_id].present?
+      @citation = Citation.friendly_find!(params[:citation_id])
+      @quiz = @citation.quizzes.current.last
     else
-      @citation = Citation.friendly_find!(params[:id])
-      @citation.quiz_active
+      @quiz = Quiz.find(params[:id])
+      @citation = @quiz.citation
     end
-    @citation ||= @quiz.citation
   end
 end
