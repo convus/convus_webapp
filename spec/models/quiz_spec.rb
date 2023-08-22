@@ -1,6 +1,15 @@
 require "rails_helper"
 
 RSpec.describe Quiz, type: :model do
+  describe "factory" do
+    let(:quiz) { FactoryBot.create(:quiz, :with_question_and_answer) }
+    it "is valid" do
+      expect(quiz).to be_valid
+      expect(quiz.quiz_questions.count).to eq 1
+      expect(quiz.quiz_question_answers.count).to eq 1
+      expect(quiz.quiz_question_answers.correct.count).to eq 1
+    end
+  end
   describe "update_status_of_replaced_quizzes" do
     let(:quiz) { FactoryBot.create(:quiz, input_text: " ") }
     let(:citation) { quiz.citation }

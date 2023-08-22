@@ -69,7 +69,7 @@ class Admin::QuizzesController < Admin::BaseController
 
     if params[:search_citation_id].present?
       @searched_citation = Citation.friendly_find(params[:search_citation_id])
-      quizzes = quizzes.where(citation_id: @citation.id) if @citation.present?
+      quizzes = quizzes.where(citation_id: @searched_citation.id) if @searched_citation.present?
     end
 
     quizzes.where(created_at: @time_range)

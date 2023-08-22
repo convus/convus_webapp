@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :quizzes, only: %i[index show update]
+
   root "landing#index"
 
   get "/about", to: "landing#about"
@@ -57,6 +59,7 @@ Rails.application.routes.draw do
     resources :ratings, only: %i[index show update destroy]
     resources :publishers, only: %i[index edit update show]
     resources :quizzes, except: [:destroy]
+    resources :quiz_responses, only: [:index]
   end
 
   authenticate :user, lambda { |u| u.developer? } do

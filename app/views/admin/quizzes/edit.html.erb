@@ -75,7 +75,9 @@
           <tr>
             <td>Responses</td>
             <td>
-              Link To responses
+              <%= link_to admin_quiz_responses_path(search_quiz_id: @quiz.id) do %>
+                <%= admin_number_display(@quiz.quiz_responses.count) %>
+              <% end %>
             </td>
           </tr>
         </tbody>

@@ -56,7 +56,7 @@
             <%= admin_number_display(quiz.quiz_questions.count) %>
           </td>
           <td>
-            <%#= link_to admin_number_display(quiz.quiz_responses.count), quiz_responses_path(search_quiz_id: quiz.id) %>
+            <%= link_to admin_number_display(quiz.quiz_responses.count), admin_quiz_responses_path(search_quiz_id: quiz.id) %>
           </td>
         </tr>
       <% end %>
