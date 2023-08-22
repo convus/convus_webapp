@@ -152,6 +152,8 @@
     <%= link_to "Quiz".pluralize(quizzes_count), admin_quizzes_path(search_citation_id: @citation.id) %>
     <% if quizzes_count == 0 %>
       <%= link_to "New quiz", new_admin_quiz_path(citation_id: @citation.id), class: "link text-sm text-primary" %>
+    <% else %>
+      <span class="text-base less-strong">showing current quiz</span>
     <% end %>
   </h2>
   <% if quizzes_count > 0 %>

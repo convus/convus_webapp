@@ -20,8 +20,8 @@ class Admin::QuizzesController < Admin::BaseController
     if @citation.present?
       @quiz ||= Quiz.new(citation: @citation)
     else
-      flash[:error] = "Unable to find a Citation to use for the new quiz (requires passing citation_id)"
-      redirect_back(fallback_location: admin_root_url, status: :see_other)
+      flash[:error] = "Unable to find a Citation for the new quiz (citation_id is required)"
+      redirect_back(fallback_location: admin_citations_path, status: :see_other)
     end
   end
 
