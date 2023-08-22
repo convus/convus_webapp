@@ -44,10 +44,10 @@
             </td>
           <% end %>
           <td>
-            <%= quiz.status %>
+            <%= admin_status_display(quiz.status) %>
           </td>
           <td>
-            <code><%= quiz.source %></code>
+            <span class="text-sm"><%= quiz.source %></span>
           </td>
           <td>
             <%= quiz.version %>

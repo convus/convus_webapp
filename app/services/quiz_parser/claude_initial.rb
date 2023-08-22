@@ -3,6 +3,10 @@ class QuizParser::ClaudeInitial
     def parse(quiz)
       parsed = parse_input_text(quiz)
 
+      unless parsed.any?
+        raise QuizParser::ParsingError, "Unable to parse questions from input_text"
+      end
+
       # Add the opening question text
       q1_text = [opening_question_text(quiz), parsed.first[:question]].reject(&:blank?)
       parsed.first[:question] = q1_text.join(", ")

@@ -38,6 +38,18 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
       end
     end
 
+    context "invalid input_text" do
+      let(:input_text) { "Something or other" }
+      it "adds a parse error" do
+        instance.perform(quiz.id)
+        quiz.reload
+        expect(quiz.input_text_parse_error).to match(/unable to parse/i)
+        expect(quiz.status).to eq "parse_errored"
+        # previous quiz status isn't updated
+        expect(previous_quiz.reload.status).to eq "active"
+      end
+    end
+
     context "valid quiz" do
       let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question One\nTrue option: Something True\nFalse option: Something false\nStep 2:  \nQuestion: Question two\nTrue option: Something 2 True\nFalse option: Something 2 false\n\n" }
       let(:target) do

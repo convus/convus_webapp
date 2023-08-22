@@ -31,7 +31,7 @@
     <% if @searched_citation.present? %>
       <p class="mb-2">
         <%= viewing %> for
-        <strong><%= citation_display_admin(@searched_citation) %></strong>
+        <strong><%= admin_citation_display(@searched_citation) %></strong>
         <em class="less-strong">
           &ndash; view <%= viewing.downcase %> for
           <%= link_to "all citations", url_for(sortable_params.merge(search_citation_id: nil)) %>
