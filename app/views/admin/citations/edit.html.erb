@@ -147,9 +147,22 @@
   <% end %>
 
   <h2 class="standard-top-offset mb-2">
-    <%= admin_number_display(ratings.count) %>
-    <%= "Rating".pluralize(ratings.count) %>
-    <% if ratings.count > 10 %>
+    <% quizzes_count = @citation.quizzes.count %>
+    <%= admin_number_display(quizzes_count) %>
+    <%= link_to "Quiz".pluralize(quizzes_count), admin_quizzes_path(search_citation_id: @citation.id) %>
+    <% if quizzes_count == 0 %>
+      <%= link_to "New quiz", new_admin_quiz_path(citation_id: @citation.id), class: "link text-sm text-primary" %>
+    <% end %>
+  </h2>
+  <% if quizzes_count > 0 %>
+    <%= render partial: "/admin/quizzes/table", locals: {quizzes: @citation.quizzes.current, skip_sortable: true, skip_citation: true} %>
+  <% end %>
+
+  <h2 class="standard-top-offset mb-2">
+    <% ratings_count = ratings.count %>
+    <%= admin_number_display(ratings_count) %>
+    <%= "Rating".pluralize(ratings_count) %>
+    <% if ratings_count > 10 %>
       <small>first 10 shown, <%= link_to "see all", admin_ratings_path(search_citation_id: @citation.id) %></small>
     <% end %>
     <%= button_to "reprocess ratings", admin_citation_path(@citation.to_param, update_citation_metadata_from_ratings: true), method: :patch, class: "link text-sm text-primary" %>

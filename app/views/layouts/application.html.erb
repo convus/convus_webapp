@@ -46,6 +46,9 @@
           <%= active_link admin_citations_path, class: "main-nav-link ml-2", match_controller: true do %>
             <span title="Citations">Cit<span class="hidden md:inline">ations</span></span>
           <% end %>
+          <%= active_link admin_quizzes_path, class: "main-nav-link ml-2", match_controller: true do %>
+            <span title="Citations">Q<span class="hidden md:inline">uizzes</span></span>
+          <% end %>
           <%= link_to "Exit", user_root_url, class: "main-nav-link ml-auto less-strong" %>
         <% else %>
           <% ratings_active = controller_name == "ratings" && viewing_display_name == "all" %>
