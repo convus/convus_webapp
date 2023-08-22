@@ -11,18 +11,24 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def show
-    redirect_to edit_quiz_path(params[:id])
+    redirect_to edit_admin_quiz_path(params[:id])
     nil
   end
 
   def new
-    @quiz ||= Quiz.new(citation: find_citation)
+    @citation = Citation.friendly_find(params[:citation_id])
+    if @citation.present?
+      @quiz ||= Quiz.new(citation: @citation)
+    else
+      flash[:error] = "Unable to find a Citation to use for the new quiz (requires passing citation_id)"
+      redirect_back(fallback_location: admin_root_url, status: :see_other)
+    end
   end
 
   def create
     @quiz = Quiz.new(permitted_params)
     if @quiz.save
-      flash[:success] = "Citation created"
+      flash[:success] = "Quiz created"
       redirect_to admin_quiz_path(@quiz), status: :see_other
     else
       render :new, status: :see_other
@@ -30,6 +36,7 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def edit
+    @quiz_questions = @quiz.quiz_questions.includes(:quiz_question_answers)
   end
 
   def update
@@ -73,20 +80,17 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def permitted_params
-    # params.require(:quiz).permit(:name, :parents_string, :previous_slug)
+    params.require(:quiz).permit(:input_text, :citation_id)
+      .merge(source: :admin_entry)
   end
 
   def find_quiz
     @quiz = if Citation.integer_str?(params[:id])
+      Quiz.find(params[:id])
+    else
       @citation = Citation.friendly_find!(params[:id])
       @citation.quiz_active
-    else
-      Quiz.find!(params[:id])
     end
     @citation ||= @quiz.citation
-  end
-
-  def find_citation
-    @citation ||= Citation.friendly_find!(params[:citation_id])
   end
 end

@@ -2,4 +2,4 @@
 
 <%= render partial: "/shared/current_header", locals: {collection: @quizzes, render_period: true} %>
 
-<%= render partial: "table", locals: {topics: @quizzes, skip_sortable: false} %>
+<%= render partial: "table", locals: {quizzes: @quizzes, skip_sortable: false} %>

@@ -25,6 +25,8 @@ class Quiz < ApplicationRecord
   has_many :quiz_questions
   has_many :quiz_question_answers, through: :quiz_questions
 
+  validates_presence_of :citation_id
+
   before_validation :set_calculated_attributes
   after_commit :mark_quizzes_replaced_and_enqueue_parsing, on: :create
 

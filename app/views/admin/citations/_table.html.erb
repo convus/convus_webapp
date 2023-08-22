@@ -21,6 +21,7 @@
         <th>Ratings</th>
         <th>Ratings w meta</th>
         <th>Missing meta #</th>
+        <th>Quizzes</th>
       </tr>
     </thead>
     <tbody>
@@ -41,6 +42,7 @@
           <td><%= admin_number_display(citation.ratings.count) %></td>
           <td><%= admin_number_display(citation.ratings.metadata_present.count) %></td>
           <td><%= missing_meta_count(citation) %></td>
+          <td><%= admin_number_display(citation.quizzes.count) %></td>
         </tr>
       <% end %>
     </tbody>

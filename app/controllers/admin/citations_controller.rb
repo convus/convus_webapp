@@ -7,7 +7,7 @@ class Admin::CitationsController < Admin::BaseController
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
     @citations = searched_citations.reorder("citations.#{sort_column} #{sort_direction}")
-      .includes(:ratings, :topics).page(page).per(@per_page)
+      .includes(:ratings, :topics, :quizzes).page(page).per(@per_page)
   end
 
   def show
