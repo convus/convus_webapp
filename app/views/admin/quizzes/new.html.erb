@@ -1,0 +1,13 @@
+<%= content_for :main_wrapper_class, "container-padded" %>
+<div class="large-width-container">
+  <h1 class="standard-top-offset">
+    New Quiz
+    <small class="less-strong">for citation:</small>
+  </h1>
+</div>
+
+<%= render partial: "/admin/citations/table", locals: {citations: [@citation], skip_sortable: true} %>
+
+<div class="large-width-container">
+  <%= render partial: "form", locals: {quiz: @quiz} %>
+</div>

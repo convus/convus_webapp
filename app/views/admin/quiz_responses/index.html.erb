@@ -1,0 +1,10 @@
+<%= content_for :main_wrapper_class, "container-padded" %>
+<div class="large-width-container">
+  <h1 class="standard-top-offset mb-4">Admin Quiz Responses</h1>
+
+  <%= render partial: "/shared/current_header", locals: {collection: @quiz_responses, render_period: true} %>
+</div>
+
+<%= render partial: "table", locals: {quiz_responses: @quiz_responses, skip_sortable: false} %>
+
+<%= render partial: "tranzito_utils/pagination", locals: {collection: @quiz_responses, skip_total: true} %>
