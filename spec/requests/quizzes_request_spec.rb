@@ -47,7 +47,7 @@ RSpec.describe base_url, type: :request do
         expect(assigns(:quiz_response)&.id).to be_blank
       end
       context "with existing quiz_response" do
-        let!(:quiz_response) { FactoryBot.create(:quiz_response, quiz: quiz, user: current_user)}
+        let!(:quiz_response) { FactoryBot.create(:quiz_response, quiz: quiz, user: current_user) }
         it "renders" do
           expect {
             get "#{base_url}/#{quiz.id}"

@@ -28,9 +28,9 @@ class Admin::QuizResponsesController < Admin::BaseController
       quiz_responses = quiz_responses.where(status: @search_status)
     end
 
-    if params[:quiz_id].present?
+    if params[:search_quiz_id].present?
       @searched_quiz = Quiz.find(params[:search_quiz_id])
-      quiz_responses = quiz_responses.where(quiz_id: @quiz.id) if @searched_quiz.present?
+      quiz_responses = quiz_responses.where(quiz_id: @searched_quiz.id) if @searched_quiz.present?
     elsif params[:search_citation_id].present?
       @searched_citation = Citation.friendly_find(params[:search_citation_id])
       quiz_responses = quiz_responses.where(citation_id: @searched_citation.id) if @searched_citation.present?
