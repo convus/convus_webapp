@@ -19,7 +19,7 @@ module AdminHelper
     case status&.downcase
     when "active"
       "text-success"
-    when "pending" then "text-yellow-400"
+    when "pending", "in_progress" then "text-yellow-400"
     when "replaced" then "text-teal-500"
     when /error/ then "text-error"
     else
