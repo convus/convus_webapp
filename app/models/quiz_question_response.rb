@@ -7,10 +7,12 @@ class QuizQuestionResponse < ApplicationRecord
 
   validates_presence_of :quiz_response_id
   validates_presence_of :quiz_question_answer_id
-  validates_uniqueness_of :quiz_question_answer_id, scope: [:quiz_response_id]
+  validates_uniqueness_of :quiz_question_id, scope: [:quiz_response_id]
 
   before_validation :set_calculated_attributes
   after_commit :update_quiz_response, only: :create
+
+  delegate :user, :quiz, to: :quiz_response, allow_nil: true
 
   def update_quiz_response
     quiz_response.update(updated_at: Time.current)

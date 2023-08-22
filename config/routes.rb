@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :quizzes, only: %i[index show update]
+
   root "landing#index"
 
   get "/about", to: "landing#about"
