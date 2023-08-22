@@ -1,1 +1,22 @@
-Quiz Show
+<div class="standard-top-offset small-width-container-padded">
+  <% @quiz_questions.each do |quiz_question| %>
+    <div class="mt-8 pb-4">
+      <% if quiz_question.text.present? %>
+        <h4 class=""><%= quiz_question.text.html_safe %></h4>
+      <% end %>
+      <% quiz_question_response = @quiz_question_responses.where(quiz_question_id: quiz_question.id).first %>
+      <% quiz_question.quiz_question_answers.each do |quiz_question_answer| %>
+        <div class="mt-4 p-2">
+          <% if quiz_question_response.present? %>
+            <%= quiz_question_responded_display(quiz_question_response, quiz_question_answer) %>
+          <% else %>
+            <%= button_to(quiz_question_answer.text, quiz_path(@quiz.to_param, quiz_question_answer_id: quiz_question_answer.id), method: :patch, class: "link block w-full text-left p-4") %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<hr class="standard-top-offset" />
+<h4 class="mt-4 text-center"><%= link_to "Read the article!", @quiz.citation.url %></h4>

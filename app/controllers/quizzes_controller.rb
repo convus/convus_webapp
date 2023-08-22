@@ -1,13 +1,15 @@
 class QuizzesController < ApplicationController
   before_action :redirect_to_signup_unless_user_present!, except: %i[index show]
   before_action :find_quiz_and_response, except: [:index]
-  before_action { @controller_display_name = "Topic Review" }
 
   def index
     @quizzes = Quiz.active.order(created_at: :desc)
+    @quiz_response_quiz_ids = current_user&.quiz_responses&.pluck(:quiz_id) || []
   end
 
   def show
+    @quiz_questions = @quiz.quiz_questions.includes(:quiz_question_answers)
+    @quiz_question_responses = @quiz_response.quiz_question_responses
   end
 
   def update
@@ -28,6 +30,6 @@ class QuizzesController < ApplicationController
     # TODO: make friendly find via citation
     @quiz = Quiz.find(params[:id])
     quiz_response = current_user&.quiz_responses&.where(quiz_id: @quiz.id)&.first
-    @quiz_response = quiz_response || QuizResponse.new(quiz: @quiz, user: current_user)
+    @quiz_response = (quiz_response || QuizResponse.new(quiz: @quiz, user: current_user))
   end
 end
