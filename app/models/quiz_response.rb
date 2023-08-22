@@ -23,6 +23,10 @@ class QuizResponse < ApplicationRecord
     correct_count + incorrect_count
   end
 
+  def quiz_version
+    quiz&.version
+  end
+
   def set_calculated_attributes
     self.citation_id ||= quiz&.citation_id
     self.question_count = quiz&.quiz_questions&.count || 0
@@ -37,7 +41,7 @@ class QuizResponse < ApplicationRecord
     if question_count <= question_responses_count
       :finished
     else
-      question_responses_count == 0 ? :pending : :in_progress
+      (question_responses_count == 0) ? :pending : :in_progress
     end
   end
 end

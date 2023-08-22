@@ -24,6 +24,7 @@ class Quiz < ApplicationRecord
 
   has_many :quiz_questions
   has_many :quiz_question_answers, through: :quiz_questions
+  has_many :quiz_responses
 
   validates_presence_of :citation_id
 

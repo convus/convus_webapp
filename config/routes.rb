@@ -57,6 +57,7 @@ Rails.application.routes.draw do
     resources :ratings, only: %i[index show update destroy]
     resources :publishers, only: %i[index edit update show]
     resources :quizzes, except: [:destroy]
+    resources :quiz_responses, only: [:index]
   end
 
   authenticate :user, lambda { |u| u.developer? } do

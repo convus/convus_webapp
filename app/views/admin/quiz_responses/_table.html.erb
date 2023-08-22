@@ -1,0 +1,75 @@
+<% skip_sortable ||= false %>
+<% quiz_responses ||= @quiz_responses %>
+<% skip_citation ||= false %>
+
+<div class="full-screen-table">
+  <table class="table table-sm">
+    <thead class="sortable">
+      <tr>
+        <th>
+          <%= sortable "created_at", skip_sortable: skip_sortable %>
+        </th>
+        <% if render_updated_at? %>
+          <th>
+            <small><%= sortable "updated_at", skip_sortable: skip_sortable %></small>
+          </th>
+        <% end %>
+        <% unless skip_citation %>
+          <th>
+            <%= sortable "citation_id",  skip_sortable: skip_sortable %>
+          </th>
+        <% end %>
+        <th>
+          Quiz Version
+        </th>
+        <th>
+          <%= sortable "status", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          <%= sortable "user_id", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          <%= sortable "correct_count", skip_sortable: skip_sortable %>
+        </th>
+        <th>
+          <%= sortable "incorrect_count", skip_sortable: skip_sortable %>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% quiz_responses.each do |quiz_response| %>
+        <tr>
+          <td>
+            <% if display_dev_info? %><code class="only-dev-visible-small"><%= quiz_response.id %></code><% end %>
+            <span class="convertTime"><%= l(quiz_response.created_at, format: :convert_time) %></span>
+          </td>
+          <% if render_updated_at? %>
+            <td>
+              <small class="convertTime"><%= l(quiz_response.updated_at, format: :convert_time) %></small>
+            </td>
+          <% end %>
+          <% unless skip_citation %>
+            <td>
+              <%= admin_citation_cell(quiz_response.citation) %>
+            </td>
+          <% end %>
+          <td>
+            <%= quiz_response.quiz_version %>
+          </td>
+          <td>
+            <%= admin_status_display(quiz_response.status) %>
+          </td>
+          <td>
+            <%= link_to quiz_response.user&.username, url_for(sortable_params.merge(user: quiz_response.user_id)) %>
+          </td>
+          <td>
+            <%= admin_number_display(quiz_response.correct_count) %>
+          </td>
+          <td>
+            <%= admin_number_display(quiz_response.incorrect_count) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

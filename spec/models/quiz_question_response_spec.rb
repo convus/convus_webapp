@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe QuizQuestionResponse, type: :model do
   describe "factory" do
