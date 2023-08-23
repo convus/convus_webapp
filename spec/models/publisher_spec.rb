@@ -104,4 +104,19 @@ RSpec.describe Publisher, type: :model do
       expect(Citation.matching_url_components(url_components).first&.id).to eq citation.id
     end
   end
+
+  describe "Remove title" do
+    let(:title) { "Cool title | A Famous Publication" }
+    let(:citation) { FactoryBot.create(:citation, title: title) }
+    let(:publisher) { citation.publisher }
+    it "updates all the citations if name changed" do
+      expect(citation.reload.title).to eq title
+      # This doesn't call update_citation_titles
+      publisher.update(base_word_count: 50)
+      expect(citation.reload.title).to eq title
+      # But updating the name does call it!
+      publisher.reload.update(name: "A famous publication")
+      expect(citation.reload.title).to eq "Cool title"
+    end
+  end
 end

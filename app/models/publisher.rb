@@ -12,6 +12,7 @@ class Publisher < ApplicationRecord
   before_validation :set_default_remove_query, on: :create
   before_validation :set_calculated_attributes
   after_commit :remove_citation_queries_if_changed
+  after_commit :update_citation_titles_if_changed
 
   scope :remove_query, -> { where(remove_query: true) }
   scope :keep_query, -> { where(remove_query: false) }
@@ -44,6 +45,7 @@ class Publisher < ApplicationRecord
     self.domain = domain&.downcase
     self.slug = self.class.slugify(name)
     self.base_word_count ||= BASE_WORD_COUNT
+    @update_citation_titles = name_changed?
   end
 
   def default_remove_query?
@@ -53,5 +55,10 @@ class Publisher < ApplicationRecord
   def remove_citation_queries_if_changed
     return unless @remove_query_enabled
     citations.each { |c| c.remove_query! }
+  end
+
+  def update_citation_titles_if_changed
+    return unless @update_citation_titles
+    citations.each { |c| c.save if c.title != c.clean_title(c.title, name) }
   end
 end
