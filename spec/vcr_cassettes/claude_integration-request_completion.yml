@@ -1,0 +1,48 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/complete
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-2","prompt":"\n\nHuman: What is your favorite color?\n\nAssistant:","max_tokens_to_sample":2000,"stream":false}'
+    headers:
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_KEY>"
+      User-Agent:
+      - Faraday v2.7.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Request-Id:
+      - cc255dad00374b8f291b85cf0668f52b6f8b1c399e3fd62330d9485aa1fb1d36
+      X-Cloud-Trace-Context:
+      - 802aaceacf39ab9b95f788ab14261c7c
+      Date:
+      - Wed, 23 Aug 2023 19:12:00 GMT
+      Server:
+      - Google Frontend
+      Content-Length:
+      - '299'
+      Via:
+      - 1.1 google
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: UTF-8
+      string: '{"completion":" I''m an AI assistant created by Anthropic to be helpful,
+        harmless, and honest. I don''t have personal preferences like a favorite color.","stop_reason":"stop_sequence","model":"claude-2.0","stop":"\n\nHuman:","log_id":"cc255dad00374b8f291b85cf0668f52b6f8b1c399e3fd62330d9485aa1fb1d36"}'
+  recorded_at: Wed, 23 Aug 2023 19:12:00 GMT
+recorded_with: VCR 6.1.0

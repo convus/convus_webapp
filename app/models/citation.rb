@@ -78,7 +78,7 @@ class Citation < ApplicationRecord
     end
 
     def url_to_components(str, normalized: false)
-      str = normalized ? str.downcase : normalized_url(str)&.downcase
+      str = normalized ? str&.downcase : normalized_url(str)&.downcase
       return {} if str.blank?
       parsed_uri = URI.parse(str)
       # if scheme is missing, parse fails to pull out the host sometimes
@@ -231,10 +231,10 @@ class Citation < ApplicationRecord
     self.url ||= self.class.normalized_url(url)
     self.url_components_json ||= self.class.url_to_components(url, normalized: true).except(:remove_query)
     self.authors = (Array(authors) || [])&.map { |a| self.class.normalize_author(a) }&.compact
-    self.citation_text = citation_text.blank? ? nil : citation_text.strip
+    self.citation_text = clean_citation_text(citation_text)
     self.manually_updated_attributes = [] if manually_updated_attributes.blank?
     # If assigning publisher, remove query if required
-    if publisher.blank?
+    if publisher.blank? && url.present?
       self.publisher = Publisher.find_or_create_for_domain(url_components[:host])
       self.url = self.class.normalized_url(url, remove_query) if publisher.remove_query?
     end
@@ -276,5 +276,12 @@ class Citation < ApplicationRecord
 
   def references_filename
     Slugifyer.filename_slugify(pretty_url.gsub(url_components[:host], ""))
+  end
+
+  private
+
+  def clean_citation_text(text)
+    stripped = text&.gsub(" ", " ")&.strip
+    stripped.present? ? stripped : nil
   end
 end

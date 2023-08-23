@@ -7,7 +7,10 @@ class Quiz < ApplicationRecord
     parse_errored: 4
   }.freeze
 
-  SOURCE_ENUM = {admin_entry: 0}.freeze
+  SOURCE_ENUM = {
+    admin_entry: 0,
+    claude_integration: 1
+  }.freeze
 
   KIND_ENUM = {citation_quiz: 0}.freeze
 

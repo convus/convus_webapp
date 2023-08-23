@@ -16,6 +16,7 @@ gem "redis" # Redis itself
 gem "sidekiq" # Background job processing (with redis)
 gem "sinatra" # Used for sidekiq web
 gem "sidekiq-failures" # Show sidekiq failures
+gem "redlock" # Locking, to handle API rate limiting
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]

@@ -332,4 +332,24 @@ RSpec.describe Citation, type: :model do
       end
     end
   end
+
+  describe "clean_citation_text" do
+    let(:citation) { Citation.new(citation_text: citation_text) }
+    let(:citation_text) { "" }
+    it "makes nil if blank" do
+      citation.set_calculated_attributes
+      expect(citation.citation_text).to be_nil
+      # Also, strips non-breaking whitespaces
+      citation.citation_text = "   "
+      citation.set_calculated_attributes
+      expect(citation.citation_text).to be_nil
+    end
+    context "with non-breaking whitespaces" do
+      let(:citation_text) { "\n\nCool Stuff.\n \nAnother thing  " }
+      it "removes them" do
+        citation.set_calculated_attributes
+        expect(citation.citation_text).to eq "Cool Stuff.\n \nAnother thing"
+      end
+    end
+  end
 end
