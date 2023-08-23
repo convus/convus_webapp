@@ -29,18 +29,21 @@ class QuizParser::ClaudeInitial
       quiz.input_text.split("\n").each do |line|
         if line.match?(/\Astep \d+:/i)
           update_result(result, current_key, current_text)
-          current_key = nil
           result << {question: nil, correct: [], incorrect: []}
+          # Updated format has question following step exactly
+          current_key = :question
+          update_result(result, current_key, line.gsub(/\Astep \d+:/i, ""))
         elsif result.any?
+          pp result, line
           # ignore everything before the 'Step 1:', since there isn't a result yet
           if line.match?(/\Aquestion:/i)
             update_result(result, current_key, current_text)
             current_key = :question
-            current_text = line.gsub(/\Aquestion:/i, "").strip
+            current_text = line.gsub(/\Aquestion:/i, "")
           elsif line.match?(/\A((true)|(false))\s?(option)?:/i)
             update_result(result, current_key, current_text)
             current_key = line.match?(/\Atrue/i) ? :correct : :incorrect
-            current_text = line.gsub(/\A((true)|(false))\s?(option)?:/i, "").strip
+            current_text = line.gsub(/\A((true)|(false))\s?(option)?:/i, "")
           elsif current_key.present?
             update_result(result, current_key, line)
           end
@@ -53,9 +56,9 @@ class QuizParser::ClaudeInitial
     def update_result(result, current_key, current_text)
       return if current_key.blank? || current_text.blank?
       if current_key == :question
-        result.last[current_key] = current_text
+        result.last[current_key] = current_text.strip
       elsif current_key.present?
-        result.last[current_key] << current_text
+        result.last[current_key] << current_text.strip
       end
     end
 
