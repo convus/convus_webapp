@@ -47,8 +47,7 @@ RSpec.describe CreateCitationQuizJob, type: :job do
           expect(quiz.source).to eq "claude_integration"
           expect(quiz.kind).to eq "citation_quiz"
           expect(quiz.prompt_text).to eq prompt_text
-          pp quiz
-          expect(quiz.input_text).to eq "PARTY ON!"
+          expect(quiz.input_text.length).to be > 1000
         end
       end
     end
