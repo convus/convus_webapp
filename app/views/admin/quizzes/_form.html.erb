@@ -12,6 +12,15 @@
     <%# row_count = quiz.input_text.present? ? quiz.input_text.split("\n").count : 4 %>
     <%= f.text_area :input_text, class: "form-control", required: true, rows: 15 %>
   </div>
+  <p>Text should have at least one step, and be formatted like this:</p>
+
+  <code class="code-small">
+    <pre>Step 1: {question text}
+
+True option: {true option text}
+
+False option: {false option text}</pre>
+  </code>
 
   <div class="form-row-btn">
     <%= f.submit "save", class: "btn" %>
