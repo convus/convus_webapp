@@ -199,7 +199,8 @@ RSpec.describe Citation, type: :model do
       expect(Topic.child_ids_for_ids(topic2.id)).to eq([topic1.id])
       expect(Citation.matching_topics([topic1.id], include_children: true).pluck(:id)).to match_array([citation1.id, citation3.id])
       expect(Citation.matching_topics([topic2.id], include_children: true).pluck(:id)).to match_array([citation1.id, citation2.id, citation3.id])
-      expect(Citation.matching_topics([topic1.id, topic3.id]).pluck(:id)).to match_array([citation1.id, citation2.id, citation3.id])
+      # NOTE: If you include distinct here, this breaks rating search
+      expect(Citation.matching_topics([topic1.id, topic3.id]).pluck(:id)).to match_array([citation1.id, citation2.id, citation3.id, citation3.id])
 
       # TODO: Make searching multiple different topics make more sense.
       # ALSO: need to handle include_children
