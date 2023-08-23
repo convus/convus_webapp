@@ -3,7 +3,7 @@ class QuizQuestion < ApplicationRecord
 
   belongs_to :quiz
 
-  has_many :quiz_question_answers
+  has_many :quiz_question_answers, dependent: :destroy
 
   delegate :status, to: :quiz, allow_nil: true
 end

@@ -40,8 +40,8 @@ RSpec.describe QuizParser::ClaudeInitial do
         "False option: Something false\n" \
         "Step 2:\n" \
         "Question two\n" \
-        "True option: Something 2 True\n" \
-        "False option: Something 2 false\n\n"
+        "True option: \"Something 2 True\"\n" \
+        "False option: \"Something 2 false\"\n\n"
       end
       it "responds with target" do
         result = subject.parse(quiz)
