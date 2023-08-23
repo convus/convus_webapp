@@ -34,7 +34,7 @@ class CreateCitationQuizJob < ApplicationJob
 
     redlock = lock_manager.lock(REDLOCK_KEY, lock_duration_ms)
     unless redlock
-      return CreateCitationQuizJob.perform_in(requeue_delay, citation_id)
+      return self.class.perform_in(requeue_delay, citation_id)
     end
 
     begin
@@ -45,6 +45,8 @@ class CreateCitationQuizJob < ApplicationJob
         kind: :citation_quiz,
         prompt_text: QUIZ_PROMPT,
         input_text: claude_response)
+    rescue Faraday::TimeoutError
+      return self.class.perform_async(requeue_delay, citation_id)
     ensure
       lock_manager.unlock(redlock)
     end

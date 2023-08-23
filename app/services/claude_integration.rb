@@ -26,7 +26,7 @@ class ClaudeIntegration
       conn.headers["Content-Type"] = "application/json"
       conn.headers["anthropic-version"] = "2023-06-01"
       conn.headers["x-api-key"] = API_KEY
-      conn.options.timeout = 30
+      conn.options.timeout = 60
       conn.adapter Faraday.default_adapter
     end
   end
