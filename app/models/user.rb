@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   include FriendlyFindable
 
-  ROLE_ENUM = {normal_user: 0, admin: 2, developer: 1}.freeze
+  ROLE_ENUM = {basic_user: 0, admin: 2, developer: 1}.freeze
 
   devise :database_authenticatable, :registerable, :trackable,
     :recoverable, :rememberable, :validatable
@@ -102,7 +102,7 @@ class User < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.role ||= "normal_user"
+    self.role ||= "basic_user"
     self.about = nil if about.blank?
     self.api_token = self.class.generate_api_token if new_api_token?
     self.username = username&.strip

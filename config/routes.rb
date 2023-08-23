@@ -51,7 +51,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "ratings#index"
-    resources :users, only: [:index, :edit]
+    resources :users, only: %i[index edit update destroy]
     resources :topics
     resources :topic_reviews, except: [:show]
     resources :topic_review_citations, only: %i[edit update]
