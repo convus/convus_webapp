@@ -5,7 +5,8 @@ class CreateCitationQuizJob < ApplicationJob
   REDLOCK_KEY = "Claude-#{Rails.env.slice(0, 3)}"
 
   def self.enqueue_for_citation?(citation)
-    QUIZ_PROMPT.present? && citation.citation_text.present? && citation.quizzes.none?
+    QUIZ_PROMPT.present? && citation.present? && citation.citation_text.present? &&
+      citation.quizzes.none?
   end
 
   def self.redis_url
@@ -14,7 +15,7 @@ class CreateCitationQuizJob < ApplicationJob
 
   # May use get_remaining_ttl to calculate sometime
   def requeue_delay
-    50.seconds
+    39.seconds
   end
 
   def lock_duration_ms
@@ -30,9 +31,10 @@ class CreateCitationQuizJob < ApplicationJob
     lock_manager = Redlock::Client.new([self.class.redis_url])
     citation = Citation.find(citation_id)
     return unless self.class.enqueue_for_citation?(citation)
+
     redlock = lock_manager.lock(REDLOCK_KEY, lock_duration_ms)
     unless redlock
-      return CreateCitationQuizJob.perform_in(requeue_delay)
+      return CreateCitationQuizJob.perform_in(requeue_delay, citation_id)
       # time_remaining = lock_manager.get_remaining_ttl_for_resource(REDLOCK_KEY) || 0
       # message = "Locked: Jobs - #{self.class.jobs_count}. remaining time: #{time_remaining} (#{lock_duration_ms - time_remaining} since locked)"
       # raise message
