@@ -358,7 +358,7 @@ RSpec.describe Citation, type: :model do
     let(:citation) { Citation.new(title: title, publisher: publisher) }
     let(:publisher) { Publisher.new(name: publisher_name, domain: domain) }
     let(:publisher_name) { "" }
-    let(:domain) { ""}
+    let(:domain) { "" }
     let(:title) { "Some title | Roger " }
     it "makes nil if blank" do
       citation.set_calculated_attributes
