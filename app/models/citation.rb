@@ -287,6 +287,7 @@ class Citation < ApplicationRecord
   end
 
   def clean_title(str)
+    return nil if str.blank?
     new_title = str.strip
     pub_name = publisher_name
     return new_title if pub_name.blank?
