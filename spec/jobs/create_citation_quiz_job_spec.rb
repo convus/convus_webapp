@@ -31,7 +31,7 @@ RSpec.describe CreateCitationQuizJob, type: :job do
         context "error response" do
           let(:error_response) { '{"error": {"type": "invalid_request_error", "message": "prompt is too long: 0 tokens > 102398 maximum"}}' }
           it "creates a new quiz with the error" do
-            allow_any_instance_of(ClaudeIntegration).to receive(:request_completion) {  error_response }
+            allow_any_instance_of(ClaudeIntegration).to receive(:request_completion) { error_response }
             expect(citation.quizzes.count).to eq 0
             expect {
               instance.perform(citation.id)

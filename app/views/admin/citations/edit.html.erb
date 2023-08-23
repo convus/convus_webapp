@@ -153,11 +153,11 @@
     <% if quizzes_count == 0 %>
       <%= link_to "New quiz", new_admin_quiz_path(citation_id: @citation.id), class: "link text-sm text-primary" %>
     <% else %>
-      <span class="text-base less-strong">showing current quiz</span>
+      <span class="text-base less-strong">showing most recent quiz</span>
     <% end %>
   </h2>
   <% if quizzes_count > 0 %>
-    <%= render partial: "/admin/quizzes/table", locals: {quizzes: @citation.quizzes.current, skip_sortable: true, skip_citation: true} %>
+    <%= render partial: "/admin/quizzes/table", locals: {quizzes: [@citation.quizzes.last], skip_sortable: true, skip_citation: true} %>
   <% end %>
 
   <h2 class="standard-top-offset mb-2">
