@@ -269,13 +269,13 @@ class Citation < ApplicationRecord
     {id: id, url: url, filepath: references_filepath}
   end
 
-  # pub_name can be passed in so that publisher can directly update citations
-  def clean_title(str, pub_name = nil)
+  # pub can be passed in so that publisher can directly update citations
+  def clean_title(str, pub = nil)
     return nil if str.blank?
     new_title = str.strip
-    pub_name ||= publisher_name
-    return new_title if pub_name.blank?
-    new_title.gsub(/\s\W+\s+#{pub_name}\z/i, "")
+    pub ||= publisher
+    return new_title if pub.blank?
+    new_title.gsub(/\s\W+\s+#{pub.name}\z/i, "").gsub(/\s\W+\s+#{pub.domain}\z/i, "")
   end
 
   private

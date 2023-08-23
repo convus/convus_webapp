@@ -59,6 +59,6 @@ class Publisher < ApplicationRecord
 
   def update_citation_titles_if_changed
     return unless @update_citation_titles
-    citations.each { |c| c.save if c.title != c.clean_title(c.title, name) }
+    citations.each { |c| c.save if c.title != c.clean_title(c.title, self) }
   end
 end

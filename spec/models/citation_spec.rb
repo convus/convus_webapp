@@ -356,8 +356,9 @@ RSpec.describe Citation, type: :model do
 
   describe "remove publisher_name" do
     let(:citation) { Citation.new(title: title, publisher: publisher) }
-    let(:publisher) { Publisher.new(name: publisher_name) }
+    let(:publisher) { Publisher.new(name: publisher_name, domain: domain) }
     let(:publisher_name) { "" }
+    let(:domain) { ""}
     let(:title) { "Some title | Roger " }
     it "makes nil if blank" do
       citation.set_calculated_attributes
@@ -365,6 +366,15 @@ RSpec.describe Citation, type: :model do
     end
     context "with matching publisher" do
       let(:publisher_name) { "Roger" }
+      it "removes them" do
+        citation.set_calculated_attributes
+        expect(citation.title).to eq "Some title"
+      end
+    end
+    context "with matching publisher domain" do
+      let(:publisher_name) { "Christian Science Monitor" }
+      let(:domain) { "csmonitor.com" }
+      let(:title) { "Some title - CSMonitor.com" }
       it "removes them" do
         citation.set_calculated_attributes
         expect(citation.title).to eq "Some title"
