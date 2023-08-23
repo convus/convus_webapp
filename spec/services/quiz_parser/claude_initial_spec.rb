@@ -168,10 +168,8 @@ RSpec.describe QuizParser::ClaudeInitial do
       end
       it "returns the parsed text" do
         result = subject.send(:parse_input_text, quiz)
-        pp result
         expect(result.count).to eq 3
         result.count.times do |i|
-          pp result[i]
           expect_hashes_to_match(result[i], target[i])
         end
       end
