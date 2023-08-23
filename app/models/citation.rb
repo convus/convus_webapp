@@ -101,7 +101,7 @@ class Citation < ApplicationRecord
       if match_all
         topic_ids.reduce(self) { |matches, topic_id| matches.matching_a_topic(topic_id) }
       else
-        joins(:citation_topics).distinct.where(citation_topics: {topic_id: topic_ids})
+        joins(:citation_topics).where(citation_topics: {topic_id: topic_ids})
       end
     end
 
@@ -238,6 +238,7 @@ class Citation < ApplicationRecord
       self.publisher = Publisher.find_or_create_for_domain(url_components[:host])
       self.url = self.class.normalized_url(url, remove_query) if publisher.remove_query?
     end
+    self.title = clean_title(title)
   end
 
   def set_manually_updated_attributes
@@ -283,5 +284,12 @@ class Citation < ApplicationRecord
   def clean_citation_text(text)
     stripped = text&.gsub(" ", " ")&.strip
     stripped.present? ? stripped : nil
+  end
+
+  def clean_title(str)
+    new_title = str.strip
+    pub_name = publisher_name
+    return new_title if pub_name.blank?
+    new_title.gsub(/\s\W\s+#{pub_name}\z/i, "")
   end
 end
