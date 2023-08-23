@@ -62,7 +62,7 @@
             <% end %>
           <% end %>
           <%#= active_link "topics", reviews_path, class: "main-nav-link ml-2" %>
-          <% if current_user&.admin? %>
+          <% if current_user&.admin_access? %>
             <%= active_link "admin", admin_root_path, class: "main-nav-link ml-2 less-strong" %>
           <% end %>
           <span class="ml-auto block">

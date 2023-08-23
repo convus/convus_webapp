@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   include FriendlyFindable
 
-  ROLE_ENUM = {normal_user: 0, developer: 1}.freeze
+  ROLE_ENUM = {normal_user: 0, admin: 2, developer: 1}.freeze
 
   devise :database_authenticatable, :registerable, :trackable,
     :recoverable, :rememberable, :validatable
@@ -55,8 +55,8 @@ class User < ApplicationRecord
     ratings.where(citation_id: citation_id).limit(1).any?
   end
 
-  def admin?
-    developer?
+  def admin_access?
+    admin? || developer?
   end
 
   def following_ratings_visible
