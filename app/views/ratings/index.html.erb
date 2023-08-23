@@ -1,8 +1,11 @@
-LINK TO Browser extension
-
 <%= content_for :main_wrapper_class, "container-padded" %>
 <div class="large-width-container">
   <% search_params_present = (params.keys - %w[user controller action]).any? %>
+  <% unless search_params_present %>
+    <p class="mb-3 text-center less-strong">
+      Rating articles is fast&mdash;install the <%= link_to "app / browser extension", browser_extensions_path %> and give it a try.
+    </p>
+  <% end %>
   <% if @viewing_single_user %>
     <% unless search_params_present %>
       <%= render partial: "/u/user_display", locals: {user: user_subject, render_second_hr: true, only_render_name: search_params_present} %>
