@@ -101,7 +101,7 @@ class Citation < ApplicationRecord
       if match_all
         topic_ids.reduce(self) { |matches, topic_id| matches.matching_a_topic(topic_id) }
       else
-        joins(:citation_topics).distinct.where(citation_topics: {topic_id: topic_ids})
+        joins(:citation_topics).where(citation_topics: {topic_id: topic_ids})
       end
     end
 
