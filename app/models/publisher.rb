@@ -8,6 +8,7 @@ class Publisher < ApplicationRecord
 
   validates_uniqueness_of :domain, allow_nil: false
   validates_presence_of :name
+  validates_uniqueness_of :name
 
   before_validation :set_default_remove_query, on: :create
   before_validation :set_calculated_attributes
