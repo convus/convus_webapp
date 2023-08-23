@@ -238,6 +238,7 @@ class Citation < ApplicationRecord
       self.publisher = Publisher.find_or_create_for_domain(url_components[:host])
       self.url = self.class.normalized_url(url, remove_query) if publisher.remove_query?
     end
+    self.title = clean_title(title)
   end
 
   def set_manually_updated_attributes
@@ -268,6 +269,15 @@ class Citation < ApplicationRecord
     {id: id, url: url, filepath: references_filepath}
   end
 
+  # pub can be passed in so that publisher can directly update citations
+  def clean_title(str, pub = nil)
+    return nil if str.blank?
+    new_title = str.strip
+    pub ||= publisher
+    return new_title if pub.blank?
+    new_title.gsub(/\s\W+\s+#{pub.name}\z/i, "").gsub(/\s\W+\s+#{pub.domain}\z/i, "")
+  end
+
   private
 
   def references_folder
@@ -277,8 +287,6 @@ class Citation < ApplicationRecord
   def references_filename
     Slugifyer.filename_slugify(pretty_url.gsub(url_components[:host], ""))
   end
-
-  private
 
   def clean_citation_text(text)
     stripped = text&.gsub(" ", " ")&.strip
