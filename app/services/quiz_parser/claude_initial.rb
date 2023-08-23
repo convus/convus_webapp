@@ -16,7 +16,7 @@ class QuizParser::ClaudeInitial
 
     private
 
-    # I don't love this, line by line parsing - but it works pretty well and I think it's flexible.
+    # I don't love this, line by line procedural parsing - but it works pretty well and I think it's flexible.
     def parse_input_text(quiz)
       if quiz.input_text.blank?
         raise QuizParser::ParsingError, "No input_text"
@@ -27,36 +27,30 @@ class QuizParser::ClaudeInitial
       current_text = nil
 
       quiz.input_text.split("\n").each do |line|
+        current_text = line
         if line.match?(/\Astep \d+:/i)
-          update_result(result, current_key, current_text)
-          result << {question: nil, correct: [], incorrect: []}
-          # Updated format has question following step exactly
+          # Since there isn't a result initially, everything before the 'Step 1:' is ignored
+          result << {question: "", correct: [], incorrect: []}
           current_key = :question
-          update_result(result, current_key, line.gsub(/\Astep \d+:/i, ""))
+          current_text.gsub!(/\Astep \d+:/i, "")
         elsif result.any?
-          pp result, line
-          # ignore everything before the 'Step 1:', since there isn't a result yet
           if line.match?(/\Aquestion:/i)
-            update_result(result, current_key, current_text)
             current_key = :question
-            current_text = line.gsub(/\Aquestion:/i, "")
+            current_text.gsub!(/\Aquestion:/i, "")
           elsif line.match?(/\A((true)|(false))\s?(option)?:/i)
-            update_result(result, current_key, current_text)
             current_key = line.match?(/\Atrue/i) ? :correct : :incorrect
-            current_text = line.gsub(/\A((true)|(false))\s?(option)?:/i, "")
-          elsif current_key.present?
-            update_result(result, current_key, line)
+            current_text.gsub!(/\A((true)|(false))\s?(option)?:/i, "")
           end
         end
+        update_result(result, current_key, current_text)
       end
-      update_result(result, current_key, current_text)
       result
     end
 
     def update_result(result, current_key, current_text)
-      return if current_key.blank? || current_text.blank?
+      return if result.blank? || current_key.blank? || current_text.blank?
       if current_key == :question
-        result.last[current_key] = current_text.strip
+        result.last[current_key] += current_text.strip
       elsif current_key.present?
         result.last[current_key] << current_text.strip
       end
