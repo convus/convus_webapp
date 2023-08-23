@@ -11,7 +11,7 @@
 
 <% skip_sortable ||= false %>
 
-<div class="full-screen-table">
+<div class="full-screen-table mb-4">
   <table class="table table-sm table-striped thead-light">
     <thead class="sortable">
       <tr>
@@ -46,7 +46,7 @@
             <small class="convertTime"><%= l(user.updated_at, format: :convert_time) %></small>
           </td>
           <td>
-            <%= link_to user&.username, ratings_path(sortable_params.merge(user: user.username)) %>
+            <%= link_to user&.username, edit_admin_user_path(user.id) %>
           </td>
           <td>
             <small><%= user.email %></small>
@@ -59,8 +59,8 @@
             <%= link_to admin_number_display(user.followers_approved.count), followers_u_path(id: user.to_param) %>
           </td>
           <td>
-            <% unless user.normal_user? %>
-              <%= user.role %>
+            <% unless user.basic_user? %>
+              <small><%= user.role %></small>
             <% end %>
           </td>
         </tr>

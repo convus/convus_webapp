@@ -14,8 +14,12 @@ FactoryBot.define do
       role { :developer }
     end
 
+    trait :admin_access do
+      role { :admin }
+    end
+
     factory :user_developer, traits: [:developer_access]
 
-    factory :user_admin, traits: [:developer_access]
+    factory :user_admin, traits: [:admin_access]
   end
 end

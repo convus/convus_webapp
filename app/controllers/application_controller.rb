@@ -117,7 +117,7 @@ class ApplicationController < ActionController::Base
   def ensure_user_admin!
     if current_user.blank?
       redirect_to_signup_unless_user_present!
-    elsif !current_user.admin?
+    elsif !current_user.admin_access?
       flash[:error] = "Not authorized"
       redirect_to user_root_url, status: :see_other
     end
