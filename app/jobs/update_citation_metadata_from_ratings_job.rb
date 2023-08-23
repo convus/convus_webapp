@@ -34,6 +34,10 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     if new_attributes[:publisher_name].present? && !citation.publisher.name_assigned?
       citation.publisher.update(name: new_attributes[:publisher_name])
     end
+    # Create the quiz!
+    if CreateCitationQuizJob.enqueue_for_citation?(citation)
+      CreateCitationQuizJob.perform_async(citation.id)
+    end
     citation
   end
 
