@@ -282,6 +282,8 @@ GEM
     redis (4.8.0)
     redis-client (0.11.2)
       connection_pool
+    redlock (2.0.1)
+      redis-client
     regexp_parser (2.6.1)
     request_store (1.5.1)
       rack (>= 1.4)
@@ -418,6 +420,7 @@ DEPENDENCIES
   rails (~> 7.0.6)
   rails-controller-testing
   redis
+  redlock
   rerun
   rspec-rails
   rspec_junit_formatter
