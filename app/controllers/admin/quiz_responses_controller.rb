@@ -36,6 +36,10 @@ class Admin::QuizResponsesController < Admin::BaseController
       quiz_responses = quiz_responses.where(citation_id: @searched_citation.id) if @searched_citation.present?
     end
 
+    if user_subject.present?
+      quiz_responses = quiz_responses.where(user_id: user_subject.id)
+    end
+
     quiz_responses.where(created_at: @time_range)
   end
 end

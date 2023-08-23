@@ -72,10 +72,6 @@ class Admin::QuizzesController < Admin::BaseController
       quizzes = quizzes.where(citation_id: @searched_citation.id) if @searched_citation.present?
     end
 
-    if user_subject.present?
-      quizzes = quizzes.where(user_id: user_subject.id)
-    end
-
     quizzes.where(created_at: @time_range)
   end
 
