@@ -42,7 +42,7 @@ class QuizParser::ClaudeInitial
             current_text.gsub!(/\A((true)|(false))\s?(option)?:/i, "")
           end
         end
-        update_result(result, current_key, current_text)
+        update_result(result, current_key, current_text.strip)
       end
       result
     end
@@ -50,9 +50,9 @@ class QuizParser::ClaudeInitial
     def update_result(result, current_key, current_text)
       return if result.blank? || current_key.blank? || current_text.blank?
       if current_key == :question
-        result.last[current_key] += current_text.strip
+        result.last[current_key] += current_text
       elsif current_key.present?
-        result.last[current_key] << current_text.strip
+        result.last[current_key] << current_text
       end
     end
 
