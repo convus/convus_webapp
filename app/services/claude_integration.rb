@@ -6,7 +6,8 @@ class ClaudeIntegration
   end
 
   def completion_for_prompt(prompt)
-    request_completion(format_prompt(prompt)).dig("completion")
+    result = request_completion(format_prompt(prompt))
+    result["completion"] || result
   end
 
   def request_completion(formatted_prompt)

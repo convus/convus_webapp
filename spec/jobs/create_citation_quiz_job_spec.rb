@@ -28,6 +28,23 @@ RSpec.describe CreateCitationQuizJob, type: :job do
           expect(quiz.prompt_text).to eq prompt_text
           expect(quiz.input_text).to eq "response text"
         end
+        context "error response" do
+          let(:error_response) { '{"error": {"type": "invalid_request_error", "message": "prompt is too long: 0 tokens > 102398 maximum"}}' }
+          it "creates a new quiz with the error" do
+            allow_any_instance_of(ClaudeIntegration).to receive(:request_completion) {  error_response }
+            expect(citation.quizzes.count).to eq 0
+            expect {
+              instance.perform(citation.id)
+            }.to change(Quiz, :count).by 1
+
+            quiz = Quiz.last
+            expect(quiz.citation_id).to eq citation.id
+            expect(quiz.source).to eq "claude_integration"
+            expect(quiz.kind).to eq "citation_quiz"
+            expect(quiz.prompt_text).to eq prompt_text
+            expect(quiz.input_text).to eq error_response
+          end
+        end
       end
 
       context "with citation_text" do
