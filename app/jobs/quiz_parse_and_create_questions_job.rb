@@ -10,10 +10,7 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
     return if quiz.status != "pending"
 
     self.class.parsed_input_text(quiz).each_with_index do |parsed_question, i|
-      quiz_question = quiz.quiz_questions.create(text: parsed_question[:question], list_order: i + 1)
-      question_hashes(parsed_question).each do |attrs|
-        quiz_question.quiz_question_answers.create(attrs)
-      end
+      create_question_and_answers(quiz, parsed_question, i + 1)
     end
 
     quiz.update(status: "active")
@@ -21,6 +18,16 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
     quiz.associated_quizzes_previous.current.update_all(status: :replaced)
   rescue QuizParser::ParsingError => e
     quiz.update(input_text_parse_error: e, status: :parse_errored)
+  end
+
+  def create_question_and_answers(quiz, parsed_question, list_order)
+    # Don't create questions unless there are correct and false answers
+    return if parsed_question[:correct].none? || parsed_question[:incorrect].none?
+
+    quiz_question = quiz.quiz_questions.create(text: parsed_question[:question], list_order: list_order)
+    question_hashes(parsed_question).each do |attrs|
+      quiz_question.quiz_question_answers.create(attrs)
+    end
   end
 
   def question_hashes(parsed_question)
