@@ -52,6 +52,12 @@ RSpec.describe base_url, type: :request do
       expect(response).to render_template("ratings/index")
       expect(assigns(:viewing_display_name)).to eq "all"
       expect(assigns(:ratings).pluck(:id)).to eq([rating.id])
+      # Added to test for a specific bug from a distinct query
+      FactoryBot.create(:topic, name: "apple")
+      get "#{base_url}?search_topics[]=apple&sort=display_name"
+      expect(response.code).to eq "200"
+      expect(response).to render_template("ratings/index")
+      expect(assigns(:ratings).pluck(:id)).to eq([])
     end
     context "additional search queries" do
       let(:topic1) { FactoryBot.create(:topic) }
