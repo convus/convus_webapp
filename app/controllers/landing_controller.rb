@@ -3,8 +3,8 @@ class LandingController < ApplicationController
 
   def index
     @page_title = "Convus"
-    @ratings = Rating.joins(:citation).reorder("ratings.created_at desc")
-      .includes(:user).page(1).per(5)
+    @quizzes = Quiz.joins(:citation).reorder("quizzes.created_at desc").limit(5)
+    @quiz_response_quiz_ids = current_user&.quiz_responses&.pluck(:quiz_id) || []
   end
 
   def about

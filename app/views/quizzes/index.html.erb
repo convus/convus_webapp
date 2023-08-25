@@ -1,36 +1,3 @@
 <h1 class="mb-4">Quizzes</h1>
 
-<div class="full-screen-table">
-  <table class="table table-sm">
-    <thead class="sortable">
-      <tr>
-        <th>
-          Created
-        </th>
-        <th>
-          Citation
-        </th>
-        <th>
-          Completed?
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @quizzes.each do |quiz| %>
-        <tr>
-          <td>
-            <%= link_to l(quiz.created_at, format: :convert_time), quiz_path(quiz), class: "convertTime link" %>
-          </td>
-          <td>
-            <%= admin_citation_cell(quiz.citation) %>
-          </td>
-          <td>
-            <% if @quiz_response_quiz_ids.include?(quiz.id) %>
-              <span class="text-success">completed</span>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<%= render partial: "/quizzes/table", locals: {quizzes: @quizzes} %>

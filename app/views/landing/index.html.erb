@@ -1,28 +1,6 @@
 <h2 class="standard-top-offset mb-4">Find the best articles about <span class="underline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</h2>
-<p class="mb-2">Convus is a place to find and share high quality writing and investigate the best articles on a given topic.</p>
-<p class="mb-2">Use it to learn about how other people think and where their opinions come from.</p>
+<p class="mb-10">Convus is a place to find and share high quality writing&mdash;install the <%= link_to "app or browser extension", browser_extensions_path %> to rate articles you read.</p>
 
-<% if primary_topic_review.present? %>
-  <h3 class="standard-top-offset mb-4">
-    The current topic being reviewed is
-    <%= link_to topic_review_display(primary_topic_review), review_path(primary_topic_review.slug) %>
-  </h3>
-<% end %>
+<%= render partial: "/quizzes/table", locals: {quizzes: @quizzes} %>
 
-<p class="mb-4">View <%= link_to "previous reviews", reviews_path %></p>
-
-<p class="standard-top-offset mb-2"><strong>How it works:</strong></p>
-<ol class="list-decimal mt-3 mb-6 pl-5">
-  <li class="mb-3">A topic is chosen every few days</li>
-  <li class="mb-3">Rate articles on the topic</li>
-  <li class="mb-3">Choose which articles on the topic are the best</li>
-</ol>
-<p class="mb-3">Rating articles is fast&mdash;install the <%= link_to "app / browser extension", browser_extensions_path %> and give it a try.</p>
-
-<h2 class="standard-top-offset mb-1 text-xl">
-  Recent Ratings
-</h2>
-
-<%= render partial: "/ratings/table", locals: {ratings: @ratings, render_user: true, hide_private_users: true, skip_header: true, url_for_route: ratings_path} %>
-
-<h4 class="mt-5"><%= link_to "... view more ratings", ratings_landing_url %></h4>
+<h4 class="mt-5"><%= link_to "... view more quizzes", quizzes_path %></h4>

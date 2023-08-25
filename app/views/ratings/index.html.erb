@@ -3,7 +3,7 @@
   <% search_params_present = (params.keys - %w[user controller action]).any? %>
   <% unless search_params_present %>
     <p class="mb-3 text-center less-strong">
-      Rating articles is fast&mdash;install the <%= link_to "app / browser extension", browser_extensions_path %> and give it a try.
+      Rating articles is easy and quick&mdash;install the <%= link_to "app / browser extension", browser_extensions_path %> and give it a try.
     </p>
   <% end %>
   <% if @viewing_single_user %>
