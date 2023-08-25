@@ -25,7 +25,7 @@ test('time_parser formats time from years ago', () => {
 })
 
 test('time_parser formats time from years ago', () => {
-  const dateString = "2019-06-03 11:55:14 am"
+  const dateString = '2019-06-03 11:55:14 am'
   expect(timeParser.localTimezone).toBe('America/Los_Angeles')
   expect(timeParser.localizedTimeHtml(1559588114, { withPreposition: true })).toBe(
     `<span title="${dateString}">on 2019-06-03</span>`
@@ -90,7 +90,7 @@ test('time_parser from yesterday', () => {
   const timeStamp = timeParser.todayStart.unix() - 15120 // 7:48pm
   const dateString = timeParser.yesterdayStart.format('YYYY-MM-DD')
 
-  expect(timeParser.localizedTimeHtml(timeStamp, {withPreposition: true})).toBe(
+  expect(timeParser.localizedTimeHtml(timeStamp, { withPreposition: true })).toBe(
     `<span title="${dateString} 7:48:00 pm">Yesterday at 7:48pm</span>`
   )
 
