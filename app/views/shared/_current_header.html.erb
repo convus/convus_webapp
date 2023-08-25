@@ -2,7 +2,8 @@
 
 <%# NOTE: when you add new search_ params here, also add it to hidden_search_fields %>
 <% viewing ||= controller_name.humanize %>
-<% current_header_keys = %w[search_topics user search_author search_publisher search_citation_id] %>
+<% current_header_keys = %w[search_author search_citation_id search_publisher user
+  search_status search_topics] %>
 <% header_present ||= (current_header_keys & params.keys).any? || current_topics.present? %>
 
 <% if header_present %>
@@ -55,6 +56,16 @@
         <em class="less-strong">
           &ndash; view <%= viewing.downcase %> for
           <%= link_to "all authors", url_for(sortable_params.merge(search_author: nil)) %>
+        </em>
+      </p>
+    <% end %>
+    <% if @search_status.present? %>
+      <p class="mb-2">
+        <%= viewing %> with status:
+        <strong><%= @search_status %></strong>
+        <em class="less-strong">
+          &ndash; view <%= viewing.downcase %> for
+          <%= link_to "all statuses", url_for(sortable_params.merge(search_status: nil)) %>
         </em>
       </p>
     <% end %>

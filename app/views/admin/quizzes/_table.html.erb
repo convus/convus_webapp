@@ -45,6 +45,9 @@
           <% end %>
           <td>
             <%= admin_status_display(quiz.status) %>
+            <% unless skip_sortable %>
+              <%= link_to search_emoji, url_for(sortable_params.merge(search_status: quiz.status)), class: "text-sm no-underline" %>
+            <% end %>
           </td>
           <td>
             <span class="text-sm"><%= quiz.source %></span>
