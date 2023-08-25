@@ -1,3 +1,5 @@
+// 2023-8-25 - Updated withPreposition
+
 import TimeParser from '../scripts/time_parser'
 
 window.localTimezone = 'America/Los_Angeles' // For consistency in testing
@@ -22,10 +24,18 @@ test('time_parser formats time from years ago', () => {
   expect(timeParser.localizedTimeHtml(1559588114, {})).toBe(target)
 })
 
-test('time_parser formats time from years ago, preciseTime', () => {
+test('time_parser formats time from years ago', () => {
+  const dateString = "2019-06-03 11:55:14 am"
   expect(timeParser.localTimezone).toBe('America/Los_Angeles')
+  expect(timeParser.localizedTimeHtml(1559588114, { withPreposition: true })).toBe(
+    `<span title="${dateString}">on 2019-06-03</span>`
+  )
+
+  expect(timeParser.localizedTimeHtml(1559588114, { withPreposition: true, preciseTime: true })).toBe(
+    `<span title="${dateString}">on 2019-06-03 <span class="less-strong">at 11:55am</span></span>`
+  )
   expect(timeParser.localizedTimeHtml(1559588114, { preciseTime: true })).toBe(
-    '<span title="2019-06-03 11:55:14 am">2019-06-03 <span class="less-strong">11:55am</span></span>'
+    `<span title="${dateString}">2019-06-03 <span class="less-strong">11:55am</span></span>`
   )
 
   expect(
@@ -34,7 +44,7 @@ test('time_parser formats time from years ago, preciseTime', () => {
       includeSeconds: true
     })
   ).toBe(
-    '<span title="2019-06-03 11:55:14 am">2019-06-03 <span class="less-strong">11:55:<small>14</small> am</span></span>'
+    `<span title="${dateString}">2019-06-03 <span class="less-strong">11:55:<small>14</small> am</span></span>`
   )
 
   // with a different timezone - Doesn't work because moment.tz.setDefault. TODO: make it actually work
@@ -64,7 +74,7 @@ test('time_parser from today', () => {
       withPreposition: true
     })
   ).toBe(
-    `<span title="${dateString} 11:44:00 am"> at 11:44:<small>00</small> am</span>`
+    `<span title="${dateString} 11:44:00 am">at 11:44:<small>00</small> am</span>`
   )
   // With preciseTime
   expect(timeParser.localizedTimeHtml(timeStamp, { preciseTime: true })).toBe(
@@ -79,6 +89,10 @@ test('time_parser from today', () => {
 test('time_parser from yesterday', () => {
   const timeStamp = timeParser.todayStart.unix() - 15120 // 7:48pm
   const dateString = timeParser.yesterdayStart.format('YYYY-MM-DD')
+
+  expect(timeParser.localizedTimeHtml(timeStamp, {withPreposition: true})).toBe(
+    `<span title="${dateString} 7:48:00 pm">Yesterday at 7:48pm</span>`
+  )
 
   expect(timeParser.localizedTimeHtml(timeStamp, {})).toBe(
     `<span title="${dateString} 7:48:00 pm">Yesterday 7:48pm</span>`

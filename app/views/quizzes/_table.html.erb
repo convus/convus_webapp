@@ -10,7 +10,7 @@
             <%= link_to l(quiz.created_at, format: :convert_time), quiz_path(quiz), class: "convertTime link" %>
           </td>
           <td>
-            <%= admin_citation_cell(quiz.citation) %>
+            <%= link_to quiz_title(quiz), quiz_path(quiz) %>
           </td>
           <td>
             <% if quiz_response_quiz_ids.include?(quiz.id) %>
