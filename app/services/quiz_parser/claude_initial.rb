@@ -44,6 +44,10 @@ class QuizParser::ClaudeInitial
         end
         update_result(result, current_key, clean_text(current_text))
       end
+
+      # Remove questions that are just 'question'
+      result.each { |r| r[:question] = "" if r[:question]&.downcase == "question" }
+
       result
     end
 

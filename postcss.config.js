@@ -26,7 +26,9 @@ module.exports = {
           error: '#fecba1', // orange
           bodytext: '#212529', // gray-900
           gray: colors.gray,
-          slate: colors.slate
+          slate: colors.slate,
+          teal: colors.teal,
+          yellow: colors.yellow
         },
         extend: {
           spacing: {

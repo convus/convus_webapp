@@ -66,7 +66,7 @@
             <td>Prompt Text</td>
             <td>
               <% if @quiz.prompt_text.present? %>
-                <textarea class="form-control text-sm" rows=3><%= @quiz.prompt_text %></textarea>
+                <textarea class="form-control text-sm" disabled=true rows=3><%= @quiz.prompt_text %></textarea>
               <% else %>
                 <small class="less-strong">none</small>
               <% end %>

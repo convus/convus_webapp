@@ -20,7 +20,7 @@ module AdminHelper
     when "active"
       "text-success"
     when "pending", "in_progress" then "text-yellow-400"
-    when "replaced" then "text-teal-500"
+    # when "replaced" then "text-teal-400"
     when /error/ then "text-error"
     else
       "less-strong"
