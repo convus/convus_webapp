@@ -68,9 +68,9 @@ class QuizParser::ClaudeInitial
     def opening_question_text(quiz)
       citation = quiz.citation
       opening_text = if citation.authors.empty?
-        "According to <u>#{citation.publisher.name}</u>"
+        "According to <u class=\"underline decoration-gray-500\">#{citation.publisher.name}</u>"
       else
-        "According to <em>#{citation.authors.first}</em> in <u>#{citation.publisher.name}</u>"
+        "According to <em>#{citation.authors.first}</em> in <u class=\"underline decoration-gray-500\">#{citation.publisher.name}</u>"
       end
 
       "#{opening_text} <span class=\"convertTime withPreposition\">#{citation.published_updated_at_with_fallback.to_i}</span>"

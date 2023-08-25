@@ -21,7 +21,7 @@
   <%# skip showing publisher if self published %>
   <% if [citation.publisher_name] != citation.authors_rendered %>
     <span class="mr-2">
-      <%= link_to citation.publisher_name, sortable_url_for_params.merge(search_publisher: citation.publisher_name), class: "text-gray-500 no-underline" %>
+      <%= link_to citation.publisher_name, sortable_url_for_params.merge(search_publisher: citation.publisher_name), class: "text-gray-500 decoration-gray-500" %>
     </span>
   <% end %>
   <% if citation.authors_rendered.any? %>

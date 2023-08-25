@@ -5,10 +5,11 @@ module QuizHelper
       concat("An article from ")
       if citation.authors.any?
         concat(content_tag(:em, citation.authors.first))
-        concat(" in ")
+        concat(" in")
       end
-      concat(content_tag(:u, citation.publisher.name))
-      concat(" ")
+      concat(content_tag(:span, " ", class: "no-underline"))
+      concat(content_tag(:span, citation.publisher.name, class: "underline decoration-slate-4 00"))
+      concat(content_tag(:span, " ", class: "no-underline"))
       concat(content_tag(:span,
         citation.published_updated_at_with_fallback.to_i,
         class: "convertTime withPreposition"))
