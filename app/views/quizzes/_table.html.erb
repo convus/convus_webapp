@@ -2,24 +2,11 @@
 <% quiz_response_quiz_ids ||= @quiz_response_quiz_ids || [] %>
 
 <div class="full-screen-table">
-  <table class="table table-sm">
-    <thead class="sortable">
-      <tr>
-        <th>
-          Created
-        </th>
-        <th>
-          Citation
-        </th>
-        <th>
-          Completed?
-        </th>
-      </tr>
-    </thead>
+  <table class="table table-sm table-striped">
     <tbody>
       <% quizzes.each do |quiz| %>
         <tr>
-          <td>
+          <td class="hidden">
             <%= link_to l(quiz.created_at, format: :convert_time), quiz_path(quiz), class: "convertTime link" %>
           </td>
           <td>
