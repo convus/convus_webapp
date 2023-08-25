@@ -152,4 +152,10 @@ module ApplicationHelper
       link_to("##{ns[0]}", raw("#{link_url}#{ns[1]}"), html_opts)
     }, " ")
   end
+
+  # Overrides tranzito_utils, strips out blank lines
+  def pretty_print_json(data)
+    require "coderay"
+    CodeRay.scan(JSON.pretty_generate(data), :json).div.gsub(/\s*\n\n\s*/, "").html_safe
+  end
 end

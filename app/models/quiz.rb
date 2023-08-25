@@ -25,7 +25,7 @@ class Quiz < ApplicationRecord
 
   belongs_to :citation
 
-  has_many :quiz_questions
+  has_many :quiz_questions, dependent: :destroy
   has_many :quiz_question_answers, through: :quiz_questions
   has_many :quiz_responses
 

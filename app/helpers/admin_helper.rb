@@ -17,10 +17,8 @@ module AdminHelper
 
   def admin_status_display_class(status = nil)
     case status&.downcase
-    when "active"
-      "text-success"
+    when "active" then "text-success"
     when "pending", "in_progress" then "text-yellow-400"
-    when "replaced" then "text-teal-500"
     when /error/ then "text-error"
     else
       "less-strong"

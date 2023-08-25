@@ -23,7 +23,7 @@ class CreateCitationQuizJob < ApplicationJob
   end
 
   def quiz_prompt(citation)
-    "#{QUIZ_PROMPT}\n\nArticle text: #{citation.citation_text}"
+    "#{QUIZ_PROMPT}\n\nArticle: #{citation.citation_text}"
   end
 
   def perform(citation_id)
@@ -34,11 +34,9 @@ class CreateCitationQuizJob < ApplicationJob
 
     redlock = lock_manager.lock(REDLOCK_KEY, lock_duration_ms)
     unless redlock
-      return CreateCitationQuizJob.perform_in(requeue_delay, citation_id)
-      # time_remaining = lock_manager.get_remaining_ttl_for_resource(REDLOCK_KEY) || 0
-      # message = "Locked: Jobs - #{self.class.jobs_count}. remaining time: #{time_remaining} (#{lock_duration_ms - time_remaining} since locked)"
-      # raise message
+      return self.class.perform_in(requeue_delay, citation_id)
     end
+
     begin
       claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation))
 
@@ -47,6 +45,8 @@ class CreateCitationQuizJob < ApplicationJob
         kind: :citation_quiz,
         prompt_text: QUIZ_PROMPT,
         input_text: claude_response)
+    rescue Faraday::TimeoutError
+      self.class.perform_async(requeue_delay, citation_id)
     ensure
       lock_manager.unlock(redlock)
     end

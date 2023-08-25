@@ -66,7 +66,7 @@
             <td>Prompt Text</td>
             <td>
               <% if @quiz.prompt_text.present? %>
-                <textarea class="form-control text-sm" rows=3><%= @quiz.prompt_text %></textarea>
+                <textarea class="form-control text-sm" disabled=true rows=3><%= @quiz.prompt_text %></textarea>
               <% else %>
                 <small class="less-strong">none</small>
               <% end %>
@@ -98,3 +98,12 @@
 </div>
 
 <%= render partial: "/admin/quizzes/quiz_questions_table", locals: {quiz_questions: @quiz_questions, skip_sortable: true} %>
+
+<% if display_dev_info? && !@quiz.parse_errored? %>
+  <div class="large-width-container mt-4">
+    <p class="only-dev-visible">Input Text Parsed</p>
+    <div class="code-small">
+      <%= pretty_print_json(QuizParseAndCreateQuestionsJob.parsed_input_text(@quiz)) %>
+    </div>
+  </div>
+<% end %>

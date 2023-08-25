@@ -96,4 +96,26 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
       end
     end
   end
+
+  describe "create_questions_and_answers" do
+    let(:parsed_question) { {question: "Question One", correct: ["Something True"], incorrect: ["Something false"]} }
+    it "creates a quiz_question and answer" do
+      expect(quiz.reload.quiz_questions.count).to eq 0
+      instance.create_question_and_answers(quiz, parsed_question, 1)
+
+      expect(quiz.reload.quiz_questions.count).to eq 1
+      expect(quiz.quiz_questions.first.text).to eq "Question One"
+      expect(quiz.quiz_question_answers.count).to eq 2
+      expect(quiz.quiz_question_answers.pluck(:text)).to match_array(["Something True", "Something false"])
+    end
+    context "no incorrect answer" do
+      let(:parsed_question) { {question: "Question One", correct: ["Something True"], incorrect: []} }
+      it "doesn't create a quiz question and answer" do
+        expect(quiz.reload.quiz_questions.count).to eq 0
+        instance.create_question_and_answers(quiz, parsed_question, 1)
+
+        expect(quiz.reload.quiz_questions.count).to eq 0
+      end
+    end
+  end
 end

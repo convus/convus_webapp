@@ -6,7 +6,8 @@ class ClaudeIntegration
   end
 
   def completion_for_prompt(prompt)
-    request_completion(format_prompt(prompt)).dig("completion")
+    result = request_completion(format_prompt(prompt))
+    result["completion"] || result
   end
 
   def request_completion(formatted_prompt)
@@ -26,7 +27,7 @@ class ClaudeIntegration
       conn.headers["Content-Type"] = "application/json"
       conn.headers["anthropic-version"] = "2023-06-01"
       conn.headers["x-api-key"] = API_KEY
-      conn.options.timeout = 30
+      conn.options.timeout = 120
       conn.adapter Faraday.default_adapter
     end
   end

@@ -40,8 +40,8 @@ RSpec.describe QuizParser::ClaudeInitial do
         "False option: Something false\n" \
         "Step 2:\n" \
         "Question two\n" \
-        "True option: Something 2 True\n" \
-        "False option: Something 2 false\n\n"
+        "True option: \"Something 2 True\"\n" \
+        "False option: \"Something 2 false\"\n\n"
       end
       it "responds with target" do
         result = subject.parse(quiz)
@@ -171,6 +171,27 @@ RSpec.describe QuizParser::ClaudeInitial do
         expect(result.count).to eq 3
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])
+        end
+      end
+      context "with blank question text" do
+        let(:input_text) do
+          "Here is a 3-step chronological summary of the key events in the article, with one true and one false option at each step:\n" \
+          "Step 1: Question\n" \
+          "True: Step 1 true\n" \
+          "False: Step 1 false\n" \
+          "Step 2: Question\n" \
+          "True: Step 2 true\n" \
+          "False: Step 2 false\n" \
+          "Step 3: Question\n" \
+          "True: Step 3 true\n" \
+          "False: Step 3 false"
+        end
+        it "returns the parsed text" do
+          result = subject.send(:parse_input_text, quiz)
+          expect(result.count).to eq 3
+          result.count.times do |i|
+            expect_hashes_to_match(result[i], target[i])
+          end
         end
       end
     end

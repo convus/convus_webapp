@@ -42,8 +42,12 @@ class QuizParser::ClaudeInitial
             current_text.gsub!(/\A((true)|(false))\s?(option)?:/i, "")
           end
         end
-        update_result(result, current_key, current_text.strip)
+        update_result(result, current_key, clean_text(current_text))
       end
+
+      # Remove questions that are just 'question'
+      result.each { |r| r[:question] = "" if r[:question]&.downcase == "question" }
+
       result
     end
 
@@ -54,6 +58,11 @@ class QuizParser::ClaudeInitial
       elsif current_key.present?
         result.last[current_key] << current_text
       end
+    end
+
+    def clean_text(text = nil)
+      return nil if text.blank?
+      text.strip.gsub(/"\z/, "").gsub(/\A"/, "")
     end
 
     def opening_question_text(quiz)
