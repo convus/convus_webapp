@@ -4,7 +4,7 @@
   </h1>
 
   <% @quiz_questions.each do |quiz_question| %>
-    <div class="mt-8 pb-4">
+    <div class="mt-8 pb-4" id="<%= quiz_question.anchor_id %>">
       <% if quiz_question.text.present? %>
         <h4 class=""><%= quiz_question.text.html_safe %></h4>
       <% end %>
@@ -14,7 +14,7 @@
           <% if quiz_question_response.present? %>
             <%= quiz_question_responded_display(quiz_question_response, quiz_question_answer) %>
           <% else %>
-            <%= button_to(quiz_question_answer.text, quiz_path(@quiz.to_param, quiz_question_answer_id: quiz_question_answer.id), method: :patch, class: "link block w-full text-left p-4") %>
+            <%= button_to(quiz_question_answer.text, quiz_path(@quiz.to_param, quiz_question_answer_id: quiz_question_answer.id, anchor: quiz_question.anchor_id), method: :patch, class: "link block w-full text-left p-4") %>
           <% end %>
         </div>
       <% end %>

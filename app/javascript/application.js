@@ -77,7 +77,39 @@ const expandSiblingsEllipse = (event) => {
   elementsCollapse(target, 'hide')
 }
 
+// It's impossible to redirect_to anchor locations with Hotwire (because of :see_other)
+// So: this adds an event listener to store anchor locations prior to form submission
+// and scrolls to the stored location
+const scrollToStoredLocation = () => {
+  const storedAnchor = localStorage.getItem("storedAnchorLocation")
+  if (storedAnchor) {
+    log.debug(`scrolling to stored anchor: ${storedAnchor}`)
+    location.hash = storedAnchor
+    localStorage.removeItem("storedAnchorLocation")
+  }
+
+  document.querySelectorAll('.button_to')
+    .forEach(el => {
+      if (button_toAnchorTarget(el)) {
+        el.addEventListener('submit', storeAnchorLocation)
+      }
+    })
+}
+
+// Pull out the anchor target from button_to
+const button_toAnchorTarget = (el) => {
+  const result = el?.action?.match(/#.*/)
+  return result && result[0]
+}
+
+const storeAnchorLocation = (event) => {
+  localStorage.setItem("storedAnchorLocation", button_toAnchorTarget(event.target))
+  return true
+}
+
 document.addEventListener('turbo:load', () => {
+  scrollToStoredLocation()
+
   if (document.getElementById('timeSelectionBtnGroup')) {
     const periodSelector = new PeriodSelector()
     periodSelector.init()

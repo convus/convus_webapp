@@ -21,7 +21,10 @@ class QuizzesController < ApplicationController
     unless quiz_question_response.save
       flash[:error] = quiz_question_response.errors.full_messages
     end
-    redirect_back(fallback_location: quiz_path(@quiz.to_param, status: :see_other))
+
+    # NOTE: redirect with anchor and see_other doesn't work, see https://github.com/hotwired/turbo/issues/211
+    # the anchor is handled via JS
+    redirect_to quiz_path(@quiz.to_param, anchor: quiz_question_response.anchor_id), status: :see_other
   end
 
   private
