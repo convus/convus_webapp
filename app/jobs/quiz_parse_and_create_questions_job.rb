@@ -7,13 +7,13 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
 
   def perform(id)
     quiz = Quiz.find(id)
-    return if quiz.status != "pending"
+    return unless %w[pending disabled].include?(quiz.status)
 
     self.class.parsed_input_text(quiz).each_with_index do |parsed_question, i|
       create_question_and_answers(quiz, parsed_question, i + 1)
     end
 
-    quiz.update(status: "active")
+    quiz.update(status: "active") if quiz.status == "pending"
     # Mark all previous current quizzes as replaced
     quiz.associated_quizzes_previous.current.update_all(status: :replaced)
   rescue QuizParser::ParsingError => e

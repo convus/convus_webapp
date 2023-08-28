@@ -34,7 +34,6 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def edit
-
   end
 
   def update

@@ -49,4 +49,9 @@ module AdminHelper
       "Text from #{quiz.source_humanized}"
     end
   end
+
+  def prompt_text_area_text(prompt_text = nil)
+    return "" if prompt_text.blank?
+    prompt_text.gsub("\\n", "\n").gsub("\\\"", '"')
+  end
 end

@@ -41,6 +41,14 @@ class Quiz < ApplicationRecord
     %i[pending active disabled].freeze
   end
 
+  def self.disableable_statuses
+    %i[pending active].freeze
+  end
+
+  def self.prompt_sources
+    %i[claude_integration claude_resubmission].freeze
+  end
+
   def self.kind_humanized(str)
     str.present? ? str.to_s.humanize : nil
   end
@@ -49,16 +57,16 @@ class Quiz < ApplicationRecord
     str.present? ? str.to_s.humanize : nil
   end
 
-  def self.prompt_sources
-    %i[claude_integration claude_resubmission].freeze
-  end
-
   def prompt_source?
     self.class.prompt_sources.include?(source&.to_sym)
   end
 
   def current?
     self.class.current_statuses.include?(status&.to_sym)
+  end
+
+  def disableable?
+    self.class.disableable_statuses.include?(status&.to_sym)
   end
 
   def kind_humanized
