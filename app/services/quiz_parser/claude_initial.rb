@@ -9,17 +9,6 @@ class QuizParser::ClaudeInitial
       parsed
     end
 
-    def opening_question_text(quiz)
-      citation = quiz.citation
-      opening_text = if citation.authors.empty?
-        "According to <u class=\"underline decoration-gray-500\">#{citation.publisher.name}</u>"
-      else
-        "According to <em>#{citation.authors.first}</em> in <u class=\"underline decoration-gray-500\">#{citation.publisher.name}</u>"
-      end
-
-      "#{opening_text} <span class=\"convertTime withPreposition\">#{citation.published_updated_at_with_fallback.to_i}</span>"
-    end
-
     private
 
     # I don't love this, line by line procedural parsing - but it works pretty well and I think it's flexible.

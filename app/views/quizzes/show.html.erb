@@ -1,4 +1,8 @@
 <div class="standard-top-offset small-width-container-padded">
+  <h1>
+    From <%= quiz_title_display(@quiz) %>
+  </h1>
+
   <% @quiz_questions.each do |quiz_question| %>
     <div class="mt-8 pb-4">
       <% if quiz_question.text.present? %>
