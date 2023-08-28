@@ -5,7 +5,7 @@
 
 <%= form_with(model: quiz, url: form_url, method: (editing_quiz ? :patch : :post), class: "pb-2") do |f| %>
   <%= render partial: "/shared/errors", locals: {obj: quiz, name: "Quiz"} %>
-
+  <%= f.hidden_field :source, value: form_type %>
   <%= f.hidden_field :citation_id %>
 
   <% if form_type == "admin_entry" %>
@@ -35,4 +35,8 @@
   <div class="form-row-btn">
     <%= f.submit "save", class: "btn" %>
   </div>
+<% end %>
+
+<% if form_type != "admin_entry" %>
+
 <% end %>

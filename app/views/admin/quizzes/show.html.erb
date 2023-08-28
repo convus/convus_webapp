@@ -43,8 +43,22 @@
       <span class="less-strong">Quiz can't be disabled because it isn't active</span>
     <% end %>
     <%= link_to "Manually update quiz text", edit_admin_quiz_path(@quiz.to_param, form_type: "admin_entry"), class: "btn mr-2" %>
-    <%= link_to "Resubmit with a new prompt", edit_admin_quiz_path(@quiz.to_param, form_type: "claude_resubmission"), class: "btn" %>
+    <%= link_to "Resubmit with a new prompt", edit_admin_quiz_path(@quiz.to_param, form_type: "claude_manual_submission"), class: "btn" %>
   </div>
+
+  <h2 class="standard-top-offset mb-4">
+    <%= admin_number_display(@quiz_questions.count) %>
+    <%= "Questions".pluralize(@quiz_questions) %>
+  </h2>
 </div>
 
-<%= render partial: "show_footer" %>
+<%= render partial: "/admin/quizzes/quiz_questions_table", locals: {quiz_questions: @quiz_questions, skip_sortable: true} %>
+
+<% if display_dev_info? && !@quiz.parse_errored? %>
+  <div class="large-width-container mt-4">
+    <p class="only-dev-visible">Input Text Parsed</p>
+    <div class="code-small">
+      <%= pretty_print_json(QuizParseAndCreateQuestionsJob.parsed_input_text(@quiz)) %>
+    </div>
+  </div>
+<% end %>

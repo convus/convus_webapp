@@ -55,7 +55,7 @@
           <tr class="text-sm">
             <td>Version</td>
             <td>
-              <%= @quiz.version %>
+              <%= link_to @quiz.version, admin_quizzes_path(search_citation_id: @quiz.citation_id) %>
             </td>
           </tr>
           <tr class="text-sm">

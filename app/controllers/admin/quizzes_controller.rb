@@ -15,7 +15,7 @@ class Admin::QuizzesController < Admin::BaseController
 
   def new
     @citation = Citation.friendly_find(params[:citation_id])
-    @form_type = "admin_entry"
+    @form_type = selected_form_type
     if @citation.present?
       @quiz ||= Quiz.new(citation: @citation)
     else
@@ -35,13 +35,15 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def edit
-    @form_type = permitted_form_types.include?(params[:form_type]) ? params[:form_type] : permitted_form_types.first
+    @form_type = selected_form_type
   end
 
   def update
     if params[:update_disabledness].present?
       update_status = (params[:update_disabledness] == "disabled") ? "disabled" : "active"
-      if @quiz.update(status: update_status)
+      if !@quiz.disableable?
+        flash[:error] = "Can't disable quiz, it's currently #{@quiz.status}"
+      elsif @quiz.update(status: update_status)
         flash[:success] = "Quiz #{params[:update_disabledness]}"
       else
         flash[:error] = @quiz.errors.full_messages.to_sentence
@@ -61,7 +63,7 @@ class Admin::QuizzesController < Admin::BaseController
   private
 
   def permitted_form_types
-    %w[admin_entry claude_resubmission].freeze
+    %w[admin_entry claude_manual_submission].freeze
   end
 
   def sortable_columns
@@ -70,6 +72,10 @@ class Admin::QuizzesController < Admin::BaseController
 
   def searchable_statuses
     @searchable_statuses ||= Quiz.statuses.keys
+  end
+
+  def selected_form_type
+    permitted_form_types.include?(params[:form_type]) ? params[:form_type] : permitted_form_types.first
   end
 
   def searched_quizzes

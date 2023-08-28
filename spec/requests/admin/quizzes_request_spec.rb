@@ -3,7 +3,7 @@ require "rails_helper"
 base_url = "/admin/quizzes"
 RSpec.describe base_url, type: :request do
   let(:citation) { FactoryBot.create(:citation) }
-  let(:quiz) { FactoryBot.create(:quiz, citation: citation) }
+  let(:quiz) { FactoryBot.create(:quiz, citation: citation, status: "active") }
   let(:valid_params) { {input_text: "some text", citation_id: citation.id} }
 
   describe "index" do
@@ -36,6 +36,7 @@ RSpec.describe base_url, type: :request do
           get "#{base_url}/new?citation_id=#{citation.url}"
           expect(response.code).to eq "200"
           expect(assigns(:citation)&.id).to eq citation.id
+          expect(assigns(:form_type)).to eq "admin_entry"
           expect(response).to render_template("admin/quizzes/new")
         end
       end
@@ -68,14 +69,16 @@ RSpec.describe base_url, type: :request do
         get "#{base_url}/#{quiz.id}/edit"
         expect(response.code).to eq "200"
         expect(assigns(:quiz)&.id).to eq quiz.id
+        expect(assigns(:form_type)).to eq "admin_entry"
         expect(response).to render_template("admin/quizzes/edit")
       end
       context "id: citation slug" do
         it "renders" do
           expect(quiz).to be_valid
-          get "#{base_url}/citation/edit?citation_id=#{citation.url}"
+          get "#{base_url}/citation/edit?citation_id=#{citation.url}&form_type=claude_manual_submission"
           expect(response.code).to eq "200"
           expect(assigns(:quiz)&.id).to eq quiz.id
+          expect(assigns(:form_type)).to eq "claude_manual_submission"
           expect(response).to render_template("admin/quizzes/edit")
         end
       end
@@ -88,15 +91,32 @@ RSpec.describe base_url, type: :request do
           patch "#{base_url}/#{quiz.id}", params: {quiz: valid_params}
         }.to change(Quiz, :count).by 1
         expect(flash[:success]).to be_present
+        expect(quiz.reload.status).to eq "active"
 
         new_quiz = Quiz.last
         expect_attrs_to_match_hash(new_quiz, valid_params)
         expect(new_quiz.status).to eq "pending"
-        expect(new_quiz.version).to eq 2
+        expect(new_quiz.prompt_text).to be_nil
+      end
+      context "with prompt_text" do
+        let(:valid_params) { {prompt_text: "some text", citation_id: citation.id, source: "claude_manual_submission"} }
+        it "creates a new quiz" do
+          expect(quiz).to be_valid
+          expect {
+            patch "#{base_url}/#{quiz.id}", params: {quiz: valid_params}
+          }.to change(Quiz, :count).by 1
+          expect(flash[:success]).to be_present
+          expect(quiz.reload.status).to eq "active"
+
+          new_quiz = Quiz.last
+          expect_attrs_to_match_hash(new_quiz, valid_params)
+          expect(new_quiz.status).to eq "pending"
+          expect(new_quiz.input_text).to be_nil
+        end
       end
       context "disable_update" do
         it "disables a new quiz" do
-          expect(quiz.reload.status).to eq "pending"
+          expect(quiz.reload.status).to eq "active"
           expect {
             patch "#{base_url}/#{quiz.id}", params: {update_disabledness: "disabled"}
           }.to change(Quiz, :count).by 0
@@ -108,6 +128,22 @@ RSpec.describe base_url, type: :request do
           }.to change(Quiz, :count).by 0
           expect(flash[:success]).to be_present
           expect(quiz.reload.status).to eq "active"
+
+          quiz.update(status: "pending")
+          expect(quiz.reload.status).to eq "pending"
+          expect {
+            patch "#{base_url}/#{quiz.id}", params: {update_disabledness: "disabled"}
+          }.to change(Quiz, :count).by 0
+          expect(flash[:success]).to be_present
+          expect(quiz.reload.status).to eq "disabled"
+
+          # If it's replaced, it doesn't update
+          expect(quiz.update(status: "replaced")).to be_truthy
+          expect {
+            patch "#{base_url}/#{quiz.id}", params: {update_disabledness: "disabled"}
+          }.to change(Quiz, :count).by 0
+          expect(flash[:error]).to be_present
+          expect(quiz.reload.status).to eq "replaced"
         end
       end
     end
