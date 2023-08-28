@@ -5,8 +5,10 @@
   </h1>
 </div>
 
-<h2 class="large-width-container mt-4 mb-0">For Citation:</h2>
-<%= render partial: "/admin/citations/table", locals: {citations: [@citation], skip_sortable: true, filter_link: admin_citations_path} %>
+<div class="large-width-container mt-4 mb-8">
+  <span class="font-bold block">Citation:</span>
+  <%= admin_citation_cell(@citation, filter_link: admin_citations_path) %>
+</div>
 
 <div class="large-width-container mt-4">
   <%= render partial: "form", locals: {quiz: @quiz} %>

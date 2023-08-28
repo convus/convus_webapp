@@ -15,7 +15,7 @@ class Admin::QuizzesController < Admin::BaseController
 
   def new
     @citation = Citation.friendly_find(params[:citation_id])
-    @form_type = selected_form_type
+    @form_type = selected_form_type(params[:form_type])
     if @citation.present?
       @quiz ||= Quiz.new(citation: @citation)
     else
@@ -35,18 +35,20 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def edit
-    @form_type = selected_form_type
+    @form_type = selected_form_type(params[:form_type])
   end
 
   def update
     if params[:update_disabledness].present?
       update_status = (params[:update_disabledness] == "disabled") ? "disabled" : "active"
-      if !@quiz.disableable?
-        flash[:error] = "Can't disable quiz, it's currently #{@quiz.status}"
-      elsif @quiz.update(status: update_status)
-        flash[:success] = "Quiz #{params[:update_disabledness]}"
+      if @quiz.disableable? || @quiz.disabled?
+        if @quiz.update(status: update_status)
+          flash[:success] = "Quiz #{params[:update_disabledness]}"
+        else
+          flash[:error] = @quiz.errors.full_messages.to_sentence
+        end
       else
-        flash[:error] = @quiz.errors.full_messages.to_sentence
+        flash[:error] = "Can't disable quiz, it's currently #{@quiz.status}"
       end
       redirect_to admin_quiz_path(@quiz), status: :see_other
     else
@@ -74,8 +76,8 @@ class Admin::QuizzesController < Admin::BaseController
     @searchable_statuses ||= Quiz.statuses.keys
   end
 
-  def selected_form_type
-    permitted_form_types.include?(params[:form_type]) ? params[:form_type] : permitted_form_types.first
+  def selected_form_type(form_type = nil)
+    permitted_form_types.include?(form_type) ? form_type : permitted_form_types.first
   end
 
   def searched_quizzes
@@ -100,8 +102,8 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def permitted_params
-    params.require(:quiz).permit(:input_text, :citation_id)
-      .merge(source: :admin_entry)
+    params.require(:quiz).permit(:input_text, :citation_id, :prompt_text)
+      .merge(source: selected_form_type(params.dig(:quiz, :source)))
   end
 
   def find_quiz

@@ -52,6 +52,6 @@ module AdminHelper
 
   def prompt_text_area_text(prompt_text = nil)
     return "" if prompt_text.blank?
-    prompt_text.gsub("\\n", "\n").gsub("\\\"", '"')
+    prompt_text.gsub("\\n", "\n").gsub("\\\"", '"') + "\n\nArticle: ${ARTICLE_TEXT}"
   end
 end
