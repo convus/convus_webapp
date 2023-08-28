@@ -60,3 +60,7 @@ h4 { @apply font-bold; }
   }
   & img { cursor: pointer; }
 }
+
+.decoration-publisher {
+  @apply underline decoration-slate-400;
+}

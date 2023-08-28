@@ -2,9 +2,9 @@
 
 <%# NOTE: when you add new search_ params here, also add it to hidden_search_fields %>
 <% viewing ||= controller_name.humanize %>
-<% current_header_keys = %w[search_author search_citation_id search_publisher user
-  search_status search_topics] %>
-<% header_present ||= (current_header_keys & params.keys).any? || current_topics.present? %>
+<% cheader_keys = %w[search_author search_citation_id search_publisher user search_status
+                     search_topics] %>
+<% header_present ||= (cheader_keys & params.keys).any? || current_topics.present? %>
 
 <% if header_present %>
   <div>

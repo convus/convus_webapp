@@ -7,7 +7,7 @@ module QuizHelper
         concat(" in")
       end
       concat(content_tag(:span, " ", class: "no-underline"))
-      concat(content_tag(:span, citation.publisher.name, class: "underline decoration-slate-4 00"))
+      concat(content_tag(:span, citation.publisher.name, class: "decoration-publisher"))
       concat(content_tag(:span, " ", class: "no-underline"))
       concat(content_tag(:span,
         citation.published_updated_at_with_fallback.to_i,

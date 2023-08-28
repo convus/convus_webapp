@@ -13,7 +13,7 @@ RSpec.describe QuizHelper, type: :helper do
   describe "opening_question_text" do
     context "with no author" do
       let(:target) do
-        "<span><span class=\"no-underline\"> </span><span class=\"underline decoration-slate-4 00\">a Publisher</span>" \
+        "<span><span class=\"no-underline\"> </span><span class=\"decoration-publisher\">a Publisher</span>" \
         "<span class=\"no-underline\"> </span>#{time_el}</span>"
       end
       it "responds with text" do
@@ -26,7 +26,7 @@ RSpec.describe QuizHelper, type: :helper do
     context "with one author" do
       let(:citation) { FactoryBot.create(:citation, publisher: publisher, authors: ["Sally"], published_updated_at: time) }
       let(:target) do
-        "<span><em>Sally</em> in<span class=\"no-underline\"> </span><span class=\"underline decoration-slate-4 00\">a Publisher</span>" \
+        "<span><em>Sally</em> in<span class=\"no-underline\"> </span><span class=\"decoration-publisher\">a Publisher</span>" \
         "<span class=\"no-underline\"> </span>#{time_el}</span>" \
       end
       it "responds with text" do
