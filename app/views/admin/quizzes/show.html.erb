@@ -18,7 +18,7 @@
       <textarea class="form-control text-sm" rows="15"><%= @quiz.input_text %></textarea>
     </div>
   <% else %>
-    <div class="row sm:grid-cols-2">
+    <div class="row sm:grid-cols-3">
       <div class="col">
         <div class="form-row">
           <label>Prompt</label>
@@ -42,8 +42,8 @@
     <% else %>
       <span class="less-strong">Quiz can't be disabled because it isn't active</span>
     <% end %>
-    <%= link_to "Manually update quiz text", edit_admin_quiz_path(@quiz.to_param, edit_kind: "admin_entry"), class: "btn mr-2" %>
-    <%= link_to "Resubmit with a new prompt", edit_admin_quiz_path(@quiz.to_param, edit_kind: "claude_resubmission"), class: "btn" %>
+    <%= link_to "Manually update quiz text", edit_admin_quiz_path(@quiz.to_param, form_type: "admin_entry"), class: "btn mr-2" %>
+    <%= link_to "Resubmit with a new prompt", edit_admin_quiz_path(@quiz.to_param, form_type: "claude_resubmission"), class: "btn" %>
   </div>
 </div>
 

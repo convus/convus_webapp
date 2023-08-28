@@ -18,12 +18,6 @@
             </tr>
           <% end %>
           <tr>
-            <td>Version</td>
-            <td>
-              <%= @quiz.version %>
-            </td>
-          </tr>
-          <tr>
             <td>Status</td>
             <td>
               <%= admin_status_display(@quiz.status) %>
@@ -35,6 +29,10 @@
                 </span>
               <% end %>
             </td>
+          </tr>
+          <tr>
+            <td>Citation</td>
+            <td><%= admin_citation_cell(@citation, filter_link: admin_citations_path) %></td>
           </tr>
         </tbody>
       </table>
@@ -54,7 +52,13 @@
               <%= @quiz.kind_humanized %>
             </td>
           </tr>
-          <tr>
+          <tr class="text-sm">
+            <td>Version</td>
+            <td>
+              <%= @quiz.version %>
+            </td>
+          </tr>
+          <tr class="text-sm">
             <td>Responses</td>
             <td>
               <%= link_to admin_quiz_responses_path(search_quiz_id: @quiz.id) do %>
@@ -67,6 +71,3 @@
     </div>
   </div>
 </div>
-
-<h2 class="large-width-container mt-4 mb-0">For Citation:</h2>
-<%= render partial: "/admin/citations/table", locals: {citations: [@citation], skip_sortable: true} %>

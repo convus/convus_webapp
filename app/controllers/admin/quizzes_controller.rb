@@ -15,6 +15,7 @@ class Admin::QuizzesController < Admin::BaseController
 
   def new
     @citation = Citation.friendly_find(params[:citation_id])
+    @form_type = "admin_entry"
     if @citation.present?
       @quiz ||= Quiz.new(citation: @citation)
     else
@@ -34,6 +35,7 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def edit
+    @form_type = permitted_form_types.include?(params[:form_type]) ? params[:form_type] : permitted_form_types.first
   end
 
   def update
@@ -58,8 +60,12 @@ class Admin::QuizzesController < Admin::BaseController
 
   private
 
+  def permitted_form_types
+    %w[admin_entry claude_resubmission].freeze
+  end
+
   def sortable_columns
-    %w[created_at citation_id status version source]
+    %w[created_at citation_id status version source].freeze
   end
 
   def searchable_statuses

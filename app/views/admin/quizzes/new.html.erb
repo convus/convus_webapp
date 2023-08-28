@@ -2,12 +2,12 @@
 <div class="large-width-container">
   <h1 class="standard-top-offset">
     New Quiz
-    <small class="less-strong">for citation:</small>
   </h1>
 </div>
 
-<%= render partial: "/admin/citations/table", locals: {citations: [@citation], skip_sortable: true} %>
+<h2 class="large-width-container mt-4 mb-0">For Citation:</h2>
+<%= render partial: "/admin/citations/table", locals: {citations: [@citation], skip_sortable: true, filter_link: admin_citations_path} %>
 
-<div class="large-width-container">
+<div class="large-width-container mt-4">
   <%= render partial: "form", locals: {quiz: @quiz} %>
 </div>

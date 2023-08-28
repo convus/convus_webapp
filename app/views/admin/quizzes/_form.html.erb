@@ -1,4 +1,5 @@
 <% quiz ||= @quiz %>
+<% form_type = @form_type || "admin_entry" %>
 <% editing_quiz = quiz.id.present? %>
 <% form_url = editing_quiz ? admin_quiz_url(quiz) : admin_quizzes_url %>
 
@@ -7,20 +8,29 @@
 
   <%= f.hidden_field :citation_id %>
 
-  <div class="form-row mt-4">
-    <%= f.label :input_text %>
-    <%# row_count = quiz.input_text.present? ? quiz.input_text.split("\n").count : 4 %>
-    <%= f.text_area :input_text, class: "form-control", required: true, rows: 15 %>
-  </div>
-  <p>Text should have at least one step, and be formatted like this:</p>
+  <% if form_type == "admin_entry" %>
+    <h2>Manually enter text to generate quiz questions</h2>
+    <div class="row sm:grid-cols-3 mt-4 mb-2">
+      <div class="col col-span-2">
+        <div class="form-row">
+          <%= f.text_area :input_text, class: "form-control", required: true, rows: 15 %>
+        </div>
+      </div>
+      <div class="col pt-1 sm:pt-3">
+        <p class="text-sm">Text should have at least one step, and be formatted like this:</p>
 
-  <code class="code-small">
-    <pre>Step 1: {question text}
-
-True option: {true option text}
-
-False option: {false option text}</pre>
-  </code>
+        <code class="code-small block mt-2">
+          Step 1: {question text}<br />
+          <br />
+          True option: {true option text}<br />
+          <br />
+          False option: {false option text}
+        </code>
+      </div>
+    </div>
+  <% else %>
+    <h2><%= form_type %></h2>
+  <% end %>
 
   <div class="form-row-btn">
     <%= f.submit "save", class: "btn" %>
