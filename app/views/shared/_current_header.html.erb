@@ -7,7 +7,7 @@
 <% header_present ||= (cheader_keys & params.keys).any? || current_topics.present? %>
 
 <% if header_present %>
-  <div>
+  <div class="mb-4">
     <% skip_topics ||= false %>
     <% if !skip_topics && current_topics.present? %>
       <p class="mb-2">

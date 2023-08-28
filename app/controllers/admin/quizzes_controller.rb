@@ -11,8 +11,6 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def show
-    redirect_to edit_admin_quiz_path(params[:id])
-    nil
   end
 
   def new
@@ -36,7 +34,7 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def edit
-    @quiz_questions = @quiz.quiz_questions.includes(:quiz_question_answers)
+
   end
 
   def update
@@ -67,6 +65,11 @@ class Admin::QuizzesController < Admin::BaseController
       quizzes = quizzes.where(status: @search_status)
     end
 
+    if params[:search_source].present?
+      @search_source = params[:search_source]
+      quizzes = quizzes.where(source: @search_source)
+    end
+
     if params[:search_citation_id].present?
       @searched_citation = Citation.friendly_find(params[:search_citation_id])
       quizzes = quizzes.where(citation_id: @searched_citation.id) if @searched_citation.present?
@@ -88,5 +91,6 @@ class Admin::QuizzesController < Admin::BaseController
       @quiz = Quiz.find(params[:id])
       @citation = @quiz.citation
     end
+    @quiz_questions = @quiz.quiz_questions.includes(:quiz_question_answers)
   end
 end

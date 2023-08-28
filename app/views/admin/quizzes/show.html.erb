@@ -1,0 +1,43 @@
+<%= content_for :main_wrapper_class, "container-padded" %>
+<div class="large-width-container mb-4">
+  <h1 class="standard-top-offset">
+    Quiz
+    <small class="less-strong"><%= quiz_title_display(@quiz) %></small>
+  </h1>
+</div>
+
+<%= render partial: "show_header" %>
+
+<div class="large-width-container mt-8">
+  <% if !@quiz.prompt_source? %>
+    <%# NOTE: input_text duplicated below %>
+    <div class="form-row">
+      <label><%= quiz_input_text_label_name(@quiz) %></label>
+      <textarea class="form-control text-sm" rows="15">
+        <%= @quiz.input_text %>
+      </textarea>
+    </div>
+  <% else %>
+    <div class="row sm:grid-cols-2">
+      <div class="col">
+        <div class="form-row">
+          <label>Prompt</label>
+          <textarea class="form-control text-sm" rows="15">
+            <%= @quiz.prompt_text %>
+          </textarea>
+        </div>
+      </div>
+      <div class="col">
+        <%# NOTE: input_text duplicated above %>
+        <div class="form-row">
+          <label><%= quiz_input_text_label_name(@quiz) %></label>
+          <textarea class="form-control text-sm" rows="15">
+            <%= @quiz.input_text %>
+          </textarea>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%= render partial: "show_footer" %>

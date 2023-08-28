@@ -1,0 +1,72 @@
+<div class="large-width-container mt-4">
+  <div class="row sm:grid-cols-2">
+    <div class="col">
+      <table class="table-list">
+        <tbody>
+          <tr>
+            <td>Created</td>
+            <td>
+              <span class="convertTime"><%= l(@quiz.created_at, format: :convert_time) %></span>
+            </td>
+          </tr>
+          <% if false %>
+            <tr class="small">
+              <td class="only-dev-visible">Updated</td>
+              <td>
+                <small class="convertTime"><%= l(@quiz.updated_at, format: :convert_time) %></small>
+              </td>
+            </tr>
+          <% end %>
+          <tr>
+            <td>Version</td>
+            <td>
+              <%= @quiz.version %>
+            </td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td>
+              <%= admin_status_display(@quiz.status) %>
+
+              <% if @quiz.input_text_parse_error.present? %>
+                <span class="block">
+                  <strong>Error message:</strong>
+                  <%= @quiz.input_text_parse_error %>
+                </span>
+              <% end %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <table class="table-list">
+        <tbody>
+          <tr>
+            <td>Source</td>
+            <td>
+              <%= @quiz.source_humanized %>
+            </td>
+          </tr>
+          <tr>
+            <td>Kind</td>
+            <td>
+              <%= @quiz.kind_humanized %>
+            </td>
+          </tr>
+          <tr>
+            <td>Responses</td>
+            <td>
+              <%= link_to admin_quiz_responses_path(search_quiz_id: @quiz.id) do %>
+                <%= admin_number_display(@quiz.quiz_responses.count) %>
+              <% end %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<h2 class="large-width-container mt-4 mb-0">For Citation:</h2>
+<%= render partial: "/admin/citations/table", locals: {citations: [@citation], skip_sortable: true} %>

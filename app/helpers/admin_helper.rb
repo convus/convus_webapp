@@ -41,4 +41,12 @@ module AdminHelper
       concat(render(partial: "/shared/citation", locals: {citation: citation, url_for_route: filter_link, skip_title_and_description: true}))
     end
   end
+
+  def quiz_input_text_label_name(quiz)
+    if quiz.prompt_source?
+      "Prompt response"
+    else
+      "Text from #{quiz.source_humanized}"
+    end
+  end
 end

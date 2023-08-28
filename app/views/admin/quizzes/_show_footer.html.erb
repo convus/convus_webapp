@@ -1,22 +1,3 @@
-<%= content_for :main_wrapper_class, "container-padded" %>
-<div class="large-width-container">
-  <h1 class="standard-top-offset">
-    Edit Quiz
-    <small class="less-strong">for citation:</small>
-  </h1>
-</div>
-
-<%= render partial: "show_header" %>
-
-<%= render partial: "/admin/citations/table", locals: {citations: [@citation], skip_sortable: true} %>
-
-
-
-  <div class="mt-4">
-    <%= render partial: "form", locals: {quiz: @quiz} %>
-  </div>
-</div>
-
 <div class="large-width-container standard-top-offset mb-4">
   <h2>
     <%= admin_number_display(@quiz_questions.count) %>

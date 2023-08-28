@@ -9,7 +9,8 @@ class Quiz < ApplicationRecord
 
   SOURCE_ENUM = {
     admin_entry: 0,
-    claude_integration: 1
+    claude_integration: 1,
+    claude_resubmission: 2
   }.freeze
 
   KIND_ENUM = {citation_quiz: 0}.freeze
@@ -40,12 +41,32 @@ class Quiz < ApplicationRecord
     %i[pending active disabled].freeze
   end
 
-  def self.integer_str?(str)
-    str.is_a?(Integer) || str.strip.match?(/\A\d+\z/)
+  def self.kind_humanized(str)
+    str.present? ? str.to_s.humanize : nil
+  end
+
+  def self.source_humanized(str)
+    str.present? ? str.to_s.humanize : nil
+  end
+
+  def self.prompt_sources
+    %i[claude_integration claude_resubmission].freeze
+  end
+
+  def prompt_source?
+    self.class.prompt_sources.include?(source&.to_sym)
   end
 
   def current?
     self.class.current_statuses.include?(status&.to_sym)
+  end
+
+  def kind_humanized
+    self.class.kind_humanized(kind)
+  end
+
+  def source_humanized
+    self.class.source_humanized(source)
   end
 
   def set_calculated_attributes

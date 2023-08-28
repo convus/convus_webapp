@@ -39,18 +39,15 @@
             <%= link_to l(quiz.created_at, format: :convert_time), admin_quiz_path(quiz), class: "convertTime link" %>
           </td>
           <% unless skip_citation %>
-            <td>
+            <td class="max-w-md maxWScreen">
               <%= admin_citation_cell(quiz.citation) %>
             </td>
           <% end %>
           <td>
-            <%= admin_status_display(quiz.status) %>
-            <% unless skip_sortable %>
-              <%= link_to search_emoji, url_for(sortable_params.merge(search_status: quiz.status)), class: "text-sm no-underline" %>
-            <% end %>
+            <%= admin_status_display(quiz.status) %><% unless skip_sortable %>&nbsp;<%= link_to search_emoji, url_for(sortable_params.merge(search_status: quiz.status)), class: "text-xs no-underline" %><% end %>
           </td>
           <td>
-            <span class="text-sm"><%= quiz.source %></span>
+            <span class="text-sm"><%= quiz.source_humanized %></span><% unless skip_sortable %>&nbsp;<%= link_to search_emoji, url_for(sortable_params.merge(search_source: quiz.source)), class: "text-xs no-underline" %><% end %>
           </td>
           <td>
             <%= quiz.version %>
