@@ -23,7 +23,7 @@ class QuizzesController < ApplicationController
     end
 
     # NOTE: redirect with anchor and see_other doesn't work, see https://github.com/hotwired/turbo/issues/211
-    # the anchor is handled via JS
+    # Scrolling to the anchor is handled via JS, but adding this seems like a good plan
     redirect_to quiz_path(@quiz.to_param, anchor: quiz_question_response.anchor_id), status: :see_other
   end
 

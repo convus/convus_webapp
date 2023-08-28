@@ -81,29 +81,29 @@ const expandSiblingsEllipse = (event) => {
 // So: this adds an event listener to store anchor locations prior to form submission
 // and scrolls to the stored location
 const scrollToStoredLocation = () => {
-  const storedAnchor = localStorage.getItem("storedAnchorLocation")
+  const storedAnchor = localStorage.getItem('storedAnchorLocation')
   if (storedAnchor) {
     log.debug(`scrolling to stored anchor: ${storedAnchor}`)
-    location.hash = storedAnchor
-    localStorage.removeItem("storedAnchorLocation")
+    window.location.hash = storedAnchor
+    localStorage.removeItem('storedAnchorLocation')
   }
 
   document.querySelectorAll('.button_to')
     .forEach(el => {
-      if (button_toAnchorTarget(el)) {
+      if (buttonToAnchorTarget(el)) {
         el.addEventListener('submit', storeAnchorLocation)
       }
     })
 }
 
 // Pull out the anchor target from button_to
-const button_toAnchorTarget = (el) => {
+const buttonToAnchorTarget = (el) => {
   const result = el?.action?.match(/#.*/)
   return result && result[0]
 }
 
 const storeAnchorLocation = (event) => {
-  localStorage.setItem("storedAnchorLocation", button_toAnchorTarget(event.target))
+  localStorage.setItem('storedAnchorLocation', buttonToAnchorTarget(event.target))
   return true
 }
 
