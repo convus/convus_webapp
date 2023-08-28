@@ -75,7 +75,6 @@ RSpec.describe QuizParser::ClaudeInitial do
     end
   end
 
-
   describe "parse_input_text" do
     it "blank input_text raises parser error" do
       expect(quiz.input_text).to be_nil
