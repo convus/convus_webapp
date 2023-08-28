@@ -37,12 +37,22 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def update
-    @quiz = Quiz.new(permitted_params)
-    if @quiz.save
-      flash[:success] = "New Quiz version created"
-      redirect_to edit_admin_quiz_path(@quiz), status: :see_other
+    if params[:update_disabledness].present?
+      update_status = (params[:update_disabledness] == "disabled") ? "disabled" : "active"
+      if @quiz.update(status: update_status)
+        flash[:success] = "Quiz #{params[:update_disabledness]}"
+      else
+        flash[:error] = @quiz.errors.full_messages.to_sentence
+      end
+      redirect_to admin_quiz_path(@quiz), status: :see_other
     else
-      render :edit, status: :see_other
+      @quiz = Quiz.new(permitted_params)
+      if @quiz.save
+        flash[:success] = "New Quiz version created"
+        redirect_to edit_admin_quiz_path(@quiz), status: :see_other
+      else
+        render :edit, status: :see_other
+      end
     end
   end
 

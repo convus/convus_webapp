@@ -94,6 +94,22 @@ RSpec.describe base_url, type: :request do
         expect(new_quiz.status).to eq "pending"
         expect(new_quiz.version).to eq 2
       end
+      context "disable_update" do
+        it "disables a new quiz" do
+          expect(quiz.reload.status).to eq "pending"
+          expect {
+            patch "#{base_url}/#{quiz.id}", params: {update_disabledness: "disabled"}
+          }.to change(Quiz, :count).by 0
+          expect(flash[:success]).to be_present
+          expect(quiz.reload.status).to eq "disabled"
+
+          expect {
+            patch "#{base_url}/#{quiz.id}", params: {update_disabledness: "un-disable"}
+          }.to change(Quiz, :count).by 0
+          expect(flash[:success]).to be_present
+          expect(quiz.reload.status).to eq "active"
+        end
+      end
     end
   end
 end

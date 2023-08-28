@@ -36,9 +36,9 @@
   <% end %>
   <div class="mt-6 mb-4">
     <% if @quiz.disabled? %>
-      <%= button_to "re-enable quiz", admin_quiz_path(@quiz.to_param, un_disable_quiz: true), method: :patch, class: "btn mr-2 text-yellow-600" %>
+      <%= button_to "re-enable quiz", admin_quiz_path(@quiz.to_param, update_disabledness: "re-enabled"), method: :patch, class: "btn mr-2 italic" %>
     <% elsif @quiz.disableable? %>
-      <%= button_to "Disable quiz", admin_quiz_path(@quiz.to_param, un_disable_quiz: true), method: :patch, class: "btn mr-2 text-yellow-600" %>
+      <%= button_to "Disable quiz", admin_quiz_path(@quiz.to_param, update_disabledness: "disabled"), method: :patch, class: "btn mr-2 text-yellow-600" %>
     <% else %>
       <span class="less-strong">Quiz can't be disabled because it isn't active</span>
     <% end %>
