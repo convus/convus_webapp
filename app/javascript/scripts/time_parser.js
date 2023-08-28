@@ -1,3 +1,6 @@
+// 2023-7-30 - Added setDateInputField
+// 2023-8-25 - Updated withPreposition
+
 import moment from 'moment-timezone'
 
 // TimeParser updates all HTML elements with class '.convertTime', making them:
@@ -21,7 +24,7 @@ import moment from 'moment-timezone'
 // You can add this to a react component:
 // componentDidUpdate() { window.timeParser.localize() }
 
-class TimeParser {
+export default class TimeParser {
   constructor () {
     if (!window.localTimezone) {
       window.localTimezone = moment.tz.guess()
@@ -64,19 +67,24 @@ class TimeParser {
   // Removes the classes that trigger localization, so it doesn't reupdate the times
   localize () {
     // Write times
-    Array.from(document.getElementsByClassName('convertTime')).forEach(el =>
+    Array.from(document.getElementsByClassName('convertTime')).forEach((el) =>
       this.writeTime(el)
     )
 
     // Write timezones
-    Array.from(document.getElementsByClassName('convertTimezone')).forEach(el =>
-      this.writeTimezone(el)
-    )
+    Array.from(
+      document.getElementsByClassName('convertTimezone')
+    ).forEach((el) => this.writeTimezone(el))
 
     // Write hidden timezone fields - so if we're submitting a form, it includes the current timezone
-    Array.from(document.getElementsByClassName('hiddenFieldTimezone')).forEach(
-      el => this.setHiddenTimezoneFields(el)
-    )
+    Array.from(
+      document.getElementsByClassName('hiddenFieldTimezone')
+    ).forEach((el) => this.setHiddenTimezoneFields(el))
+
+    // Write local time in fields
+    Array.from(
+      document.getElementsByClassName('dateInputUpdateZone')
+    ).forEach((el) => this.setDateInputField(el))
   }
 
   // ---------
@@ -113,7 +121,7 @@ class TimeParser {
   // If we're display time with the hour, we have different formats based on whether we include seconds
   // this manages that functionality
   hourFormat (time, baseTimeFormat, includeSeconds, withPreposition) {
-    const prefix = withPreposition ? ' at ' : ''
+    const prefix = withPreposition ? 'at ' : ''
     if (includeSeconds) {
       return `${prefix}${time.format(baseTimeFormat)}:<small>${time.format(
         'ss'
@@ -187,6 +195,14 @@ class TimeParser {
     el.value = this.localTimezone
   }
 
+  setDateInputField (el) {
+    const text = el.getAttribute('data-initialtime')
+    if (text.length > 0) {
+      // Format that at least Chrome expects for field
+      el.value = moment(text, moment.ISO_8601).format('YYYY-MM-DDTHH:mm')
+    }
+  }
+
   parse (text) {
     // If time is only a number, parse as a timestamp
     // Otherwise, parse as ISO_8601 which is the default time string
@@ -206,5 +222,3 @@ class TimeParser {
     el.classList.remove('convertTimezone')
   }
 }
-
-export default TimeParser
