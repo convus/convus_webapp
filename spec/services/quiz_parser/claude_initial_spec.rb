@@ -2,10 +2,8 @@ require "rails_helper"
 
 RSpec.describe QuizParser::ClaudeInitial do
   let(:subject) { described_class }
-  let(:time) { Time.at(1657071309) } # 2022-07-05 18:35:09
-  let(:time_el) { "<span class=\"convertTime withPreposition\">#{time.to_i}</span>" }
   let(:publisher) { FactoryBot.create(:publisher, name: "a Publisher") }
-  let(:citation) { FactoryBot.create(:citation, publisher: publisher, created_at: time) }
+  let(:citation) { FactoryBot.create(:citation, publisher: publisher) }
   let(:quiz) { FactoryBot.create(:quiz, input_text: input_text, citation: citation) }
   let(:input_text) { nil }
 
@@ -14,7 +12,7 @@ RSpec.describe QuizParser::ClaudeInitial do
     let(:target) do
       [
         {
-          question: "According to <u>a Publisher</u> #{time_el}, Question One",
+          question: "Question One",
           correct: ["Something True"],
           incorrect: ["Something false"]
         }, {
@@ -57,7 +55,7 @@ RSpec.describe QuizParser::ClaudeInitial do
       let(:target) do
         [
           {
-            question: "According to <u>a Publisher</u> #{time_el}",
+            question: "",
             correct: ["Something True"],
             incorrect: ["Something false"]
           }, {
@@ -73,25 +71,6 @@ RSpec.describe QuizParser::ClaudeInitial do
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])
         end
-      end
-    end
-  end
-
-  describe "opening_question_text" do
-    context "with no author" do
-      let(:target) { "According to <u>a Publisher</u> #{time_el}" }
-      it "responds with text" do
-        expect(citation.reload.published_updated_at_with_fallback).to be_within(1).of time
-        expect(citation.authors).to be_empty
-        expect(subject.send(:opening_question_text, quiz)).to eq target
-      end
-    end
-
-    context "with one author" do
-      let(:citation) { FactoryBot.create(:citation, publisher: publisher, authors: ["Sally"], published_updated_at: time) }
-      let(:target) { "According to <em>Sally</em> in <u>a Publisher</u> #{time_el}" }
-      it "responds with text" do
-        expect(subject.send(:opening_question_text, quiz)).to eq target
       end
     end
   end

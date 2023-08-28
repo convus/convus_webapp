@@ -55,7 +55,7 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
       let(:target) do
         [
           {
-            question: "According to <u>#{citation.publisher.name}</u> <span class=\"convertTime withPreposition\">#{time.to_i}</span>, Question One",
+            question: "Question One",
             correct: ["Something True"],
             incorrect: ["Something false"]
           }, {

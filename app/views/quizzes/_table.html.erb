@@ -1,0 +1,26 @@
+<% quizzes ||= @quizzes %>
+<% quiz_response_quiz_ids ||= @quiz_response_quiz_ids || [] %>
+
+<div class="full-screen-table">
+  <table class="table table-sm table-striped">
+    <tbody>
+      <% quizzes.each do |quiz| %>
+        <tr>
+          <td class="hidden">
+            <%= link_to l(quiz.created_at, format: :convert_time), quiz_path(quiz), class: "convertTime link" %>
+          </td>
+          <td>
+            <%= link_to quiz_path(quiz) do %>
+              An article from <%= quiz_title_display(quiz) %>
+            <% end %>
+          </td>
+          <td>
+            <% if quiz_response_quiz_ids.include?(quiz.id) %>
+              <span class="text-success">completed</span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -73,6 +73,7 @@ RSpec.describe base_url, type: :request do
           }
         }.to change(QuizResponse, :count).by 1
         expect(flash).to be_empty
+        expect(response).to redirect_to("#{base_url}/#{quiz.id}#QQuestion-#{quiz_question.list_order}")
 
         quiz_response = QuizResponse.last
         expect(quiz_response.user_id).to eq current_user.id

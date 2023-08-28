@@ -13,6 +13,7 @@ class QuizQuestionResponse < ApplicationRecord
   after_commit :update_quiz_response, only: :create
 
   delegate :user, :quiz, to: :quiz_response, allow_nil: true
+  delegate :anchor_id, to: :quiz_question, allow_nil: true
 
   def update_quiz_response
     quiz_response.update(updated_at: Time.current)

@@ -1,6 +1,10 @@
 <div class="standard-top-offset small-width-container-padded">
+  <h1>
+    From <%= quiz_title_display(@quiz) %>
+  </h1>
+
   <% @quiz_questions.each do |quiz_question| %>
-    <div class="mt-8 pb-4">
+    <div class="mt-8 pb-4" id="<%= quiz_question.anchor_id %>">
       <% if quiz_question.text.present? %>
         <h4 class=""><%= quiz_question.text.html_safe %></h4>
       <% end %>
@@ -10,7 +14,7 @@
           <% if quiz_question_response.present? %>
             <%= quiz_question_responded_display(quiz_question_response, quiz_question_answer) %>
           <% else %>
-            <%= button_to(quiz_question_answer.text, quiz_path(@quiz.to_param, quiz_question_answer_id: quiz_question_answer.id), method: :patch, class: "link block w-full text-left p-4") %>
+            <%= button_to(quiz_question_answer.text, quiz_path(@quiz.to_param, quiz_question_answer_id: quiz_question_answer.id, anchor: quiz_question.anchor_id), method: :patch, class: "link block w-full text-left p-4") %>
           <% end %>
         </div>
       <% end %>
@@ -19,4 +23,8 @@
 </div>
 
 <hr class="standard-top-offset" />
-<h4 class="mt-4 text-center"><%= link_to "Read the article!", @quiz.citation.url %></h4>
+
+<p class="mt-4 text-center">
+  <span class="text-lg font-semibold"><%= link_to "Read the article:", @quiz.citation.url %></span>
+  <%= link_to @quiz.citation.title, @quiz.citation.url %>
+</p>

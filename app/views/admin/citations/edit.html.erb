@@ -121,7 +121,7 @@
         <div class="form-row">
           <label>Publisher</label>
           <p class="form-control bg-gray-100">
-            <%= link_to @citation.publisher_name, admin_publisher_path(@citation.publisher_id) %>
+            <%= link_to @citation.publisher_name, admin_publisher_path(@citation.publisher_id), class: "decoration-publisher" %>
           </p>
         </div>
       </div>
