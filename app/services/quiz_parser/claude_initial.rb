@@ -6,12 +6,18 @@ class QuizParser::ClaudeInitial
       unless parsed.any?
         raise QuizParser::ParsingError, "Unable to parse questions from input_text"
       end
-
-      # Add the opening question text
-      q1_text = [opening_question_text(quiz), parsed.first[:question]].reject(&:blank?)
-      parsed.first[:question] = q1_text.join(", ")
-
       parsed
+    end
+
+    def opening_question_text(quiz)
+      citation = quiz.citation
+      opening_text = if citation.authors.empty?
+        "According to <u class=\"underline decoration-gray-500\">#{citation.publisher.name}</u>"
+      else
+        "According to <em>#{citation.authors.first}</em> in <u class=\"underline decoration-gray-500\">#{citation.publisher.name}</u>"
+      end
+
+      "#{opening_text} <span class=\"convertTime withPreposition\">#{citation.published_updated_at_with_fallback.to_i}</span>"
     end
 
     private
@@ -63,17 +69,6 @@ class QuizParser::ClaudeInitial
     def clean_text(text = nil)
       return nil if text.blank?
       text.strip.gsub(/"\z/, "").gsub(/\A"/, "")
-    end
-
-    def opening_question_text(quiz)
-      citation = quiz.citation
-      opening_text = if citation.authors.empty?
-        "According to <u class=\"underline decoration-gray-500\">#{citation.publisher.name}</u>"
-      else
-        "According to <em>#{citation.authors.first}</em> in <u class=\"underline decoration-gray-500\">#{citation.publisher.name}</u>"
-      end
-
-      "#{opening_text} <span class=\"convertTime withPreposition\">#{citation.published_updated_at_with_fallback.to_i}</span>"
     end
   end
 end
