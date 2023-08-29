@@ -109,9 +109,9 @@ class Quiz < ApplicationRecord
   def mark_quizzes_replaced_and_enqueue_parsing
     return true if associated_quizzes.where("id > ?", id).any?
     if claude_admin_submission?
-      PromptClaudeForCitationQuizJob.perform_async(id)
+      PromptClaudeForCitationQuizJob.perform_async(citation_id, id)
     else
-      QuizParseAndCreateQuestionsJob.perform_async(citation_id, id)
+      QuizParseAndCreateQuestionsJob.perform_async(id)
     end
   end
 

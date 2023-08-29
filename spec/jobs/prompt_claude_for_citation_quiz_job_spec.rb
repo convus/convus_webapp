@@ -17,6 +17,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
           before { allow_any_instance_of(ClaudeIntegration).to receive(:completion_for_prompt) { "response text" } }
           it "creates a new quiz" do
             expect(citation.quizzes.count).to eq 0
+            expect(Quiz.count).to eq 0
             Sidekiq::Worker.clear_all
             expect {
               instance.perform(citation.id)
