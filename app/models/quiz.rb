@@ -111,7 +111,7 @@ class Quiz < ApplicationRecord
     if claude_admin_submission?
       PromptClaudeForCitationQuizJob.perform_async(id)
     else
-      QuizParseAndCreateQuestionsJob.perform_async(id)
+      QuizParseAndCreateQuestionsJob.perform_async(citation_id, id)
     end
   end
 

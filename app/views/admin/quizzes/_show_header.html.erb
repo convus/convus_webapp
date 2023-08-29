@@ -21,8 +21,15 @@
             <td>Status</td>
             <td>
               <%= admin_status_display(@quiz.status) %>
-
-              <% if @quiz.input_text_parse_error.present? %>
+              <% if @quiz.pending? %>
+                <a href="#" class="text-sm less-strong ml-2" id="reloadLink">reload</a>
+                <script>
+                  document.querySelector('#reloadLink').addEventListener('click', (e) => {
+                    e.preventDefault()
+                    location.reload();
+                  })
+                </script>
+              <% elsif @quiz.input_text_parse_error.present? %>
                 <span class="block">
                   <strong>Error message:</strong>
                   <%= @quiz.input_text_parse_error %>

@@ -54,7 +54,7 @@
 
 <%= render partial: "/admin/quizzes/quiz_questions_table", locals: {quiz_questions: @quiz_questions, skip_sortable: true} %>
 
-<% if display_dev_info? && !@quiz.parse_errored? %>
+<% if display_dev_info? && !@quiz.parse_errored? && @quiz.input_text.present? %>
   <div class="large-width-container mt-4">
     <p class="only-dev-visible">Input Text Parsed</p>
     <div class="code-small">
