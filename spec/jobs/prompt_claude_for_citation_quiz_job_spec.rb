@@ -16,7 +16,6 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
         context "success_response" do
           before { allow_any_instance_of(ClaudeIntegration).to receive(:completion_for_prompt) { "response text" }}
           it "creates a new quiz" do
-
             expect(citation.quizzes.count).to eq 0
             expect {
               instance.perform(citation.id)
@@ -29,7 +28,24 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
             expect(quiz.prompt_text).to eq prompt_text
             expect(quiz.input_text).to eq "response text"
           end
-          context "quiz "
+          context "claude_admin_submission" do
+            let(:prompt_text) { "some prompt, article: ${ARTICLE_TEXT}" }
+            let(:quiz) { FactoryBot.create(:quiz, citation: citation, source: "claude_admin_submission", prompt_text: prompt_text) }
+            it "updates the quiz" do
+              expect(described_class.enqueue_for_quiz?(quiz)).to be_truthy
+              expect(instance.quiz_prompt(citation, quiz)).to eq "some prompt, article: some text"
+              expect(citation.reload.quizzes.count).to eq 1
+              expect {
+                instance.perform(citation.id, quiz.id)
+              }.to change(Quiz, :count).by 0
+
+              expect(quiz.reload.citation_id).to eq citation.id
+              expect(quiz.source).to eq "claude_admin_submission"
+              expect(quiz.prompt_text).to eq prompt_text
+              expect(quiz.input_text).to eq "response text"
+              expect(quiz.status).to eq "pending"
+            end
+          end
         end
         context "error response" do
           let(:error_response) { '{"error": {"type": "invalid_request_error", "message": "prompt is too long: 0 tokens > 102398 maximum"}}' }

@@ -77,11 +77,16 @@ class Quiz < ApplicationRecord
     self.class.source_humanized(source)
   end
 
+  def prompt_full_text
+    prompt_text.present? ? prompt_text.gsub("${ARTICLE_TEXT}", citation&.citation_text) : ""
+  end
+
   def set_calculated_attributes
     self.status ||= :pending
     self.kind ||= :citation_quiz if citation_id.present?
     self.version ||= calculated_version
     self.input_text = nil if input_text.blank?
+    self.prompt_text = nil if prompt_text.blank?
     self.input_text_format ||= :claude_initial
   end
 

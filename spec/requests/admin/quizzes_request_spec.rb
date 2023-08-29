@@ -102,6 +102,7 @@ RSpec.describe base_url, type: :request do
         let(:valid_params) { {prompt_text: "some text", citation_id: citation.id, source: "claude_admin_submission"} }
         it "creates a new quiz" do
           expect(quiz).to be_valid
+          Sidekiq::Worker.clear_all
           expect {
             patch "#{base_url}/#{quiz.id}", params: {quiz: valid_params}
           }.to change(Quiz, :count).by 1
@@ -112,6 +113,7 @@ RSpec.describe base_url, type: :request do
           expect_attrs_to_match_hash(new_quiz, valid_params)
           expect(new_quiz.status).to eq "pending"
           expect(new_quiz.input_text).to be_nil
+          expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([new_quiz.id])
         end
       end
       context "disable_update" do

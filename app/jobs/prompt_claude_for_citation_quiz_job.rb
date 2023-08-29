@@ -9,6 +9,11 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
       citation.quizzes.none?
   end
 
+  def self.enqueue_for_quiz?(quiz)
+    quiz.present? && quiz.pending? && quiz.input_text.blank? &&
+      quiz.prompt_text.present?
+  end
+
   def self.redis_url
     ConvusReviews::Application.config.redis_default_url
   end
@@ -22,29 +27,45 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
     (5.minutes * 1000).to_i
   end
 
-  def quiz_prompt(citation)
-    "#{QUIZ_PROMPT}\n\nArticle: #{citation.citation_text}"
+  def quiz_prompt(citation, quiz = nil)
+    if quiz.present?
+      quiz.prompt_full_text
+    else
+      "#{QUIZ_PROMPT}\n\nArticle: #{citation.citation_text}"
+    end
   end
 
   def perform(citation_id, quiz_id = nil)
     return if SKIP_JOB
     lock_manager = Redlock::Client.new([self.class.redis_url])
-    citation = Citation.find(citation_id)
-    return unless self.class.enqueue_for_citation?(citation)
+    if quiz_id.present?
+      quiz = Quiz.find(quiz_id)
+      return unless self.class.enqueue_for_quiz?(quiz)
+      citation = quiz.citation
+    else
+      citation = Citation.find(citation_id)
+      return unless self.class.enqueue_for_citation?(citation)
+    end
 
     redlock = lock_manager.lock(REDLOCK_KEY, lock_duration_ms)
     unless redlock
-      return self.class.perform_in(requeue_delay, citation_id)
+      return self.class.perform_in(requeue_delay, citation_id, quiz_id)
     end
 
     begin
-      claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation))
+      claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation, quiz))
 
-      Quiz.create!(citation: citation,
+      if quiz.present?
+        quiz.input_text = claude_response
+      else
+        quiz = Quiz.new(citation: citation,
         source: :claude_integration,
         kind: :citation_quiz,
         prompt_text: QUIZ_PROMPT,
         input_text: claude_response)
+      end
+      quiz.save!
+
     rescue Faraday::TimeoutError
       self.class.perform_async(requeue_delay, citation_id)
     ensure
