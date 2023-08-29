@@ -26,9 +26,9 @@ Run these commands in the terminal, from the directory the project is in.
 
 - Create and migrate the databases `bundle exec rake db:create db:migrate db:test:prepare`
 
-- `./start` start the server.
+- `./start.sh` start the server.
 
-  - [start](start) is a bash script. It starts Redis in the background and runs foreman with the [dev procfile](Procfile_development)
+  - [start.sh](start.sh) is a bash script. It starts Redis in the background and runs foreman with the [dev procfile](Procfile_development)
 
 - Go to [localhost:3009](http://localhost:3009)
 
