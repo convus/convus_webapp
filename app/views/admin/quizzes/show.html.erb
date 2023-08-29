@@ -43,7 +43,7 @@
       <span class="less-strong">Quiz can't be disabled because it isn't active</span>
     <% end %>
     <%= link_to "Manually update quiz text", edit_admin_quiz_path(@quiz.to_param, form_type: "admin_entry"), class: "btn mr-2" %>
-    <%= link_to "Resubmit with a new prompt", edit_admin_quiz_path(@quiz.to_param, form_type: "claude_manual_submission"), class: "btn" %>
+    <%= link_to "Resubmit with a new prompt", edit_admin_quiz_path(@quiz.to_param, form_type: "claude_admin_submission"), class: "btn" %>
   </div>
 
   <h2 class="standard-top-offset mb-4">

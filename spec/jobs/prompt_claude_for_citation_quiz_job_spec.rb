@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe CreateCitationQuizJob, type: :job do
+RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
   let(:instance) { described_class.new }
   let(:citation) { FactoryBot.create(:citation, citation_text: citation_text) }
   let(:citation_text) { "some text" }
@@ -10,23 +10,26 @@ RSpec.describe CreateCitationQuizJob, type: :job do
   # Skipping on CI for now because of Redis incompatibility
   unless ENV["CI"]
     describe "#perform" do
-      before { stub_const("CreateCitationQuizJob::QUIZ_PROMPT", prompt_text) }
+      before { stub_const("PromptClaudeForCitationQuizJob::QUIZ_PROMPT", prompt_text) }
       context "stubbed" do
         let(:prompt_text) { "example" }
+        context "success_response" do
+          before { allow_any_instance_of(ClaudeIntegration).to receive(:completion_for_prompt) { "response text" }}
+          it "creates a new quiz" do
 
-        it "creates a new quiz" do
-          allow_any_instance_of(ClaudeIntegration).to receive(:completion_for_prompt) { "response text" }
-          expect(citation.quizzes.count).to eq 0
-          expect {
-            instance.perform(citation.id)
-          }.to change(Quiz, :count).by 1
+            expect(citation.quizzes.count).to eq 0
+            expect {
+              instance.perform(citation.id)
+            }.to change(Quiz, :count).by 1
 
-          quiz = Quiz.last
-          expect(quiz.citation_id).to eq citation.id
-          expect(quiz.source).to eq "claude_integration"
-          expect(quiz.kind).to eq "citation_quiz"
-          expect(quiz.prompt_text).to eq prompt_text
-          expect(quiz.input_text).to eq "response text"
+            quiz = Quiz.last
+            expect(quiz.citation_id).to eq citation.id
+            expect(quiz.source).to eq "claude_integration"
+            expect(quiz.kind).to eq "citation_quiz"
+            expect(quiz.prompt_text).to eq prompt_text
+            expect(quiz.input_text).to eq "response text"
+          end
+          context "quiz "
         end
         context "error response" do
           let(:error_response) { '{"error": {"type": "invalid_request_error", "message": "prompt is too long: 0 tokens > 102398 maximum"}}' }

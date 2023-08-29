@@ -11,8 +11,8 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
   describe "perform" do
     before do
       Sidekiq::Worker.clear_all
-      # Required to enqueue CreateCitationQuizJob
-      stub_const("CreateCitationQuizJob::QUIZ_PROMPT", "something")
+      # Required to enqueue PromptClaudeForCitationQuizJob
+      stub_const("PromptClaudeForCitationQuizJob::QUIZ_PROMPT", "something")
     end
     context "nil" do
       let(:citation_metadata_str) { "{}" }
@@ -55,7 +55,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         # Updates publisher
         expect(publisher.reload.name).to eq "The New Yorker"
         expect(publisher.name_assigned?).to be_truthy
-        expect(CreateCitationQuizJob.jobs.count).to eq 0
+        expect(PromptClaudeForCitationQuizJob.jobs.count).to eq 0
       end
       context "topics present" do
         let!(:topic1) { Topic.find_or_create_for_name("U.S. President") }
@@ -79,16 +79,16 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
       context "citation_text present" do
         let(:citation_text) { "Some text goes here" }
         before { rating.update(citation_text: citation_text) }
-        it "assigns topics and enqueues CreateCitationQuizJob" do
-          expect(CreateCitationQuizJob.jobs.count).to eq 0
+        it "assigns topics and enqueues PromptClaudeForCitationQuizJob" do
+          expect(PromptClaudeForCitationQuizJob.jobs.count).to eq 0
           expect(citation.citation_text).to be_nil
           instance.perform(citation.id)
           citation.reload
           expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
           expect(citation.citation_text).to eq citation_text
           expect(citation.manually_updated_attributes).to eq([])
-          expect(CreateCitationQuizJob.jobs.count).to eq 1
-          expect(CreateCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id])
+          expect(PromptClaudeForCitationQuizJob.jobs.count).to eq 1
+          expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id])
         end
       end
       context "already assigned" do

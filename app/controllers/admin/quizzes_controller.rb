@@ -65,7 +65,7 @@ class Admin::QuizzesController < Admin::BaseController
   private
 
   def permitted_form_types
-    %w[admin_entry claude_manual_submission].freeze
+    %w[admin_entry claude_admin_submission].freeze
   end
 
   def sortable_columns

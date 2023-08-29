@@ -10,7 +10,7 @@ class Quiz < ApplicationRecord
   SOURCE_ENUM = {
     admin_entry: 0,
     claude_integration: 1,
-    claude_manual_submission: 2
+    claude_admin_submission: 2
   }.freeze
 
   KIND_ENUM = {citation_quiz: 0}.freeze
@@ -46,7 +46,7 @@ class Quiz < ApplicationRecord
   end
 
   def self.prompt_sources
-    %i[claude_integration claude_manual_submission].freeze
+    %i[claude_integration claude_admin_submission].freeze
   end
 
   def self.kind_humanized(str)

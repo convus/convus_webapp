@@ -1,4 +1,4 @@
-class CreateCitationQuizJob < ApplicationJob
+class PromptClaudeForCitationQuizJob < ApplicationJob
   sidekiq_options retry: false
   SKIP_JOB = ENV["SKIP_CREATE_CITATION_QUIZ"].present?
   QUIZ_PROMPT = ENV["CLAUDE_QUIZ_PROMPT"].freeze
@@ -26,7 +26,7 @@ class CreateCitationQuizJob < ApplicationJob
     "#{QUIZ_PROMPT}\n\nArticle: #{citation.citation_text}"
   end
 
-  def perform(citation_id)
+  def perform(citation_id, quiz_id = nil)
     return if SKIP_JOB
     lock_manager = Redlock::Client.new([self.class.redis_url])
     citation = Citation.find(citation_id)

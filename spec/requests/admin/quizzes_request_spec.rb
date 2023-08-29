@@ -75,10 +75,10 @@ RSpec.describe base_url, type: :request do
       context "id: citation slug" do
         it "renders" do
           expect(quiz).to be_valid
-          get "#{base_url}/citation/edit?citation_id=#{citation.url}&form_type=claude_manual_submission"
+          get "#{base_url}/citation/edit?citation_id=#{citation.url}&form_type=claude_admin_submission"
           expect(response.code).to eq "200"
           expect(assigns(:quiz)&.id).to eq quiz.id
-          expect(assigns(:form_type)).to eq "claude_manual_submission"
+          expect(assigns(:form_type)).to eq "claude_admin_submission"
           expect(response).to render_template("admin/quizzes/edit")
         end
       end
@@ -99,7 +99,7 @@ RSpec.describe base_url, type: :request do
         expect(new_quiz.prompt_text).to be_nil
       end
       context "with prompt_text" do
-        let(:valid_params) { {prompt_text: "some text", citation_id: citation.id, source: "claude_manual_submission"} }
+        let(:valid_params) { {prompt_text: "some text", citation_id: citation.id, source: "claude_admin_submission"} }
         it "creates a new quiz" do
           expect(quiz).to be_valid
           expect {
