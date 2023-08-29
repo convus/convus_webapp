@@ -1,5 +1,6 @@
 class Rating < ApplicationRecord
   include CreatedDateable
+  include Qualityable
 
   RAW_KEY = "raw".freeze
   ATTRS_KEY = "attrs".freeze
@@ -10,16 +11,9 @@ class Rating < ApplicationRecord
     agree: 2
   }.freeze
 
-  QUALITY_ENUM = {
-    quality_med: 0,
-    quality_low: 1,
-    quality_high: 2
-  }.freeze
-
   RANK_OFFSET = 1000
 
   enum agreement: AGREEMENT_ENUM
-  enum quality: QUALITY_ENUM
 
   belongs_to :citation
   belongs_to :user
@@ -57,15 +51,6 @@ class Rating < ApplicationRecord
   delegate :publisher, to: :citation, allow_nil: true
 
   class << self
-    def quality_humanized(str)
-      return nil if str.blank?
-      if str.to_sym == :quality_med
-        "medium"
-      else
-        str.to_s.gsub("quality_", "")
-      end
-    end
-
     def find_for_url(submitted_url, user_id)
       citation = Citation.find_for_url(submitted_url)
       return nil if citation.blank?
@@ -163,10 +148,6 @@ class Rating < ApplicationRecord
   def topic_names
     return [] unless topics_text.present?
     topics_text.strip.split("\n").reject(&:blank?)
-  end
-
-  def quality_humanized
-    self.class.quality_humanized(quality)
   end
 
   def citation_url

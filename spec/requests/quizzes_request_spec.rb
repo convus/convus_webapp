@@ -73,7 +73,7 @@ RSpec.describe base_url, type: :request do
           }
         }.to change(QuizResponse, :count).by 1
         expect(flash).to be_empty
-        expect(response).to redirect_to("#{base_url}/#{quiz.id}#QQuestion-#{quiz_question.list_order}")
+        expect(response).to redirect_to("#{base_url}/#{quiz.id}")
 
         quiz_response = QuizResponse.last
         expect(quiz_response.user_id).to eq current_user.id
@@ -86,6 +86,18 @@ RSpec.describe base_url, type: :request do
         quiz_question_response = quiz_response.quiz_question_responses.first
         expect(quiz_question_response.correct).to be_falsey
         expect(quiz_question_response.quiz_question_answer_id).to eq quiz_question_answer2.id
+        expect(quiz_question_response.quality).to eq "quality_med"
+
+        # It updates quality
+        expect {
+          patch "#{base_url}/#{quiz.id}", params: {
+            quiz_question_id: quiz_question.id,
+            quality: "quality_high"
+          }
+        }.to change(QuizResponse, :count).by 0
+        expect(flash).to be_blank
+        quiz_question_response.reload
+        expect(quiz_question_response.quality).to eq "quality_high"
       end
     end
   end

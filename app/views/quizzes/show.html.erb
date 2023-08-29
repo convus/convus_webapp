@@ -24,6 +24,12 @@
           <% end %>
         </div>
       <% end %>
+      <% if quiz_question_response.present? %>
+        <p class="text-right opacity-50 text-sm">
+          quality
+          <%= display_icon("quality_high") %>
+        </p>
+      <% end %>
     </div>
   <% end %>
 </div>
