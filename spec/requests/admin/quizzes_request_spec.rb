@@ -113,7 +113,7 @@ RSpec.describe base_url, type: :request do
           expect_attrs_to_match_hash(new_quiz, valid_params)
           expect(new_quiz.status).to eq "pending"
           expect(new_quiz.input_text).to be_nil
-          expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([new_quiz.id])
+          expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id, new_quiz.id])
         end
       end
       context "disable_update" do
