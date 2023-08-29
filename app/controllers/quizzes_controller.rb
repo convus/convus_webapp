@@ -34,7 +34,7 @@ class QuizzesController < ApplicationController
   def update_quiz_question_response(quiz_response, quiz_question_id, quality)
     quiz_question_response = quiz_response.quiz_question_responses.where(quiz_question_id: quiz_question_id).first
     if quiz_question_response.present?
-      if QuizQuestionResponse.qualities.keys.include?(quality)
+      if QuizQuestionResponse.qualities.key?(quality)
         quiz_question_response.update!(quality: quality)
       else
         flash[:error] = "Invalid quality: #{quality}"

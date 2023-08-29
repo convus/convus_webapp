@@ -1,6 +1,6 @@
 <% skip_sortable ||= false %>
 <% quiz_responses ||= @quiz_responses %>
-<% skip_citation ||= false %>
+<% skip_quiz ||= false %>
 
 <div class="full-screen-table">
   <table class="table table-sm">
@@ -14,9 +14,9 @@
             <small><%= sortable "updated_at", skip_sortable: skip_sortable %></small>
           </th>
         <% end %>
-        <% unless skip_citation %>
+        <% unless skip_quiz %>
           <th>
-            <%= sortable "citation_id",  skip_sortable: skip_sortable %>
+            <%= sortable "quiz_id",  skip_sortable: skip_sortable %>
           </th>
         <% end %>
         <th>
@@ -34,6 +34,9 @@
         <th>
           <%= sortable "incorrect_count", skip_sortable: skip_sortable %>
         </th>
+        <th>
+          <small>high/low quality</small>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -48,9 +51,9 @@
               <small class="convertTime"><%= l(quiz_response.updated_at, format: :convert_time) %></small>
             </td>
           <% end %>
-          <% unless skip_citation %>
+          <% unless skip_quiz %>
             <td>
-              <%= admin_citation_cell(quiz_response.citation) %>
+              <%= link_to quiz_title_display(quiz_response.quiz), admin_quiz_path(quiz_response.quiz) %>
             </td>
           <% end %>
           <td>
@@ -67,6 +70,13 @@
           </td>
           <td>
             <%= admin_number_display(quiz_response.incorrect_count) %>
+          </td>
+          <td class="small">
+            <% high = quiz_response.quiz_question_responses.quality_high.count %>
+            <% low = quiz_response.quiz_question_responses.quality_low.count %>
+            <% if high + low > 0 %>
+              <%= admin_number_display(high) %>/<%= admin_number_display(low) %>
+            <% end %>
           </td>
         </tr>
       <% end %>
