@@ -41,4 +41,19 @@ module AdminHelper
       concat(render(partial: "/shared/citation", locals: {citation: citation, url_for_route: filter_link, skip_title_and_description: true}))
     end
   end
+
+  def quiz_input_text_label_name(quiz)
+    if quiz.prompt_source?
+      "Prompt response"
+    else
+      "Text from #{quiz.source_humanized}"
+    end
+  end
+
+  def prompt_text_area_text(prompt_text = nil)
+    return "" if prompt_text.blank?
+    text = prompt_text.gsub("\\n", "\n").gsub("\\\"", '"')
+    text += "\n\nArticle: ${ARTICLE_TEXT}" unless text.match?(/\$\{ARTICLE_TEXT\}/)
+    text
+  end
 end

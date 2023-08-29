@@ -12,7 +12,7 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
 
   describe "#perform" do
     let!(:previous_quiz) { FactoryBot.create(:quiz, citation: citation, status: :active) }
-    context "quiz status is not pending" do
+    context "quiz status: active" do
       before { quiz.update(status: :active) }
 
       it "returns early" do
@@ -65,12 +65,12 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
           }
         ]
       end
-      it "creates questions and answers" do
+
+      def expect_target_questions_created(quiz)
         expect(described_class.parsed_input_text(quiz)).to eq target
         instance.perform(quiz.id)
         quiz.reload
         expect(quiz.input_text_parse_error).to be_nil
-        expect(quiz.status).to eq "active"
 
         expect(quiz.quiz_questions.count).to eq 2
         quiz_question1 = quiz.quiz_questions.list_order.first
@@ -93,6 +93,19 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
 
         # previous quiz status isn't updated
         expect(previous_quiz.reload.status).to eq "replaced"
+      end
+
+      it "creates questions and answers" do
+        expect_target_questions_created(quiz)
+        expect(quiz.status).to eq "active"
+      end
+
+      context "quiz status: disabled" do
+        before { quiz.update(status: :disabled) }
+        it "creates questions and answers, doesn't update status" do
+          expect_target_questions_created(quiz)
+          expect(quiz.status).to eq "disabled"
+        end
       end
     end
   end

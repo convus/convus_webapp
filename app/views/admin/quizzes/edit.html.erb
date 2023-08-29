@@ -1,109 +1,16 @@
 <%= content_for :main_wrapper_class, "container-padded" %>
-<div class="large-width-container">
+<div class="large-width-container mb-4">
   <h1 class="standard-top-offset">
     Edit Quiz
-    <small class="less-strong">for citation:</small>
+    <small class="less-strong">
+      <%= quiz_title_display(@quiz) %></small>
   </h1>
 </div>
 
-<%= render partial: "/admin/citations/table", locals: {citations: [@citation], skip_sortable: true} %>
+<%= render partial: "show_header" %>
 
-<div class="large-width-container mt-4">
-  <div class="row sm:grid-cols-2">
-    <div class="col">
-      <table class="table-list">
-        <tbody>
-          <tr>
-            <td>Created</td>
-            <td>
-              <span class="convertTime"><%= l(@quiz.created_at, format: :convert_time) %></span>
-            </td>
-          </tr>
-          <tr>
-            <td>Updated</td>
-            <td>
-              <small class="convertTime"><%= l(@quiz.updated_at, format: :convert_time) %></small>
-            </td>
-          </tr>
-          <tr>
-            <td>Version</td>
-            <td>
-              <%= @quiz.version %>
-            </td>
-          </tr>
-          <tr>
-            <td>Status</td>
-            <td>
-              <%= admin_status_display(@quiz.status) %>
-
-              <% if @quiz.input_text_parse_error.present? %>
-                <span class="block">
-                  <strong>Error message:</strong>
-                  <%= @quiz.input_text_parse_error %>
-                </span>
-              <% end %>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="col">
-      <table class="table-list">
-        <tbody>
-          <tr>
-            <td>Source</td>
-            <td>
-              <%= @quiz.source %>
-            </td>
-          </tr>
-          <tr>
-            <td>Kind</td>
-            <td>
-              <%= @quiz.kind %>
-            </td>
-          </tr>
-          <tr>
-            <td>Prompt Text</td>
-            <td>
-              <% if @quiz.prompt_text.present? %>
-                <textarea class="form-control text-sm" disabled=true rows=3><%= @quiz.prompt_text %></textarea>
-              <% else %>
-                <small class="less-strong">none</small>
-              <% end %>
-            </td>
-          </tr>
-          <tr>
-            <td>Responses</td>
-            <td>
-              <%= link_to admin_quiz_responses_path(search_quiz_id: @quiz.id) do %>
-                <%= admin_number_display(@quiz.quiz_responses.count) %>
-              <% end %>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
+<div class="large-width-container mt-8">
   <div class="mt-4">
     <%= render partial: "form", locals: {quiz: @quiz} %>
   </div>
 </div>
-
-<div class="large-width-container standard-top-offset mb-4">
-  <h2>
-    <%= admin_number_display(@quiz_questions.count) %>
-    <%= "Questions".pluralize(@quiz_questions) %>
-  </h2>
-</div>
-
-<%= render partial: "/admin/quizzes/quiz_questions_table", locals: {quiz_questions: @quiz_questions, skip_sortable: true} %>
-
-<% if display_dev_info? && !@quiz.parse_errored? %>
-  <div class="large-width-container mt-4">
-    <p class="only-dev-visible">Input Text Parsed</p>
-    <div class="code-small">
-      <%= pretty_print_json(QuizParseAndCreateQuestionsJob.parsed_input_text(@quiz)) %>
-    </div>
-  </div>
-<% end %>

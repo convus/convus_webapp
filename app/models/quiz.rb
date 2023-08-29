@@ -9,7 +9,8 @@ class Quiz < ApplicationRecord
 
   SOURCE_ENUM = {
     admin_entry: 0,
-    claude_integration: 1
+    claude_integration: 1,
+    claude_admin_submission: 2
   }.freeze
 
   KIND_ENUM = {citation_quiz: 0}.freeze
@@ -40,12 +41,44 @@ class Quiz < ApplicationRecord
     %i[pending active disabled].freeze
   end
 
-  def self.integer_str?(str)
-    str.is_a?(Integer) || str.strip.match?(/\A\d+\z/)
+  def self.disableable_statuses
+    %i[pending active].freeze
+  end
+
+  def self.prompt_sources
+    %i[claude_integration claude_admin_submission].freeze
+  end
+
+  def self.kind_humanized(str)
+    str.present? ? str.to_s.humanize : nil
+  end
+
+  def self.source_humanized(str)
+    str.present? ? str.to_s.humanize : nil
+  end
+
+  def prompt_source?
+    self.class.prompt_sources.include?(source&.to_sym)
   end
 
   def current?
     self.class.current_statuses.include?(status&.to_sym)
+  end
+
+  def disableable?
+    self.class.disableable_statuses.include?(status&.to_sym)
+  end
+
+  def kind_humanized
+    self.class.kind_humanized(kind)
+  end
+
+  def source_humanized
+    self.class.source_humanized(source)
+  end
+
+  def prompt_full_text
+    prompt_text.present? ? prompt_text.gsub("${ARTICLE_TEXT}", citation&.citation_text) : ""
   end
 
   def set_calculated_attributes
@@ -53,6 +86,7 @@ class Quiz < ApplicationRecord
     self.kind ||= :citation_quiz if citation_id.present?
     self.version ||= calculated_version
     self.input_text = nil if input_text.blank?
+    self.prompt_text = nil if prompt_text.blank?
     self.input_text_format ||= :claude_initial
   end
 
@@ -74,7 +108,11 @@ class Quiz < ApplicationRecord
 
   def mark_quizzes_replaced_and_enqueue_parsing
     return true if associated_quizzes.where("id > ?", id).any?
-    QuizParseAndCreateQuestionsJob.perform_async(id)
+    if claude_admin_submission?
+      PromptClaudeForCitationQuizJob.perform_async(citation_id, id)
+    else
+      QuizParseAndCreateQuestionsJob.perform_async(id)
+    end
   end
 
   private

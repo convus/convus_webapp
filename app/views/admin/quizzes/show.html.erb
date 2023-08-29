@@ -1,0 +1,63 @@
+<%= content_for :main_wrapper_class, "container-padded" %>
+<div class="large-width-container mb-4">
+  <h1 class="standard-top-offset">
+    Quiz
+    <small class="less-strong"><%= quiz_title_display(@quiz) %></small>
+  </h1>
+  <p class="text-lg mt-2 mb-4"><%= link_to "Take quiz", quiz_path(@quiz) %></p>
+</div>
+
+<%= render partial: "show_header" %>
+
+<div class="large-width-container mt-8">
+  <% if !@quiz.prompt_source? %>
+    <%# NOTE: input_text duplicated below %>
+    <div class="form-row">
+      <label><%= quiz_input_text_label_name(@quiz) %></label>
+      <textarea class="form-control text-sm" rows="15"><%= @quiz.input_text %></textarea>
+    </div>
+  <% else %>
+    <div class="row sm:grid-cols-2">
+      <div class="col">
+        <div class="form-row">
+          <label>Prompt</label>
+          <textarea class="form-control text-sm" rows="15"><%= prompt_text_area_text(@quiz.prompt_text) %></textarea>
+        </div>
+      </div>
+      <div class="col">
+        <%# NOTE: input_text duplicated above %>
+        <div class="form-row">
+          <label><%= quiz_input_text_label_name(@quiz) %></label>
+          <textarea class="form-control text-sm" rows="15"><%= @quiz.input_text %></textarea>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <div class="mt-6 mb-4">
+    <% if @quiz.disabled? %>
+      <%= button_to "re-enable quiz", admin_quiz_path(@quiz.to_param, update_disabledness: "re-enabled"), method: :patch, class: "btn mr-2 italic" %>
+    <% elsif @quiz.disableable? %>
+      <%= button_to "Disable quiz", admin_quiz_path(@quiz.to_param, update_disabledness: "disabled"), method: :patch, class: "btn mr-2 text-yellow-600" %>
+    <% else %>
+      <span class="less-strong">Quiz can't be disabled because it isn't active</span>
+    <% end %>
+    <%= link_to "Manually update quiz text", edit_admin_quiz_path(@quiz.to_param, form_type: "admin_entry"), class: "btn mr-2" %>
+    <%= link_to "Resubmit with a new prompt", edit_admin_quiz_path(@quiz.to_param, form_type: "claude_admin_submission"), class: "btn" %>
+  </div>
+
+  <h2 class="standard-top-offset mb-4">
+    <%= admin_number_display(@quiz_questions.count) %>
+    <%= "Questions".pluralize(@quiz_questions) %>
+  </h2>
+</div>
+
+<%= render partial: "/admin/quizzes/quiz_questions_table", locals: {quiz_questions: @quiz_questions, skip_sortable: true} %>
+
+<% if display_dev_info? && !@quiz.parse_errored? && @quiz.input_text.present? %>
+  <div class="large-width-container mt-4">
+    <p class="only-dev-visible">Input Text Parsed</p>
+    <div class="code-small">
+      <%= pretty_print_json(QuizParseAndCreateQuestionsJob.parsed_input_text(@quiz)) %>
+    </div>
+  </div>
+<% end %>

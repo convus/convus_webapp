@@ -2,6 +2,16 @@
 <div class="large-width-container">
   <h1 class="standard-top-offset mb-4">Admin Quizzes</h1>
 
+  <% if @search_source.present? %>
+    <p class="mb-2">
+      Quizzes from source:
+      <strong><%= Quiz.source_humanized(@search_source) %></strong>
+      <em class="less-strong">
+        &ndash; view quizzes for
+        <%= link_to "all sources", url_for(sortable_params.merge(search_source: nil)) %>
+      </em>
+    </p>
+  <% end %>
   <%= render partial: "/shared/current_header", locals: {collection: @quizzes, render_period: true} %>
 </div>
 

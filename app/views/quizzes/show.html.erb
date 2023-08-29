@@ -1,4 +1,10 @@
 <div class="standard-top-offset small-width-container-padded">
+  <% if current_user&.admin_access? %>
+    <p class="-mt-3 mb-7 text-right">
+      <%= link_to "quiz admin", admin_quiz_path(@quiz), class: "text-sm less-strong" %>
+    </p>
+  <% end %>
+
   <h1>
     From <%= quiz_title_display(@quiz) %>
   </h1>
@@ -24,7 +30,7 @@
 
 <hr class="standard-top-offset" />
 
-<p class="mt-4 text-center">
+<p class="my-4 text-center">
   <span class="text-lg font-semibold"><%= link_to "Read the article:", @quiz.citation.url %></span>
   <%= link_to @quiz.citation.title, @quiz.citation.url %>
 </p>

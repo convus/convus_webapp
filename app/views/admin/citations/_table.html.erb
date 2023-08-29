@@ -1,4 +1,5 @@
 <% skip_sortable ||= false %>
+<% filter_link ||= nil %>
 
 <div class="full-screen-table">
   <table class="table table-sm table-striped thead-light max-w-full">
@@ -37,12 +38,18 @@
             </td>
           <% end %>
           <td class="max-w-md maxWScreen">
-            <%= admin_citation_cell(citation) %>
+            <%= admin_citation_cell(citation, filter_link: filter_link) %>
           </td>
           <td><%= admin_number_display(citation.ratings.count) %></td>
           <td><%= admin_number_display(citation.ratings.metadata_present.count) %></td>
           <td><%= missing_meta_count(citation) %></td>
-          <td><%= admin_number_display(citation.quizzes.count) %></td>
+          <td>
+            <% if skip_sortable %>
+              <%= admin_number_display(citation.quizzes.count) %>
+            <% else %>
+              <%= link_to admin_number_display(citation.quizzes.count), admin_quizzes_path(search_citation_id: citation.id) %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>

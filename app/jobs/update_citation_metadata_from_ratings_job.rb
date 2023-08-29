@@ -35,8 +35,8 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
       citation.publisher.update(name: new_attributes[:publisher_name])
     end
     # Create the quiz!
-    if CreateCitationQuizJob.enqueue_for_citation?(citation)
-      CreateCitationQuizJob.perform_async(citation.id)
+    if PromptClaudeForCitationQuizJob.enqueue_for_citation?(citation)
+      PromptClaudeForCitationQuizJob.perform_async(citation.id)
     end
     citation
   end
