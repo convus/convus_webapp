@@ -55,7 +55,7 @@ class Admin::QuizzesController < Admin::BaseController
       @quiz = Quiz.new(permitted_params)
       if @quiz.save
         flash[:success] = "New Quiz version created"
-        redirect_to edit_admin_quiz_path(@quiz), status: :see_other
+        redirect_to admin_quiz_path(@quiz), status: :see_other
       else
         render :edit, status: :see_other
       end
