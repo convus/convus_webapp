@@ -44,6 +44,6 @@
 <% if form_type != "admin_entry" && editing_quiz %>
   <div class="mt-8 mb-4">
     <span class="less-strong">Previous prompt response:</span>
-    <textarea class="form-control text-sm" rows="15"><%= @quiz.input_text %></textarea>
+    <textarea class="form-control text-sm" disabled=true rows="15"><%= @quiz.input_text %></textarea>
   </div>
 <% end %>

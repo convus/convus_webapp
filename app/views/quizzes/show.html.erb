@@ -10,17 +10,29 @@
   </h1>
 
   <% @quiz_questions.each do |quiz_question| %>
+    <% quiz_question_response = @quiz_question_responses.where(quiz_question_id: quiz_question.id).first %>
+
     <div class="mt-8 pb-4" id="<%= quiz_question.anchor_id %>">
       <% if quiz_question.text.present? %>
-        <h4 class=""><%= quiz_question.text.html_safe %></h4>
+        <h4 class="">
+          <%= quiz_question.text.html_safe %>
+        </h4>
       <% end %>
-      <% quiz_question_response = @quiz_question_responses.where(quiz_question_id: quiz_question.id).first %>
       <% quiz_question.quiz_question_answers.each do |quiz_question_answer| %>
         <div class="mt-4 p-2">
           <% if quiz_question_response.present? %>
             <%= quiz_question_responded_display(quiz_question_response, quiz_question_answer) %>
           <% else %>
             <%= button_to(quiz_question_answer.text, quiz_path(@quiz.to_param, quiz_question_answer_id: quiz_question_answer.id, anchor: quiz_question.anchor_id), method: :patch, class: "link block w-full text-left p-4") %>
+          <% end %>
+        </div>
+      <% end %>
+      <% if quiz_question_response.present? %>
+        <div class="text-right text-sm px-4 -mt-1 mb-1">
+          <% if quiz_question_response.quality_med? %>
+            <%= button_to("excellent question?", quiz_path(@quiz.to_param, quiz_question_id: quiz_question.id, anchor: quiz_question.anchor_id, quality: "quality_high"), method: :patch, class: "opacity-50") %>
+          <% else %>
+            <%= button_to(display_icon("quality_high"), quiz_path(@quiz.to_param, quiz_question_id: quiz_question.id, anchor: quiz_question.anchor_id, quality: "quality_med"), method: :patch, class: "") %>
           <% end %>
         </div>
       <% end %>

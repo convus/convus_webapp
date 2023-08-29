@@ -1,5 +1,6 @@
 class QuizQuestionResponse < ApplicationRecord
   include CorrectBooleaned
+  include Qualityable
 
   belongs_to :quiz_response
   belongs_to :quiz_question

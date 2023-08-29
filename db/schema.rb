@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_22_171727) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_29_041921) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -106,6 +106,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_22_171727) do
     t.boolean "correct"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "quality", default: 0
     t.index ["quiz_question_answer_id"], name: "index_quiz_question_responses_on_quiz_question_answer_id"
     t.index ["quiz_question_id"], name: "index_quiz_question_responses_on_quiz_question_id"
     t.index ["quiz_response_id"], name: "index_quiz_question_responses_on_quiz_response_id"
