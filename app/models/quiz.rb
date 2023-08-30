@@ -99,6 +99,7 @@ class Quiz < ApplicationRecord
   end
 
   def set_calculated_attributes
+    self.subject ||= citation.subject
     self.status ||= :pending
     self.kind ||= :citation_quiz if citation_id.present?
     self.version ||= calculated_version

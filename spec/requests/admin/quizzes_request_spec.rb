@@ -103,6 +103,7 @@ RSpec.describe base_url, type: :request do
           {
             prompt_text: "some text",
             citation_id: citation.id,
+            subject: "Things about stuff",
             source: "claude_admin_submission",
             prompt_params_text: ""
           }
@@ -115,15 +116,17 @@ RSpec.describe base_url, type: :request do
           }.to change(Quiz, :count).by 1
           expect(flash[:success]).to be_present
           expect(quiz.reload.status).to eq "active"
+          expect(quiz.subject).to be_nil
 
           new_quiz = Quiz.last
           expect_attrs_to_match_hash(new_quiz, valid_params.except(:prompt_params_text))
+          expect(new_quiz.subject_set_manually).to be_truthy
           expect(new_quiz.status).to eq "pending"
           expect(new_quiz.input_text).to be_nil
           expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id, new_quiz.id])
         end
         context "with prompt_params" do
-          let(:params_with_prompt_params) { valid_params.merge(prompt_params_text: "{\"temperature\": 0.9}") }
+          let(:params_with_prompt_params) { valid_params.merge(subject: nil, prompt_params_text: "{\"temperature\": 0.9}") }
           it "creates a new quiz" do
             expect(quiz).to be_valid
             Sidekiq::Worker.clear_all
@@ -138,6 +141,7 @@ RSpec.describe base_url, type: :request do
             expect(new_quiz.status).to eq "pending"
             expect(new_quiz.input_text).to be_nil
             expect(new_quiz.prompt_params).to eq({"temperature" => 0.9})
+            expect(new_quiz.subject_set_manually).to be_falsey
             expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id, new_quiz.id])
           end
           context "invalid prompt_params" do

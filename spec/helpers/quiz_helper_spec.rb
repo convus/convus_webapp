@@ -10,7 +10,7 @@ RSpec.describe QuizHelper, type: :helper do
   let(:time_el) { "<span class=\"convertTime withPreposition\">#{time.to_i}</span>" }
   let(:input_text) { nil }
 
-  describe "opening_question_text" do
+  describe "quiz_title_display" do
     context "with no author" do
       let(:target) do
         "<span><span class=\"no-underline\"> </span><span class=\"decoration-publisher\">a Publisher</span>" \

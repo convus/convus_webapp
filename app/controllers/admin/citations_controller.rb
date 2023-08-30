@@ -59,6 +59,7 @@ class Admin::CitationsController < Admin::BaseController
       :paywall,
       :published_at_in_zone,
       :published_updated_at_in_zone,
+      :subject,
       :timezone,
       :title,
       :topics_string,

@@ -52,6 +52,7 @@ class Admin::QuizzesController < Admin::BaseController
       redirect_to admin_quiz_path(@quiz), status: :see_other
     else
       @new_quiz = Quiz.new(permitted_params)
+      @new_quiz.subject_set_manually = subject_set_manually?(permitted_params, @quiz.subject_set_manually, @new_quiz)
       if @new_quiz.save
         flash[:success] = "New Quiz version created"
         redirect_to admin_quiz_path(@new_quiz), status: :see_other
@@ -72,7 +73,7 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def sortable_columns
-    %w[created_at citation_id status version source].freeze
+    %w[created_at subject citation_id status version source].freeze
   end
 
   def searchable_statuses
@@ -110,7 +111,8 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def permitted_params
-    params.require(:quiz).permit(:input_text, :citation_id, :prompt_text, :prompt_params_text)
+    params.require(:quiz)
+      .permit(:citation_id, :input_text, :prompt_params_text, :prompt_text, :subject)
       .merge(source: selected_form_type(params.dig(:quiz, :source)))
   end
 
@@ -123,5 +125,11 @@ class Admin::QuizzesController < Admin::BaseController
       @citation = @quiz.citation
     end
     @quiz_questions = @quiz.quiz_questions.includes(:quiz_question_answers)
+  end
+
+  def subject_set_manually?(pparams, previous_quiz_set_manually, quiz)
+    return false if pparams[:subject].blank?
+    return true if previous_quiz_set_manually
+    quiz.subject != quiz.citation.subject
   end
 end

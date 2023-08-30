@@ -243,6 +243,8 @@ class Citation < ApplicationRecord
     end
     current_m_attrs << "citation_text" if manually_updating && citation_text_changed?
     self.manually_updated_attributes = current_m_attrs.uniq.sort
+    # Update subject here to prevent it from being included in manually updated accidentally
+    self.subject = calculated_subject unless manually_updated_attributes.include?("subject")
     self.manually_updated_at = manually_updated_attributes.any? ? Time.current : nil
   end
 
@@ -277,5 +279,10 @@ class Citation < ApplicationRecord
   def clean_citation_text(text)
     stripped = text&.gsub(" ", " ")&.strip
     stripped.present? ? stripped : nil
+  end
+
+  def calculated_subject
+    topic_names = topics.name_ordered.pluck(:name)
+    topic_names.any? ? topic_names.to_sentence : nil
   end
 end

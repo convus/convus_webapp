@@ -9,6 +9,9 @@
         <th>
           <%= sortable "created_at", skip_sortable: skip_sortable %>
         </th>
+        <th>
+          <%= sortable "subject", skip_sortable: skip_sortable %>
+        </th>
         <% unless skip_citation %>
           <th>
             <%= sortable "citation_id",  skip_sortable: skip_sortable %>
@@ -38,6 +41,7 @@
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= quiz.id %></code><% end %>
             <%= link_to l(quiz.created_at, format: :convert_time), admin_quiz_path(quiz), class: "convertTime link" %>
           </td>
+          <td><%= quiz.subject %></td>
           <% unless skip_citation %>
             <td class="max-w-md maxWScreen">
               <%= admin_citation_cell(quiz.citation) %>
