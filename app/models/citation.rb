@@ -1,5 +1,6 @@
 class Citation < ApplicationRecord
   include FriendlyFindable
+  include TopicMatchable
 
   COUNTED_META_ATTRS = MetadataAttributer::COUNTED_ATTR_KEYS.map(&:to_s).freeze
 
@@ -93,21 +94,6 @@ class Citation < ApplicationRecord
         path: path.blank? ? nil : path,
         query: query
       }.with_indifferent_access
-    end
-
-    def matching_topics(topic_ids, include_children: false, match_all: false)
-      topic_ids = Array(topic_ids)
-      topic_ids += Topic.child_ids_for_ids(topic_ids) if include_children
-      if match_all
-        topic_ids.reduce(self) { |matches, topic_id| matches.matching_a_topic(topic_id) }
-      else
-        joins(:citation_topics).where(citation_topics: {topic_id: topic_ids})
-      end
-    end
-
-    # TODO: Make this work correctly
-    def matching_a_topic(topic_id)
-      joins(:citation_topics).where(citation_topics: {topic_id: [topic_id]})
     end
 
     def references_filepath(str)

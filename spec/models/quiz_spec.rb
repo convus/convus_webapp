@@ -55,4 +55,15 @@ RSpec.describe Quiz, type: :model do
       end
     end
   end
+
+  describe "topics" do
+    let(:citation_topic) { FactoryBot.create(:citation_topic) }
+    let(:topic) { citation_topic.topic }
+    let(:citation) { citation_topic.citation }
+    let(:quiz) { FactoryBot.create(:quiz, citation: citation) }
+    it "uses citation_topic association" do
+      expect(quiz.topics.pluck(:id)).to eq([topic.id])
+      expect(Quiz.matching_topics(topic).pluck(:id)).to eq([quiz.id])
+    end
+  end
 end
