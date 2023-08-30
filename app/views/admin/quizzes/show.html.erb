@@ -32,6 +32,14 @@
         </div>
       </div>
     </div>
+    <% if @quiz.prompt_params.present? %>
+      <div class="form-row mb-2 text-sm">
+        <label>Additional Claude options</label>
+        <div class="code-small">
+          <%= pretty_print_json(@quiz.prompt_params) %>
+        </div>
+      </div>
+    <% end %>
   <% end %>
   <div class="mt-6 mb-4">
     <% if @quiz.disabled? %>
@@ -44,7 +52,6 @@
     <%= link_to "Manually update quiz text", edit_admin_quiz_path(@quiz.to_param, form_type: "admin_entry"), class: "btn mr-2" %>
     <%= link_to "Resubmit with a new prompt", edit_admin_quiz_path(@quiz.to_param, form_type: "claude_admin_submission"), class: "btn" %>
   </div>
-
   <h2 class="standard-top-offset mb-4">
     <%= admin_number_display(@quiz_questions.count) %>
     <%= "Questions".pluralize(@quiz_questions) %>
