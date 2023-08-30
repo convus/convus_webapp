@@ -31,11 +31,14 @@ class Quiz < ApplicationRecord
   has_many :quiz_responses
 
   validates_presence_of :citation_id
+  validate :prompt_params_text_valid_json
 
   before_validation :set_calculated_attributes
   after_commit :mark_quizzes_replaced_and_enqueue_parsing, on: :create
 
   scope :current, -> { where(status: current_statuses) }
+
+  attr_writer :prompt_params_text
 
   def self.current_statuses
     %i[pending active disabled].freeze
@@ -81,6 +84,16 @@ class Quiz < ApplicationRecord
     prompt_text.present? ? prompt_text.gsub("${ARTICLE_TEXT}", citation&.citation_text) : ""
   end
 
+  def prompt_params_text
+    @prompt_params_text ||= (prompt_params || {}).to_json
+  end
+
+  def prompt_params_text_valid_json
+    self.prompt_params = JSON.parse(prompt_params_text) if prompt_params_text.present?
+  rescue => e
+    errors.add(:prompt_params, "Unable to parse: #{e.message}")
+  end
+
   def set_calculated_attributes
     self.status ||= :pending
     self.kind ||= :citation_quiz if citation_id.present?
@@ -109,7 +122,7 @@ class Quiz < ApplicationRecord
   def mark_quizzes_replaced_and_enqueue_parsing
     return true if associated_quizzes.where("id > ?", id).any?
     if claude_admin_submission?
-      PromptClaudeForCitationQuizJob.perform_async(citation_id, id)
+      PromptClaudeForCitationQuizJob.perform_async([citation_id, id])
     else
       QuizParseAndCreateQuestionsJob.perform_async(id)
     end

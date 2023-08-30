@@ -39,6 +39,16 @@
   <div class="form-row-btn">
     <%= f.submit "save", class: "btn" %>
   </div>
+
+  <div class="form-row">
+    <%= f.label :prompt_params_text do %>
+      Additional options for Claude. <strong>Must be valid JSON</strong>
+      <small class="less-strong">
+        e.g. <code class="text-xs">{"temperature": 0.7}</code>
+      </small>
+    <% end %>
+    <%= f.text_area :prompt_params_text, class: "form-control", rows: 2 %>
+  </div>
 <% end %>
 
 <% if form_type != "admin_entry" && editing_quiz %>

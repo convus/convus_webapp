@@ -99,7 +99,14 @@ RSpec.describe base_url, type: :request do
         expect(new_quiz.prompt_text).to be_nil
       end
       context "with prompt_text" do
-        let(:valid_params) { {prompt_text: "some text", citation_id: citation.id, source: "claude_admin_submission"} }
+        let(:valid_params) do
+          {
+            prompt_text: "some text",
+            citation_id: citation.id,
+            source: "claude_admin_submission",
+            prompt_params_text: ""
+          }
+        end
         it "creates a new quiz" do
           expect(quiz).to be_valid
           Sidekiq::Worker.clear_all
@@ -110,10 +117,45 @@ RSpec.describe base_url, type: :request do
           expect(quiz.reload.status).to eq "active"
 
           new_quiz = Quiz.last
-          expect_attrs_to_match_hash(new_quiz, valid_params)
+          expect_attrs_to_match_hash(new_quiz, valid_params.except(:prompt_params_text))
           expect(new_quiz.status).to eq "pending"
           expect(new_quiz.input_text).to be_nil
           expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id, new_quiz.id])
+        end
+        context "with prompt_params" do
+          let(:params_with_prompt_params) { valid_params.merge(prompt_params_text: "{\"temperature\": 0.9}") }
+          it "creates a new quiz" do
+            expect(quiz).to be_valid
+            Sidekiq::Worker.clear_all
+            expect {
+              patch "#{base_url}/#{quiz.id}", params: {quiz: params_with_prompt_params}
+            }.to change(Quiz, :count).by 1
+            expect(flash[:success]).to be_present
+            expect(quiz.reload.status).to eq "active"
+
+            new_quiz = Quiz.last
+            expect_attrs_to_match_hash(new_quiz, params_with_prompt_params.except(:prompt_params_text))
+            expect(new_quiz.status).to eq "pending"
+            expect(new_quiz.input_text).to be_nil
+            expect(new_quiz.prompt_params).to eq({"temperature" => 0.9})
+            expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id, new_quiz.id])
+          end
+          context "invalid prompt_params" do
+            let(:params_with_prompt_params) { valid_params.merge(prompt_params_text: "{temperature 0.9}") }
+            it "doesn't create, rerenders" do
+              expect(quiz).to be_valid
+              Sidekiq::Worker.clear_all
+              expect {
+                patch "#{base_url}/#{quiz.id}", params: {quiz: params_with_prompt_params}
+              }.to_not change(Quiz, :count)
+
+              expect(response).to render_template("admin/quizzes/edit")
+              rendered_quiz = assigns(:quiz)
+              expect(rendered_quiz.prompt_params_text).to eq params_with_prompt_params[:prompt_params_text]
+              expect(rendered_quiz.id).to eq quiz.id
+              expect(rendered_quiz.errors.full_messages).to eq(["Prompt params Unable to parse: 859: unexpected token at '{temperature 0.9}'"])
+            end
+          end
         end
       end
       context "disable_update" do

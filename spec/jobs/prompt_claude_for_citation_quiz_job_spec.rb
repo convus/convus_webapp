@@ -20,7 +20,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
             expect(Quiz.count).to eq 0
             Sidekiq::Worker.clear_all
             expect {
-              instance.perform(citation.id)
+              instance.perform([citation.id])
             }.to change(Quiz, :count).by 1
 
             quiz = Quiz.last
@@ -40,7 +40,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
               expect(citation.reload.quizzes.count).to eq 1
               Sidekiq::Worker.clear_all
               expect {
-                instance.perform(citation.id, quiz.id)
+                instance.perform([citation.id, quiz.id])
               }.to change(Quiz, :count).by 0
 
               expect(quiz.reload.citation_id).to eq citation.id
@@ -58,7 +58,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
             allow_any_instance_of(ClaudeIntegration).to receive(:request_completion) { error_response }
             expect(citation.quizzes.count).to eq 0
             expect {
-              instance.perform(citation.id)
+              instance.perform([citation.id])
             }.to change(Quiz, :count).by 1
 
             quiz = Quiz.last
@@ -84,7 +84,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
             expect(citation).to be_valid
             Sidekiq::Worker.clear_all
             expect {
-              instance.perform(citation.id)
+              instance.perform([citation.id])
             }.to change(Quiz, :count).by 1
 
             quiz = Quiz.last

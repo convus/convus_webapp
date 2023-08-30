@@ -1,7 +1,8 @@
 class Admin::QuizzesController < Admin::BaseController
   include TranzitoUtils::SortableTable
-  before_action :set_period, only: [:index]
-  before_action :find_quiz, except: [:index, :new, :create]
+  before_action :set_period, only: %i[index]
+  before_action :find_quiz, except: %i[index new create]
+  before_action :set_form_type, only: %i[new create edit update]
 
   def index
     page = params[:page] || 1
@@ -15,7 +16,6 @@ class Admin::QuizzesController < Admin::BaseController
 
   def new
     @citation = Citation.friendly_find(params[:citation_id])
-    @form_type = selected_form_type(params[:form_type])
     if @citation.present?
       @quiz ||= Quiz.new(citation: @citation)
     else
@@ -35,7 +35,6 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def edit
-    @form_type = selected_form_type(params[:form_type])
   end
 
   def update
@@ -52,11 +51,15 @@ class Admin::QuizzesController < Admin::BaseController
       end
       redirect_to admin_quiz_path(@quiz), status: :see_other
     else
-      @quiz = Quiz.new(permitted_params)
-      if @quiz.save
+      @new_quiz = Quiz.new(permitted_params)
+      if @new_quiz.save
         flash[:success] = "New Quiz version created"
-        redirect_to admin_quiz_path(@quiz), status: :see_other
+        redirect_to admin_quiz_path(@new_quiz), status: :see_other
       else
+        # assign the new attributes to the old quiz
+        @quiz.attributes = @new_quiz.slice(permitted_params.keys)
+        # And add in the errors
+        @new_quiz.errors.each { |e| @quiz.errors.add(e.attribute, e.type) }
         render :edit, status: :see_other
       end
     end
@@ -78,6 +81,11 @@ class Admin::QuizzesController < Admin::BaseController
 
   def selected_form_type(form_type = nil)
     permitted_form_types.include?(form_type) ? form_type : permitted_form_types.first
+  end
+
+  def set_form_type
+    passed_type = params.dig(:quiz, :source) || params[:form_type]
+    @form_type = selected_form_type(passed_type)
   end
 
   def searched_quizzes
@@ -102,7 +110,7 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def permitted_params
-    params.require(:quiz).permit(:input_text, :citation_id, :prompt_text)
+    params.require(:quiz).permit(:input_text, :citation_id, :prompt_text, :prompt_params_text)
       .merge(source: selected_form_type(params.dig(:quiz, :source)))
   end
 

@@ -35,9 +35,10 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
     end
   end
 
-  def perform(citation_id, quiz_id = nil)
+  # args: [citation_id, quiz_id = nil]
+  def perform(args)
     return if SKIP_JOB
-    lock_manager = Redlock::Client.new([self.class.redis_url])
+    citation_id, quiz_id = *args
     if quiz_id.present?
       quiz = Quiz.find(quiz_id)
       return unless self.class.enqueue_for_quiz?(quiz)
@@ -47,13 +48,14 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
       return unless self.class.enqueue_for_citation?(citation)
     end
 
+    lock_manager = Redlock::Client.new([self.class.redis_url])
     redlock = lock_manager.lock(REDLOCK_KEY, lock_duration_ms)
     unless redlock
       return self.class.perform_in(requeue_delay, citation_id, quiz_id)
     end
 
     begin
-      claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation, quiz))
+      claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation, quiz), quiz.prompt_params)
 
       if quiz.present?
         if quiz.update(input_text: claude_response)
