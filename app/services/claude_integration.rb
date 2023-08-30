@@ -1,11 +1,21 @@
 class ClaudeIntegration
   API_KEY = ENV["ANTHROPIC_KEY"]
+  REDLOCK_KEY = "Claude-#{Rails.env.slice(0, 3)}"
 
   DEFAULT_PARAMS = {
     model: "claude-2",
     max_tokens_to_sample: 2000,
     stream: false
   }.freeze
+
+
+  def self.redis_url
+    ConvusReviews::Application.config.redis_default_url
+  end
+
+  def self.new_lock
+    Redlock::Client.new([self.class.redis_url])
+  end
 
   def format_prompt(str)
     "\n\nHuman: #{str}\n\nAssistant:"

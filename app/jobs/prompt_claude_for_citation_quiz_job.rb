@@ -2,7 +2,6 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
   sidekiq_options retry: false
   SKIP_JOB = ENV["SKIP_CREATE_CITATION_QUIZ"].present?
   QUIZ_PROMPT = ENV["CLAUDE_QUIZ_PROMPT"].freeze
-  REDLOCK_KEY = "Claude-#{Rails.env.slice(0, 3)}"
 
   def self.enqueue_for_citation?(citation)
     QUIZ_PROMPT.present? && citation.present? && citation.citation_text.present? &&
@@ -12,10 +11,6 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
   def self.enqueue_for_quiz?(quiz)
     quiz.present? && quiz.pending? && quiz.input_text.blank? &&
       quiz.prompt_text.present?
-  end
-
-  def self.redis_url
-    ConvusReviews::Application.config.redis_default_url
   end
 
   # May use get_remaining_ttl to calculate sometime
@@ -48,7 +43,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
       return unless self.class.enqueue_for_citation?(citation)
     end
 
-    lock_manager = Redlock::Client.new([self.class.redis_url])
+    lock_manager = ClaudeIntegration.new_lock
     redlock = lock_manager.lock(REDLOCK_KEY, lock_duration_ms)
     unless redlock
       return self.class.perform_in(requeue_delay, [citation_id, quiz_id])
