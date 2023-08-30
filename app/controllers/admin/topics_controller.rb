@@ -50,11 +50,7 @@ class Admin::TopicsController < Admin::BaseController
   private
 
   def sortable_columns
-    %w[slug created_at updated_at previous_slug]
-  end
-
-  def default_direction
-    "asc"
+    %w[created_at slug updated_at previous_slug]
   end
 
   def searched_topics

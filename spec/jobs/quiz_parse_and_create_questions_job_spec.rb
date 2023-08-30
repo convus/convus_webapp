@@ -7,7 +7,14 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
   let(:input_text) { "Some example text" }
   let(:time) { Time.at(1684698531) } # 2023-05-21 12:48
   let(:citation) { FactoryBot.create(:citation, published_updated_at: time) }
-  let(:quiz) { FactoryBot.create(:quiz, input_text: input_text, citation: citation) }
+  let(:quiz) do
+    FactoryBot.create(:quiz,
+      input_text: input_text,
+      citation: citation,
+      subject: subject_str,
+      subject_set_manually: true)
+  end
+  let(:subject_str) { nil }
   let(:input_text) { nil }
 
   describe "#perform" do
@@ -65,6 +72,7 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
           }
         ]
       end
+      let(:subject_str) { "Amazing subject" }
 
       def expect_target_questions_created(quiz)
         expect(described_class.parsed_input_text(quiz)).to eq target
@@ -93,6 +101,11 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
 
         # previous quiz status isn't updated
         expect(previous_quiz.reload.status).to eq "replaced"
+        expect(previous_quiz.subject).to be_nil
+
+        # it updates citation subject
+        expect(citation.reload.subject).to eq subject_str
+        expect(citation.manually_updated_attributes).to eq(["subject"])
       end
 
       it "creates questions and answers" do
@@ -103,6 +116,8 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
       context "quiz status: disabled" do
         before { quiz.update(status: :disabled) }
         it "creates questions and answers, doesn't update status" do
+          # Citation subject is still updated
+          citation.update(subject: "dasdfasdf")
           expect_target_questions_created(quiz)
           expect(quiz.status).to eq "disabled"
         end

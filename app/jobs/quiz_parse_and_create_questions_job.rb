@@ -16,6 +16,9 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
     quiz.update(status: "active") if quiz.status == "pending"
     # Mark all previous current quizzes as replaced
     quiz.associated_quizzes_previous.current.update_all(status: :replaced)
+    if quiz.subject_set_manually
+      quiz.citation.update(manually_updating: true, subject: quiz.subject)
+    end
   rescue QuizParser::ParsingError => e
     quiz.update(input_text_parse_error: e, status: :parse_errored)
   end

@@ -1,4 +1,6 @@
 class Quiz < ApplicationRecord
+  include TopicMatchable
+
   STATUS_ENUM = {
     pending: 0,
     active: 1,
@@ -29,6 +31,8 @@ class Quiz < ApplicationRecord
   has_many :quiz_questions, dependent: :destroy
   has_many :quiz_question_answers, through: :quiz_questions
   has_many :quiz_responses
+  has_many :citation_topics, foreign_key: :citation_id, primary_key: :citation_id
+  has_many :topics, through: :citation_topics
 
   validates_presence_of :citation_id
   validate :prompt_params_text_valid_json
@@ -95,6 +99,7 @@ class Quiz < ApplicationRecord
   end
 
   def set_calculated_attributes
+    self.subject ||= citation.subject
     self.status ||= :pending
     self.kind ||= :citation_quiz if citation_id.present?
     self.version ||= calculated_version
