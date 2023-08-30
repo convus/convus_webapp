@@ -2,8 +2,14 @@ module QuizHelper
   def quiz_title_display(quiz)
     citation = quiz.citation
     content_tag(:span) do
-      concat("#{quiz.subject} ") if quiz.subject.present?
-      if citation.authors.any?
+      if quiz.subject.present?
+        concat(quiz.subject)
+      else
+        concat("an article")
+      end
+      concat(" from")
+      if citation.authors.any? && citation.authors.first != citation.publisher.name
+        concat(" ")
         concat(content_tag(:em, citation.authors.first))
         concat(" in")
       end
