@@ -31,11 +31,14 @@ class Quiz < ApplicationRecord
   has_many :quiz_responses
 
   validates_presence_of :citation_id
+  validate :prompt_params_text_valid_json
 
   before_validation :set_calculated_attributes
   after_commit :mark_quizzes_replaced_and_enqueue_parsing, on: :create
 
   scope :current, -> { where(status: current_statuses) }
+
+  attr_writer :prompt_params_text
 
   def self.current_statuses
     %i[pending active disabled].freeze
@@ -79,6 +82,16 @@ class Quiz < ApplicationRecord
 
   def prompt_full_text
     prompt_text.present? ? prompt_text.gsub("${ARTICLE_TEXT}", citation&.citation_text) : ""
+  end
+
+  def prompt_params_text
+    @prompt_params_text ||= (prompt_params || {}).to_json
+  end
+
+  def prompt_params_text_valid_json
+    self.prompt_params = JSON.parse(prompt_params_text) if prompt_params_text.present?
+  rescue => e
+    errors.add(:prompt_params, "Unable to parse: #{e.message}")
   end
 
   def set_calculated_attributes

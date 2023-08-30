@@ -55,7 +55,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
     end
 
     begin
-      claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation, quiz))
+      claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation, quiz), quiz.prompt_params)
 
       if quiz.present?
         if quiz.update(input_text: claude_response)
