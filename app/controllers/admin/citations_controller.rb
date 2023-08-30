@@ -31,7 +31,7 @@ class Admin::CitationsController < Admin::BaseController
         @citation.reload
         @citation.ratings.each { |r| update_citation_rating_topics(@citation, r) }
         flash[:success] = "Citation updated"
-        redirect_to admin_citations_path, status: :see_other
+        redirect_to edit_admin_citation_path(@citation), status: :see_other
       else
         render :edit, status: :see_other
       end

@@ -244,7 +244,13 @@ class Citation < ApplicationRecord
     current_m_attrs << "citation_text" if manually_updating && citation_text_changed?
     self.manually_updated_attributes = current_m_attrs.uniq.sort
     # Update subject here to prevent it from being included in manually updated accidentally
-    self.subject = calculated_subject unless manually_updated_attributes.include?("subject")
+    if manually_updated_attributes.include?("subject")
+      if subject == calculated_subject
+        self.manually_updated_attributes = manually_updated_attributes - ["subject"]
+      end
+    else
+      self.subject = calculated_subject
+    end
     self.manually_updated_at = manually_updated_attributes.any? ? Time.current : nil
   end
 

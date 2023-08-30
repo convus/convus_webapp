@@ -354,6 +354,25 @@ RSpec.describe Citation, type: :model do
     end
   end
 
+  describe "subject" do
+    let(:citation) { FactoryBot.create(:citation) }
+    let!(:citation_topic) { FactoryBot.create(:citation_topic, citation: citation) }
+    let(:topic) { citation_topic.topic }
+    it "updates" do
+      citation.update(updated_at: Time.current)
+      expect(citation.reload.subject).to eq topic.name
+      citation.update(manually_updating: true, subject: "A cool subject")
+      expect(citation.reload.subject).to eq "A cool subject"
+      expect(citation.manually_updated_attributes).to eq(["subject"])
+      expect(citation.manually_updated_at).to be_present
+      # Updating with the calculated subject puts it back
+      citation.update(manually_updating: true, subject: topic.name)
+      expect(citation.reload.subject).to eq topic.name
+      expect(citation.manually_updated_attributes).to eq([])
+      expect(citation.manually_updated_at).to be_nil
+    end
+  end
+
   describe "remove publisher_name" do
     let(:citation) { Citation.new(title: title, publisher: publisher) }
     let(:publisher) { Publisher.new(name: publisher_name, domain: domain) }
