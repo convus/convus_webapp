@@ -17,6 +17,7 @@ class ClaudeIntegration
   end
 
   def request_completion(formatted_prompt, claude_params = {})
+    claude_params = {} if claude_params.blank?
     response = connection.post("/v1/complete") do |req|
       req.body = DEFAULT_PARAMS.merge(claude_params)
         .merge(prompt: formatted_prompt).to_json

@@ -51,11 +51,11 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
     lock_manager = Redlock::Client.new([self.class.redis_url])
     redlock = lock_manager.lock(REDLOCK_KEY, lock_duration_ms)
     unless redlock
-      return self.class.perform_in(requeue_delay, citation_id, quiz_id)
+      return self.class.perform_in(requeue_delay, [citation_id, quiz_id])
     end
 
     begin
-      claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation, quiz), quiz.prompt_params)
+      claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation, quiz), quiz&.prompt_params)
 
       if quiz.present?
         if quiz.update(input_text: claude_response)
