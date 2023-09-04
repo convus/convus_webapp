@@ -11,7 +11,7 @@ class QuizQuestionResponse < ApplicationRecord
   validates_uniqueness_of :quiz_question_id, scope: [:quiz_response_id]
 
   before_validation :set_calculated_attributes
-  after_commit :update_quiz_response, only: :create
+  after_commit :update_quiz_response, on: :create
 
   delegate :user, :quiz, to: :quiz_response, allow_nil: true
   delegate :anchor_id, to: :quiz_question, allow_nil: true

@@ -31,7 +31,7 @@ class Rating < ApplicationRecord
   before_validation :set_calculated_attributes
   before_save :associate_citation
 
-  after_commit :perform_rating_created_event_job, only: :create
+  after_commit :perform_rating_created_event_job, on: :create
   after_commit :reconcile_rating_topics
 
   scope :learned_something, -> { where(learned_something: true) }
