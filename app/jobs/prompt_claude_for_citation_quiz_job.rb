@@ -44,7 +44,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
     end
 
     lock_manager = ClaudeIntegration.new_lock
-    redlock = lock_manager.lock(REDLOCK_KEY, lock_duration_ms)
+    redlock = lock_manager.lock(ClaudeIntegration::REDLOCK_KEY, lock_duration_ms)
     unless redlock
       return self.class.perform_in(requeue_delay, [citation_id, quiz_id])
     end

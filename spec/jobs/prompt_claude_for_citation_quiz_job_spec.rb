@@ -8,7 +8,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
   let(:citation_text) { "some text" }
 
   # Skipping on CI for now because of Redis incompatibility
-  unless ENV["CI"]
+  unless false # ENV["CI"]
     describe "#perform" do
       before { stub_const("#{described_class.name}::QUIZ_PROMPT", prompt_text) }
       context "stubbed" do

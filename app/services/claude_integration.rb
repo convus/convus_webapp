@@ -8,13 +8,12 @@ class ClaudeIntegration
     stream: false
   }.freeze
 
-
   def self.redis_url
     ConvusReviews::Application.config.redis_default_url
   end
 
   def self.new_lock
-    Redlock::Client.new([self.class.redis_url])
+    Redlock::Client.new([redis_url])
   end
 
   def format_prompt(str)
