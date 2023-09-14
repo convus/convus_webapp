@@ -38,7 +38,7 @@ class Quiz < ApplicationRecord
   validate :prompt_params_text_valid_json
 
   before_validation :set_calculated_attributes
-  after_commit :mark_quizzes_replaced_and_enqueue_parsing, on: :create
+  after_commit :enqueue_prompting_if_admin_submission, on: :create
 
   scope :current, -> { where(status: current_statuses) }
 
@@ -84,8 +84,8 @@ class Quiz < ApplicationRecord
     self.class.source_humanized(source)
   end
 
-  def prompt_full_text
-    prompt_text.present? ? prompt_text.gsub("${ARTICLE_TEXT}", citation&.citation_text) : ""
+  def prompt_full_texts
+    QuizParser::ClaudeInitial.quiz_prompt_full_texts(prompt_text, citation)
   end
 
   def prompt_params_text
@@ -124,13 +124,11 @@ class Quiz < ApplicationRecord
     associated_current
   end
 
-  def mark_quizzes_replaced_and_enqueue_parsing
+  def enqueue_prompting_if_admin_submission
     return true if associated_quizzes.where("id > ?", id).any?
-    if claude_admin_submission?
-      PromptClaudeForCitationQuizJob.perform_async({citation_id: citation_id, quiz_id: id}.as_json)
-    else
-      QuizParseAndCreateQuestionsJob.perform_async(id)
-    end
+    # QuizParseAndCreateQuestionsJob is enqueued from the PromptClaude job
+    return true unless claude_admin_submission?
+    PromptClaudeForCitationQuizJob.perform_async({citation_id: citation_id, quiz_id: id}.as_json)
   end
 
   private

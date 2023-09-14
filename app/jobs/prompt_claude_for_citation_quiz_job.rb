@@ -2,6 +2,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
   sidekiq_options retry: false
   SKIP_JOB = ENV["SKIP_CREATE_CITATION_QUIZ"].present?
   QUIZ_PROMPT = ENV["CLAUDE_QUIZ_PROMPT"].freeze
+  SUBJECT_PROMPT = ENV["CLAUDE_SUBJECT_PROMPT"].freeze
 
   def self.enqueue_for_citation?(citation)
     QUIZ_PROMPT.present? && citation.present? && citation.citation_text.present? &&
@@ -19,15 +20,17 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
   end
 
   def lock_duration_ms
-    (5.minutes * 1000).to_i
+    (10.minutes * 1000).to_i
   end
 
-  def quiz_prompt(citation, quiz = nil)
-    if quiz.present?
-      quiz.prompt_full_text
-    else
-      "#{QUIZ_PROMPT}\n\nArticle: #{citation.citation_text}"
-    end
+  def quiz_prompt_text(quiz = nil)
+    return quiz.prompt_text if quiz.present?
+
+    [QUIZ_PROMPT, SUBJECT_PROMPT].reject(&:blank?).join("\n\n---\n\n")
+  end
+
+  def quiz_prompt_full_texts(citation, prompt_text)
+    QuizParser::ClaudeInitial.quiz_prompt_full_texts(prompt_text, citation)
   end
 
   # args: {citation_id, quiz_id}
@@ -44,28 +47,29 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
       return unless self.class.enqueue_for_citation?(citation)
     end
 
+    # Check for lock
     lock_manager = ClaudeIntegration.new_lock
     redlock = lock_manager.lock(ClaudeIntegration::REDLOCK_KEY, lock_duration_ms)
-    unless redlock
-      return self.class.perform_in(requeue_delay, args)
-    end
+    return self.class.perform_in(requeue_delay, args) unless redlock
 
+    # Prompt claude for things and update the quiz
     begin
-      claude_response = ClaudeIntegration.new.completion_for_prompt(quiz_prompt(citation, quiz), quiz&.prompt_params)
-
-      if quiz.present?
-        if quiz.update(input_text: claude_response)
-          QuizParseAndCreateQuestionsJob.perform_async(quiz_id)
-        else
-          raise quiz.errors.full_messages
-        end
-      else
-        Quiz.create!(citation: citation,
+      prompt_text = quiz_prompt_text(quiz)
+      quiz ||= Quiz.create!(citation: citation,
           source: :claude_integration,
           kind: :citation_quiz,
-          prompt_text: QUIZ_PROMPT,
-          input_text: claude_response)
+          prompt_text: prompt_text)
+
+      quiz.input_text = ""
+      quiz_prompt_full_texts(citation, prompt_text).each do |ptext|
+        claude_response = ClaudeIntegration.new.completion_for_prompt(ptext, quiz&.prompt_params)
+        new_text = [quiz.input_text, claude_response].reject(&:blank?).join("\n\n---\n\n")
+
+        quiz.update!(input_text: new_text)
       end
+      # Enqueue parsing after creating everything
+      QuizParseAndCreateQuestionsJob.perform_async(quiz.id)
+
     rescue Faraday::TimeoutError
       self.class.perform_async(requeue_delay, args)
     ensure

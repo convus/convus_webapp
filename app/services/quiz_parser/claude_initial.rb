@@ -9,6 +9,11 @@ class QuizParser::ClaudeInitial
       parsed
     end
 
+    def quiz_prompt_full_texts(quiz_prompt_text, citation)
+      (quiz_prompt_text || "").gsub("${ARTICLE_TEXT}", citation&.citation_text)
+        .split("---").map(&:strip)
+    end
+
     private
 
     # I don't love this, line by line procedural parsing - but it works pretty well and I think it's flexible.
