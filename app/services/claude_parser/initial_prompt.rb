@@ -1,10 +1,21 @@
 class ClaudeParser::InitialPrompt
   class << self
     def parse_quiz(quiz)
-      parsed = parse_input_text(claude_responses(quiz)[:quiz])
+      parsed = parse_quiz_response(claude_responses(quiz)[:quiz])
 
       unless parsed.any?
-        raise ClaudeParser::ParsingError, "Unable to parse questions from input_text"
+        raise ClaudeParser::ParsingError, "Unable to parse Quiz questions from input_text"
+      end
+      parsed
+    end
+
+    def parse_subject(quiz)
+      subject_text = claude_responses(quiz)[:subject]
+      return nil if subject_text.blank?
+
+      parsed = parse_subject_response(subject_text)
+      unless parsed.present?
+        raise ClaudeParser::ParsingError, "Unable to Subject from input_text"
       end
       parsed
     end
@@ -22,12 +33,16 @@ class ClaudeParser::InitialPrompt
       end
 
       # zip then reverse, to skip the subject key if there is no subject
-      quiz.input_text.split("\n---\n").zip([:quiz, :subject])
+      quiz.input_text.split("\n---\n").map(&:strip).zip([:quiz, :subject])
         .map(&:reverse).to_h
     end
 
+    def parse_subject_response(subject_text)
+      subject_text.split(/\n+/).last.strip
+    end
+
     # I don't love this, line by line procedural parsing - but it works pretty well and I think it's flexible.
-    def parse_input_text(quiz_text)
+    def parse_quiz_response(quiz_text)
       result = []
       current_key = nil
       current_text = nil

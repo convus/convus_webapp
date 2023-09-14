@@ -75,7 +75,7 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
       let(:subject_str) { "Amazing subject" }
 
       def expect_target_questions_created(quiz)
-        expect(described_class.parsed_input_text(quiz)).to eq target
+        expect(described_class.parsed_quiz_text(quiz)).to eq target
         instance.perform(quiz.id)
         quiz.reload
         expect(quiz.input_text_parse_error).to be_nil
@@ -121,6 +121,10 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
           expect_target_questions_created(quiz)
           expect(quiz.status).to eq "disabled"
         end
+      end
+
+      describe "update quiz subject" do
+
       end
     end
   end

@@ -12,7 +12,8 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
   def perform(id)
     quiz = Quiz.find(id)
     return unless %w[pending disabled].include?(quiz.status)
-    quiz.update
+
+    quiz.subject ||= self.class.parsed_subject_text(quiz)
 
     self.class.parsed_quiz_text(quiz).each_with_index do |parsed_question, i|
       create_question_and_answers(quiz, parsed_question, i + 1)
