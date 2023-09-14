@@ -1,6 +1,5 @@
 class ClaudeParser::InitialPrompt
   class << self
-
     def parse_quiz(quiz)
       parsed = parse_input_text(claude_responses(quiz)[:quiz])
 

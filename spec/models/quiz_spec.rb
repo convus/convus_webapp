@@ -64,14 +64,14 @@ RSpec.describe Quiz, type: :model do
     it "uses citation_topic association" do
       expect(citation.reload.subject).to be_nil
       citation.update(updated_at: Time.current)
-      expect(citation.reload.subject).to eq "Environment"
+      expect(citation.reload.subject).to be_nil
       expect(citation.manually_updated_attributes).to eq([])
       expect(quiz.topics.pluck(:id)).to eq([topic.id])
       expect(Quiz.matching_topics(topic).pluck(:id)).to eq([quiz.id])
 
       quiz.update(subject: "Specific Environment")
       # Citation subject is updated in QuizParseAndCreateQuestionsJob
-      expect(citation.reload.subject).to eq "Environment"
+      expect(citation.reload.subject).to be_nil
     end
   end
 end

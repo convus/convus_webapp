@@ -18,7 +18,7 @@ class Quiz < ApplicationRecord
   SUBJECT_SOURCE = {
     subject_default_source: 0,
     subject_admin_entry: 1,
-    subject_admin_citation_entry: 2,
+    subject_admin_citation_entry: 2
   }.freeze
 
   KIND_ENUM = {citation_quiz: 0}.freeze
