@@ -123,7 +123,7 @@ RSpec.describe base_url, type: :request do
           expect(new_quiz.subject_set_manually).to be_truthy
           expect(new_quiz.status).to eq "pending"
           expect(new_quiz.input_text).to be_nil
-          expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }).to match_array([{citation_id: citation.id, quiz_id: new_quiz.id}].as_json)
+          expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([{citation_id: citation.id, quiz_id: new_quiz.id}].as_json)
         end
         context "with prompt_params" do
           let(:params_with_prompt_params) { valid_params.merge(subject: nil, prompt_params_text: "{\"temperature\": 0.9}") }
