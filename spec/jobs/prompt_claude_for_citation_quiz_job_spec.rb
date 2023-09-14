@@ -18,7 +18,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
           expect(Quiz.count).to eq 0
           Sidekiq::Worker.clear_all
           expect {
-            instance.perform([citation.id])
+            instance.perform({citation_id: citation.id}.as_json)
           }.to change(Quiz, :count).by 1
 
           quiz = Quiz.last
@@ -39,9 +39,9 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
             expect(Quiz.count).to eq 0
             Sidekiq::Worker.clear_all
             expect {
-              instance.perform([citation.id])
+              instance.perform({citation_id: citation.id}.as_json)
             }.to change(Quiz, :count).by 0
-            expect(described_class.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id, nil])
+            expect(described_class.jobs.map { |j| j["args"] }.flatten).to match_array([{citation_id: citation.id}.as_json])
           end
         end
         context "claude_admin_submission" do
@@ -53,7 +53,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
             expect(citation.reload.quizzes.count).to eq 1
             Sidekiq::Worker.clear_all
             expect {
-              instance.perform([citation.id, quiz.id])
+              instance.perform({citation_id: citation.id, quiz_id: quiz.id}.as_json)
             }.to change(Quiz, :count).by 0
 
             expect(quiz.reload.citation_id).to eq citation.id
@@ -71,7 +71,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
           allow_any_instance_of(ClaudeIntegration).to receive(:request_completion) { error_response }
           expect(citation.quizzes.count).to eq 0
           expect {
-            instance.perform([citation.id])
+            instance.perform({citation_id: citation.id}.as_json)
           }.to change(Quiz, :count).by 1
 
           quiz = Quiz.last
@@ -97,7 +97,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
           expect(citation).to be_valid
           Sidekiq::Worker.clear_all
           expect {
-            instance.perform([citation.id])
+            instance.perform({citation_id: citation.id}.as_json)
           }.to change(Quiz, :count).by 1
 
           quiz = Quiz.last

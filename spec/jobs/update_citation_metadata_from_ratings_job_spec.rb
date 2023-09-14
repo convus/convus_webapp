@@ -92,8 +92,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
           expect(citation.citation_text).to eq citation_text
           expect(citation.manually_updated_attributes).to eq([])
-          expect(PromptClaudeForCitationQuizJob.jobs.count).to eq 1
-          expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id])
+          expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([{citation_id: citation.id}.as_json])
         end
       end
       context "already assigned" do

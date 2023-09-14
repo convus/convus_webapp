@@ -42,7 +42,7 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     end
     # Create the quiz!
     if PromptClaudeForCitationQuizJob.enqueue_for_citation?(citation)
-      PromptClaudeForCitationQuizJob.perform_async([citation.id])
+      PromptClaudeForCitationQuizJob.perform_async({"citation_id" => citation.id})
     end
     citation
   end

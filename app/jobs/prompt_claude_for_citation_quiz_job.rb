@@ -30,10 +30,11 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
     end
   end
 
-  # args: [citation_id, quiz_id = nil]
+  # args: {citation_id, quiz_id}
   def perform(args)
     return if SKIP_JOB
-    citation_id, quiz_id = *args
+    citation_id = args["citation_id"]
+    quiz_id = args["quiz_id"]
     if quiz_id.present?
       quiz = Quiz.find(quiz_id)
       return unless self.class.enqueue_for_quiz?(quiz)
@@ -46,7 +47,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
     lock_manager = ClaudeIntegration.new_lock
     redlock = lock_manager.lock(ClaudeIntegration::REDLOCK_KEY, lock_duration_ms)
     unless redlock
-      return self.class.perform_in(requeue_delay, [citation_id, quiz_id])
+      return self.class.perform_in(requeue_delay, args)
     end
 
     begin
@@ -66,7 +67,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
           input_text: claude_response)
       end
     rescue Faraday::TimeoutError
-      self.class.perform_async(requeue_delay, citation_id)
+      self.class.perform_async(requeue_delay, args)
     ensure
       lock_manager.unlock(redlock)
     end
