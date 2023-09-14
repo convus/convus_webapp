@@ -2,11 +2,11 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
   sidekiq_options retry: 2
 
   def self.parsed_quiz_text(quiz)
-    ClaudeParser::InitialPrompt.parse_quiz(quiz)
+    ClaudeParser::SecondPrompt.parse_quiz(quiz)
   end
 
   def self.parsed_subject_text(quiz)
-    ClaudeParser::InitialPrompt.parse_subject(quiz)
+    ClaudeParser::SecondPrompt.parse_subject(quiz)
   end
 
   def perform(id)

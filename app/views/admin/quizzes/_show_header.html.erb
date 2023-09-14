@@ -52,7 +52,7 @@
             <td>
               <%= @quiz.subject %>
               <% if display_dev_info? %>
-                <small class="only-dev-visible"><%= @quiz.subject_source %></small>
+                <small class="only-dev-visible ml-1"><%= @quiz.subject_source || 'NO SOURCE!' %></small>
               <% end %>
             </td>
           </tr>

@@ -30,10 +30,10 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
   end
 
   def quiz_prompt_full_texts(citation, prompt_text)
-    ClaudeParser::InitialPrompt.quiz_prompt_full_texts(prompt_text, citation)
+    ClaudeParser::SecondPrompt.quiz_prompt_full_texts(prompt_text, citation)
   end
 
-  # args: {citation_id, quiz_id}
+  # args: {citation_id:, quiz_id:, summary_migration:}
   def perform(args)
     return if SKIP_JOB
     citation_id = args["citation_id"]

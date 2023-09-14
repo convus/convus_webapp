@@ -219,6 +219,7 @@ class Citation < ApplicationRecord
     self.authors = (Array(authors) || [])&.map { |a| self.class.normalize_author(a) }&.compact
     self.citation_text = clean_citation_text(citation_text)
     self.manually_updated_attributes = [] if manually_updated_attributes.blank?
+    self.subject = nil if subject.blank?
     # If assigning publisher, remove query if required
     if publisher.blank? && url.present?
       self.publisher = Publisher.find_or_create_for_domain(url_components[:host])

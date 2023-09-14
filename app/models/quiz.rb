@@ -23,7 +23,7 @@ class Quiz < ApplicationRecord
 
   KIND_ENUM = {citation_quiz: 0}.freeze
 
-  INPUT_TEXT_FORMAT = {claude_initial: 0}.freeze
+  INPUT_TEXT_FORMAT = {claude_initial: 0, claude_second: 1}.freeze
 
   enum status: STATUS_ENUM
   enum source: SOURCE_ENUM
@@ -119,7 +119,7 @@ class Quiz < ApplicationRecord
     self.version ||= calculated_version
     self.input_text = nil if input_text.blank?
     self.prompt_text = nil if prompt_text.blank?
-    self.input_text_format ||= :claude_initial
+    self.input_text_format ||= :claude_second
     self.subject_source ||= calculated_subject_source
     self.subject = citation&.subject if subject.blank?
   end
@@ -150,10 +150,11 @@ class Quiz < ApplicationRecord
   private
 
   def calculated_subject_source
-    return :subject_admin_entry if admin_entry? && subject.present?
-    # Right now, this only happens from the Citation Admin controller
-    # :subject_admin_citation_entry if citation&.manually_updated_attributes&.include?("subject")
-    :subject_default_source
+    if admin_entry? && subject.present?
+      :subject_admin_entry
+    else
+      :subject_default_source
+    end
   end
 
   def calculated_version

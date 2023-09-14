@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ClaudeParser::InitialPrompt do
+RSpec.describe ClaudeParser::SecondPrompt do
   let(:subject) { described_class }
   let(:publisher) { FactoryBot.create(:publisher, name: "a Publisher") }
   let(:citation) { FactoryBot.create(:citation, publisher: publisher) }

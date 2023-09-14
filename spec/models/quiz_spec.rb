@@ -22,7 +22,7 @@ RSpec.describe Quiz, type: :model do
       expect(quiz.source_humanized).to eq "Admin entry"
       expect(quiz.kind).to eq "citation_quiz"
       expect(quiz.kind_humanized).to eq "Citation quiz"
-      expect(quiz.input_text_format).to eq "claude_initial"
+      expect(quiz.input_text_format).to eq "claude_second"
       expect(quiz.input_text).to be_nil
       expect(quiz.current?).to be_truthy
       expect(quiz.associated_quizzes_current&.id).to eq quiz.id

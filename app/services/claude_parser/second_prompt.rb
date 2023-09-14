@@ -1,4 +1,6 @@
-class ClaudeParser::InitialPrompt
+# Second is the same as the initial prompt - except that it includes the summary
+
+class ClaudeParser::SecondPrompt
   class << self
     def parse_quiz(quiz)
       parsed = parse_quiz_response(claude_responses(quiz)[:quiz])
