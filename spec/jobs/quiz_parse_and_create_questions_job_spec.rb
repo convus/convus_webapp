@@ -124,6 +124,9 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
       end
 
       describe "update quiz subject" do
+        it "updates the quiz subject" do
+          # fail
+        end
       end
     end
   end

@@ -18,11 +18,16 @@ class MigrateQuizSummariesJob < ApplicationJob
     (5.minutes * 1000).to_i
   end
 
-  def quiz_prompt_full_texts(citation, prompt_text)
-    ClaudeParser::SecondPrompt.quiz_prompt_full_texts(prompt_text, citation)
+  def prompt_text(quiz, subject_prompt = nil)
+    subject_prompt ||= SUBJECT_PROMPT
+    "#{quiz.prompt_text}\n\nArticle: [ARTICLE_TEXT]\n\n---\n\n#{subject_prompt}"
   end
 
-  def perform(quiz_id)
+  def subject_prompt_full_text(quiz)
+    ClaudeParser::SecondPrompt.quiz_prompt_full_texts(quiz.prompt_text, quiz.citation).last
+  end
+
+  def perform(quiz_id, subject_prompt = nil)
     return if SKIP_JOB
     quiz = Quiz.find(quiz_id)
     return unless self.class.enqueue_for_quiz?(quiz)
@@ -34,17 +39,14 @@ class MigrateQuizSummariesJob < ApplicationJob
     return self.class.perform_in(requeue_delay, args) unless redlock
 
     begin
-      prompt_text = "#{quiz.prompt_text}\n\nArticle: ${ARTICLE_TEXT}\n\n---\n\n#{SUBJECT_PROMPT}"
       new_quiz ||= Quiz.new(citation: citation,
         source: :claude_integration,
         kind: :citation_quiz,
         input_text: quiz.input_text,
-        prompt_text: prompt_text)
-      subject_prompt = quiz_prompt_full_texts(citation, prompt_text).last
-      pp subject_prompt
+        prompt_text: prompt_text(quiz, subject_prompt))
 
       # Prompt Claude and update the quiz
-      claude_response = ClaudeIntegration.new.completion_for_prompt(subject_prompt, new_quiz&.prompt_params)
+      claude_response = ClaudeIntegration.new.completion_for_prompt(subject_prompt(new_quiz))
       new_text = [new_quiz.input_text, claude_response].reject(&:blank?).join("\n\n---\n\n")
       new_quiz.update!(input_text: new_text.strip)
 

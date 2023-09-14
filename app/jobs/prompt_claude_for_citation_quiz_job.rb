@@ -29,7 +29,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
     [QUIZ_PROMPT, SUBJECT_PROMPT].reject(&:blank?).join("\n\n---\n\n")
   end
 
-  def quiz_prompt_full_texts(citation, prompt_text)
+  def quiz_prompt_full_texts(prompt_text, citation)
     ClaudeParser::SecondPrompt.quiz_prompt_full_texts(prompt_text, citation)
   end
 
@@ -60,7 +60,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
         prompt_text: prompt_text)
 
       # Prompt Claude and update the quiz
-      quiz_prompt_full_texts(citation, prompt_text).each do |ptext|
+      quiz_prompt_full_texts(prompt_text, citation).each do |ptext|
         claude_response = ClaudeIntegration.new.completion_for_prompt(ptext, quiz&.prompt_params)
         new_text = [quiz.input_text, claude_response].reject(&:blank?).join("\n\n---\n\n")
 
