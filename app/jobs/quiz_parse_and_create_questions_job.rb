@@ -2,7 +2,7 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
   sidekiq_options retry: 2
 
   def self.parsed_input_text(quiz)
-    QuizParser::ClaudeInitial.parse(quiz)
+    ClaudeParser::InitialPrompt.parse_quiz(quiz)
   end
 
   def perform(id)
@@ -19,7 +19,7 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
     if quiz.subject_set_manually
       quiz.citation.update(manually_updating: true, subject: quiz.subject)
     end
-  rescue QuizParser::ParsingError => e
+  rescue ClaudeParser::ParsingError => e
     quiz.update(input_text_parse_error: e, status: :parse_errored)
   end
 

@@ -132,10 +132,8 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
             expect(quiz.citation_id).to eq citation.id
             expect(quiz.source).to eq "claude_integration"
             expect(quiz.kind).to eq "citation_quiz"
-            pp quiz.prompt_text
             expect(quiz.prompt_text).to eq "#{prompt_text}\n\n---\n\n#{subject_text}"
             expect(quiz.input_text.length).to be > 1000
-            pp quiz.input_text
             expect(quiz.input_text).to match(/\n\n---\n\n/)
             expect(QuizParseAndCreateQuestionsJob.jobs.map { |j| j["args"] }.flatten).to match_array([quiz.id])
           end
@@ -151,7 +149,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
       stub_const("#{described_class.name}::QUIZ_PROMPT", "Quiz:\n\n${ARTICLE_TEXT}")
       stub_const("#{described_class.name}::SUBJECT_PROMPT", "Subject:\n\n${ARTICLE_TEXT}")
     end
-    let(:prompt_text) { "Quiz:\n\n${ARTICLE_TEXT}\n---\nSubject:\n\n${ARTICLE_TEXT}" }
+    let(:prompt_text) { "Quiz:\n\n${ARTICLE_TEXT}\n\n---\n\nSubject:\n\n${ARTICLE_TEXT}" }
     it "returns targets" do
       expect(instance.quiz_prompt_text(nil)).to eq prompt_text
       expect(instance.quiz_prompt_full_texts(citation, prompt_text)).to eq(["Quiz:\n\n#{citation_text.strip}", "Subject:\n\n#{citation_text.strip}"])
@@ -166,7 +164,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
       end
       context "with multiple prompts" do
         let(:prompt_text) { "Some prompt\n\n ${ARTICLE_TEXT}\n\n---\nAnother Prompt\n\n${ARTICLE_TEXT}\n" }
-        let(:target_both) { target_first + ["Another Prompt\n\n#{citation_text.strip}"]}
+        let(:target_both) { target_first + ["Another Prompt\n\n#{citation_text.strip}"] }
         it "allows multiple texts" do
           expect(instance.quiz_prompt_full_texts(citation, prompt_text)).to eq target_both
         end

@@ -84,10 +84,6 @@ class Quiz < ApplicationRecord
     self.class.source_humanized(source)
   end
 
-  def prompt_full_texts
-    QuizParser::ClaudeInitial.quiz_prompt_full_texts(prompt_text, citation)
-  end
-
   def prompt_params_text
     @prompt_params_text ||= (prompt_params || {}).to_json
   end

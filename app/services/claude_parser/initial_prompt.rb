@@ -1,10 +1,10 @@
-class QuizParser::ClaudeInitial
+class ClaudeParser::InitialPrompt
   class << self
-    def parse(quiz)
+    def parse_quiz(quiz)
       parsed = parse_input_text(quiz)
 
       unless parsed.any?
-        raise QuizParser::ParsingError, "Unable to parse questions from input_text"
+        raise ClaudeParser::ParsingError, "Unable to parse questions from input_text"
       end
       parsed
     end
@@ -19,7 +19,7 @@ class QuizParser::ClaudeInitial
     # I don't love this, line by line procedural parsing - but it works pretty well and I think it's flexible.
     def parse_input_text(quiz)
       if quiz.input_text.blank?
-        raise QuizParser::ParsingError, "No input_text"
+        raise ClaudeParser::ParsingError, "No input_text"
       end
 
       result = []

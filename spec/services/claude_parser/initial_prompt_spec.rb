@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe QuizParser::ClaudeInitial do
+RSpec.describe ClaudeParser::InitialPrompt do
   let(:subject) { described_class }
   let(:publisher) { FactoryBot.create(:publisher, name: "a Publisher") }
   let(:citation) { FactoryBot.create(:citation, publisher: publisher) }
@@ -23,7 +23,7 @@ RSpec.describe QuizParser::ClaudeInitial do
       ]
     end
     it "responds with target" do
-      result = subject.parse(quiz)
+      result = subject.parse_quiz(quiz)
       expect(result.count).to eq 2
       result.count.times do |i|
         expect_hashes_to_match(result[i], target[i])
@@ -42,7 +42,7 @@ RSpec.describe QuizParser::ClaudeInitial do
         "False option: \"Something 2 false\"\n\n"
       end
       it "responds with target" do
-        result = subject.parse(quiz)
+        result = subject.parse_quiz(quiz)
         expect(result.count).to eq 2
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])
@@ -66,7 +66,7 @@ RSpec.describe QuizParser::ClaudeInitial do
         ]
       end
       it "responds with target" do
-        result = subject.parse(quiz)
+        result = subject.parse_quiz(quiz)
         expect(result.count).to eq 2
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])

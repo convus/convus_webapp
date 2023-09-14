@@ -1,3 +1,3 @@
-module QuizParser
+module ClaudeParser
   class ParsingError < StandardError; end
 end
