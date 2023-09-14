@@ -51,8 +51,8 @@
             <td>Subject</td>
             <td>
               <%= @quiz.subject %>
-              <% if @quiz.subject_set_manually && display_dev_info? %>
-                <small class="only-dev-visible">set manually</small>
+              <% if display_dev_info? %>
+                <small class="only-dev-visible"><%= @quiz.subject_source %></small>
               <% end %>
             </td>
           </tr>

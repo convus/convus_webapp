@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_30_211346) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_14_192126) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -151,7 +151,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_30_211346) do
     t.datetime "updated_at", null: false
     t.jsonb "prompt_params", default: {}
     t.string "subject"
-    t.boolean "subject_set_manually", default: false
+    t.integer "subject_source"
     t.index ["citation_id"], name: "index_quizzes_on_citation_id"
   end
 

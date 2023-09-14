@@ -4,7 +4,7 @@ base_url = "/admin/quizzes"
 RSpec.describe base_url, type: :request do
   let(:citation) { FactoryBot.create(:citation) }
   let(:quiz) { FactoryBot.create(:quiz, citation: citation, status: "active") }
-  let(:valid_params) { {input_text: "some text", citation_id: citation.id} }
+  let(:valid_params) { {input_text: "some text", citation_id: citation.id, subject: "Things about stuff"} }
 
   describe "index" do
     it "sets return to" do
@@ -52,6 +52,7 @@ RSpec.describe base_url, type: :request do
         new_quiz = Quiz.last
         expect_attrs_to_match_hash(new_quiz, valid_params)
         expect(new_quiz.status).to eq "pending"
+        expect(new_quiz.subject_source).to eq "subject_admin_entry"
       end
     end
 
@@ -97,13 +98,13 @@ RSpec.describe base_url, type: :request do
         expect_attrs_to_match_hash(new_quiz, valid_params)
         expect(new_quiz.status).to eq "pending"
         expect(new_quiz.prompt_text).to be_nil
+        expect(new_quiz.subject_source).to eq "subject_admin_entry"
       end
       context "with prompt_text" do
         let(:valid_params) do
           {
             prompt_text: "some text",
             citation_id: citation.id,
-            subject: "Things about stuff",
             source: "claude_admin_submission",
             prompt_params_text: ""
           }
@@ -117,12 +118,13 @@ RSpec.describe base_url, type: :request do
           expect(flash[:success]).to be_present
           expect(quiz.reload.status).to eq "active"
           expect(quiz.subject).to be_nil
+          expect(quiz.subject_source).to eq "subject_default_source"
 
           new_quiz = Quiz.last
           expect_attrs_to_match_hash(new_quiz, valid_params.except(:prompt_params_text))
-          expect(new_quiz.subject_set_manually).to be_truthy
           expect(new_quiz.status).to eq "pending"
           expect(new_quiz.input_text).to be_nil
+          expect(new_quiz.subject_source).to eq "subject_default_source"
           expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([{citation_id: citation.id, quiz_id: new_quiz.id}].as_json)
         end
         context "with prompt_params" do
@@ -141,7 +143,7 @@ RSpec.describe base_url, type: :request do
             expect(new_quiz.status).to eq "pending"
             expect(new_quiz.input_text).to be_nil
             expect(new_quiz.prompt_params).to eq({"temperature" => 0.9})
-            expect(new_quiz.subject_set_manually).to be_falsey
+            expect(new_quiz.subject_source).to eq "subject_default_source"
             expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([{citation_id: citation.id, quiz_id: new_quiz.id}].as_json)
           end
           context "invalid prompt_params" do

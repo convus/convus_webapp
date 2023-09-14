@@ -9,14 +9,13 @@
   <%= f.hidden_field :source, value: form_type %>
   <%= f.hidden_field :citation_id %>
 
-  <div class="form-row mb-4">
-    <%= f.label :subject do %>
-      Quiz/Citation Subject <small class="less-strong">updating this will also update the citation</small>
-    <% end %>
-    <%= f.text_field :subject, class: "form-control", required: true %>
-  </div>
-
   <% if form_type == "admin_entry" %>
+    <div class="form-row mb-4">
+      <%= f.label :subject do %>
+        Quiz/Citation Subject <small class="less-strong">updating this will also update the citation</small>
+      <% end %>
+      <%= f.text_field :subject, class: "form-control", required: true %>
+    </div>
     <h2>Manually enter text to generate quiz questions</h2>
     <div class="row sm:grid-cols-3 mt-4 mb-2">
       <div class="col col-span-2">

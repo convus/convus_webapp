@@ -15,6 +15,12 @@ class Quiz < ApplicationRecord
     claude_admin_submission: 2
   }.freeze
 
+  SUBJECT_SOURCE = {
+    subject_default_source: 0,
+    subject_admin_entry: 1,
+    subject_admin_citation_entry: 2,
+  }.freeze
+
   KIND_ENUM = {citation_quiz: 0}.freeze
 
   INPUT_TEXT_FORMAT = {claude_initial: 0}.freeze
@@ -23,6 +29,7 @@ class Quiz < ApplicationRecord
   enum source: SOURCE_ENUM
   enum kind: KIND_ENUM
   enum input_text_format: INPUT_TEXT_FORMAT
+  enum subject_source: SUBJECT_SOURCE
 
   self.implicit_order_column = :id
 
@@ -56,12 +63,24 @@ class Quiz < ApplicationRecord
     %i[claude_integration claude_admin_submission].freeze
   end
 
+  def self.subject_set_manually_sources
+    %i[subject_admin_entry subject_admin_citation_entry].freeze
+  end
+
   def self.kind_humanized(str)
     str.present? ? str.to_s.humanize : nil
   end
 
   def self.source_humanized(str)
     str.present? ? str.to_s.humanize : nil
+  end
+
+  def subject_set_manually?
+    self.class.subject_set_manually_sources.include?(subject_source.to_sym)
+  end
+
+  def assigns_citation_subject?
+    current? && subject.present? && !subject_admin_citation_entry?
   end
 
   def prompt_source?
@@ -95,13 +114,14 @@ class Quiz < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.subject ||= citation.subject
     self.status ||= :pending
     self.kind ||= :citation_quiz if citation_id.present?
     self.version ||= calculated_version
     self.input_text = nil if input_text.blank?
     self.prompt_text = nil if prompt_text.blank?
     self.input_text_format ||= :claude_initial
+    self.subject_source ||= calculated_subject_source
+    self.subject = citation&.subject if subject.blank?
   end
 
   def associated_quizzes
@@ -128,6 +148,13 @@ class Quiz < ApplicationRecord
   end
 
   private
+
+  def calculated_subject_source
+    return :subject_admin_entry if admin_entry? && subject.present?
+    # Right now, this only happens from the Citation Admin controller
+    # :subject_admin_citation_entry if citation&.manually_updated_attributes&.include?("subject")
+    :subject_default_source
+  end
 
   def calculated_version
     associated_quizzes_previous.count + 1

@@ -23,6 +23,7 @@ RSpec.describe ClaudeParser::InitialPrompt do
       ]
     end
     it "responds with target" do
+      expect(subject.send(:claude_responses, quiz)).to eq({quiz: input_text})
       result = subject.parse_quiz(quiz)
       expect(result.count).to eq 2
       result.count.times do |i|
@@ -75,26 +76,28 @@ RSpec.describe ClaudeParser::InitialPrompt do
     end
   end
 
-  describe "parse_input_text" do
+  describe "claude_responses" do
     it "blank input_text raises parser error" do
       expect(quiz.input_text).to be_nil
       expect {
-        subject.send(:parse_input_text, quiz)
+        subject.send(:claude_responses, quiz)
       }.to raise_error(/No input_text/)
     end
+  end
 
+  describe "parse_input_text" do
     context "valid single question claude_initial response" do
       let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: The Question Step 1\nTrue option: The Step 1 True\nFalse option: The Step 1 false\n\n" }
       let(:target) { {question: "The Question Step 1", correct: ["The Step 1 True"], incorrect: ["The Step 1 false"]} }
       it "returns the parsed text" do
-        result = subject.send(:parse_input_text, quiz)
+        result = subject.send(:parse_input_text, quiz.input_text)
         expect(result.count).to eq 1
         expect_hashes_to_match(result.first, target)
       end
       context "reversed order, extra white space" do
         let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nFalse option:\n\nThe Step 1 false\nTrue option: The Step 1 True\nQuestion:\n\nThe Question Step 1\n\n" }
         it "returns the parsed text" do
-          result = subject.send(:parse_input_text, quiz)
+          result = subject.send(:parse_input_text, quiz.input_text)
           expect(result.count).to eq 1
           expect_hashes_to_match(result.first, target)
         end
@@ -119,7 +122,7 @@ RSpec.describe ClaudeParser::InitialPrompt do
           {question: "Question Step 5", correct: ["Step 5 True"], incorrect: ["Step 5 false"]}]
       end
       it "returns the parsed text" do
-        result = subject.send(:parse_input_text, quiz)
+        result = subject.send(:parse_input_text, quiz.input_text)
         expect(result.count).to eq 5
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])
@@ -146,7 +149,7 @@ RSpec.describe ClaudeParser::InitialPrompt do
           {question: "", correct: ["Step 3 true"], incorrect: ["Step 3 false"]}]
       end
       it "returns the parsed text" do
-        result = subject.send(:parse_input_text, quiz)
+        result = subject.send(:parse_input_text, quiz.input_text)
         expect(result.count).to eq 3
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])
@@ -166,7 +169,7 @@ RSpec.describe ClaudeParser::InitialPrompt do
           "False: Step 3 false"
         end
         it "returns the parsed text" do
-          result = subject.send(:parse_input_text, quiz)
+          result = subject.send(:parse_input_text, quiz.input_text)
           expect(result.count).to eq 3
           result.count.times do |i|
             expect_hashes_to_match(result[i], target[i])

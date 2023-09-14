@@ -1,22 +1,27 @@
 class QuizParseAndCreateQuestionsJob < ApplicationJob
   sidekiq_options retry: 2
 
-  def self.parsed_input_text(quiz)
+  def self.parsed_quiz_text(quiz)
     ClaudeParser::InitialPrompt.parse_quiz(quiz)
+  end
+
+  def self.parsed_subject_text(quiz)
+    ClaudeParser::InitialPrompt.parse_subject(quiz)
   end
 
   def perform(id)
     quiz = Quiz.find(id)
     return unless %w[pending disabled].include?(quiz.status)
+    quiz.update
 
-    self.class.parsed_input_text(quiz).each_with_index do |parsed_question, i|
+    self.class.parsed_quiz_text(quiz).each_with_index do |parsed_question, i|
       create_question_and_answers(quiz, parsed_question, i + 1)
     end
 
     quiz.update(status: "active") if quiz.status == "pending"
     # Mark all previous current quizzes as replaced
     quiz.associated_quizzes_previous.current.update_all(status: :replaced)
-    if quiz.subject_set_manually
+    if quiz.assigns_citation_subject?
       quiz.citation.update(manually_updating: true, subject: quiz.subject)
     end
   rescue ClaudeParser::ParsingError => e

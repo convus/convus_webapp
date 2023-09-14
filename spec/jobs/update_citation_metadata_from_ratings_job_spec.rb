@@ -65,6 +65,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         let(:quiz) { FactoryBot.create(:quiz, citation: citation) }
         it "assigns topics" do
           expect(quiz.reload.subject).to be_blank
+          expect(quiz.subject_source).to eq "subject_default_source"
           expect(topic1.reload.children.pluck(:id)).to eq([topic2.id])
           expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_with_topics.except(:published_updated_at), match_time_within: 1)
           instance.perform(citation.id)
@@ -76,9 +77,25 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           instance.perform(citation.id)
           expect(citation.reload.topics.pluck(:id)).to eq([topic3.id])
           expect_attrs_to_match_hash(citation, metadata_with_topics.except(:keywords, :topics_string))
-          expect(citation.reload.subject).to eq "Party"
-          expect(quiz.reload.subject).to eq "Party"
-          expect(quiz.subject_set_manually).to be_falsey
+          expect(citation.reload.subject).to be_blank
+          expect(quiz.reload.subject).to be_blank
+          expect(quiz.subject_source).to eq "subject_default_source"
+        end
+      end
+      context "subject present" do
+        let(:quiz) { FactoryBot.create(:quiz, citation: citation, status: :active) }
+        it "assigns topics" do
+          expect(quiz.reload.subject).to be_blank
+          expect(quiz.subject_source).to eq "subject_default_source"
+          expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
+          citation.update(manually_updating: true, subject: "New Subject")
+          expect(citation.reload.manually_updated_attributes).to eq(["subject"])
+          instance.perform(citation.id)
+          citation.reload
+          expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
+          expect(citation.reload.subject).to eq "New Subject"
+          expect(quiz.reload.subject).to eq "New Subject"
+          expect(quiz.subject_source).to eq "subject_admin_citation_entry"
         end
       end
       context "citation_text present" do

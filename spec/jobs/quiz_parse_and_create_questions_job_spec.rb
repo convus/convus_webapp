@@ -12,7 +12,7 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
       input_text: input_text,
       citation: citation,
       subject: subject_str,
-      subject_set_manually: true)
+      subject_source: :subject_admin_entry)
   end
   let(:subject_str) { nil }
   let(:input_text) { nil }

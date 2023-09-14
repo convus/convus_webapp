@@ -1,7 +1,8 @@
 class ClaudeParser::InitialPrompt
   class << self
+
     def parse_quiz(quiz)
-      parsed = parse_input_text(quiz)
+      parsed = parse_input_text(claude_responses(quiz)[:quiz])
 
       unless parsed.any?
         raise ClaudeParser::ParsingError, "Unable to parse questions from input_text"
@@ -11,22 +12,28 @@ class ClaudeParser::InitialPrompt
 
     def quiz_prompt_full_texts(quiz_prompt_text, citation)
       (quiz_prompt_text || "").gsub("${ARTICLE_TEXT}", citation&.citation_text)
-        .split("---").map(&:strip)
+        .split("\n---\n").map(&:strip)
     end
 
     private
 
-    # I don't love this, line by line procedural parsing - but it works pretty well and I think it's flexible.
-    def parse_input_text(quiz)
+    def claude_responses(quiz)
       if quiz.input_text.blank?
         raise ClaudeParser::ParsingError, "No input_text"
       end
 
+      # zip then reverse, to skip the subject key if there is no subject
+      quiz.input_text.split("\n---\n").zip([:quiz, :subject])
+        .map(&:reverse).to_h
+    end
+
+    # I don't love this, line by line procedural parsing - but it works pretty well and I think it's flexible.
+    def parse_input_text(quiz_text)
       result = []
       current_key = nil
       current_text = nil
 
-      quiz.input_text.split("\n").each do |line|
+      quiz_text.split("\n").each do |line|
         current_text = line
         if line.match?(/\Astep \d+:/i)
           # Since there isn't a result initially, everything before the 'Step 1:' is ignored
