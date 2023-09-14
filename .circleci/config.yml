@@ -23,7 +23,7 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: convus_reviews_test
           POSTGRES_PASSWORD: ""
-      - image: redis:4.0.9
+      - image: redis:7.0.12
     steps:
       - checkout
       - restore_cache:
