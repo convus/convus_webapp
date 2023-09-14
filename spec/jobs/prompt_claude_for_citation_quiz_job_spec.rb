@@ -29,6 +29,21 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
           expect(quiz.input_text).to eq "response text"
           expect(QuizParseAndCreateQuestionsJob.jobs.map { |j| j["args"] }.flatten).to match_array([quiz.id])
         end
+        context "redlock" do
+          before do
+            @lock_manager = ClaudeIntegration.new_lock
+            @redlock = @lock_manager.lock(ClaudeIntegration::REDLOCK_KEY, 5000)
+          end
+          after { @lock_manager.unlock(@redlock) }
+          it "enqueues again" do
+            expect(Quiz.count).to eq 0
+            Sidekiq::Worker.clear_all
+            expect {
+              instance.perform([citation.id])
+            }.to change(Quiz, :count).by 0
+            expect(described_class.jobs.map { |j| j["args"] }.flatten).to match_array([citation.id, nil])
+          end
+        end
         context "claude_admin_submission" do
           let(:prompt_text) { "some prompt, article: ${ARTICLE_TEXT}" }
           let(:quiz) { FactoryBot.create(:quiz, citation: citation, source: "claude_admin_submission", prompt_text: prompt_text) }
