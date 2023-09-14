@@ -1,5 +1,23 @@
 <div class="large-width-container mt-4">
-  <div class="row sm:grid-cols-2">
+  <table class="table-list">
+    <tbody>
+      <tr>
+        <td>Citation</td>
+        <td><%= admin_citation_cell(@citation, filter_link: admin_citations_path) %></td>
+      </tr>
+      <tr>
+        <td>Subject</td>
+        <td>
+          <%= @quiz.subject %>
+          <% if display_dev_info? %>
+            <small class="only-dev-visible ml-1"><%= @quiz.subject_source || 'NO SOURCE!' %></small>
+          <% end %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="row sm:grid-cols-2 mt-4">
     <div class="col">
       <table class="table-list">
         <tbody>
@@ -34,12 +52,36 @@
                   <strong>Error message:</strong>
                   <%= @quiz.input_text_parse_error %>
                 </span>
+              <% elsif @quiz.status == "replaced" %>
+                <% replaced_by = @quiz.quizzes_following.first %>
+                <% if replaced_by.present? %>
+                  <em class="ml-2 text-sm">
+                    by
+                    <%= link_to admin_quiz_path(replaced_by) do %>
+                      quiz <%= replaced_by.version %>
+                      <span class="less-strong convertTime withPreposition"><%= l(replaced_by.created_at, format: :convert_time) %></span>
+                    <% end %>
+                  </em>
+                <% end %>
               <% end %>
             </td>
           </tr>
-          <tr>
-            <td>Citation</td>
-            <td><%= admin_citation_cell(@citation, filter_link: admin_citations_path) %></td>
+          <tr class="text-sm">
+            <td>Version</td>
+            <td>
+              <%= link_to @quiz.version, admin_quizzes_path(search_citation_id: @quiz.citation_id) %>
+              <% current_quiz = @quiz.quizzes_following.last %>
+              <% if current_quiz.present? %>
+                <em class="ml-2 text-sm">
+                  <%= link_to "version #{current_quiz.version} is current", admin_quiz_path(current_quiz.to_param) %>
+                </em>
+              <% end %>
+              <% if @quiz.version > 1 %>
+                <% @quiz.quizzes_preceding.reorder(id: :desc).each do |pquiz| %>
+                  <%= link_to "quiz #{pquiz.version}", admin_quiz_path(pquiz.to_param), class: "ml-1 text-sm less-strong italic" %>
+                <% end %>
+              <% end %>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -47,15 +89,6 @@
     <div class="col">
       <table class="table-list">
         <tbody>
-          <tr>
-            <td>Subject</td>
-            <td>
-              <%= @quiz.subject %>
-              <% if display_dev_info? %>
-                <small class="only-dev-visible ml-1"><%= @quiz.subject_source || 'NO SOURCE!' %></small>
-              <% end %>
-            </td>
-          </tr>
           <tr>
             <td>Source</td>
             <td>
@@ -66,12 +99,6 @@
             <td>Kind</td>
             <td>
               <%= @quiz.kind_humanized %>
-            </td>
-          </tr>
-          <tr class="text-sm">
-            <td>Version</td>
-            <td>
-              <%= link_to @quiz.version, admin_quizzes_path(search_citation_id: @quiz.citation_id) %>
             </td>
           </tr>
           <tr class="text-sm">

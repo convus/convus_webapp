@@ -4,10 +4,11 @@
     Quiz
     <small class="less-strong"><%= quiz_title_display(@quiz) %></small>
   </h1>
-  <p class="text-lg mt-2 mb-4"><%= link_to "Take quiz", quiz_path(@quiz) %></p>
-</div>
 
-<%= render partial: "show_header" %>
+  <p class="text-lg mt-2 mb-4"><%= link_to "Take quiz", quiz_path(@quiz) %></p>
+
+  <%= render partial: "show_header" %>
+</div>
 
 <div class="large-width-container mt-8">
   <% if !@quiz.prompt_source? %>
@@ -62,9 +63,14 @@
 
 <% if display_dev_info? && !@quiz.parse_errored? && @quiz.input_text.present? %>
   <div class="large-width-container my-4">
-    <p class="only-dev-visible">Input Text Parsed</p>
+    <p class="only-dev-visible">Quiz Text Parsed</p>
     <div class="code-small">
-      <%= pretty_print_json(QuizParseAndCreateQuestionsJob.parsed_input_text(@quiz)) %>
+      <%= pretty_print_json(QuizParseAndCreateQuestionsJob.parsed_quiz_text(@quiz)) %>
+    </div>
+
+    <p class="only-dev-visible mt-5">Subject Text Parsed</p>
+    <div class="code-small">
+      <%= pretty_print_json(QuizParseAndCreateQuestionsJob.parsed_subject_text(@quiz)) %>
     </div>
   </div>
 <% end %>
