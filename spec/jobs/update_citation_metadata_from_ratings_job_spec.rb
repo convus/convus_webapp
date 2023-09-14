@@ -62,7 +62,9 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         let!(:topic2) { Topic.find_or_create_for_name("Joe Biden", parents_string: "U.S. presidents") }
         let!(:topic3) { Topic.find_or_create_for_name("Party") }
         let(:metadata_with_topics) { metadata_attrs.merge(topics_string: "Joe Biden") }
+        let(:quiz) { FactoryBot.create(:quiz, citation: citation) }
         it "assigns topics" do
+          expect(quiz.reload.subject).to be_blank
           expect(topic1.reload.children.pluck(:id)).to eq([topic2.id])
           expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_with_topics.except(:published_updated_at), match_time_within: 1)
           instance.perform(citation.id)
@@ -74,6 +76,9 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           instance.perform(citation.id)
           expect(citation.reload.topics.pluck(:id)).to eq([topic3.id])
           expect_attrs_to_match_hash(citation, metadata_with_topics.except(:keywords, :topics_string))
+          expect(citation.reload.subject).to eq "Party"
+          expect(quiz.reload.subject).to eq "Party"
+          expect(quiz.subject_set_manually).to be_falsey
         end
       end
       context "citation_text present" do

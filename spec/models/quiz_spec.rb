@@ -55,4 +55,23 @@ RSpec.describe Quiz, type: :model do
       end
     end
   end
+
+  describe "topics and subject" do
+    let(:topic) { FactoryBot.create(:topic, name: "Environment") }
+    let(:citation_topic) { FactoryBot.create(:citation_topic, topic: topic) }
+    let(:citation) { citation_topic.citation }
+    let(:quiz) { FactoryBot.create(:quiz, citation: citation) }
+    it "uses citation_topic association" do
+      expect(citation.reload.subject).to be_nil
+      citation.update(updated_at: Time.current)
+      expect(citation.reload.subject).to eq "Environment"
+      expect(citation.manually_updated_attributes).to eq([])
+      expect(quiz.topics.pluck(:id)).to eq([topic.id])
+      expect(Quiz.matching_topics(topic).pluck(:id)).to eq([quiz.id])
+
+      quiz.update(subject: "Specific Environment")
+      # Citation subject is updated in QuizParseAndCreateQuestionsJob
+      expect(citation.reload.subject).to eq "Environment"
+    end
+  end
 end

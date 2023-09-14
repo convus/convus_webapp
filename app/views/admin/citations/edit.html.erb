@@ -33,6 +33,10 @@
       <% end %>
       <%= f.text_field :topics_string, placeholder: "If blank, topics are set from the Rating metadata", class: "form-control" %>
     </div>
+    <div class="form-row">
+      <%= f.label :subject %>
+      <%= f.text_field :subject, class: "form-control" %>
+    </div>
     <div class="form-row-btn">
       <%= f.submit "save", class: "btn" %>
     </div>

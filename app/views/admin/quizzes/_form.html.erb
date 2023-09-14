@@ -8,6 +8,13 @@
   <%= f.hidden_field :source, value: form_type %>
   <%= f.hidden_field :citation_id %>
 
+  <div class="form-row mb-4">
+    <%= f.label :subject do %>
+      Quiz/Citation Subject <small class="less-strong">updating this will also update the citation</small>
+    <% end %>
+    <%= f.text_field :subject, class: "form-control", required: true %>
+  </div>
+
   <% if form_type == "admin_entry" %>
     <h2>Manually enter text to generate quiz questions</h2>
     <div class="row sm:grid-cols-3 mt-4 mb-2">
@@ -40,15 +47,17 @@
     <%= f.submit "save", class: "btn" %>
   </div>
 
-  <div class="form-row">
-    <%= f.label :prompt_params_text do %>
-      Additional options for Claude. <strong>Must be valid JSON</strong>
-      <small class="less-strong">
-        e.g. <code class="text-xs">{"temperature": 0.7}</code>
-      </small>
-    <% end %>
-    <%= f.text_area :prompt_params_text, class: "form-control", rows: 2 %>
-  </div>
+  <% if form_type != "admin_entry" %>
+    <div class="form-row">
+      <%= f.label :prompt_params_text do %>
+        Additional options for Claude. <strong>Must be valid JSON</strong>
+        <small class="less-strong">
+          e.g. <code class="text-xs">{"temperature": 0.7}</code>
+        </small>
+      <% end %>
+      <%= f.text_area :prompt_params_text, class: "form-control", rows: 2 %>
+    </div>
+  <% end %>
 <% end %>
 
 <% if form_type != "admin_entry" && editing_quiz %>

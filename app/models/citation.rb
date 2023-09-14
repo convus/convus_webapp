@@ -1,5 +1,6 @@
 class Citation < ApplicationRecord
   include FriendlyFindable
+  include TopicMatchable
 
   COUNTED_META_ATTRS = MetadataAttributer::COUNTED_ATTR_KEYS.map(&:to_s).freeze
 
@@ -93,21 +94,6 @@ class Citation < ApplicationRecord
         path: path.blank? ? nil : path,
         query: query
       }.with_indifferent_access
-    end
-
-    def matching_topics(topic_ids, include_children: false, match_all: false)
-      topic_ids = Array(topic_ids)
-      topic_ids += Topic.child_ids_for_ids(topic_ids) if include_children
-      if match_all
-        topic_ids.reduce(self) { |matches, topic_id| matches.matching_a_topic(topic_id) }
-      else
-        joins(:citation_topics).where(citation_topics: {topic_id: topic_ids})
-      end
-    end
-
-    # TODO: Make this work correctly
-    def matching_a_topic(topic_id)
-      joins(:citation_topics).where(citation_topics: {topic_id: [topic_id]})
     end
 
     def references_filepath(str)
@@ -257,6 +243,14 @@ class Citation < ApplicationRecord
     end
     current_m_attrs << "citation_text" if manually_updating && citation_text_changed?
     self.manually_updated_attributes = current_m_attrs.uniq.sort
+    # Update subject here to prevent it from being included in manually updated accidentally
+    if manually_updated_attributes.include?("subject")
+      if subject == calculated_subject
+        self.manually_updated_attributes = manually_updated_attributes - ["subject"]
+      end
+    else
+      self.subject = calculated_subject
+    end
     self.manually_updated_at = manually_updated_attributes.any? ? Time.current : nil
   end
 
@@ -291,5 +285,10 @@ class Citation < ApplicationRecord
   def clean_citation_text(text)
     stripped = text&.gsub(" ", " ")&.strip
     stripped.present? ? stripped : nil
+  end
+
+  def calculated_subject
+    topic_names = topics.name_ordered.pluck(:name)
+    topic_names.any? ? topic_names.to_sentence : nil
   end
 end

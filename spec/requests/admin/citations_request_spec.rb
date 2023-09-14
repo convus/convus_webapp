@@ -119,6 +119,7 @@ RSpec.describe base_url, type: :request do
         let(:updated_at) { Time.current - 1.day }
         let(:metadata_params) do
           {
+            subject: "Cool subject",
             title: "something",
             # topics_string: "",
             authors_str: "george\nSally, Post\n\nAlix",
