@@ -127,7 +127,7 @@ class Quiz < ApplicationRecord
   def mark_quizzes_replaced_and_enqueue_parsing
     return true if associated_quizzes.where("id > ?", id).any?
     if claude_admin_submission?
-      PromptClaudeForCitationQuizJob.perform_async([citation_id, id])
+      PromptClaudeForCitationQuizJob.perform_async({citation_id: citation_id, quiz_id: id}.as_json)
     else
       QuizParseAndCreateQuestionsJob.perform_async(id)
     end

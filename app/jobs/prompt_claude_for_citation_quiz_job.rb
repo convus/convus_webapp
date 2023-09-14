@@ -2,7 +2,6 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
   sidekiq_options retry: false
   SKIP_JOB = ENV["SKIP_CREATE_CITATION_QUIZ"].present?
   QUIZ_PROMPT = ENV["CLAUDE_QUIZ_PROMPT"].freeze
-  REDLOCK_KEY = "Claude-#{Rails.env.slice(0, 3)}"
 
   def self.enqueue_for_citation?(citation)
     QUIZ_PROMPT.present? && citation.present? && citation.citation_text.present? &&
@@ -12,10 +11,6 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
   def self.enqueue_for_quiz?(quiz)
     quiz.present? && quiz.pending? && quiz.input_text.blank? &&
       quiz.prompt_text.present?
-  end
-
-  def self.redis_url
-    ConvusReviews::Application.config.redis_default_url
   end
 
   # May use get_remaining_ttl to calculate sometime
@@ -35,10 +30,11 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
     end
   end
 
-  # args: [citation_id, quiz_id = nil]
+  # args: {citation_id, quiz_id}
   def perform(args)
     return if SKIP_JOB
-    citation_id, quiz_id = *args
+    citation_id = args["citation_id"]
+    quiz_id = args["quiz_id"]
     if quiz_id.present?
       quiz = Quiz.find(quiz_id)
       return unless self.class.enqueue_for_quiz?(quiz)
@@ -48,10 +44,10 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
       return unless self.class.enqueue_for_citation?(citation)
     end
 
-    lock_manager = Redlock::Client.new([self.class.redis_url])
-    redlock = lock_manager.lock(REDLOCK_KEY, lock_duration_ms)
+    lock_manager = ClaudeIntegration.new_lock
+    redlock = lock_manager.lock(ClaudeIntegration::REDLOCK_KEY, lock_duration_ms)
     unless redlock
-      return self.class.perform_in(requeue_delay, [citation_id, quiz_id])
+      return self.class.perform_in(requeue_delay, args)
     end
 
     begin
@@ -71,7 +67,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
           input_text: claude_response)
       end
     rescue Faraday::TimeoutError
-      self.class.perform_async(requeue_delay, citation_id)
+      self.class.perform_async(requeue_delay, args)
     ensure
       lock_manager.unlock(redlock)
     end
