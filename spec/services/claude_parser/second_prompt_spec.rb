@@ -214,7 +214,7 @@ RSpec.describe ClaudeParser::SecondPrompt do
       end
     end
     context "another leading words description" do
-      let(:subject_str) { "In 8 words or less, the subject of this article is Libraries strained as social services decline." }
+      let(:subject_str) { "In 8 words or less, the subject of this article is libraries strained as social services decline." }
       it "responds with the target" do
         expect(subject.send(:clean_subject, subject_str)).to eq target
       end

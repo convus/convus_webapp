@@ -13,7 +13,7 @@ RSpec.describe QuizHelper, type: :helper do
   describe "quiz_title_display" do
     context "with subject" do
       let(:target) do
-        "<span>Cool stuff from<span class=\"no-underline\"> </span><span class=\"decoration-publisher\">a Publisher</span>" \
+        "<span>Cool stuff, from<span class=\"no-underline\"> </span><span class=\"decoration-publisher\">a Publisher</span>" \
         "<span class=\"no-underline\"> </span>#{time_el}</span>"
       end
       it "responds with text" do
@@ -26,7 +26,7 @@ RSpec.describe QuizHelper, type: :helper do
 
     context "with no author" do
       let(:target) do
-        "<span>an article from<span class=\"no-underline\"> </span><span class=\"decoration-publisher\">a Publisher</span>" \
+        "<span>an article, from<span class=\"no-underline\"> </span><span class=\"decoration-publisher\">a Publisher</span>" \
         "<span class=\"no-underline\"> </span>#{time_el}</span>"
       end
       it "responds with text" do
@@ -39,7 +39,7 @@ RSpec.describe QuizHelper, type: :helper do
     context "with one author" do
       let(:citation) { FactoryBot.create(:citation, publisher: publisher, authors: ["Sally"], published_updated_at: time) }
       let(:target) do
-        "<span>an article from <em>Sally</em> in<span class=\"no-underline\"> </span><span class=\"decoration-publisher\">a Publisher</span>" \
+        "<span>an article, from <em>Sally</em> in<span class=\"no-underline\"> </span><span class=\"decoration-publisher\">a Publisher</span>" \
         "<span class=\"no-underline\"> </span>#{time_el}</span>" \
       end
       it "responds with text" do

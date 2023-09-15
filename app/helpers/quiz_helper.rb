@@ -3,7 +3,7 @@ module QuizHelper
     citation = quiz.citation
     content_tag(:span) do
       concat(quiz.title)
-      concat(" from")
+      concat(", from")
       if citation.authors.any? && citation.authors.first != citation.publisher.name
         concat(" ")
         concat(content_tag(:em, citation.authors.first))
