@@ -65,7 +65,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         let(:quiz) { FactoryBot.create(:quiz, citation: citation) }
         it "assigns topics" do
           expect(quiz.reload.subject).to be_blank
-          expect(quiz.subject_source).to eq "subject_default_source"
+          expect(quiz.subject_source).to eq "subject_inherited"
           expect(topic1.reload.children.pluck(:id)).to eq([topic2.id])
           expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_with_topics.except(:published_updated_at), match_time_within: 1)
           instance.perform(citation.id)
@@ -79,14 +79,19 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect_attrs_to_match_hash(citation, metadata_with_topics.except(:keywords, :topics_string))
           expect(citation.reload.subject).to be_blank
           expect(quiz.reload.subject).to be_blank
-          expect(quiz.subject_source).to eq "subject_default_source"
+          expect(quiz.subject_source).to eq "subject_inherited"
         end
       end
       context "subject present" do
-        let(:quiz) { FactoryBot.create(:quiz, citation: citation, status: :active) }
+        let(:quiz_replaced) { FactoryBot.create(:quiz, subject: "OG Quiz subject", subject_source: subject_source, citation: citation, status: :replaced) }
+        let(:quiz) { FactoryBot.create(:quiz, subject: "Quiz subject", subject_source: subject_source, citation: citation, status: :active) }
+        let(:subject_source) { "subject_claude_integration" }
         it "assigns topics" do
-          expect(quiz.reload.subject).to be_blank
-          expect(quiz.subject_source).to eq "subject_default_source"
+          expect(quiz_replaced.reload.subject).to eq "OG Quiz subject"
+          expect(quiz_replaced.subject_source).to eq subject_source
+
+          expect(quiz.reload.subject).to eq "Quiz subject"
+          expect(quiz.subject_source).to eq subject_source
           expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
           citation.update(manually_updating: true, subject: "New Subject")
           expect(citation.reload.manually_updated_attributes).to eq(["subject"])
@@ -96,6 +101,25 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect(citation.reload.subject).to eq "New Subject"
           expect(quiz.reload.subject).to eq "New Subject"
           expect(quiz.subject_source).to eq "subject_admin_citation_entry"
+          # This job doesn't update replaced quiz subjects
+          expect(quiz_replaced.reload.subject_source).to eq subject_source
+          expect(quiz_replaced.subject).to eq "OG Quiz subject"
+        end
+        context "quiz subject_admin_entry" do
+          let(:subject_source) { "subject_admin_entry" }
+          it "does not update" do
+            expect(quiz.reload.subject).to eq "Quiz subject"
+            expect(quiz.subject_source).to eq "subject_admin_entry"
+            expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
+            citation.update(manually_updating: true, subject: "New Subject")
+            expect(citation.reload.manually_updated_attributes).to eq(["subject"])
+            instance.perform(citation.id)
+            citation.reload
+            expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
+            expect(citation.reload.subject).to eq "New Subject"
+            expect(quiz.reload.subject).to eq "Quiz subject"
+            expect(quiz.subject_source).to eq "subject_admin_entry"
+          end
         end
       end
       context "citation_text present" do

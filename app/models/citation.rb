@@ -212,6 +212,11 @@ class Citation < ApplicationRecord
       .map { |attr, val| val.present? ? nil : attr }.compact
   end
 
+  # No need to check if subject present, manually_updated_attributes handles on save
+  def manually_updated_subject?
+    manually_updated_attributes.include?("subject")
+  end
+
   def set_calculated_attributes
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)
@@ -245,7 +250,7 @@ class Citation < ApplicationRecord
     current_m_attrs << "citation_text" if manually_updating && citation_text_changed?
     self.manually_updated_attributes = current_m_attrs.uniq.sort
     # Update subject here to prevent it from being included in manually updated accidentally
-    if manually_updated_attributes.include?("subject") && subject.blank?
+    if manually_updated_subject? && subject.blank?
       self.manually_updated_attributes = manually_updated_attributes - ["subject"]
     end
     self.manually_updated_at = manually_updated_attributes.any? ? Time.current : nil

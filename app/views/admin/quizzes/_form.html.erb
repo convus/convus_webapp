@@ -39,7 +39,9 @@
     <h2>Input the prompt for Claude to generate the quiz</h2>
     <div class="form-row">
       <%= f.text_area :prompt_text, value: prompt_text_area_text(@quiz.prompt_text), class: "form-control", required: true, rows: 15 %>
-      <p class="text-sm -mt-1 mb-3 less-strong"><code>[ARTICLE_TEXT]</code> will be replaced with the actual article text</p>
+      <p class="text-sm -mt-1 mb-3 less-strong">
+        <code>[ARTICLE_TEXT]</code> will be replaced with the actual article text. Separating the prompt with <code>---</code> makes a separate request to Claude.
+      </p>
     </div>
   <% end %>
 

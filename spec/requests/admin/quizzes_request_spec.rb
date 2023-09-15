@@ -118,13 +118,13 @@ RSpec.describe base_url, type: :request do
           expect(flash[:success]).to be_present
           expect(quiz.reload.status).to eq "active"
           expect(quiz.subject).to be_nil
-          expect(quiz.subject_source).to eq "subject_default_source"
+          expect(quiz.subject_source).to eq "subject_inherited"
 
           new_quiz = Quiz.last
           expect_attrs_to_match_hash(new_quiz, valid_params.except(:prompt_params_text))
           expect(new_quiz.status).to eq "pending"
           expect(new_quiz.input_text).to be_nil
-          expect(new_quiz.subject_source).to eq "subject_default_source"
+          expect(new_quiz.subject_source).to eq "subject_inherited"
           expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([{citation_id: citation.id, quiz_id: new_quiz.id}].as_json)
         end
         context "with prompt_params" do
@@ -143,7 +143,7 @@ RSpec.describe base_url, type: :request do
             expect(new_quiz.status).to eq "pending"
             expect(new_quiz.input_text).to be_nil
             expect(new_quiz.prompt_params).to eq({"temperature" => 0.9})
-            expect(new_quiz.subject_source).to eq "subject_default_source"
+            expect(new_quiz.subject_source).to eq "subject_inherited"
             expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([{citation_id: citation.id, quiz_id: new_quiz.id}].as_json)
           end
           context "invalid prompt_params" do

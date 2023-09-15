@@ -26,7 +26,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
           expect(quiz.source).to eq "claude_integration"
           expect(quiz.kind).to eq "citation_quiz"
           expect(quiz.prompt_text).to eq prompt_text
-          expect(quiz.prompt_params).to eq({"temperature" => 0.9})
+          expect(quiz.prompt_params).to eq({})
           expect(quiz.input_text).to eq "response text"
           expect(QuizParseAndCreateQuestionsJob.jobs.map { |j| j["args"] }.flatten).to match_array([quiz.id])
         end
@@ -137,7 +137,14 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
             expect(quiz.prompt_text).to eq "#{prompt_text}\n\n---\n\n#{subject_text}"
             expect(quiz.input_text.length).to be > 1000
             expect(quiz.input_text).to match(/\n\n---\n\n/)
+            expect(quiz.subject).to be_nil
+            expect(quiz.status).to eq "pending"
             expect(QuizParseAndCreateQuestionsJob.jobs.map { |j| j["args"] }.flatten).to match_array([quiz.id])
+            QuizParseAndCreateQuestionsJob.drain
+            expect(quiz.reload.status).to eq "active"
+            expect(quiz.subject).to eq "Climate bill spurs clean tech"
+            expect(quiz.subject_source).to eq "subject_claude_integration"
+            expect(quiz.quiz_questions.count).to eq 6
           end
         end
       end

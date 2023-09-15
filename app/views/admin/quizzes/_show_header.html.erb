@@ -69,7 +69,7 @@
                   <%= @quiz.input_text_parse_error %>
                 </span>
               <% elsif @quiz.status == "replaced" %>
-                <% replaced_by = @quiz.asssociated_quizzes_following.first %>
+                <% replaced_by = @quiz.associated_quizzes_following.first %>
                 <% if replaced_by.present? && replaced_by != current_quiz %>
                   <em class="ml-2 text-sm less-strong">
                     replaced by
@@ -86,7 +86,7 @@
               V<%= @quiz.version %>
               <%= link_to search_emoji, admin_quizzes_path(search_citation_id: @quiz.citation_id), class: "text-sm no-underline mr-2" %>
               <% if @quiz.version > 1 %>
-                <em class="text-sm less-strong">earlier quizzes:</em>
+                <em class="text-sm less-strong">earlier versions:</em>
                 <%= safe_join(@quiz.associated_quizzes_previous.reorder(id: :desc).map { |pquiz| link_to("V#{pquiz.version}", admin_quiz_path(pquiz.to_param), class: "ml-1 text-sm less-strong italic") }, ", ") %>
               <% end %>
             </td>

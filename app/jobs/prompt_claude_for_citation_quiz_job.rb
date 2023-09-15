@@ -57,7 +57,7 @@ class PromptClaudeForCitationQuizJob < ApplicationJob
       quiz ||= Quiz.create!(citation: citation,
         source: :claude_integration,
         kind: :citation_quiz,
-        prompt_params: {temperature: 0.9},
+        prompt_params: {},
         prompt_text: prompt_text)
 
       # Prompt Claude and update the quiz

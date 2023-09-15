@@ -44,7 +44,7 @@ class MigrateQuizSummariesJob < ApplicationJob
         kind: :citation_quiz,
         input_text: quiz.input_text.split("\n---\n").first,
         prompt_text: prompt_text(quiz, subject_prompt),
-        prompt_params: {temperature: 0.9})
+        prompt_params: {temperature: 0.5})
 
       # Prompt Claude and update the quiz
       claude_response = ClaudeIntegration.new.completion_for_prompt(subject_prompt_full_text(new_quiz), new_quiz.prompt_params)

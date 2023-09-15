@@ -13,7 +13,10 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
     quiz = Quiz.find(id)
     return unless %w[pending disabled].include?(quiz.status)
 
-    quiz.subject ||= self.class.parsed_subject_text(quiz)
+    parsed_subject = self.class.parsed_subject_text(quiz)
+    if parsed_subject.present? && !quiz.subject_set_manually?
+      quiz.update(subject: parsed_subject, subject_source: "subject_claude_integration")
+    end
 
     self.class.parsed_quiz_text(quiz).each_with_index do |parsed_question, i|
       create_question_and_answers(quiz, parsed_question, i + 1)
@@ -22,11 +25,19 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
     quiz.update(status: "active") if quiz.status == "pending"
     # Mark all previous current quizzes as replaced
     quiz.associated_quizzes_previous.current.update_all(status: :replaced)
-    if quiz.assigns_citation_subject?
-      quiz.citation.update(subject: quiz.subject)
+
+    citation = quiz.citation
+    if assign_citation_subject?(quiz, citation)
+      citation.update(subject: quiz.subject)
     end
   rescue ClaudeParser::ParsingError => e
     quiz.update(input_text_parse_error: e, status: :parse_errored)
+  end
+
+  def assign_citation_subject?(quiz, citation)
+    # Only update citation if the quiz has a good subject
+    citation.present? && !citation.manually_updated_subject? &&
+      %w[subject_claude_integration subject_admin_entry].include?(quiz.subject_source)
   end
 
   def create_question_and_answers(quiz, parsed_question, list_order)

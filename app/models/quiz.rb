@@ -16,9 +16,10 @@ class Quiz < ApplicationRecord
   }.freeze
 
   SUBJECT_SOURCE = {
-    subject_default_source: 0,
-    subject_admin_entry: 1,
-    subject_admin_citation_entry: 2
+    subject_inherited: 0,
+    subject_claude_integration: 1,
+    subject_admin_entry: 2,
+    subject_admin_citation_entry: 3
   }.freeze
 
   KIND_ENUM = {citation_quiz: 0}.freeze
@@ -79,10 +80,6 @@ class Quiz < ApplicationRecord
     self.class.subject_set_manually_sources.include?(subject_source.to_sym)
   end
 
-  def assigns_citation_subject?
-    current? && subject.present? && !subject_admin_citation_entry?
-  end
-
   def prompt_source?
     self.class.prompt_sources.include?(source&.to_sym)
   end
@@ -120,8 +117,8 @@ class Quiz < ApplicationRecord
     self.input_text = nil if input_text.blank?
     self.prompt_text = nil if prompt_text.blank?
     self.input_text_format ||= :claude_second
-    self.subject_source ||= calculated_subject_source
-    self.subject = citation&.subject if subject.blank?
+    self.subject_source ||= calculated_initial_subject_source
+    self.subject = citation&.subject if subject.blank? || subject_admin_citation_entry?
   end
 
   def associated_quizzes
@@ -153,11 +150,13 @@ class Quiz < ApplicationRecord
 
   private
 
-  def calculated_subject_source
+  def calculated_initial_subject_source
     if admin_entry? && subject.present?
       :subject_admin_entry
+    elsif citation&.manually_updated_subject?
+      :subject_admin_citation_entry
     else
-      :subject_default_source
+      :subject_inherited
     end
   end
 

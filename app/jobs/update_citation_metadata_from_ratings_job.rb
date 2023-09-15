@@ -35,9 +35,10 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
       citation.publisher.update(name: new_attributes[:publisher_name])
     end
 
-    # Update quiz subjects!
+    # Update quiz subjects, if subject is manually assigned
     if citation.manually_updated_attributes.include?("subject") && citation.subject.present?
-      citation.quizzes.active.subject_default_source
+      # Only update the current quiz, doesn't update subject_admin_entry
+      citation.quizzes.current.not_subject_admin_entry
         .update_all(subject: citation.subject, subject_source: :subject_admin_citation_entry)
     end
 

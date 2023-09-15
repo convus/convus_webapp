@@ -40,7 +40,7 @@ RSpec.describe Quiz, type: :model do
       quiz.reload
       expect(quiz.status).to eq "pending"
       expect(quiz.version).to eq 1
-      # expect(quiz.associated_quizzes.pluck(:id)).to eq([quiz2.id, quiz3.id])
+      expect(quiz.associated_quizzes.pluck(:id)).to eq([quiz2.id, quiz3.id])
       expect(quiz.associated_quizzes_current&.id).to eq quiz3.id
       expect(citation.quiz_active&.id).to be_blank
     end
@@ -77,6 +77,51 @@ RSpec.describe Quiz, type: :model do
       quiz.update(subject: "Specific Environment")
       # Citation subject is updated in QuizParseAndCreateQuestionsJob
       expect(citation.reload.subject).to be_nil
+    end
+  end
+
+  describe "subject_source" do
+    let(:citation) { FactoryBot.create(:citation, subject: "Citation subject") }
+    let(:citation_manual_subject) { FactoryBot.create(:citation, subject: "Citation subject", manually_updated_attributes: ["subject"]) }
+    let(:quiz) { FactoryBot.create(:quiz, citation: citation) }
+    it "is inherited" do
+      expect(quiz.reload.source).to eq "admin_entry"
+      expect(quiz.subject).to eq "Citation subject"
+      expect(quiz.subject_source).to eq "subject_inherited"
+    end
+    context "with quiz subject present" do
+      let(:quiz) { FactoryBot.create(:quiz, citation: citation, subject: "Quiz subject", source: source) }
+      let(:source) { "claude_integration" }
+      it "is inherited" do
+        expect(quiz.reload.source).to eq "claude_integration"
+        expect(quiz.subject).to eq "Quiz subject"
+        expect(quiz.subject_source).to eq "subject_inherited"
+      end
+      context "citation manually set subject" do
+        let(:citation) { citation_manual_subject }
+        it "is subject_admin_citation_entry" do
+          expect(citation.reload.manually_updated_attributes).to eq(["subject"])
+          expect(quiz.reload.source).to eq "claude_integration"
+          expect(quiz.subject).to eq "Citation subject"
+          expect(quiz.subject_source).to eq "subject_admin_citation_entry"
+        end
+      end
+      context "admin_entry" do
+        let(:source) { "admin_entry" }
+        it "is admin_entry" do
+          expect(quiz.reload.source).to eq "admin_entry"
+          expect(quiz.subject).to eq "Quiz subject"
+          expect(quiz.subject_source).to eq "subject_admin_entry"
+        end
+        context "citation manually set subject" do
+          let(:citation) { citation_manual_subject }
+          it "is admin_entry" do
+            expect(quiz.reload.source).to eq "admin_entry"
+            expect(quiz.subject).to eq "Quiz subject"
+            expect(quiz.subject_source).to eq "subject_admin_entry"
+          end
+        end
+      end
     end
   end
 end

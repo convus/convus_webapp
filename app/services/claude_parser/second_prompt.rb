@@ -40,7 +40,10 @@ class ClaudeParser::SecondPrompt
     end
 
     def parse_subject_response(subject_text)
-      subject_text.split(/\n+/).last.strip
+      subject = subject_text.split(/\n+/).reject(&:blank?).last.strip
+      return subject unless subject.match?(/article.*:/i)
+      # When subject is one line, it looks something like "subject of article is: xyz"
+      subject.gsub(/\A.*article.*:/i, "").strip
     end
 
     # I don't love this, line by line procedural parsing - but it works pretty well and I think it's flexible.

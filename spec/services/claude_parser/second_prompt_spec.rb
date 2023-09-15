@@ -7,7 +7,7 @@ RSpec.describe ClaudeParser::SecondPrompt do
   let(:quiz) { FactoryBot.create(:quiz, input_text: input_text, citation: citation) }
   let(:input_text) { nil }
 
-  describe "parse" do
+  describe "parse_quiz" do
     let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question One\nTrue option: Something True\nFalse option: Something false\nStep 2:  \nQuestion: Question two\nTrue option: Something 2 True\nFalse option: Something 2 false\n\n" }
     let(:target) do
       [
@@ -91,6 +91,13 @@ RSpec.describe ClaudeParser::SecondPrompt do
     it "returns the parsed text" do
       expect(subject.send(:claude_responses, quiz)).to eq({quiz: "", subject: subject_text})
       expect(subject.send(:parse_subject_response, subject_text)).to eq "Climate bill spurs clean tech"
+    end
+    context "on the same line" do
+      let(:subject_text) { "The subject of the article is: Climate bill spurs clean tech" }
+      it "returns the parsed text" do
+        expect(subject.send(:claude_responses, quiz)).to eq({quiz: "", subject: subject_text.strip})
+        expect(subject.send(:parse_subject_response, subject_text)).to eq "Climate bill spurs clean tech"
+      end
     end
   end
 
