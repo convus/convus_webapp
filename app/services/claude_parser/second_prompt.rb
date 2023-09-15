@@ -23,7 +23,7 @@ class ClaudeParser::SecondPrompt
     end
 
     def quiz_prompt_full_texts(quiz_prompt_text, citation)
-      (quiz_prompt_text || "").gsub("[ARTICLE_TEXT]", citation&.citation_text)
+      (quiz_prompt_text || "").gsub("[ARTICLE_TEXT]", citation&.citation_text || "")
         .split("\n---\n").map(&:strip)
     end
 
