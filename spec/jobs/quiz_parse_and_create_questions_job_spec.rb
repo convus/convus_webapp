@@ -105,7 +105,7 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
 
         # it updates citation subject
         expect(citation.reload.subject).to eq subject_str
-        expect(citation.manually_updated_attributes).to eq(["subject"])
+        expect(citation.manually_updated_attributes).to eq([])
       end
 
       it "creates questions and answers" do
@@ -124,8 +124,7 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
       end
 
       describe "update quiz subject" do
-        it "updates the quiz subject" do
-          # fail
+        xit "updates the quiz subject" do
         end
       end
     end

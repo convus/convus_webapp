@@ -42,11 +42,12 @@ class MigrateQuizSummariesJob < ApplicationJob
       new_quiz ||= Quiz.new(citation: citation,
         source: :claude_integration,
         kind: :citation_quiz,
-        input_text: quiz.input_text,
-        prompt_text: prompt_text(quiz, subject_prompt))
+        input_text: quiz.input_text.split("\n---\n").first,
+        prompt_text: prompt_text(quiz, subject_prompt),
+        prompt_params: {temperature: 0.9})
 
       # Prompt Claude and update the quiz
-      claude_response = ClaudeIntegration.new.completion_for_prompt(subject_prompt_full_text(new_quiz))
+      claude_response = ClaudeIntegration.new.completion_for_prompt(subject_prompt_full_text(new_quiz), new_quiz.prompt_params)
       new_text = [new_quiz.input_text, claude_response].reject(&:blank?).join("\n\n---\n\n")
       new_quiz.update!(input_text: new_text.strip)
 

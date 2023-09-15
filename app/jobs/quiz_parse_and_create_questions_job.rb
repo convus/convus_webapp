@@ -23,7 +23,7 @@ class QuizParseAndCreateQuestionsJob < ApplicationJob
     # Mark all previous current quizzes as replaced
     quiz.associated_quizzes_previous.current.update_all(status: :replaced)
     if quiz.assigns_citation_subject?
-      quiz.citation.update(manually_updating: true, subject: quiz.subject)
+      quiz.citation.update(subject: quiz.subject)
     end
   rescue ClaudeParser::ParsingError => e
     quiz.update(input_text_parse_error: e, status: :parse_errored)
