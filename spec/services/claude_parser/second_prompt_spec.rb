@@ -194,4 +194,37 @@ RSpec.describe ClaudeParser::SecondPrompt do
       end
     end
   end
+
+  describe "clean_subject" do
+    let(:subject_str) { "The article is about Libraries strained as social services decline." }
+    let(:target) { "Libraries strained as social services decline" }
+    it "responds with the target" do
+      expect(subject.send(:clean_subject, subject_str)).to eq target
+    end
+    context "The article discusses" do
+      let(:subject_str) { "The article discusses Libraries strained as social services decline." }
+      it "responds with the target" do
+        expect(subject.send(:clean_subject, subject_str)).to eq target
+      end
+    end
+    context "count" do
+      let(:subject_str) { "In 10 words or less: Libraries strained as social services decline" }
+      it "responds with the target" do
+        expect(subject.send(:clean_subject, subject_str)).to eq target
+      end
+    end
+    context "another leading words description" do
+      let(:subject_str) { "In 8 words or less, the subject of this article is Libraries strained as social services decline." }
+      it "responds with the target" do
+        expect(subject.send(:clean_subject, subject_str)).to eq target
+      end
+    end
+
+    context "In 10 words or less, this article is about" do
+      let(:subject_str) { "In 10 words or less, this article is about Libraries strained as social services decline." }
+      it "responds with the target" do
+        expect(subject.send(:clean_subject, subject_str)).to eq target
+      end
+    end
+  end
 end
