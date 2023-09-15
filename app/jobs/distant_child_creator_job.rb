@@ -1,4 +1,6 @@
 class DistantChildCreatorJob < ApplicationJob
+  sidekiq_options retry: 1
+
   def perform(id = nil)
     return enqueue_jobs if id.blank?
     topic = Topic.find(id)
