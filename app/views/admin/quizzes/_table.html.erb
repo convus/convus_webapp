@@ -51,7 +51,8 @@
               <span class="text-sm"><%= quiz.source_humanized %></span><% unless skip_sortable %>&nbsp;<%= link_to search_emoji, url_for(sortable_params.merge(search_source: quiz.source)), class: "text-xs no-underline" %><% end %>
             </td>
             <td>
-              <%= quiz.version %>
+              V<%= quiz.version %>
+              <% unless skip_sortable %> <%= link_to search_emoji, admin_quizzes_path(search_citation_id: quiz.citation_id), class: "text-xs no-underline mr-2" %><% end %>
             </td>
             <td>
               <%= admin_number_display(quiz.quiz_questions.count) %>

@@ -95,18 +95,6 @@ class Quiz < ApplicationRecord
     self.class.disableable_statuses.include?(status&.to_sym)
   end
 
-  def citation_quizzes
-    Quiz.where(citation_id: citation_id)
-  end
-
-  def quizzes_following
-    citation_quizzes.where("id > ?", id).order(:id)
-  end
-
-  def quizzes_preceding
-    citation_quizzes.where("id < ?", id).order(:id)
-  end
-
   def kind_humanized
     self.class.kind_humanized(kind)
   end
@@ -137,7 +125,11 @@ class Quiz < ApplicationRecord
   end
 
   def associated_quizzes
-    self.class.where(citation_id: citation_id).where.not(id: id)
+    self.class.where(citation_id: citation_id).where.not(id: id).order(:id)
+  end
+
+  def associated_quizzes_following
+    associated_quizzes.where("id > ?", id)
   end
 
   def associated_quizzes_previous

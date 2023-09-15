@@ -77,6 +77,7 @@ const expandSiblingsEllipse = (event) => {
   elementsCollapse(target, 'hide')
 }
 
+// TODO: Move this into a stimulus controller
 // It's impossible to redirect_to anchor locations with Hotwire (because of :see_other)
 // So: this adds an event listener to store anchor locations prior to form submission
 // and scrolls to the stored location

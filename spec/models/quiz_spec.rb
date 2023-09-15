@@ -14,6 +14,7 @@ RSpec.describe Quiz, type: :model do
     let(:quiz) { FactoryBot.create(:quiz, input_text: " ") }
     let(:citation) { quiz.citation }
     let(:quiz2) { FactoryBot.create(:quiz, citation: citation) }
+    let(:quiz3) { FactoryBot.create(:quiz, citation: citation) }
     it "updates all the previous quizzes" do
       expect(quiz).to be_valid
       expect(quiz.status).to eq "pending"
@@ -33,10 +34,14 @@ RSpec.describe Quiz, type: :model do
       expect(quiz2.kind).to eq "citation_quiz"
       expect(quiz2.associated_quizzes_current&.id).to eq quiz2.id
 
+      expect(quiz3.associated_quizzes.pluck(:id)).to eq([quiz.id, quiz2.id])
+      expect(quiz3.associated_quizzes_previous.pluck(:id)).to eq([quiz.id, quiz2.id])
+
       quiz.reload
       expect(quiz.status).to eq "pending"
       expect(quiz.version).to eq 1
-      expect(quiz.associated_quizzes_current&.id).to eq quiz2.id
+      # expect(quiz.associated_quizzes.pluck(:id)).to eq([quiz2.id, quiz3.id])
+      expect(quiz.associated_quizzes_current&.id).to eq quiz3.id
       expect(citation.quiz_active&.id).to be_blank
     end
     context "quiz active" do

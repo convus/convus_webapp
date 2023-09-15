@@ -6,9 +6,9 @@ class Admin::QuizzesController < Admin::BaseController
 
   def index
     page = params[:page] || 1
-    @per_page = params[:per_page] || 200
+    @per_page = params[:per_page] || 50
     @quizzes = searched_quizzes.reorder("quizzes.#{sort_column} #{sort_direction}")
-      .includes(:citation, :quiz_questions).page(page).per(@per_page)
+      .includes(:citation, :quiz_questions, :quiz_responses).page(page).per(@per_page)
   end
 
   def show
@@ -76,7 +76,7 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def searchable_statuses
-    @searchable_statuses ||= Quiz.statuses.keys
+    @searchable_statuses ||= %w[not_replaced current all] + Quiz.statuses.keys.map(&:to_s)
   end
 
   def selected_form_type(form_type = nil)
@@ -91,19 +91,23 @@ class Admin::QuizzesController < Admin::BaseController
   def searched_quizzes
     quizzes = Quiz
 
-    if searchable_statuses.include?(params[:search_status])
-      @search_status = params[:search_status]
-      quizzes = quizzes.where(status: @search_status)
+    if params[:search_citation_id].present?
+      @searched_citation = Citation.friendly_find(params[:search_citation_id])
+      quizzes = quizzes.where(citation_id: @searched_citation.id) if @searched_citation.present?
     end
+
+    @search_status = if searchable_statuses.include?(params[:search_status])
+      params[:search_status]
+    elsif @searched_citation.present?
+      "all"
+    else
+      searchable_statuses.first
+    end
+    quizzes = quizzes.send(@search_status)
 
     if params[:search_source].present?
       @search_source = params[:search_source]
       quizzes = quizzes.where(source: @search_source)
-    end
-
-    if params[:search_citation_id].present?
-      @searched_citation = Citation.friendly_find(params[:search_citation_id])
-      quizzes = quizzes.where(citation_id: @searched_citation.id) if @searched_citation.present?
     end
 
     quizzes.where(created_at: @time_range)
