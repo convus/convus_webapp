@@ -46,7 +46,7 @@ class MigrateQuizSummariesJob < ApplicationJob
         prompt_text: prompt_text(quiz, subject_prompt))
 
       # Prompt Claude and update the quiz
-      claude_response = ClaudeIntegration.new.completion_for_prompt(subject_prompt(new_quiz))
+      claude_response = ClaudeIntegration.new.completion_for_prompt(subject_prompt_full_text(new_quiz))
       new_text = [new_quiz.input_text, claude_response].reject(&:blank?).join("\n\n---\n\n")
       new_quiz.update!(input_text: new_text.strip)
 

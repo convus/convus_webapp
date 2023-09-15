@@ -77,9 +77,7 @@
               <%= link_to search_emoji, admin_quizzes_path(search_citation_id: @quiz.citation_id), class: "text-sm no-underline mr-2" %>
               <% if @quiz.version > 1 %>
                 <em class="text-sm less-strong">earlier quizzes:</em>
-                <% @quiz.quizzes_preceding.reorder(id: :desc).each do |pquiz| %>
-                  <%= link_to "V#{pquiz.version}", admin_quiz_path(pquiz.to_param), class: "ml-1 text-sm less-strong italic" %>
-                <% end %>
+                <%= safe_join(@quiz.quizzes_preceding.reorder(id: :desc).map { |pquiz| link_to("V#{pquiz.version}", admin_quiz_path(pquiz.to_param), class: "ml-1 text-sm less-strong italic") }, ", ") %>
               <% end %>
             </td>
           </tr>
