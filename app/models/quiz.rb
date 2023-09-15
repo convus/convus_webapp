@@ -15,14 +15,22 @@ class Quiz < ApplicationRecord
     claude_admin_submission: 2
   }.freeze
 
+  SUBJECT_SOURCE = {
+    subject_inherited: 0,
+    subject_claude_integration: 1,
+    subject_admin_entry: 2,
+    subject_admin_citation_entry: 3
+  }.freeze
+
   KIND_ENUM = {citation_quiz: 0}.freeze
 
-  INPUT_TEXT_FORMAT = {claude_initial: 0}.freeze
+  INPUT_TEXT_FORMAT = {claude_initial: 0, claude_second: 1}.freeze
 
   enum status: STATUS_ENUM
   enum source: SOURCE_ENUM
   enum kind: KIND_ENUM
   enum input_text_format: INPUT_TEXT_FORMAT
+  enum subject_source: SUBJECT_SOURCE
 
   self.implicit_order_column = :id
 
@@ -38,7 +46,7 @@ class Quiz < ApplicationRecord
   validate :prompt_params_text_valid_json
 
   before_validation :set_calculated_attributes
-  after_commit :mark_quizzes_replaced_and_enqueue_parsing, on: :create
+  after_commit :enqueue_prompting_if_admin_submission, on: :create
 
   scope :current, -> { where(status: current_statuses) }
 
@@ -56,12 +64,20 @@ class Quiz < ApplicationRecord
     %i[claude_integration claude_admin_submission].freeze
   end
 
+  def self.subject_set_manually_sources
+    %i[subject_admin_entry subject_admin_citation_entry].freeze
+  end
+
   def self.kind_humanized(str)
     str.present? ? str.to_s.humanize : nil
   end
 
   def self.source_humanized(str)
     str.present? ? str.to_s.humanize : nil
+  end
+
+  def subject_set_manually?
+    self.class.subject_set_manually_sources.include?(subject_source.to_sym)
   end
 
   def prompt_source?
@@ -84,10 +100,6 @@ class Quiz < ApplicationRecord
     self.class.source_humanized(source)
   end
 
-  def prompt_full_text
-    prompt_text.present? ? prompt_text.gsub("${ARTICLE_TEXT}", citation&.citation_text) : ""
-  end
-
   def prompt_params_text
     @prompt_params_text ||= (prompt_params || {}).to_json
   end
@@ -99,17 +111,22 @@ class Quiz < ApplicationRecord
   end
 
   def set_calculated_attributes
-    self.subject ||= citation.subject
     self.status ||= :pending
     self.kind ||= :citation_quiz if citation_id.present?
     self.version ||= calculated_version
     self.input_text = nil if input_text.blank?
     self.prompt_text = nil if prompt_text.blank?
-    self.input_text_format ||= :claude_initial
+    self.input_text_format ||= :claude_second
+    self.subject_source ||= calculated_initial_subject_source
+    self.subject = citation&.subject if subject.blank? || subject_admin_citation_entry?
   end
 
   def associated_quizzes
-    self.class.where(citation_id: citation_id).where.not(id: id)
+    self.class.where(citation_id: citation_id).where.not(id: id).order(:id)
+  end
+
+  def associated_quizzes_following
+    associated_quizzes.where("id > ?", id)
   end
 
   def associated_quizzes_previous
@@ -124,16 +141,24 @@ class Quiz < ApplicationRecord
     associated_current
   end
 
-  def mark_quizzes_replaced_and_enqueue_parsing
+  def enqueue_prompting_if_admin_submission
     return true if associated_quizzes.where("id > ?", id).any?
-    if claude_admin_submission?
-      PromptClaudeForCitationQuizJob.perform_async({citation_id: citation_id, quiz_id: id}.as_json)
-    else
-      QuizParseAndCreateQuestionsJob.perform_async(id)
-    end
+    # QuizParseAndCreateQuestionsJob is enqueued from the PromptClaude job
+    return true unless claude_admin_submission?
+    PromptClaudeForCitationQuizJob.perform_async({citation_id: citation_id, quiz_id: id}.as_json)
   end
 
   private
+
+  def calculated_initial_subject_source
+    if admin_entry? && subject.present?
+      :subject_admin_entry
+    elsif citation&.manually_updated_subject?
+      :subject_admin_citation_entry
+    else
+      :subject_inherited
+    end
+  end
 
   def calculated_version
     associated_quizzes_previous.count + 1

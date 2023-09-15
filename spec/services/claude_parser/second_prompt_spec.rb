@@ -1,13 +1,13 @@
 require "rails_helper"
 
-RSpec.describe QuizParser::ClaudeInitial do
+RSpec.describe ClaudeParser::SecondPrompt do
   let(:subject) { described_class }
   let(:publisher) { FactoryBot.create(:publisher, name: "a Publisher") }
   let(:citation) { FactoryBot.create(:citation, publisher: publisher) }
   let(:quiz) { FactoryBot.create(:quiz, input_text: input_text, citation: citation) }
   let(:input_text) { nil }
 
-  describe "parse" do
+  describe "parse_quiz" do
     let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question One\nTrue option: Something True\nFalse option: Something false\nStep 2:  \nQuestion: Question two\nTrue option: Something 2 True\nFalse option: Something 2 false\n\n" }
     let(:target) do
       [
@@ -23,7 +23,8 @@ RSpec.describe QuizParser::ClaudeInitial do
       ]
     end
     it "responds with target" do
-      result = subject.parse(quiz)
+      expect(subject.send(:claude_responses, quiz)).to eq({quiz: input_text.strip})
+      result = subject.parse_quiz(quiz)
       expect(result.count).to eq 2
       result.count.times do |i|
         expect_hashes_to_match(result[i], target[i])
@@ -42,7 +43,7 @@ RSpec.describe QuizParser::ClaudeInitial do
         "False option: \"Something 2 false\"\n\n"
       end
       it "responds with target" do
-        result = subject.parse(quiz)
+        result = subject.parse_quiz(quiz)
         expect(result.count).to eq 2
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])
@@ -66,7 +67,7 @@ RSpec.describe QuizParser::ClaudeInitial do
         ]
       end
       it "responds with target" do
-        result = subject.parse(quiz)
+        result = subject.parse_quiz(quiz)
         expect(result.count).to eq 2
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])
@@ -75,26 +76,44 @@ RSpec.describe QuizParser::ClaudeInitial do
     end
   end
 
-  describe "parse_input_text" do
+  describe "claude_responses" do
     it "blank input_text raises parser error" do
       expect(quiz.input_text).to be_nil
       expect {
-        subject.send(:parse_input_text, quiz)
+        subject.send(:claude_responses, quiz)
       }.to raise_error(/No input_text/)
     end
+  end
 
+  describe "parse_subject" do
+    let(:input_text) { "\n\n---\n\n#{subject_text}" }
+    let(:subject_text) { "Here is a 5 word summary of the article:\n\nClimate bill spurs clean tech" }
+    it "returns the parsed text" do
+      expect(subject.send(:claude_responses, quiz)).to eq({quiz: "", subject: subject_text})
+      expect(subject.send(:parse_subject_response, subject_text)).to eq "Climate bill spurs clean tech"
+    end
+    context "on the same line" do
+      let(:subject_text) { "The subject of the article is: Climate bill spurs clean tech" }
+      it "returns the parsed text" do
+        expect(subject.send(:claude_responses, quiz)).to eq({quiz: "", subject: subject_text.strip})
+        expect(subject.send(:parse_subject_response, subject_text)).to eq "Climate bill spurs clean tech"
+      end
+    end
+  end
+
+  describe "parse_quiz_response" do
     context "valid single question claude_initial response" do
       let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: The Question Step 1\nTrue option: The Step 1 True\nFalse option: The Step 1 false\n\n" }
       let(:target) { {question: "The Question Step 1", correct: ["The Step 1 True"], incorrect: ["The Step 1 false"]} }
       it "returns the parsed text" do
-        result = subject.send(:parse_input_text, quiz)
+        result = subject.send(:parse_quiz_response, quiz.input_text)
         expect(result.count).to eq 1
         expect_hashes_to_match(result.first, target)
       end
       context "reversed order, extra white space" do
         let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nFalse option:\n\nThe Step 1 false\nTrue option: The Step 1 True\nQuestion:\n\nThe Question Step 1\n\n" }
         it "returns the parsed text" do
-          result = subject.send(:parse_input_text, quiz)
+          result = subject.send(:parse_quiz_response, quiz.input_text)
           expect(result.count).to eq 1
           expect_hashes_to_match(result.first, target)
         end
@@ -119,7 +138,7 @@ RSpec.describe QuizParser::ClaudeInitial do
           {question: "Question Step 5", correct: ["Step 5 True"], incorrect: ["Step 5 false"]}]
       end
       it "returns the parsed text" do
-        result = subject.send(:parse_input_text, quiz)
+        result = subject.send(:parse_quiz_response, quiz.input_text)
         expect(result.count).to eq 5
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])
@@ -146,7 +165,7 @@ RSpec.describe QuizParser::ClaudeInitial do
           {question: "", correct: ["Step 3 true"], incorrect: ["Step 3 false"]}]
       end
       it "returns the parsed text" do
-        result = subject.send(:parse_input_text, quiz)
+        result = subject.send(:parse_quiz_response, quiz.input_text)
         expect(result.count).to eq 3
         result.count.times do |i|
           expect_hashes_to_match(result[i], target[i])
@@ -166,7 +185,7 @@ RSpec.describe QuizParser::ClaudeInitial do
           "False: Step 3 false"
         end
         it "returns the parsed text" do
-          result = subject.send(:parse_input_text, quiz)
+          result = subject.send(:parse_quiz_response, quiz.input_text)
           expect(result.count).to eq 3
           result.count.times do |i|
             expect_hashes_to_match(result[i], target[i])

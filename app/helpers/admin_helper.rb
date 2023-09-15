@@ -18,7 +18,7 @@ module AdminHelper
   def admin_status_display_class(status = nil)
     case status&.downcase
     when "active" then "text-success"
-    when "pending", "in_progress" then "text-yellow-400"
+    when "pending", "in_progress", "replaced" then "text-yellow-600"
     when /error/ then "text-error"
     else
       "less-strong"
@@ -52,8 +52,6 @@ module AdminHelper
 
   def prompt_text_area_text(prompt_text = nil)
     return "" if prompt_text.blank?
-    text = prompt_text.gsub("\\n", "\n").gsub("\\\"", '"')
-    text += "\n\nArticle: ${ARTICLE_TEXT}" unless text.match?(/\$\{ARTICLE_TEXT\}/)
-    text
+    prompt_text.gsub("\\n", "\n").gsub("\\\"", '"')
   end
 end

@@ -6,15 +6,16 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
   let(:instance) { described_class.new }
   let(:input_text) { "Some example text" }
   let(:time) { Time.at(1684698531) } # 2023-05-21 12:48
-  let(:citation) { FactoryBot.create(:citation, published_updated_at: time) }
+  let(:citation) { FactoryBot.create(:citation, published_updated_at: time, subject: "Citation initial subject") }
   let(:quiz) do
     FactoryBot.create(:quiz,
       input_text: input_text,
       citation: citation,
-      subject: subject_str,
-      subject_set_manually: true)
+      source: source,
+      subject: "Quiz initial subject",
+      subject_source: nil)
   end
-  let(:subject_str) { nil }
+  let(:source) { :claude_integration }
   let(:input_text) { nil }
 
   describe "#perform" do
@@ -58,7 +59,8 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
     end
 
     context "valid quiz" do
-      let(:input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question One\nTrue option: Something True\nFalse option: Something false\nStep 2:  \nQuestion: Question two\nTrue option: Something 2 True\nFalse option: Something 2 false\n\n" }
+      let(:quiz_input_text) { "Here is a summary of the key events from the article in a chronological true/false format with questions:\nStep 1:\nQuestion: Question One\nTrue option: Something True\nFalse option: Something false\nStep 2:  \nQuestion: Question two\nTrue option: Something 2 True\nFalse option: Something 2 false\n\n" }
+      let(:input_text) { quiz_input_text }
       let(:target) do
         [
           {
@@ -72,10 +74,9 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
           }
         ]
       end
-      let(:subject_str) { "Amazing subject" }
 
       def expect_target_questions_created(quiz)
-        expect(described_class.parsed_input_text(quiz)).to eq target
+        expect(described_class.parsed_quiz_text(quiz)).to eq target
         instance.perform(quiz.id)
         quiz.reload
         expect(quiz.input_text_parse_error).to be_nil
@@ -101,25 +102,80 @@ RSpec.describe QuizParseAndCreateQuestionsJob, type: :job do
 
         # previous quiz status isn't updated
         expect(previous_quiz.reload.status).to eq "replaced"
-        expect(previous_quiz.subject).to be_nil
-
-        # it updates citation subject
-        expect(citation.reload.subject).to eq subject_str
-        expect(citation.manually_updated_attributes).to eq(["subject"])
+        expect(previous_quiz.subject).to eq "Citation initial subject"
       end
 
       it "creates questions and answers" do
+        expect(citation.reload.subject).to eq "Citation initial subject"
+        expect(quiz.reload.subject).to eq "Quiz initial subject"
+
         expect_target_questions_created(quiz)
         expect(quiz.status).to eq "active"
+
+        expect(described_class.parsed_subject_text(quiz)).to be_nil
+        expect(quiz.subject).to eq "Quiz initial subject"
+        expect(quiz.subject_source).to eq "subject_inherited"
+        expect(citation.reload.subject).to eq "Citation initial subject"
+        expect(citation.manually_updated_attributes).to eq([])
       end
 
       context "quiz status: disabled" do
         before { quiz.update(status: :disabled) }
         it "creates questions and answers, doesn't update status" do
-          # Citation subject is still updated
-          citation.update(subject: "dasdfasdf")
           expect_target_questions_created(quiz)
           expect(quiz.status).to eq "disabled"
+          expect(quiz.subject).to eq "Quiz initial subject"
+        end
+      end
+
+      describe "input_text includes subject" do
+        let(:subject_text) { "A special event on 2023-09-12" }
+        let(:input_text) { quiz_input_text + "\n\n---\n\nThe subject of the article is: #{subject_text}" }
+        it "updates the quiz and citation subjects" do
+          expect(described_class.parsed_subject_text(quiz)).to eq subject_text
+          expect_target_questions_created(quiz)
+
+          expect(quiz.status).to eq "active"
+          expect(quiz.subject).to eq subject_text
+          expect(quiz.subject_source).to eq "subject_claude_integration"
+          expect(citation.reload.subject).to eq subject_text
+          expect(citation.manually_updated_attributes).to eq([])
+          expect(citation.reload.manually_updated_subject?).to be_falsey
+        end
+        context "citation manually_updated_subject" do
+          before { citation.update(manually_updated_attributes: ["subject"]) }
+          it "doesn't update the citation subject" do
+            expect(citation.reload.manually_updated_subject?).to be_truthy
+            expect(quiz.reload.source).to eq "claude_integration"
+            expect(quiz.subject_source).to eq "subject_admin_citation_entry"
+            expect(quiz.subject).to eq "Citation initial subject"
+            expect(described_class.parsed_subject_text(quiz)).to eq subject_text
+
+            expect_target_questions_created(quiz)
+
+            expect(quiz.status).to eq "active"
+            expect(quiz.subject).to eq "Citation initial subject"
+            expect(quiz.subject_source).to eq "subject_admin_citation_entry"
+            expect(citation.reload.subject).to eq "Citation initial subject"
+            expect(citation.manually_updated_attributes).to eq(["subject"])
+          end
+        end
+        context "admin_entry" do
+          let(:source) { :admin_entry }
+          it "updates the citation subject, doesn't update with parsed subject" do
+            expect(quiz.reload.source).to eq "admin_entry"
+            expect(quiz.subject_source).to eq "subject_admin_entry"
+            expect(citation.reload.manually_updated_subject?).to be_falsey
+            expect(described_class.parsed_subject_text(quiz)).to eq subject_text
+
+            expect_target_questions_created(quiz)
+
+            expect(quiz.status).to eq "active"
+            expect(quiz.subject).to eq "Quiz initial subject"
+            expect(quiz.subject_source).to eq "subject_admin_entry"
+            expect(citation.reload.subject).to eq "Quiz initial subject"
+            expect(citation.manually_updated_attributes).to eq([])
+          end
         end
       end
     end

@@ -212,6 +212,11 @@ class Citation < ApplicationRecord
       .map { |attr, val| val.present? ? nil : attr }.compact
   end
 
+  # No need to check if subject present, manually_updated_attributes handles on save
+  def manually_updated_subject?
+    manually_updated_attributes.include?("subject")
+  end
+
   def set_calculated_attributes
     self.title = nil if title.blank?
     self.url ||= self.class.normalized_url(url)
@@ -219,6 +224,7 @@ class Citation < ApplicationRecord
     self.authors = (Array(authors) || [])&.map { |a| self.class.normalize_author(a) }&.compact
     self.citation_text = clean_citation_text(citation_text)
     self.manually_updated_attributes = [] if manually_updated_attributes.blank?
+    self.subject = nil if subject.blank?
     # If assigning publisher, remove query if required
     if publisher.blank? && url.present?
       self.publisher = Publisher.find_or_create_for_domain(url_components[:host])
@@ -244,12 +250,8 @@ class Citation < ApplicationRecord
     current_m_attrs << "citation_text" if manually_updating && citation_text_changed?
     self.manually_updated_attributes = current_m_attrs.uniq.sort
     # Update subject here to prevent it from being included in manually updated accidentally
-    if manually_updated_attributes.include?("subject")
-      if subject == calculated_subject
-        self.manually_updated_attributes = manually_updated_attributes - ["subject"]
-      end
-    else
-      self.subject = calculated_subject
+    if manually_updated_subject? && subject.blank?
+      self.manually_updated_attributes = manually_updated_attributes - ["subject"]
     end
     self.manually_updated_at = manually_updated_attributes.any? ? Time.current : nil
   end
@@ -285,10 +287,5 @@ class Citation < ApplicationRecord
   def clean_citation_text(text)
     stripped = text&.gsub(" ", " ")&.strip
     stripped.present? ? stripped : nil
-  end
-
-  def calculated_subject
-    topic_names = topics.name_ordered.pluck(:name)
-    topic_names.any? ? topic_names.to_sentence : nil
   end
 end

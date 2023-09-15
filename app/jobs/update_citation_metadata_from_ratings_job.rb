@@ -35,11 +35,13 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
       citation.publisher.update(name: new_attributes[:publisher_name])
     end
 
-    # Update quiz subjects!
-    if citation.manually_updated_attributes.exclude?("subject") && citation.subject.present?
-      citation.quizzes.where(subject_set_manually: false)
-        .update_all(subject: citation.subject)
+    # Update quiz subjects, if subject is manually assigned
+    if citation.manually_updated_subject?
+      # Only update the current quiz, doesn't update subject_admin_entry
+      citation.quizzes.current.not_subject_admin_entry
+        .update_all(subject: citation.subject, subject_source: :subject_admin_citation_entry)
     end
+
     # Create the quiz!
     if PromptClaudeForCitationQuizJob.enqueue_for_citation?(citation)
       PromptClaudeForCitationQuizJob.perform_async({"citation_id" => citation.id})

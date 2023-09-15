@@ -1,5 +1,25 @@
+<% reload_if_pending ||= false %>
+
 <div class="large-width-container mt-4">
-  <div class="row sm:grid-cols-2">
+  <table class="table-list">
+    <tbody>
+      <tr>
+        <td>Citation</td>
+        <td><%= admin_citation_cell(@citation, filter_link: admin_citations_path) %></td>
+      </tr>
+      <tr>
+        <td>Subject</td>
+        <td>
+          <%= @quiz.subject %>
+          <% if display_dev_info? %>
+            <small class="only-dev-visible ml-1"><%= @quiz.subject_source || 'NO SOURCE!' %></small>
+          <% end %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="row sm:grid-cols-2 mt-4">
     <div class="col">
       <table class="table-list">
         <tbody>
@@ -21,25 +41,55 @@
             <td>Status</td>
             <td>
               <%= admin_status_display(@quiz.status) %>
+              <% current_quiz = @quiz.associated_quizzes_current %>
+              <% if current_quiz.present? && current_quiz != @quiz %>
+                <span class="ml-1">
+                  <%= link_to "current quiz is V#{current_quiz.version}", admin_quiz_path(current_quiz.to_param) %>
+                </span>
+              <% end %>
               <% if @quiz.pending? %>
-                <a href="#" class="text-sm less-strong ml-2" id="reloadLink">reload</a>
-                <script>
-                  document.querySelector('#reloadLink').addEventListener('click', (e) => {
-                    e.preventDefault()
-                    location.reload();
-                  })
-                </script>
+                <%# Only reload the page automatically if reload_if_pending is passed in, and the quiz is recent %>
+                <% if reload_if_pending && @quiz.created_at > Time.current - 5.minutes %>
+                  <small data-controller="reload-page-timer">waiting on Claude, reloading in <span id="reloadPageSeconds">10</span> seconds</small>
+                <% else %>
+                  <% if @quiz.created_at < Time.current - 5.minutes %>
+                    <small>prompting failed</small>
+                  <% end %>
+                  <a href="#" class="text-sm less-strong ml-2" id="reloadLink">reload</a>
+                  <script>
+                    document.querySelector('#reloadLink').addEventListener('click', (e) => {
+                      e.preventDefault()
+                      location.reload();
+                    })
+                  </script>
+                <% end %>
               <% elsif @quiz.input_text_parse_error.present? %>
                 <span class="block">
                   <strong>Error message:</strong>
                   <%= @quiz.input_text_parse_error %>
                 </span>
+              <% elsif @quiz.status == "replaced" %>
+                <% replaced_by = @quiz.associated_quizzes_following.first %>
+                <% if replaced_by.present? && replaced_by != current_quiz %>
+                  <em class="ml-2 text-sm less-strong">
+                    replaced by
+                    <%= link_to "V#{replaced_by.version}", admin_quiz_path(replaced_by) %>&nbsp;
+                    <span class="less-strong convertTime withPreposition"><%= l(replaced_by.created_at, format: :convert_time) %></span>
+                  </em>
+                <% end %>
               <% end %>
             </td>
           </tr>
-          <tr>
-            <td>Citation</td>
-            <td><%= admin_citation_cell(@citation, filter_link: admin_citations_path) %></td>
+          <tr class="text-sm">
+            <td>Version</td>
+            <td>
+              V<%= @quiz.version %>
+              <%= link_to search_emoji, admin_quizzes_path(search_citation_id: @quiz.citation_id), class: "text-sm no-underline mr-2" %>
+              <% if @quiz.version > 1 %>
+                <em class="text-sm less-strong">earlier versions:</em>
+                <%= safe_join(@quiz.associated_quizzes_previous.reorder(id: :desc).map { |pquiz| link_to("V#{pquiz.version}", admin_quiz_path(pquiz.to_param), class: "ml-1 text-sm less-strong italic") }, ", ") %>
+              <% end %>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -47,15 +97,6 @@
     <div class="col">
       <table class="table-list">
         <tbody>
-          <tr>
-            <td>Subject</td>
-            <td>
-              <%= @quiz.subject %>
-              <% if @quiz.subject_set_manually && display_dev_info? %>
-                <small class="only-dev-visible">set manually</small>
-              <% end %>
-            </td>
-          </tr>
           <tr>
             <td>Source</td>
             <td>
@@ -66,12 +107,9 @@
             <td>Kind</td>
             <td>
               <%= @quiz.kind_humanized %>
-            </td>
-          </tr>
-          <tr class="text-sm">
-            <td>Version</td>
-            <td>
-              <%= link_to @quiz.version, admin_quizzes_path(search_citation_id: @quiz.citation_id) %>
+              <% if @quiz.input_text_format.present? %>
+                <small class="less-strong ml-2">format: <%= @quiz.input_text_format.humanize.downcase %></small>
+              <% end %>
             </td>
           </tr>
           <tr class="text-sm">

@@ -360,14 +360,14 @@ RSpec.describe Citation, type: :model do
     let(:topic) { citation_topic.topic }
     it "updates" do
       citation.update(updated_at: Time.current)
-      expect(citation.reload.subject).to eq topic.name
+      expect(citation.reload.subject).to be_nil
       citation.update(manually_updating: true, subject: "A cool subject")
       expect(citation.reload.subject).to eq "A cool subject"
       expect(citation.manually_updated_attributes).to eq(["subject"])
       expect(citation.manually_updated_at).to be_present
       # Updating with the calculated subject puts it back
-      citation.update(manually_updating: true, subject: topic.name)
-      expect(citation.reload.subject).to eq topic.name
+      citation.update(manually_updating: true, subject: " ")
+      expect(citation.reload.subject).to be_nil
       expect(citation.manually_updated_attributes).to eq([])
       expect(citation.manually_updated_at).to be_nil
     end

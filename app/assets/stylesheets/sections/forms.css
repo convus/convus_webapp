@@ -2,8 +2,22 @@
   @apply mt-2;
 }
 
+
+.form-control, .form-control-inline {
+  @apply bg-white border border-gray-300 rounded-sm px-2 py-1 disabled:bg-gray-200 disabled:border-gray-300;
+}
+
 .form-control {
-  @apply bg-white border w-full border-gray-300 rounded-sm px-2 py-1 disabled:bg-gray-200 disabled:border-gray-300;
+  @apply w-full;
+}
+
+.form-control-inline {
+  @apply inline-block;
+
+  /* Selects have a ⌄ on the right side, provide sufficient padding for it */
+  &select {
+   @apply pr-7
+  }
 }
 
 .form-control-radio, .form-control-check {
