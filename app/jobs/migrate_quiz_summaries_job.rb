@@ -17,7 +17,9 @@ class MigrateQuizSummariesJob < ApplicationJob
 
   def prompt_text(quiz, subject_prompt = nil)
     subject_prompt ||= PromptClaudeForCitationQuizJob::SUBJECT_PROMPT
-    "#{quiz.prompt_text}\n\nArticle: [ARTICLE_TEXT]\n\n---\n\n#{subject_prompt}"
+    prompt_text = quiz.prompt_text
+    prompt_text += "\n\nArticle: [ARTICLE_TEXT]" unless prompt_text.match?("[ARTICLE_TEXT]")
+    prompt_text + "\n\n---\n\n#{subject_prompt}"
   end
 
   def subject_prompt_full_text(quiz)

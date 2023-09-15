@@ -108,7 +108,7 @@
             <td>
               <%= @quiz.kind_humanized %>
               <% if @quiz.input_text_format.present? %>
-                <small class="less-strong ml-2">format: <%= @quiz.input_text_format.humanize.downcase %></small>
+                <small class="less-strong ml-2">format: <code><%= @quiz.input_text_format %></code></small>
               <% end %>
             </td>
           </tr>
