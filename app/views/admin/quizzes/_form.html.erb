@@ -1,4 +1,5 @@
 <% quiz ||= @quiz %>
+<% citation = quiz.citation %>
 <% form_type = @form_type || "admin_entry" %>
 <% editing_quiz = quiz.id.present? %>
 <% form_url = editing_quiz ? admin_quiz_url(quiz) : admin_quizzes_url %>
@@ -12,14 +13,23 @@
   <% if form_type == "admin_entry" %>
     <div class="form-row mb-4">
       <%= f.label :subject do %>
-        Quiz/Citation Subject <small class="less-strong">updating this will also update the citation</small>
+        Quiz Subject
+        <small class="less-strong">
+          <% if citation.manually_updated_subject? %>
+            The citation's subject was manually updated in admin, which overrides the quiz subject.
+          <% else %>
+            updating this will also update the citation subject
+          <% end %>
+        </small>
       <% end %>
-      <%= f.text_field :subject, class: "form-control", required: true %>
+      <%= f.text_field :subject, class: "form-control", required: true, disabled: citation.manually_updated_subject? %>
     </div>
     <h2>Manually enter text to generate quiz questions</h2>
     <div class="row sm:grid-cols-3 mt-4 mb-2">
       <div class="col col-span-2">
         <div class="form-row">
+          <%# Remove the subject block from the input_text, because there is a subject field %>
+          <% quiz.input_text = ClaudeParser::SecondPrompt.quiz_prompt_full_texts(quiz.input_text, citation).first %>
           <%= f.text_area :input_text, class: "form-control", required: true, rows: 15 %>
         </div>
       </div>

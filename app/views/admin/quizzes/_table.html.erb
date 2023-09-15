@@ -10,7 +10,7 @@
           <%= sortable "created_at", skip_sortable: skip_sortable %>
         </th>
         <th>
-          <%= sortable "subject", skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
+          <%= sortable "subject", skip_sortable: skip_sortable, class: "sortable-link-narrow italic" %>
           <% unless skip_citation %>
             <%= sortable "citation_id",  skip_sortable: skip_sortable, class: "sortable-link-narrow" %>
           <% end %>
@@ -39,7 +39,7 @@
               <%= link_to l(quiz.created_at, format: :convert_time), admin_quiz_path(quiz), class: "convertTime link" %>
             </td>
             <td class="max-w-md maxWScreen">
-              <p><%= quiz.subject %></p>
+              <p class="italic"><%= quiz.subject %></p>
               <% unless skip_citation %>
                 <%= admin_citation_cell(quiz.citation) %>
               </td>

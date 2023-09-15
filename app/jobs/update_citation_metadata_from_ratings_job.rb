@@ -36,7 +36,7 @@ class UpdateCitationMetadataFromRatingsJob < ApplicationJob
     end
 
     # Update quiz subjects, if subject is manually assigned
-    if citation.manually_updated_attributes.include?("subject") && citation.subject.present?
+    if citation.manually_updated_subject?
       # Only update the current quiz, doesn't update subject_admin_entry
       citation.quizzes.current.not_subject_admin_entry
         .update_all(subject: citation.subject, subject_source: :subject_admin_citation_entry)

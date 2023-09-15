@@ -7,7 +7,6 @@ class MigrateQuizSummariesJob < ApplicationJob
     quiz.citation.quizzes.claude_second.active.none?
   end
 
-  # May use get_remaining_ttl to calculate sometime
   def requeue_delay
     31.seconds
   end
@@ -37,12 +36,12 @@ class MigrateQuizSummariesJob < ApplicationJob
     return self.class.perform_in(requeue_delay, args) unless redlock
 
     begin
-      new_quiz ||= Quiz.new(citation: citation,
+      new_quiz ||= Quiz.create(citation: citation,
         source: :claude_integration,
         kind: :citation_quiz,
         input_text: quiz.input_text.split("\n---\n").first,
         prompt_text: prompt_text(quiz, subject_prompt),
-        prompt_params: {temperature: 0.7})
+        prompt_params: {temperature: 1})
 
       # Prompt Claude and update the quiz
       claude_response = ClaudeIntegration.new.completion_for_prompt(subject_prompt_full_text(new_quiz), new_quiz.prompt_params)
