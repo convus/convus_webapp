@@ -26,6 +26,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
           expect(quiz.source).to eq "claude_integration"
           expect(quiz.kind).to eq "citation_quiz"
           expect(quiz.prompt_text).to eq prompt_text
+          expect(quiz.prompt_params).to eq({"temperature" => 0.9})
           expect(quiz.input_text).to eq "response text"
           expect(QuizParseAndCreateQuestionsJob.jobs.map { |j| j["args"] }.flatten).to match_array([quiz.id])
         end
@@ -58,6 +59,7 @@ RSpec.describe PromptClaudeForCitationQuizJob, type: :job do
 
             expect(quiz.reload.citation_id).to eq citation.id
             expect(quiz.source).to eq "claude_admin_submission"
+            expect(quiz.prompt_params).to eq({})
             expect(quiz.prompt_text).to eq prompt_text
             expect(quiz.input_text).to eq "response text"
             expect(quiz.status).to eq "pending"
