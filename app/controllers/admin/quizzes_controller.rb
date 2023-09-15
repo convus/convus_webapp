@@ -76,7 +76,7 @@ class Admin::QuizzesController < Admin::BaseController
   end
 
   def searchable_statuses
-    @searchable_statuses ||= %w[not_replaced current all] + Quiz.statuses.keys.map(&:to_s)
+    @searchable_statuses ||= %w[all current not_replaced] + Quiz.statuses.keys.map(&:to_s)
   end
 
   def selected_form_type(form_type = nil)
@@ -98,8 +98,6 @@ class Admin::QuizzesController < Admin::BaseController
 
     @search_status = if searchable_statuses.include?(params[:search_status])
       params[:search_status]
-    elsif @searched_citation.present?
-      "all"
     else
       searchable_statuses.first
     end

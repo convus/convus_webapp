@@ -1,8 +1,6 @@
 # Lazy copy of PromptClaudeForCitationQuizJob
 class MigrateQuizSummariesJob < ApplicationJob
   sidekiq_options retry: false
-  SKIP_JOB = ENV["SKIP_CREATE_CITATION_QUIZ"].present?
-  SUBJECT_PROMPT = ENV["CLAUDE_SUBJECT_PROMPT"].freeze
 
   def self.enqueue_for_quiz?(quiz)
     return false if quiz.blank?
@@ -19,7 +17,7 @@ class MigrateQuizSummariesJob < ApplicationJob
   end
 
   def prompt_text(quiz, subject_prompt = nil)
-    subject_prompt ||= SUBJECT_PROMPT
+    subject_prompt ||= PromptClaudeForCitationQuizJob::SUBJECT_PROMPT
     "#{quiz.prompt_text}\n\nArticle: [ARTICLE_TEXT]\n\n---\n\n#{subject_prompt}"
   end
 
@@ -28,7 +26,7 @@ class MigrateQuizSummariesJob < ApplicationJob
   end
 
   def perform(quiz_id, subject_prompt = nil)
-    return if SKIP_JOB
+    return if PromptClaudeForCitationQuizJob::SKIP_JOB
     quiz = Quiz.find(quiz_id)
     return unless self.class.enqueue_for_quiz?(quiz)
     citation = quiz.citation
@@ -44,7 +42,7 @@ class MigrateQuizSummariesJob < ApplicationJob
         kind: :citation_quiz,
         input_text: quiz.input_text.split("\n---\n").first,
         prompt_text: prompt_text(quiz, subject_prompt),
-        prompt_params: {temperature: 0.5})
+        prompt_params: {temperature: 0.7})
 
       # Prompt Claude and update the quiz
       claude_response = ClaudeIntegration.new.completion_for_prompt(subject_prompt_full_text(new_quiz), new_quiz.prompt_params)
