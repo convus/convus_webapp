@@ -7,7 +7,7 @@
 
   <p class="text-lg mt-2 mb-4"><%= link_to "Take quiz", quiz_path(@quiz) %></p>
 
-  <%= render partial: "show_header" %>
+  <%= render partial: "show_header", locals: {reload_if_pending: true} %>
 </div>
 
 <div class="large-width-container mt-8">

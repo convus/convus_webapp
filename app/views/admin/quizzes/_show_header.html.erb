@@ -1,3 +1,5 @@
+<% reload_if_pending ||= false %>
+
 <div class="large-width-container mt-4">
   <table class="table-list">
     <tbody>
@@ -46,13 +48,21 @@
                 </span>
               <% end %>
               <% if @quiz.pending? %>
-                <a href="#" class="text-sm less-strong ml-2" id="reloadLink">reload</a>
-                <script>
-                  document.querySelector('#reloadLink').addEventListener('click', (e) => {
-                    e.preventDefault()
-                    location.reload();
-                  })
-                </script>
+                <%# Only reload the page automatically if reload_if_pending is passed in, and the quiz is recent %>
+                <% if reload_if_pending && @quiz.created_at > Time.current - 5.minutes %>
+                  <small data-controller="reload-page-timer">waiting on Claude, reloading in <span id="reloadPageSeconds">10</span> seconds</small>
+                <% else %>
+                  <% if @quiz.created_at < Time.current - 5.minutes %>
+                    <small>prompting failed</small>
+                  <% end %>
+                  <a href="#" class="text-sm less-strong ml-2" id="reloadLink">reload</a>
+                  <script>
+                    document.querySelector('#reloadLink').addEventListener('click', (e) => {
+                      e.preventDefault()
+                      location.reload();
+                    })
+                  </script>
+                <% end %>
               <% elsif @quiz.input_text_parse_error.present? %>
                 <span class="block">
                   <strong>Error message:</strong>
