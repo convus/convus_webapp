@@ -49,6 +49,7 @@ class Quiz < ApplicationRecord
   after_commit :enqueue_prompting_if_admin_submission, on: :create
 
   scope :current, -> { where(status: current_statuses) }
+  scope :citation_ordered, -> { includes(:citation).order('citations.published_updated_at_with_fallback DESC')}
 
   attr_writer :prompt_params_text
 

@@ -163,10 +163,6 @@ class Citation < ApplicationRecord
     published_updated_at
   end
 
-  def published_updated_at_with_fallback
-    published_updated_at || published_at || created_at || Time.current
-  end
-
   def publisher_name
     publisher&.name
   end
@@ -225,6 +221,7 @@ class Citation < ApplicationRecord
     self.citation_text = clean_citation_text(citation_text)
     self.manually_updated_attributes = [] if manually_updated_attributes.blank?
     self.subject = nil if subject.blank?
+    self.published_updated_at_with_fallback = calculated_published_updated_at_with_fallback
     # If assigning publisher, remove query if required
     if publisher.blank? && url.present?
       self.publisher = Publisher.find_or_create_for_domain(url_components[:host])
@@ -275,6 +272,10 @@ class Citation < ApplicationRecord
   end
 
   private
+
+  def calculated_published_updated_at_with_fallback
+    published_updated_at || published_at || created_at || Time.current
+  end
 
   def references_folder
     Slugifyer.filename_slugify(url_components[:host])

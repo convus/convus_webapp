@@ -3,8 +3,9 @@ class QuizzesController < ApplicationController
   before_action :find_quiz_and_response, except: [:index]
 
   def index
-    @quizzes = Quiz.active.order(created_at: :desc)
-    @quiz_response_quiz_ids = current_user&.quiz_responses&.pluck(:quiz_id) || []
+    page = params[:page] || 1
+    @per_page = params[:per_page] || 50
+    @quizzes = searched_quizzes.page(page).per(@per_page)
   end
 
   def show
@@ -31,6 +32,25 @@ class QuizzesController < ApplicationController
   end
 
   private
+
+  def searched_quizzes
+    quizzes = Quiz.active
+    if current_user.present?
+      # TODO: join stuff
+      @quiz_response_quiz_ids = current_user.quiz_responses.finished.pluck(:quiz_id) || []
+      quizzes = if TranzitoUtils::Normalize.boolean(params[:search_completed])
+        quizzes.where(id: @quiz_response_quiz_ids)
+      else
+        quizzes.where.not(id: @quiz_response_quiz_ids)
+      end
+    end
+
+    if TranzitoUtils::Normalize.boolean(params[:search_quiz_ordered])
+      quizzes.order(id: :desc)
+    else
+      quizzes.citation_ordered
+    end
+  end
 
   def update_quiz_question_response(quiz_response, quiz_question_id, quality)
     quiz_question_response = quiz_response.quiz_question_responses.where(quiz_question_id: quiz_question_id).first
