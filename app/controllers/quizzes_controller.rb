@@ -10,6 +10,7 @@ class QuizzesController < ApplicationController
   def show
     @quiz_questions = @quiz.quiz_questions.includes(:quiz_question_answers)
     @quiz_question_responses = @quiz_response.quiz_question_responses
+    @page_title = "Quiz: #{@quiz.title}"
   end
 
   def update

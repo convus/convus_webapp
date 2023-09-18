@@ -1,7 +1,7 @@
 class Admin::QuizzesController < Admin::BaseController
   include TranzitoUtils::SortableTable
   before_action :set_period, only: %i[index]
-  before_action :find_quiz, except: %i[index new create]
+  before_action :find_quiz_and_set_page_title, except: %i[index new create]
   before_action :set_form_type, only: %i[new create edit update]
 
   def index
@@ -117,7 +117,7 @@ class Admin::QuizzesController < Admin::BaseController
       .merge(source: selected_form_type(params.dig(:quiz, :source)))
   end
 
-  def find_quiz
+  def find_quiz_and_set_page_title
     if params[:citation_id].present?
       @citation = Citation.friendly_find!(params[:citation_id])
       @quiz = @citation.quizzes.current.last
@@ -126,5 +126,7 @@ class Admin::QuizzesController < Admin::BaseController
       @citation = @quiz.citation
     end
     @quiz_questions = @quiz.quiz_questions.includes(:quiz_question_answers)
+    @page_title = "Quiz: #{@quiz.title}"
+    @page_title += " #{action_name}" unless action_name == "show"
   end
 end

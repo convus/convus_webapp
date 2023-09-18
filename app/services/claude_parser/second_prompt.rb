@@ -40,10 +40,25 @@ class ClaudeParser::SecondPrompt
     end
 
     def parse_subject_response(subject_text)
-      subject = subject_text.split(/\n+/).reject(&:blank?).last.strip
-      return subject unless subject.match?(/article.*:/i)
-      # When subject is one line, it looks something like "subject of article is: xyz"
-      subject.gsub(/\A.*article.*:/i, "").strip
+      subject_str = subject_text.split(/\n+/).reject(&:blank?).last.strip
+      if subject_str.match?(/article.*:/i)
+        # When subject is one line, it looks something like "subject of article is: xyz"
+        subject_str = subject_str.gsub(/\A.*article.*:/i, "")
+      end
+      clean_subject(subject_str.dup)
+    end
+
+    def clean_subject(subject_str)
+      subject_str = subject_str.dup
+      [
+        /in \d+ words (or less)?\W?/i,
+        /th(e|is) article (is about|discusses|focuses on)\W?/i,
+        /th(e|is) subject\s(of this article\s?)?(is)?\W?/i,
+        /\W\z/ # Often the response ends in a period, remove it
+      ].each { |r| subject_str.gsub!(r, "") }
+      subject_str.strip!
+      subject_str[0] = subject_str[0].upcase # Since we trimmed off the first letter of the word, capitalize
+      subject_str
     end
 
     # I don't love this, line by line procedural parsing - but it works pretty well and I think it's flexible.
