@@ -1,3 +1,22 @@
-<h1 class="mb-4">Quizzes</h1>
+<div class="row sm:grid-cols-2 standard-top-offset mb-4">
+  <div class="col">
+    <h1 class="">Quizzes</h1>
+  </div>
+  <div class="col text-right mt-2">
+    <% if current_user.present? %>
+      <% if @quizzes_completed %>
+        <%= link_to "completed", url_for(sortable_params.merge(search_completed: !@quizzes_completed)), class: "text-sm no-underline text-gray-400" %>
+      <% else %>
+        <%= link_to "incomplete", url_for(sortable_params.merge(search_completed: !@quizzes_completed)), class: "text-sm no-underline text-gray-400" %>
+      <% end %>
+      <span class="mx-1 text-gray-500">|</span>
+    <% end %>
+    <% if @quiz_ordered %>
+      <%= link_to "by when article published", url_for(sortable_params.merge(search_quiz_ordered: !@quiz_ordered)), class: "text-sm no-underline text-gray-400" %>
+    <% else %>
+      <%= link_to "by when quiz updated", url_for(sortable_params.merge(search_quiz_ordered: !@quiz_ordered)), class: "text-sm no-underline text-gray-400" %>
+    <% end %>
+  </div>
+</div>
 
 <%= render partial: "/quizzes/table", locals: {quizzes: @quizzes} %>

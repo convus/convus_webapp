@@ -80,6 +80,20 @@ RSpec.describe Quiz, type: :model do
     end
   end
 
+  describe "citation_ordered" do
+    let!(:citation2) { FactoryBot.create(:citation, published_at: Time.current - 3.weeks, published_updated_at: Time.current - 1.week) }
+    let!(:citation3) { FactoryBot.create(:citation, created_at: Time.current - 2.weeks) }
+    let!(:citation1) { FactoryBot.create(:citation, published_updated_at: Time.current - 2.days) }
+    let!(:quiz2) { FactoryBot.create(:quiz, citation: citation2) }
+    let!(:quiz3) { FactoryBot.create(:quiz, citation: citation3) }
+    let!(:quiz1) { FactoryBot.create(:quiz, citation: citation1) }
+    it "orders by citation" do
+      expect(Quiz.order(id: :desc).pluck(:id)).to eq([quiz1.id, quiz3.id, quiz2.id])
+      expect(citation3.reload.published_updated_at_with_fallback).to be_within(5).of Time.current - 2.weeks
+      expect(Quiz.citation_ordered.pluck(:id)).to eq([quiz1.id, quiz2.id, quiz3.id])
+    end
+  end
+
   describe "subject_source" do
     let(:citation) { FactoryBot.create(:citation, subject: "Citation subject") }
     let(:citation_manual_subject) { FactoryBot.create(:citation, subject: "Citation subject", manually_updated_attributes: ["subject"]) }

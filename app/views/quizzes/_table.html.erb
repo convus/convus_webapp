@@ -1,5 +1,6 @@
 <% quizzes ||= @quizzes %>
-<% quiz_response_quiz_ids ||= @quiz_response_quiz_ids || [] %>
+<% quiz_response_finished_ids ||= @quiz_response_finished_ids || [] %>
+<% quiz_response_in_progress_ids ||= @quiz_response_in_progress_ids || [] %>
 
 <div class="full-screen-table">
   <table class="table table-sm table-striped">
@@ -15,9 +16,19 @@
             <% end %>
           </td>
           <td>
-            <% if quiz_response_quiz_ids.include?(quiz.id) %>
-              <span class="text-success">completed</span>
+            <% if quiz_response_finished_ids.include?(quiz.id) %>
+              <span class="text-success">
+                completed
+              </span>
+              <% quiz_response_at = quiz.quiz_responses.last&.updated_at %>
+              <% if quiz_response_at.present? %>
+                <span class="text-sm less-strong convertTime withPreposition"><%= l(quiz_response_at, format: :convert_time) %></span>
+              <% end %>
+
+            <% elsif quiz_response_in_progress_ids.include?(quiz.id) %>
+              <span class="less-strong">started</span>
             <% end %>
+
           </td>
         </tr>
       <% end %>
