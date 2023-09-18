@@ -6,6 +6,7 @@ class QuizzesController < ApplicationController
     page = params[:page] || 1
     @per_page = params[:per_page] || 50
     @quizzes = searched_quizzes.page(page).per(@per_page)
+      .includes(:quiz_responses)
   end
 
   def show
@@ -37,15 +38,19 @@ class QuizzesController < ApplicationController
     quizzes = Quiz.active
     if current_user.present?
       # TODO: join stuff
-      @quiz_response_quiz_ids = current_user.quiz_responses.finished.pluck(:quiz_id) || []
-      quizzes = if TranzitoUtils::Normalize.boolean(params[:search_completed])
-        quizzes.where(id: @quiz_response_quiz_ids)
+      @quiz_response_finished_ids = current_user.quiz_responses.finished.pluck(:quiz_id)
+      @quizzes_completed = TranzitoUtils::Normalize.boolean(params[:search_completed])
+
+      quizzes = if @quizzes_completed
+        quizzes.where(id: @quiz_response_finished_ids)
       else
-        quizzes.where.not(id: @quiz_response_quiz_ids)
+        @quiz_response_in_progress_ids = current_user.quiz_responses.in_progress.pluck(:quiz_id)
+        quizzes.where.not(id: @quiz_response_finished_ids)
       end
     end
 
-    if TranzitoUtils::Normalize.boolean(params[:search_quiz_ordered])
+    @quiz_ordered = TranzitoUtils::Normalize.boolean(params[:search_quiz_ordered])
+    if @quiz_ordered
       quizzes.order(id: :desc)
     else
       quizzes.citation_ordered
