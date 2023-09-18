@@ -5,9 +5,9 @@
   <div class="col text-right mt-2">
     <% if current_user.present? %>
       <% if @quizzes_completed %>
-        <%= link_to "completed", url_for(sortable_params.merge(search_completed: !@quizzes_completed)), class: "text-sm no-underline text-gray-400" %>
+        <%= link_to "incompleted", url_for(sortable_params.merge(search_completed: !@quizzes_completed)), class: "text-sm no-underline text-gray-400" %>
       <% else %>
-        <%= link_to "incomplete", url_for(sortable_params.merge(search_completed: !@quizzes_completed)), class: "text-sm no-underline text-gray-400" %>
+        <%= link_to "complete", url_for(sortable_params.merge(search_completed: !@quizzes_completed)), class: "text-sm no-underline text-gray-400" %>
       <% end %>
       <span class="mx-1 text-gray-500">|</span>
     <% end %>
