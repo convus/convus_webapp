@@ -20,10 +20,10 @@
               <span class="text-success">
                 completed
               </span>
-                <% quiz_response_at = quiz.quiz_responses.last&.updated_at %>
-                <% if quiz_response_at.present? %>
-                  <span class="text-sm less-strong convertTime withPreposition"><%= l(quiz_response_at, format: :convert_time) %></span>
-                <% end %>
+              <% quiz_response_at = quiz.quiz_responses.last&.updated_at %>
+              <% if quiz_response_at.present? %>
+                <span class="text-sm less-strong convertTime withPreposition"><%= l(quiz_response_at, format: :convert_time) %></span>
+              <% end %>
 
             <% elsif quiz_response_in_progress_ids.include?(quiz.id) %>
               <span class="less-strong">started</span>
