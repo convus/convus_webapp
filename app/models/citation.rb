@@ -233,6 +233,7 @@ class Citation < ApplicationRecord
   def set_manually_updated_attributes
     current_m_attrs = manually_updated_attributes
     changes.each do |k, v|
+      next if k == "published_updated_at_with_fallback"
       if v.last.blank?
         current_m_attrs -= [k]
       elsif manually_updating

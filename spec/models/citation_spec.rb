@@ -273,19 +273,19 @@ RSpec.describe Citation, type: :model do
     it "is created_at for citations without published_at" do
       expect(citation.published_updated_at).to be_blank
       expect(citation.published_at).to be_blank
-      expect(citation.published_updated_at_with_fallback).to be_within(1).of(time)
-      expect(Citation.new.published_updated_at_with_fallback).to be_within(1).of(Time.current)
+      expect(citation.send(:calculated_published_updated_at_with_fallback)).to be_within(1).of(time)
+      expect(Citation.new.send(:calculated_published_updated_at_with_fallback)).to be_within(1).of(Time.current)
     end
     context "published_at" do
       let(:citation) { Citation.new(published_at: time, created_at: Time.current) }
       it "is published_at" do
-        expect(citation.published_updated_at_with_fallback).to be_within(1).of(time)
+        expect(citation.send(:calculated_published_updated_at_with_fallback)).to be_within(1).of(time)
       end
     end
     context "published_updated_at" do
       let(:citation) { Citation.new(published_updated_at: time, published_at: Time.current, created_at: Time.current) }
       it "is published_updated_at" do
-        expect(citation.published_updated_at_with_fallback).to be_within(1).of(time)
+        expect(citation.send(:calculated_published_updated_at_with_fallback)).to be_within(1).of(time)
       end
     end
   end
