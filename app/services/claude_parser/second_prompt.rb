@@ -52,8 +52,8 @@ class ClaudeParser::SecondPrompt
       subject_str = subject_str.dup
       [
         /in \d+ words (or less)?\W?/i,
-        /th(e|is) article (is about|discusses)\W?/i,
-        /th(e|is) subject of this article\s?(\W|is)?/i,
+        /th(e|is) article (is about|discusses|focuses on)\W?/i,
+        /th(e|is) subject\s(of this article\s?)?(is)?\W?/i,
         /\W\z/ # Often the response ends in a period, remove it
       ].each { |r| subject_str.gsub!(r, "") }
       subject_str.strip!

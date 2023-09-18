@@ -207,7 +207,7 @@ RSpec.describe ClaudeParser::SecondPrompt do
         expect(subject.send(:clean_subject, subject_str)).to eq target
       end
     end
-    context "count" do
+    context "10 words or less" do
       let(:subject_str) { "In 10 words or less: Libraries strained as social services decline" }
       it "responds with the target" do
         expect(subject.send(:clean_subject, subject_str)).to eq target
@@ -222,6 +222,20 @@ RSpec.describe ClaudeParser::SecondPrompt do
 
     context "In 10 words or less, this article is about" do
       let(:subject_str) { "In 10 words or less, this article is about Libraries strained as social services decline." }
+      it "responds with the target" do
+        expect(subject.send(:clean_subject, subject_str)).to eq target
+      end
+    end
+
+    context "The subject is:" do
+      let(:subject_str) { "The subject is: Libraries strained as social services decline." }
+      it "responds with the target" do
+        expect(subject.send(:clean_subject, subject_str)).to eq target
+      end
+    end
+
+    context "the article..." do
+      let(:subject_str) { "The article focuses on libraries strained as social services decline" }
       it "responds with the target" do
         expect(subject.send(:clean_subject, subject_str)).to eq target
       end
