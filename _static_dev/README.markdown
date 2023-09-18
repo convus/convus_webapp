@@ -7,4 +7,6 @@ The site is styled with [Tailwind CSS](https://tailwindcss.com/) - loaded via Pl
 I've had good experiences with the [Flowbite component library](https://flowbite.com/), which provides components for Tailwind, e.g.
 
 - [accordion](https://flowbite.com/docs/components/accordion/)
-- [stepper](https://flowbite.com/docs/components/stepper/)).
+- [stepper](https://flowbite.com/docs/components/stepper/))
+
+But I'm open to other solutions!
