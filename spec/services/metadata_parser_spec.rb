@@ -33,6 +33,15 @@ RSpec.describe MetadataParser do
         expect(subject.parse_string("[null]")).to eq([])
       end
     end
+    context "2023-10 - frameId hash wrapper in Safari" do
+      # See PR#97 - Safari started wrapping content in a hash
+      let(:input_str) { "{\"frameId\": 0,\"result\": [{\"name\": \"description\",\"content\": \"A description\"}]}" }
+      let(:target) { [{"name" => "description", "content" => "A description"}] }
+      it "returns result" do
+        result = subject.parse_string(input_str)
+        expect(result).to eq target
+      end
+    end
   end
 
   describe "parse_array" do
@@ -83,6 +92,14 @@ RSpec.describe MetadataParser do
       expect(subject.ignored_tag?({"name" => "visitor-HMAC"})).to be_truthy
       expect(subject.ignored_tag?({"name" => "hMaC"})).to be_truthy
       expect(subject.ignored_tag?({"name" => "hmacing"})).to be_falsey
+    end
+  end
+
+  describe "hash_to_array" do
+    let(:input) { {"some" => "thing", "content" => [{"name" => "description", "content" => "A description"}]} }
+    let(:target) { [{"some" => "thing"}, {"content" => input["content"]}] }
+    it "returns the hash" do
+      expect(subject.send(:hash_to_array, input)).to eq target
     end
   end
 end

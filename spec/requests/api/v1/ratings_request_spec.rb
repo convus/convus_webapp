@@ -57,6 +57,18 @@ RSpec.describe base_url, type: :request do
       expect_rating_matching_params(json_result, target_response, rating)
       expect(rating.citation_metadata).to eq({})
     end
+    context "500" do
+      it "responds with JSON" do
+        expect(Rating.count).to eq 0
+        post base_url, params: {rating: "fasdfasdf"}.to_json, headers: json_headers.merge(
+          "HTTP_ORIGIN" => "*",
+          "Authorization" => "Bearer #{current_user.api_token}"
+        )
+        expect(response.code).to eq "500"
+        expect(json_result["message"]).to match("fasdfasdf")
+        expect(Rating.count).to eq 0
+      end
+    end
     context "rating unwrapped" do
       include_context :test_csrf_token
       it "returns 200" do
