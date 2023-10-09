@@ -15,7 +15,7 @@ class MetadataParser
     def parse_array(arr)
       # raise NoMethodError, "undefined method `keys' for \"frameId\":String"
 
-      arr = hash_to_array(arr) if arr.is_a?(Hash)
+      # arr = hash_to_array(arr) if arr.is_a?(Hash)
       parsed = arr.reject { |meta_hash| ignored_tag?(meta_hash) }
 
       json_ld = parsed.extract! { |meta_hash| meta_hash.keys == ["json_ld"] }
