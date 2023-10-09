@@ -227,7 +227,7 @@ RSpec.describe base_url, type: :request do
         }.to change(Rating, :count).by 0
         expect(response.code).to eq "400"
 
-        expect_hashes_to_match(json_result, {message: ["Submitted url 'ERROR' is not valid"]})
+        expect_hashes_to_match(json_result, {message: "Error: Submitted url 'ERROR' is not valid"})
       end
     end
     context "gmail address" do
@@ -241,7 +241,7 @@ RSpec.describe base_url, type: :request do
         }.to change(Rating, :count).by 0
         expect(response.code).to eq "400"
 
-        expect_hashes_to_match(json_result, {message: ["Submitted url looks like an email inbox - which can't be shared"]})
+        expect_hashes_to_match(json_result, {message: "Error: Submitted url looks like an email inbox - which can't be shared"})
       end
     end
   end
