@@ -21,7 +21,6 @@ module API
         else
           render(json: {message: rating.errors.full_messages}, status: 400)
         end
-
       rescue => e
         render(json: {message: e.message}, status: 500)
       end
