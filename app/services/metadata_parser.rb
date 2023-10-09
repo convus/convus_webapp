@@ -54,7 +54,6 @@ class MetadataParser
     private
 
     def hash_to_array(metadata_hash)
-      # See PR#12
       return metadata_hash["result"] if metadata_hash["result"].is_a?(Array)
       metadata_hash.map { |k, v| {k => v} }
     end

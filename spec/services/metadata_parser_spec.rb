@@ -34,6 +34,7 @@ RSpec.describe MetadataParser do
       end
     end
     context "2023-10 - frameId hash wrapper in Safari" do
+      # See PR#97 - Safari started wrapping content in a hash
       let(:input_str) { "{\"frameId\": 0,\"result\": [{\"name\": \"description\",\"content\": \"A description\"}]}" }
       let(:target) { [{"name" => "description", "content" => "A description"}] }
       it "returns result" do
