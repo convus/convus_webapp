@@ -19,10 +19,10 @@ module API
           share_msg = ShareFormatter.share_user(current_user.reload, rating.timezone)
           render json: {message: "Rating added", share: share_msg}
         else
-          render(json: {message: rating.errors.full_messages}, status: 400)
+          render(json: {message: "Error: #{rating.errors.full_messages.to_sentence}"}, status: 400)
         end
       rescue => e
-        render(json: {message: e.message}, status: 500)
+        render(json: {message: "Server Error: #{e.message}"}, status: 500)
       end
 
       protected
