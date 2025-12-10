@@ -5,7 +5,7 @@ module API
       skip_before_action :verify_authenticity_token
 
       def not_found
-        respond_with({message: "404 - Couldn't find that"}, status: 404)
+        render(json: {message: "404 - Couldn't find that"}, status: 404) && return
       end
 
       def ensure_current_user!
