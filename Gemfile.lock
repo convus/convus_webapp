@@ -302,6 +302,8 @@ GEM
     rspec-expectations (3.12.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
+    rspec-github (3.0.0)
+      rspec-core (~> 3.0)
     rspec-mocks (3.12.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
@@ -423,6 +425,7 @@ DEPENDENCIES
   redis
   redlock
   rerun
+  rspec-github
   rspec-rails
   rspec_junit_formatter
   rubocop
