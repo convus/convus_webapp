@@ -19,8 +19,9 @@ jobs:
       - name: Lint code for consistent style
         run: bin/lint --no-fix
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
+      # brakeman hasn't been added yet
+      # - name: Scan for common Rails security vulnerabilities using static analysis
+      #   run: bin/brakeman --no-pager
 
   # scan_js:
   #   runs-on: ubuntu-latest
@@ -64,6 +65,10 @@ jobs:
         options: --entrypoint redis-server
     env:
       RAILS_ENV: test
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: password
       SKIP_PARALLEL_MIGRATIONS: true
       TZ: "America/Los_Angeles"
       COVERAGE: false # additional configuration is needed for parallelized tests
