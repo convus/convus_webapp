@@ -414,7 +414,7 @@ DEPENDENCIES
   listen (>= 3.0.5, < 3.2)
   lograge
   logstash-event
-  pg (~> 1.1)
+  pg
   premailer-rails
   propshaft
   puma
@@ -442,7 +442,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 3.2.2p53
+   ruby 3.2.9p265
 
 BUNDLED WITH
    2.4.6
