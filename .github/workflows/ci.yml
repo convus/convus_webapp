@@ -68,7 +68,6 @@ jobs:
       TZ: "America/Los_Angeles"
       COVERAGE: false # additional configuration is needed for parallelized tests
       RETRY_FLAKY: true
-      AI_POST_URL: "https://ai-api-url.com"
     steps:
       - name: Get CPU cores
         id: cpu-info
@@ -91,6 +90,12 @@ jobs:
       - name: Set up database
         run: bundle exec rails db:create db:schema:load db:migrate db:seed
       # Install JS dependencies
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          cache: "yarn"
+      - name: "Yarn Install"
+        run: yarn install --cache-folder ~/.cache/yarn
       - name: build assets
         run: bundle exec rails assets:precompile --trace
       # Run tests
