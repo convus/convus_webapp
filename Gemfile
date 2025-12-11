@@ -65,6 +65,7 @@ group :development, :test do
   gem "rubocop"
   gem "standard" # Ruby linter
   gem "htmlbeautifier" # html linting
+  gem "turbo_tests" # Parallel test execution
 end
 
 group :development do
