@@ -78,6 +78,7 @@ group :test do
   gem "guard", require: false
   gem "guard-rspec", require: false
   gem "rspec_junit_formatter" # For circle ci
+  gem "rspec-github", require: false # Rspec GitHub formatter (adds annotations to files)
   gem "rails-controller-testing" # Assert testing views
   # gem "simplecov", require: false # test coverage for Ruby
   # gem "timecop" # Time control
