@@ -78,12 +78,10 @@ jobs:
         id: cpu-info
         run: echo "cpu-cores=$(nproc)" >> $GITHUB_OUTPUT
       # install system dependencies
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install \
-            libvips \
-            postgresql-client
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libvips postgresql-client
+          version: 1.0
       - name: Checkout code
         uses: actions/checkout@v5
       # Install Ruby dependencies

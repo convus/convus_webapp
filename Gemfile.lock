@@ -210,9 +210,12 @@ GEM
       shellany (~> 0.0)
     orm_adapter (0.5.0)
     parallel (1.22.1)
+    parallel_tests (4.10.1)
+      parallel
     parser (3.1.3.0)
       ast (~> 2.4.1)
-    pg (1.4.4)
+    pg (1.6.2-arm64-darwin)
+    pg (1.6.2-x86_64-linux)
     premailer (1.19.0)
       addressable
       css_parser (>= 1.12.0)
@@ -366,6 +369,9 @@ GEM
       actionpack (>= 6.0.0)
       activejob (>= 6.0.0)
       railties (>= 6.0.0)
+    turbo_tests (2.2.5)
+      parallel_tests (>= 3.3.0, < 5)
+      rspec (>= 3.10)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.3.0)
@@ -414,7 +420,7 @@ DEPENDENCIES
   listen (>= 3.0.5, < 3.2)
   lograge
   logstash-event
-  pg (~> 1.1)
+  pg
   premailer-rails
   propshaft
   puma
@@ -437,12 +443,13 @@ DEPENDENCIES
   stimulus-rails (>= 0.4.0)
   tranzito_utils
   turbo-rails (>= 0.7.11)
+  turbo_tests
   tzinfo-data
   vcr
   webmock
 
 RUBY VERSION
-   ruby 3.2.2p53
+   ruby 3.2.9p265
 
 BUNDLED WITH
    2.4.6
