@@ -45,7 +45,7 @@ Rails.application.routes.draw do
         collection { post :filepath }
       end
 
-      get "*a", to: "api_v1#not_found"
+      match "*a", via: [:get, :post, :put, :patch, :delete], to: "api_v1#not_found"
     end
   end
 
