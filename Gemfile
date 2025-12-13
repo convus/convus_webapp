@@ -3,7 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.4.7"
 
-gem "rails", "~> 8.1.0"
+gem "rails"
 
 gem "puma" # Use Puma as the app server
 gem "rack-cors" # Make cors requests
@@ -15,7 +15,7 @@ gem "pg" # Use postgresql as the database for Active Record
 gem "redis" # Redis itself
 gem "observer" # Required for Ruby 3.4+ (removed from stdlib)
 gem "csv" # Required for Ruby 3.4+ (removed from stdlib)
-gem "sidekiq", "~> 8" # Background job processing (with redis)
+gem "sidekiq" # Background job processing (with redis)
 gem "connection_pool", "< 3" # temporary - see github.com/mperham/connection_pool/issues/212
 gem "sinatra" # Used for sidekiq web
 gem "sidekiq-failures" # Show sidekiq failures
@@ -28,7 +28,7 @@ gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-gem "devise", ">= 4.9" # Users
+gem "devise" # Users
 
 gem "kaminari" # Pagination
 gem "faraday" # How we make requests for integrations
@@ -50,10 +50,10 @@ gem "coderay" # For pretty printing JSON
 gem "propshaft" # For Assets Pipeline
 gem "jsbundling-rails" # required for new sourcemaps stuff
 gem "cssbundling-rails" # required for new sourcemaps stuff
-gem "importmap-rails", ">= 0.3.4" # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
+gem "importmap-rails" # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "hotwire-livereload" # Livereload!
-gem "turbo-rails", ">= 0.7.11" # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "stimulus-rails", ">= 0.4.0"
+gem "turbo-rails" # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "stimulus-rails"
 gem "tranzito_utils" # For timeparser, sortable, etc
 
 group :production, :staging do
@@ -64,7 +64,7 @@ end
 group :development, :test do
   gem "foreman" # Process runner for local work
   gem "dotenv-rails" # Add environmental variables for importing things
-  gem "rspec-rails", ">= 6.1" # Test framework
+  gem "rspec-rails" # Test framework
   gem "factory_bot_rails" # mocking/stubbing
   gem "rubocop"
   gem "standard" # Ruby linter
