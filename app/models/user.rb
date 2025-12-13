@@ -22,7 +22,7 @@ class User < ApplicationRecord
   has_many :topic_review_votes
   has_many :quiz_responses
 
-  enum role: ROLE_ENUM
+  enum :role, ROLE_ENUM
 
   validates_uniqueness_of :username, case_sensitive: false
   validates_with UsernameValidator

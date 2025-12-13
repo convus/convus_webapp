@@ -8,7 +8,7 @@ class TopicReviewVote < ApplicationRecord
   belongs_to :rating
   belongs_to :topic_review_citation
 
-  enum rank: RANK_ENUM
+  enum :rank, RANK_ENUM
 
   validates_presence_of :rating_id
   validates_presence_of :topic_review_id

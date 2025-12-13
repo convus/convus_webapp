@@ -5,7 +5,7 @@ class QuizResponse < ApplicationRecord
     finished: 2
   }.freeze
 
-  enum status: STATUS_ENUM
+  enum :status, STATUS_ENUM
 
   belongs_to :quiz
   belongs_to :user

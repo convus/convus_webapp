@@ -13,7 +13,7 @@ class Rating < ApplicationRecord
 
   RANK_OFFSET = 1000
 
-  enum agreement: AGREEMENT_ENUM
+  enum :agreement, AGREEMENT_ENUM
 
   belongs_to :citation
   belongs_to :user

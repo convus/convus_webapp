@@ -14,7 +14,7 @@ class Event < ApplicationRecord
 
   has_many :kudos_events, dependent: :delete_all
 
-  enum kind: KIND_ENUM
+  enum :kind, KIND_ENUM
 
   before_validation :set_calculated_attributes
 
