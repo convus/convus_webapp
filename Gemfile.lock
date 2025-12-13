@@ -392,6 +392,9 @@ GEM
       redis-client (>= 0.23.0, < 1)
     sidekiq-failures (1.1.0)
       sidekiq (>= 4.0.0)
+    sidekiq-logstash (3.2.1)
+      logstash-event (~> 1.2)
+      sidekiq (~> 7.0)
     sinatra (3.0.4)
       mustermann (~> 3.0)
       rack (~> 2.2, >= 2.2.4)
@@ -501,6 +504,7 @@ DEPENDENCIES
   rubocop
   sidekiq
   sidekiq-failures
+  sidekiq-logstash
   sinatra
   stackprof
   standard
