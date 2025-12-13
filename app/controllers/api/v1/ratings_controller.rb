@@ -44,11 +44,7 @@ module API
       end
 
       def permitted_params
-        rating_params = params.require(:rating)
-        unless rating_params.respond_to?(:permit)
-          raise ArgumentError, "rating params must be a hash, got: #{rating_params.inspect}"
-        end
-        rating_params
+        params.require(:rating)
           .permit(:agreement,
             :changed_opinion,
             :citation_metadata_str,

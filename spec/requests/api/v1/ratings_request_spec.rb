@@ -65,7 +65,7 @@ RSpec.describe base_url, type: :request do
           "Authorization" => "Bearer #{current_user.api_token}"
         )
         expect(response.code).to eq "500"
-        expect(json_result["message"]).to match("fasdfasdf")
+        expect(json_result["message"]).to match(/Server Error:/)
         expect(Rating.count).to eq 0
       end
     end
