@@ -28,7 +28,7 @@ gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-gem "devise", github: "heartcombo/devise", branch: "main" # Users - main branch for Rails 8.1 deprecation fix
+gem "devise", ">= 4.9" # Users
 
 gem "kaminari" # Pagination
 gem "faraday" # How we make requests for integrations
