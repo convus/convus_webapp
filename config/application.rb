@@ -23,7 +23,7 @@ module ConvusReviews
     config.redis_cache_url = ENV["REDIS_CACHE_URL"]
 
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 7.2
 
     # Configuration for the application, engines, and railties goes here.
     #

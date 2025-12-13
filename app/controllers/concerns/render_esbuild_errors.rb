@@ -10,10 +10,6 @@ module RenderEsbuildErrors
     before_action :render_esbuild_error_if_present
   end
 
-  def error_file_content
-    RenderEsbuildErrors.file_path.read
-  end
-
   def render_esbuild_error_if_present
     return unless esbuild_error_present?
 
@@ -30,6 +26,13 @@ module RenderEsbuildErrors
         </body>
       </html>
     HTML
+  end
+
+  private
+
+  def error_file_content
+    file_path = RenderEsbuildErrors.file_path
+    File.exist?(file_path) ? file_path.read : ""
   end
 
   def esbuild_error_present?
