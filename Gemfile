@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.3.10"
+ruby "3.4.7"
 
 gem "rails", "~> 8.0.0"
 
@@ -13,6 +13,8 @@ gem "pg" # Use postgresql as the database for Active Record
 
 # Redis, redis requirements
 gem "redis" # Redis itself
+gem "observer" # Required for Ruby 3.4+ (removed from stdlib)
+gem "csv" # Required for Ruby 3.4+ (removed from stdlib)
 gem "sidekiq" # Background job processing (with redis)
 gem "connection_pool", "< 3" # temporary - see github.com/mperham/connection_pool/issues/212
 gem "sinatra" # Used for sidekiq web
