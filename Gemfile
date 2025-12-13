@@ -14,6 +14,7 @@ gem "pg" # Use postgresql as the database for Active Record
 # Redis, redis requirements
 gem "redis" # Redis itself
 gem "sidekiq" # Background job processing (with redis)
+gem "connection_pool", "< 3" # temporary - see github.com/mperham/connection_pool/issues/212
 gem "sinatra" # Used for sidekiq web
 gem "sidekiq-failures" # Show sidekiq failures
 gem "redlock" # Locking, to handle API rate limiting
