@@ -17,9 +17,9 @@ gem "observer" # Required for Ruby 3.4+ (removed from stdlib)
 gem "csv" # Required for Ruby 3.4+ (removed from stdlib)
 gem "sidekiq", "~> 8" # Background job processing (with redis)
 gem "connection_pool", "< 3" # temporary - see github.com/mperham/connection_pool/issues/212
-# gem "sinatra" # Used for sidekiq web
-# gem "sidekiq-failures" # Show sidekiq failures
-# gem "sidekiq-logstash" # Better sidekiq logging
+gem "sinatra" # Used for sidekiq web
+gem "sidekiq-failures" # Show sidekiq failures
+gem "sidekiq-logstash" # Better sidekiq logging
 gem "redlock" # Locking, to handle API rate limiting
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
