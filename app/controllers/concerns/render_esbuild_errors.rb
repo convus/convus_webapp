@@ -1,5 +1,6 @@
 module RenderEsbuildErrors
   extend ActiveSupport::Concern
+
   ERROR_FILE = "esbuild_error"
 
   def self.file_path

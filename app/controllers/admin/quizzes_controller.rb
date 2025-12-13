@@ -1,5 +1,6 @@
 class Admin::QuizzesController < Admin::BaseController
   include TranzitoUtils::SortableTable
+
   before_action :set_period, only: %i[index]
   before_action :find_quiz_and_set_page_title, except: %i[index new create]
   before_action :set_form_type, only: %i[new create edit update]

@@ -9,7 +9,7 @@ class UrlCleaner
       return [] unless base_domain.present? && base_domain.match?(/\..+/)
       return ["wikipedia.org"] if base_domain.match?(/wikipedia.org\z/) # Just return wikipedia
       # If the domain starts with www. add both that and the bare domain
-      base_domain.start_with?(/www\./) ? [base_domain, base_domain.delete_prefix("www.")] : [base_domain]
+      base_domain.start_with?("www.") ? [base_domain, base_domain.delete_prefix("www.")] : [base_domain]
     rescue URI::InvalidURIError
       []
     end

@@ -215,7 +215,7 @@ class MetadataAttributer
       return nil if str.blank?
       result = Nokogiri::HTML.parse(str).text&.strip
         &.gsub(/\[…\]/, "...") # Replace a weird issue
-        &.gsub(" ", " ")
+        &.tr(" ", " ")
         &.gsub(/\s+/, " ") # normalize spaces
       result.blank? ? nil : result
     end

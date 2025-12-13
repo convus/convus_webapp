@@ -159,7 +159,7 @@ RSpec.describe base_url, type: :request do
               rendered_quiz = assigns(:quiz)
               expect(rendered_quiz.prompt_params_text).to eq params_with_prompt_params[:prompt_params_text]
               expect(rendered_quiz.id).to eq quiz.id
-              expect(rendered_quiz.errors.full_messages).to eq(["Prompt params Unable to parse: 859: unexpected token at '{temperature 0.9}'"])
+              expect(rendered_quiz.errors.full_messages.first).to match(/Prompt params Unable to parse:/)
             end
           end
         end

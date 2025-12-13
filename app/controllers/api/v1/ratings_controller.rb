@@ -22,6 +22,7 @@ module API
           render(json: {message: "Error: #{rating.errors.full_messages.to_sentence}"}, status: 400)
         end
       rescue => e
+        pp e
         render(json: {message: "Server Error: #{e.message}"}, status: 500)
       end
 

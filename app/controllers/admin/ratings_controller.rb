@@ -1,6 +1,7 @@
 class Admin::RatingsController < Admin::BaseController
   include RatingSearchable
   include TranzitoUtils::SortableTable
+
   before_action :set_period, only: [:index]
   before_action :find_rating, except: [:index]
 
