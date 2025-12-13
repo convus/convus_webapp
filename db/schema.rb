@@ -195,6 +195,24 @@ ActiveRecord::Schema[8.0].define(version: 2023_09_18_211351) do
     t.index ["user_id"], name: "index_ratings_on_user_id"
   end
 
+  create_table "reviews", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "citation_id"
+    t.text "submitted_url"
+    t.text "citation_title"
+    t.integer "agreement", default: 0
+    t.integer "quality", default: 0
+    t.boolean "changed_my_opinion", default: false, null: false
+    t.boolean "significant_factual_error"
+    t.text "error_quotes"
+    t.text "topics_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "source"
+    t.index ["citation_id"], name: "index_reviews_on_citation_id"
+    t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
   create_table "topic_relations", force: :cascade do |t|
     t.bigint "parent_id"
     t.bigint "child_id"
