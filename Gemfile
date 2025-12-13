@@ -3,7 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.2.9"
 
-gem "rails", "~> 7.2.0"
+gem "rails", "~> 8.0.0"
 
 gem "puma" # Use Puma as the app server
 gem "rack-cors" # Make cors requests
