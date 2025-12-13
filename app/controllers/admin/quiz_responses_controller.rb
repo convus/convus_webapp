@@ -1,5 +1,6 @@
 class Admin::QuizResponsesController < Admin::BaseController
   include TranzitoUtils::SortableTable
+
   before_action :set_period, only: [:index]
   before_action :find_quiz, except: [:index, :new, :create]
 

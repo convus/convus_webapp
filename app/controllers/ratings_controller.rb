@@ -1,6 +1,7 @@
 class RatingsController < ApplicationController
   include RatingSearchable
   include TranzitoUtils::SortableTable
+
   before_action :set_period, only: %i[index] # Actually, will want to set after assigning via
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
   before_action :find_and_authorize_rating, only: %i[edit update destroy]

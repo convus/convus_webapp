@@ -45,7 +45,7 @@ class TopicReviewVote < ApplicationRecord
   end
 
   def self.rank_humanized(str)
-    str&.gsub("_", " ")
+    str&.tr("_", " ")
   end
 
   def username

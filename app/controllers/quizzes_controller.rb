@@ -74,6 +74,6 @@ class QuizzesController < ApplicationController
     # TODO: make friendly find via citation
     @quiz = Quiz.find(params[:id])
     quiz_response = current_user&.quiz_responses&.where(quiz_id: @quiz.id)&.first
-    @quiz_response = (quiz_response || QuizResponse.new(quiz: @quiz, user: current_user))
+    @quiz_response = quiz_response || QuizResponse.new(quiz: @quiz, user: current_user)
   end
 end

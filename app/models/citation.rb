@@ -287,7 +287,7 @@ class Citation < ApplicationRecord
   end
 
   def clean_citation_text(text)
-    stripped = text&.gsub(" ", " ")&.strip
+    stripped = text&.tr(" ", " ")&.strip
     stripped.present? ? stripped : nil
   end
 end

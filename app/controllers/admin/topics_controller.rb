@@ -1,5 +1,6 @@
 class Admin::TopicsController < Admin::BaseController
   include TranzitoUtils::SortableTable
+
   before_action :set_period, only: [:index]
   before_action :find_topic, except: [:index, :new, :create]
 
