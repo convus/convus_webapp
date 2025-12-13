@@ -26,11 +26,11 @@ class Quiz < ApplicationRecord
 
   INPUT_TEXT_FORMAT = {claude_initial: 0, claude_second: 1}.freeze
 
-  enum status: STATUS_ENUM
-  enum source: SOURCE_ENUM
-  enum kind: KIND_ENUM
-  enum input_text_format: INPUT_TEXT_FORMAT
-  enum subject_source: SUBJECT_SOURCE
+  enum :status, STATUS_ENUM
+  enum :source, SOURCE_ENUM
+  enum :kind, KIND_ENUM
+  enum :input_text_format, INPUT_TEXT_FORMAT
+  enum :subject_source, SUBJECT_SOURCE
 
   self.implicit_order_column = :id
 

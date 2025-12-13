@@ -5,7 +5,7 @@ class TopicReviewCitation < ApplicationRecord
 
   has_many :topic_review_votes
 
-  enum rank: TopicReviewVote::RANK_ENUM
+  enum :rank, TopicReviewVote::RANK_ENUM
 
   validates_presence_of :citation_id
   validates_presence_of :topic_review_id

@@ -6,12 +6,12 @@ module RenderEsbuildErrors
     Rails.root.join(ERROR_FILE)
   end
 
-  included do
-    before_action :render_esbuild_error_if_present
+  def self.enabled?
+    Rails.env.development? || Rails.env.test? && ENV["ESBUILD_ERROR_RENDERED"].present?
   end
 
-  def error_file_content
-    RenderEsbuildErrors.file_path.read
+  included do
+    before_action :render_esbuild_error_if_present, if: -> { RenderEsbuildErrors.enabled? }
   end
 
   def render_esbuild_error_if_present
@@ -30,6 +30,13 @@ module RenderEsbuildErrors
         </body>
       </html>
     HTML
+  end
+
+  private
+
+  def error_file_content
+    file_path = RenderEsbuildErrors.file_path
+    File.exist?(file_path) ? file_path.read : ""
   end
 
   def esbuild_error_present?

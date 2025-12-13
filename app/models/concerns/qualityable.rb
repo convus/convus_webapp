@@ -8,7 +8,7 @@ module Qualityable
   }.freeze
 
   included do
-    enum quality: QUALITY_ENUM
+    enum :quality, QUALITY_ENUM
   end
 
   class_methods do

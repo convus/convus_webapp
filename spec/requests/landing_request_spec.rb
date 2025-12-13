@@ -15,23 +15,32 @@ RSpec.describe "/", type: :request do
         expect(response).to render_template("landing/index")
         expect(response.headers["Access-Control-Allow-Origin"]).to_not be_present
       end
-      # TODO: fix these tests! ESBUILD_ERROR_RENDERED isn't stubbed correctly
-      # describe "esbuild_error" do
-      #   before { stub_const("ApplicationController::ESBUILD_ERROR_RENDERED", true) }
-      #   it "doesn't render" do
-      #     get "/"
-      #     expect(response.code).to eq "200"
-      #     expect(response).to render_template("landing/index")
-      #   end
-      #   context "with esbuild_error" do
-      #     it "doesn't render" do
-      #       allow_any_instance_of(RenderEsbuildErrors).to receive(:error_file_content) { "Errored\nerror here" }
-      #       get "/"
-      #       expect(response.code).to eq "200"
-      #       expect(response.body).to match("<h1>Errored</h1>")
-      #     end
-      #   end
-      # end
+      describe "esbuild_error" do
+        let(:error_file_path) { RenderEsbuildErrors.file_path }
+        around do |example|
+          ENV["ESBUILD_ERROR_RENDERED"] = "true"
+          example.run
+          ENV.delete("ESBUILD_ERROR_RENDERED")
+          File.delete(error_file_path) if File.exist?(error_file_path)
+        end
+
+        it "renders normally without error file" do
+          get "/"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("landing/index")
+        end
+
+        context "with esbuild_error file present" do
+          before { File.write(error_file_path, "Errored\nerror here") }
+
+          it "renders error page" do
+            get "/"
+            expect(response.code).to eq "200"
+            expect(response.body).to match("<h1>Errored</h1>")
+            expect(response.body).to match("<pre>error here</pre>")
+          end
+        end
+      end
     end
   end
 

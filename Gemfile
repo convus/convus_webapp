@@ -3,7 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.2.9"
 
-gem "rails", "~> 7.0.6"
+gem "rails", "~> 7.2.0"
 
 gem "puma" # Use Puma as the app server
 gem "rack-cors" # Make cors requests
@@ -24,7 +24,7 @@ gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-gem "devise" # Users
+gem "devise", ">= 4.9" # Users
 
 gem "kaminari" # Pagination
 gem "faraday" # How we make requests for integrations
@@ -32,7 +32,7 @@ gem "faraday" # How we make requests for integrations
 gem "commonmarker" # parse markdown
 
 # Make logging - more useful and ingestible
-gem "lograge" # Structure log data, put it in single lines to improve the functionality
+gem "lograge", ">= 0.14" # Structure log data, put it in single lines to improve the functionality
 gem "logstash-event" # Use logstash format for logging data
 
 # Frontend things
@@ -60,7 +60,7 @@ end
 group :development, :test do
   gem "foreman" # Process runner for local work
   gem "dotenv-rails" # Add environmental variables for importing things
-  gem "rspec-rails" # Test framework
+  gem "rspec-rails", ">= 6.1" # Test framework
   gem "factory_bot_rails" # mocking/stubbing
   gem "rubocop"
   gem "standard" # Ruby linter

@@ -9,7 +9,7 @@ class TopicReview < ApplicationRecord
   has_many :topic_review_votes
   has_many :topic_review_citations
 
-  enum status: STATUS_ENUM
+  enum :status, STATUS_ENUM
 
   validates_presence_of :display_name
 
