@@ -15,24 +15,30 @@ RSpec.describe "/", type: :request do
         expect(response).to render_template("landing/index")
         expect(response.headers["Access-Control-Allow-Origin"]).to_not be_present
       end
-      describe "RenderEsbuildErrors" do
+      describe "esbuild_error" do
         let(:error_file_path) { RenderEsbuildErrors.file_path }
-        after { File.delete(error_file_path) if File.exist?(error_file_path) }
-
-        it "returns empty string when no error file exists" do
-          expect(File.exist?(error_file_path)).to be_falsey
-          controller = ApplicationController.new
-          controller.send(:extend, RenderEsbuildErrors)
-          expect(controller.send(:error_file_content)).to eq("")
-          expect(controller.send(:esbuild_error_present?)).to be_falsey
+        around do |example|
+          ENV["ESBUILD_ERROR_RENDERED"] = "true"
+          example.run
+          ENV.delete("ESBUILD_ERROR_RENDERED")
+          File.delete(error_file_path) if File.exist?(error_file_path)
         end
 
-        it "returns file content when error file exists" do
-          File.write(error_file_path, "Errored\nerror here")
-          controller = ApplicationController.new
-          controller.send(:extend, RenderEsbuildErrors)
-          expect(controller.send(:error_file_content)).to eq("Errored\nerror here")
-          expect(controller.send(:esbuild_error_present?)).to be_truthy
+        it "renders normally without error file" do
+          get "/"
+          expect(response.code).to eq "200"
+          expect(response).to render_template("landing/index")
+        end
+
+        context "with esbuild_error file present" do
+          before { File.write(error_file_path, "Errored\nerror here") }
+
+          it "renders error page" do
+            get "/"
+            expect(response.code).to eq "200"
+            expect(response.body).to match("<h1>Errored</h1>")
+            expect(response.body).to match("<pre>error here</pre>")
+          end
         end
       end
     end

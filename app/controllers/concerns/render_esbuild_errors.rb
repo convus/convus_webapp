@@ -6,8 +6,12 @@ module RenderEsbuildErrors
     Rails.root.join(ERROR_FILE)
   end
 
+  def self.enabled?
+    Rails.env.development? || Rails.env.test? && ENV["ESBUILD_ERROR_RENDERED"].present?
+  end
+
   included do
-    before_action :render_esbuild_error_if_present
+    before_action :render_esbuild_error_if_present, if: -> { RenderEsbuildErrors.enabled? }
   end
 
   def render_esbuild_error_if_present
