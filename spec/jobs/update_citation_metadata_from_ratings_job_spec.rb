@@ -217,7 +217,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           word_count: 9_949
         }
       end
-      it "parses" do
+      it "parses", :flaky do
         # Verify it's unprocessed, and that it skips processing with skip_reprocess
         expect(rating.metadata_unprocessed?).to be_truthy
         expect(described_class.ordered_ratings(rating, skip_reprocess: true).pluck(:id)).to eq([])

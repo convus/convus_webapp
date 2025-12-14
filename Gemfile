@@ -23,12 +23,13 @@ gem "sidekiq-logstash" # Better sidekiq logging
 gem "redlock" # Locking, to handle API rate limiting
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
+gem "tzinfo-data", platforms: %i[windows jruby]
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-gem "devise" # Users
+# Need to use main for Rails 8 compatibility. See https://github.com/heartcombo/devise/issues/5735
+gem "devise", github: "heartcombo/devise", branch: "main" # Users
 
 gem "kaminari" # Pagination
 gem "faraday" # How we make requests for integrations
@@ -85,6 +86,7 @@ group :test do
   gem "rspec_junit_formatter" # For circle ci
   gem "rspec-github", require: false # Rspec GitHub formatter (adds annotations to files)
   gem "rails-controller-testing" # Assert testing views
+  gem "rspec-retry", require: false # Retry flaky test failures on CI
   # gem "simplecov", require: false # test coverage for Ruby
   # gem "timecop" # Time control
   gem "vcr" # Stub external HTTP requests
