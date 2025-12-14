@@ -28,6 +28,7 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+# Need to use main for Rails 8 compatibility. See https://github.com/heartcombo/devise/issues/5735
 gem "devise", github: "heartcombo/devise", branch: "main" # Users
 
 gem "kaminari" # Pagination
