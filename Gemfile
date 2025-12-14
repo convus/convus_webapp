@@ -85,6 +85,7 @@ group :test do
   gem "rspec_junit_formatter" # For circle ci
   gem "rspec-github", require: false # Rspec GitHub formatter (adds annotations to files)
   gem "rails-controller-testing" # Assert testing views
+  gem "rspec-retry", require: false # Retry flaky test failures on CI
   # gem "simplecov", require: false # test coverage for Ruby
   # gem "timecop" # Time control
   gem "vcr" # Stub external HTTP requests

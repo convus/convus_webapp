@@ -26,6 +26,24 @@ VCR.configure do |config|
   end
 end
 
+# retry flaky specs on CI
+if ENV["RETRY_FLAKY"]
+  require "rspec/retry"
+
+  RSpec.configure do |config|
+    # configure retry
+    config.verbose_retry = true # show retry status in spec process
+
+    config.around(:each) do |ex|
+      if ex.metadata[:flaky]
+        ex.run_with_retry retry: 2
+      else
+        ex.run
+      end
+    end
+  end
+end
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
