@@ -1,3 +1,15 @@
+GIT
+  remote: https://github.com/heartcombo/devise.git
+  revision: c8a64b549c8b37e494eaca7be2def136a7e1b236
+  branch: main
+  specs:
+    devise (5.0.0.beta)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 6.0.0)
+      responders
+      warden (~> 1.2.3)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -98,12 +110,6 @@ GEM
       railties (>= 6.0.0)
     csv (3.3.5)
     date (3.5.1)
-    devise (4.9.4)
-      bcrypt (~> 3.0)
-      orm_adapter (~> 0.1)
-      railties (>= 4.1.0)
-      responders
-      warden (~> 1.2.3)
     diff-lcs (1.6.2)
     dotenv (2.8.1)
     dotenv-rails (2.8.1)
@@ -475,7 +481,7 @@ DEPENDENCIES
   connection_pool (< 3)
   cssbundling-rails
   csv
-  devise
+  devise!
   dotenv-rails
   factory_bot_rails
   faraday
