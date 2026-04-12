@@ -26,4 +26,11 @@ for db in "convus_reviews_test${CONDUCTOR_WORKSPACE_NAME}"; do
   dropdb --if-exists "$db" 2>/dev/null || true
 done
 
+# Also drop parallel test databases (TEST_ENV_NUMBER suffixed)
+for i in $(seq 1 8); do
+  for db in "convus_reviews_test${CONDUCTOR_WORKSPACE_NAME}${i}"; do
+    dropdb --if-exists "$db" 2>/dev/null || true
+  done
+done
+
 echo "Conductor teardown complete!"

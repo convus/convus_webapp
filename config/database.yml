@@ -1,16 +1,27 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
-  # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("DB_POOL") { 1000 } %>
+
+default_local: &default_local
+  <<: *default
+  port: <%= ENV.fetch("PGPORT", 5432) %>
+  <% if ENV["CI"] %>
+  host: 127.0.0.1
+  username: postgres
+  password: password
+  <% else %>
+  host: <%= ENV.fetch("PGHOST", "localhost") %>
+  username: <%= ENV["PGUSER"] %>
+  password: <%= ENV["PGPASSWORD"] %>
+  <% end %>
 
 development:
-  <<: *default
+  <<: *default_local
   database: convus_reviews_development<%= ENV["CONDUCTOR_WORKSPACE_NAME"] %>
 
 test:
-  <<: *default
+  <<: *default_local
   database: convus_reviews_test<%= ENV["CONDUCTOR_WORKSPACE_NAME"] %><%= ENV["TEST_ENV_NUMBER"] %>
 
 production:
