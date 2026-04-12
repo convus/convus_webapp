@@ -63,6 +63,7 @@ group :production, :staging do
 end
 
 group :development, :test do
+  gem "brakeman", require: false
   gem "foreman" # Process runner for local work
   gem "dotenv-rails" # Add environmental variables for importing things
   gem "rspec-rails" # Test framework
