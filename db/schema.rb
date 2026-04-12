@@ -89,76 +89,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_000000) do
     t.string "name"
     t.boolean "remove_query", default: false
     t.string "slug"
-<<<<<<< HEAD
     t.datetime "updated_at", null: false
-=======
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "quiz_question_answers", force: :cascade do |t|
-    t.boolean "correct", default: false
-    t.datetime "created_at", null: false
-    t.integer "list_order", default: 0
-    t.bigint "quiz_question_id"
-    t.text "text"
-    t.datetime "updated_at", null: false
-    t.index ["quiz_question_id"], name: "index_quiz_question_answers_on_quiz_question_id"
-  end
-
-  create_table "quiz_question_responses", force: :cascade do |t|
-    t.boolean "correct"
-    t.datetime "created_at", null: false
-    t.integer "quality", default: 0
-    t.bigint "quiz_question_answer_id"
-    t.bigint "quiz_question_id"
-    t.bigint "quiz_response_id"
-    t.datetime "updated_at", null: false
-    t.index ["quiz_question_answer_id"], name: "index_quiz_question_responses_on_quiz_question_answer_id"
-    t.index ["quiz_question_id"], name: "index_quiz_question_responses_on_quiz_question_id"
-    t.index ["quiz_response_id"], name: "index_quiz_question_responses_on_quiz_response_id"
-  end
-
-  create_table "quiz_questions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "list_order", default: 0
-    t.bigint "quiz_id"
-    t.text "text"
-    t.datetime "updated_at", null: false
-    t.index ["quiz_id"], name: "index_quiz_questions_on_quiz_id"
-  end
-
-  create_table "quiz_responses", force: :cascade do |t|
-    t.bigint "citation_id"
-    t.integer "correct_count"
-    t.datetime "created_at", null: false
-    t.integer "incorrect_count"
-    t.integer "question_count"
-    t.bigint "quiz_id"
-    t.integer "status", default: 0
-    t.datetime "updated_at", null: false
-    t.bigint "user_id"
-    t.index ["citation_id"], name: "index_quiz_responses_on_citation_id"
-    t.index ["quiz_id"], name: "index_quiz_responses_on_quiz_id"
-    t.index ["user_id"], name: "index_quiz_responses_on_user_id"
-  end
-
-  create_table "quizzes", force: :cascade do |t|
-    t.bigint "citation_id"
-    t.datetime "created_at", null: false
-    t.text "input_text"
-    t.integer "input_text_format"
-    t.text "input_text_parse_error"
-    t.integer "kind"
-    t.jsonb "prompt_params", default: {}
-    t.text "prompt_text"
-    t.integer "source"
-    t.integer "status", default: 0
-    t.string "subject"
-    t.integer "subject_source"
-    t.datetime "updated_at", null: false
-    t.integer "version"
-    t.index ["citation_id"], name: "index_quizzes_on_citation_id"
->>>>>>> origin/main
   end
 
   create_table "rating_topics", force: :cascade do |t|
