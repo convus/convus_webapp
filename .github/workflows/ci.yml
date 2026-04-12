@@ -66,6 +66,7 @@ jobs:
     env:
       RAILS_ENV: test
       CI: true
+      REDIS_URL: redis://localhost:6379
       PGHOST: localhost
       PGPORT: 5432
       PGUSER: postgres
