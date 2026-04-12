@@ -9,9 +9,36 @@ def system!(*args)
 end
 
 FileUtils.chdir APP_ROOT do
-  # This script is a way to set up or update your development environment automatically.
-  # This script is idempotent, so that you can run it at any time and get an expectable outcome.
-  # Add necessary setup steps to this file.
+  # Conductor workspace setup
+  if ENV["CONDUCTOR_ROOT_PATH"]
+    root = ENV["CONDUCTOR_ROOT_PATH"]
+    puts "== Setting up Conductor workspace =="
+
+    # Copy .env.test from root repo
+    env_test = File.join(root, ".env.test")
+    if File.exist?(env_test)
+      puts "Copying .env.test from #{root}..."
+      FileUtils.cp env_test, ".env.test"
+    end
+
+    # Copy .env.conductor_dev from root repo
+    env_dev = File.join(root, ".env.conductor_dev")
+    if File.exist?(env_dev)
+      puts "Copying .env.conductor_dev from #{root}..."
+      FileUtils.cp env_dev, ".env.development"
+    end
+
+    # Symlink storage directory for Active Storage
+    root_storage = File.join(root, "storage")
+    unless Dir.exist?(root_storage)
+      puts "Creating storage directory at #{root_storage}..."
+      FileUtils.rm_rf root_storage
+      FileUtils.mkdir_p root_storage
+    end
+    puts "Symlinking storage from #{root_storage}..."
+    FileUtils.rm_rf "storage"
+    FileUtils.ln_sf root_storage, "storage"
+  end
 
   puts "== Installing dependencies =="
   system! "gem install bundler --conservative"
