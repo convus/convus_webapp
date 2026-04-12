@@ -19,9 +19,9 @@ jobs:
       - name: Lint code for consistent style
         run: bin/lint --no-fix
 
-      # brakeman hasn't been added yet
-      # - name: Scan for common Rails security vulnerabilities using static analysis
-      #   run: bin/brakeman --no-pager
+      - name: Scan for common Rails security vulnerabilities using static analysis
+        if: success() || failure()
+        run: bin/brakeman
 
   # scan_js:
   #   runs-on: ubuntu-latest
