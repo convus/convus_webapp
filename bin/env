@@ -7,11 +7,10 @@
 
 ENV["DEV_PORT"] ||= ENV.fetch("CONDUCTOR_PORT", "3009")
 ENV["BASE_URL"] ||= "http://localhost:#{ENV["DEV_PORT"]}"
-ENV["REDIS_URL"] ||= "redis://localhost:6379"
 
 # When called with --export, print shell export statements for bash scripts
 if ARGV.include?("--export")
-  %w[DEV_PORT BASE_URL REDIS_URL].each do |key|
+  %w[DEV_PORT BASE_URL].each do |key|
     puts "export #{key}=#{ENV[key]}"
   end
 end

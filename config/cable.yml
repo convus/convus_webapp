@@ -1,6 +1,6 @@
 development:
   adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") %>
+  url: <%= ENV.fetch("REDIS_URL", "redis://localhost:6379") %>
   channel_prefix: convus_reviews_<%= ENV.fetch("CONDUCTOR_WORKSPACE", "development") %>
 
 test:
