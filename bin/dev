@@ -3,7 +3,7 @@ touch log/development.log
 > log/development.log # Clear out development log, otherwise it balloons
 > log/test.log # Clear out test log too
 touch log/bullet.log
-> log/test.log # Clear out bullet log
+> log/bullet.log # Clear out bullet log
 
 # Clear out temp - mainly used by tests
 # ... skipped for now, because pids and storage need to stick around
@@ -13,6 +13,8 @@ touch log/bullet.log
 touch log/redis.log
 > log/redis.log
 redis-server > log/redis.log &
+
+eval "$(ruby bin/env --export)"
 
 # If there is a development specific environment file
 if test -f .env.development; then

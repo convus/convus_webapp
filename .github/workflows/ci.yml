@@ -65,6 +65,7 @@ jobs:
         options: --entrypoint redis-server
     env:
       RAILS_ENV: test
+      CI: true
       PGHOST: localhost
       PGPORT: 5432
       PGUSER: postgres
