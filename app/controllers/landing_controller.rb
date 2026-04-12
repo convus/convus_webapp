@@ -4,12 +4,6 @@ class LandingController < ApplicationController
   def index
     @page_title = "Convus"
     @ratings = Rating.joins(:citation, :user).reorder("ratings.created_at desc").limit(5)
-
-    @quizzes = Quiz.joins(:citation).active.citation_ordered.limit(5)
-    if current_user.present?
-      @quiz_response_finished_ids = current_user.quiz_responses.finished.where(quiz_id: @quizzes.pluck(:id)).pluck(:quiz_id)
-      @quiz_response_in_progress_ids = current_user.quiz_responses.in_progress.where(quiz_id: @quizzes.pluck(:id)).pluck(:quiz_id)
-    end
   end
 
   def about

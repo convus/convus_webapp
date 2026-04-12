@@ -9,11 +9,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
   let(:publisher) { citation.publisher }
 
   describe "perform" do
-    before do
-      Sidekiq::Worker.clear_all
-      # Required to enqueue PromptClaudeForCitationQuizJob
-      stub_const("PromptClaudeForCitationQuizJob::QUIZ_PROMPT", "something")
-    end
+    before { Sidekiq::Worker.clear_all }
     context "nil" do
       let(:citation_metadata_str) { "{}" }
       let(:submitted_url) { "https://www.newyorker.com/news/the-political-scene/the-risky-gamble-of-kevin-mccarthys-debt-ceiling-strategy" }
@@ -32,11 +28,11 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           authors: ["Jonathan Blitzer"],
           published_at: 1682713348,
           published_updated_at: nil,
-          description: "Jonathan Blitzer writes about the House Republican’s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy’s weakened position as Speaker.",
+          description: "Jonathan Blitzer writes about the House Republican's budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy's weakened position as Speaker.",
           canonical_url: nil,
           paywall: false,
           publisher_name: "The New Yorker",
-          title: "The Risky Gamble of Kevin McCarthy’s Debt-Ceiling Strategy",
+          title: "The Risky Gamble of Kevin McCarthy's Debt-Ceiling Strategy",
           keywords: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "u.s. presidents", "web"],
           word_count: 2_040
         }
@@ -55,17 +51,13 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
         # Updates publisher
         expect(publisher.reload.name).to eq "The New Yorker"
         expect(publisher.name_assigned?).to be_truthy
-        expect(PromptClaudeForCitationQuizJob.jobs.count).to eq 0
       end
       context "topics present" do
         let!(:topic1) { Topic.find_or_create_for_name("U.S. President") }
         let!(:topic2) { Topic.find_or_create_for_name("Joe Biden", parents_string: "U.S. presidents") }
         let!(:topic3) { Topic.find_or_create_for_name("Party") }
         let(:metadata_with_topics) { metadata_attrs.merge(topics_string: "Joe Biden") }
-        let(:quiz) { FactoryBot.create(:quiz, citation: citation) }
         it "assigns topics" do
-          expect(quiz.reload.subject).to be_blank
-          expect(quiz.subject_source).to eq "subject_inherited"
           expect(topic1.reload.children.pluck(:id)).to eq([topic2.id])
           expect_hashes_to_match(MetadataAttributer.from_rating(rating).except(:published_updated_at), metadata_with_topics.except(:published_updated_at), match_time_within: 1)
           instance.perform(citation.id)
@@ -78,62 +70,18 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           expect(citation.reload.topics.pluck(:id)).to eq([topic3.id])
           expect_attrs_to_match_hash(citation, metadata_with_topics.except(:keywords, :topics_string))
           expect(citation.reload.subject).to be_blank
-          expect(quiz.reload.subject).to be_blank
-          expect(quiz.subject_source).to eq "subject_inherited"
-        end
-      end
-      context "subject present" do
-        let(:quiz_replaced) { FactoryBot.create(:quiz, subject: "OG Quiz subject", subject_source: subject_source, citation: citation, status: :replaced) }
-        let(:quiz) { FactoryBot.create(:quiz, subject: "Quiz subject", subject_source: subject_source, citation: citation, status: :active) }
-        let(:subject_source) { "subject_claude_integration" }
-        it "assigns topics" do
-          expect(quiz_replaced.reload.subject).to eq "OG Quiz subject"
-          expect(quiz_replaced.subject_source).to eq subject_source
-
-          expect(quiz.reload.subject).to eq "Quiz subject"
-          expect(quiz.subject_source).to eq subject_source
-          expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
-          citation.update(manually_updating: true, subject: "New Subject")
-          expect(citation.reload.manually_updated_attributes).to eq(["subject"])
-          instance.perform(citation.id)
-          citation.reload
-          expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
-          expect(citation.reload.subject).to eq "New Subject"
-          expect(quiz.reload.subject).to eq "New Subject"
-          expect(quiz.subject_source).to eq "subject_admin_citation_entry"
-          # This job doesn't update replaced quiz subjects
-          expect(quiz_replaced.reload.subject_source).to eq subject_source
-          expect(quiz_replaced.subject).to eq "OG Quiz subject"
-        end
-        context "quiz subject_admin_entry" do
-          let(:subject_source) { "subject_admin_entry" }
-          it "does not update" do
-            expect(quiz.reload.subject).to eq "Quiz subject"
-            expect(quiz.subject_source).to eq "subject_admin_entry"
-            expect_hashes_to_match(MetadataAttributer.from_rating(rating), metadata_attrs, match_time_within: 1)
-            citation.update(manually_updating: true, subject: "New Subject")
-            expect(citation.reload.manually_updated_attributes).to eq(["subject"])
-            instance.perform(citation.id)
-            citation.reload
-            expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
-            expect(citation.reload.subject).to eq "New Subject"
-            expect(quiz.reload.subject).to eq "Quiz subject"
-            expect(quiz.subject_source).to eq "subject_admin_entry"
-          end
         end
       end
       context "citation_text present" do
         let(:citation_text) { "Some text goes here" }
         before { rating.update(citation_text: citation_text) }
-        it "assigns topics and enqueues PromptClaudeForCitationQuizJob" do
-          expect(PromptClaudeForCitationQuizJob.jobs.count).to eq 0
+        it "assigns citation_text" do
           expect(citation.citation_text).to be_nil
           instance.perform(citation.id)
           citation.reload
           expect_attrs_to_match_hash(citation, metadata_attrs.except(:keywords))
           expect(citation.citation_text).to eq citation_text
           expect(citation.manually_updated_attributes).to eq([])
-          expect(PromptClaudeForCitationQuizJob.jobs.map { |j| j["args"] }.flatten).to match_array([{citation_id: citation.id}.as_json])
         end
       end
       context "already assigned" do
@@ -207,7 +155,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           authors: ["Christopher Barnard"],
           published_at: 1600252259,
           published_updated_at: nil,
-          description: "Last week’s groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America.",
+          description: "Last week's groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America.",
           canonical_url: "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/",
           paywall: true,
           publisher_name: "National Review",
