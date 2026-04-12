@@ -38,7 +38,7 @@ class MetadataAttributer
     def text_from_json_ld_article_body(article_body)
       return nil unless article_body.present?
       # New Yorker returns as markdown and adds some +++'s in there
-      article_body = CommonMarker.render_doc(article_body.gsub(/\++/, ""), :DEFAULT).to_html
+      article_body = Commonmarker.to_html(article_body.gsub(/\++/, ""))
       html_decode(article_body)
     end
 
