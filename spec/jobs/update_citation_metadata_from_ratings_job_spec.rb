@@ -28,11 +28,11 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           authors: ["Jonathan Blitzer"],
           published_at: 1682713348,
           published_updated_at: nil,
-          description: "Jonathan Blitzer writes about the House Republican's budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy's weakened position as Speaker.",
+          description: "Jonathan Blitzer writes about the House Republican\u2019s budget proposal that was bundled with its vote to raise the debt ceiling, and about Kevin McCarthy\u2019s weakened position as Speaker.",
           canonical_url: nil,
           paywall: false,
           publisher_name: "The New Yorker",
-          title: "The Risky Gamble of Kevin McCarthy's Debt-Ceiling Strategy",
+          title: "The Risky Gamble of Kevin McCarthy\u2019s Debt-Ceiling Strategy",
           keywords: ["debt ceiling", "joe biden", "kevin mccarthy", "textaboveleftsmallwithrule", "the political scene", "u.s. budget", "u.s. congress", "u.s. presidents", "web"],
           word_count: 2_040
         }
@@ -155,7 +155,7 @@ RSpec.describe UpdateCitationMetadataFromRatingsJob, type: :job do
           authors: ["Christopher Barnard"],
           published_at: 1600252259,
           published_updated_at: nil,
-          description: "Last week's groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America.",
+          description: "Last week\u2019s groundbreaking approval of the first-ever commercial small modular reactor in the United States fits a wider trend of private-sector leadership on nuclear innovation. We should strive to harness this further, and to remain optimistic about the future of nuclear energy in America.",
           canonical_url: "https://www.nationalreview.com/2020/09/nuclear-energy-private-sector-shaping-future-of-industry/",
           paywall: true,
           publisher_name: "National Review",
