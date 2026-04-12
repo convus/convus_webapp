@@ -49,12 +49,6 @@
             <%= admin_number_display(@user.total_kudos) %>
           </td>
         </tr>
-        <tr>
-          <td>Quizzed</td>
-          <td>
-            <%= link_to admin_number_display(@user.quiz_responses.count), admin_quiz_responses_path(user: @user.username) %>
-          </td>
-        </tr>
       </tbody>
     </table>
   </div>

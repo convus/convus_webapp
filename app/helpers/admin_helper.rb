@@ -42,14 +42,6 @@ module AdminHelper
     end
   end
 
-  def quiz_input_text_label_name(quiz)
-    if quiz.prompt_source?
-      "Prompt response"
-    else
-      "Text from #{quiz.source_humanized}"
-    end
-  end
-
   def prompt_text_area_text(prompt_text = nil)
     return "" if prompt_text.blank?
     prompt_text.gsub("\\n", "\n").gsub("\\\"", '"')
