@@ -72,10 +72,10 @@ group :development, :test do
   gem "standard" # Ruby linter
   gem "htmlbeautifier" # html linting
   gem "turbo_tests" # Parallel test execution
-  gem "lookbook" # Component previews
 end
 
 group :development do
+  gem "lookbook" # Component previews
   # gem "web-console", ">= 3.3.0" # Access an interactive console on exception pages or by calling "console" anywhere in the code - commented out because annoying
   gem "listen", ">= 3.0.5", "< 3.2"
   gem "rerun" # For restarting sidekiq on file changes
