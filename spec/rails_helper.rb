@@ -6,7 +6,13 @@ require_relative "../config/environment"
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
+require "view_component/test_helpers"
+require "capybara/rspec"
+require "axe-rspec"
 require "sidekiq/testing"
+
+# Axe rules that are acceptable to skip in component previews
+SKIPPABLE_AXE_RULES = %w[color-contrast empty-table-header heading-order html-has-lang landmark-one-main page-has-heading-one region]
 require "vcr"
 
 VCR.configure do |config|
@@ -82,6 +88,13 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :request
   # Add our request spec things
   config.include RequestSpecHelpers, type: :request
+
+  # ViewComponent test helpers
+  config.include ViewComponent::TestHelpers, type: :component
+  config.include Capybara::RSpecMatchers, type: :component
+
+  # System specs use headless Chrome
+  config.before(:each, type: :system) { driven_by :selenium, using: :headless_chrome }
 
   # Clear the sidekiq queue to prevent weird test failures
   config.before { Sidekiq::Worker.clear_all }

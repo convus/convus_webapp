@@ -74,8 +74,11 @@ group :development, :test do
   gem "turbo_tests" # Parallel test execution
 end
 
-group :development do
+group :development, :test do
   gem "lookbook" # Component previews
+end
+
+group :development do
   # gem "web-console", ">= 3.3.0" # Access an interactive console on exception pages or by calling "console" anywhere in the code - commented out because annoying
   gem "listen", ">= 3.0.5", "< 3.2"
   gem "rerun" # For restarting sidekiq on file changes
@@ -93,6 +96,9 @@ group :test do
   # gem "timecop" # Time control
   gem "vcr" # Stub external HTTP requests
   gem "webmock" # mocking for VCR
+  gem "capybara" # For view component system specs
+  gem "selenium-webdriver" # Browser driver for system specs
+  gem "axe-core-rspec" # Accessibility testing
 end
 
 # Performance Stuff
