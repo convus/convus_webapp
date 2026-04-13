@@ -55,7 +55,7 @@ gem "hotwire-livereload" # Livereload!
 gem "turbo-rails" # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem "stimulus-rails"
 gem "tranzito_utils" # For timeparser, sortable, etc
-gem "view_component" # View components
+gem "view_component", "~> 4.5.0" # View components
 
 group :production, :staging do
   gem "honeybadger" # Error reporting
