@@ -5,4 +5,12 @@ module ApplicationComponentHelper
   def number_display(number)
     content_tag(:span, number_with_delimiter(number), class: ((number == 0) ? "less-less-strong" : ""))
   end
+
+  def check_mark
+    "&#x2713;".html_safe
+  end
+
+  def cross_mark
+    "&#x274C;".html_safe
+  end
 end

@@ -3,14 +3,20 @@
 module UI
   module Dropdown
     class ComponentPreview < ApplicationComponentPreview
+      # @!group Variants
       def default
-        options = [
-          template.link_to("Profile", "#", class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"),
-          template.link_to("Settings", "#", class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"),
-          template.link_to("Logout", "#", class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700")
-        ]
-        render(UI::Dropdown::Component.new(name: "Menu", options: options))
+        render(UI::Dropdown::Component.new(name: "Menu")) do |dropdown|
+          dropdown.with_entry_item { content_tag(:a, "Profile", href: "#") }
+          dropdown.with_entry_item { content_tag(:a, "Settings", href: "#") }
+          dropdown.with_entry_divider
+          dropdown.with_entry_item { content_tag(:a, "Logout", href: "#") }
+        end
       end
+
+      def placements
+        {template: "ui/dropdown/component_preview/placements"}
+      end
+      # @!endgroup
     end
   end
 end

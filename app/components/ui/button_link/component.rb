@@ -13,20 +13,13 @@ module UI
       end
 
       def call
-        helpers.link_to(@text || content, @href, **@html_options.merge(class: link_classes))
+        link_to(@text || content, @href, **@html_options.merge(class: link_classes))
       end
 
       private
 
       def link_classes
-        classes = [
-          UI::Button::Component::BASE_CLASSES,
-          UI::Button::Component::COLORS[@color],
-          UI::Button::Component::SIZES[@size],
-          @html_options[:class]
-        ]
-        classes << UI::Button::Component::ACTIVE_COLORS[@color] if @active
-        classes.compact.join(" ")
+        UI::Button::Component.build_classes(color: @color, size: @size, active: @active, html_class: @html_options[:class])
       end
     end
   end

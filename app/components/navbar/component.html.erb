@@ -166,12 +166,30 @@
       <% else %>
         <%= render(UI::Dropdown::Component.new(
           name: "User",
-          options: user_dropdown_options,
-          button_content: avatar_button_content,
-          button_class: "flex items-center text-sm rounded-full focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 cursor-pointer",
-          header: user_dropdown_header,
-          id: "user-menu-button"
-        )) %>
+          button_class: "flex items-center text-sm rounded-full focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 cursor-pointer"
+        )) do |dropdown| %>
+          <% dropdown.with_button { avatar_button_content } %>
+
+          <% dropdown.with_entry_item do %>
+            <%= link_to(edit_account_path, class: "block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg") do %>
+              <span class="block text-sm font-medium text-gray-900 dark:text-white">
+                <%= @current_user.display_name %>
+              </span>
+
+              <span class="block text-xs text-gray-500 dark:text-gray-400 truncate">
+                <%= @current_user.email %>
+              </span>
+            <% end %>
+          <% end %>
+
+          <%= dropdown.with_entry_divider %>
+
+          <% if @current_user.admin_access? %>
+            <% dropdown.with_entry_item { link_to("Admin", admin_root_path) } %>
+          <% end %>
+
+          <% dropdown.with_entry_item { link_to("Logout", destroy_user_session_path, data: {turbo: false}) } %>
+        <% end %>
       <% end %>
     </div>
   </div>

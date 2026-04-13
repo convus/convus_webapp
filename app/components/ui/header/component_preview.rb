@@ -5,15 +5,15 @@ module UI
     class ComponentPreview < ApplicationComponentPreview
       # @!group Tags
       def h1
-        render(UI::Header::Component.new(text: "Page Title (h1)"))
+        render(UI::Header::Component.new(text: "Heading 1"))
       end
 
       def h2
-        render(UI::Header::Component.new(text: "Section Title (h2)", tag: :h2))
+        render(UI::Header::Component.new(text: "Heading 2", tag: :h2))
       end
 
       def h3
-        render(UI::Header::Component.new(text: "Sub-section Title (h3)", tag: :h3))
+        render(UI::Header::Component.new(text: "Heading 3", tag: :h3))
       end
       # @!endgroup
     end

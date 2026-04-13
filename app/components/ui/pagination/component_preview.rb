@@ -19,6 +19,11 @@ module UI
         render(UI::Pagination::Component.new(pagy: pagy_a, page_params: {}, size: :lg, data: {turbo_action: "advance"}))
       end
 
+      def middle_page_md_size(page: 10)
+        pagy_a = pagy_arg(default_opts.merge(page:))
+        render(UI::Pagination::Component.new(pagy: pagy_a, page_params: {}, size: :md, data: {turbo_action: "advance"}))
+      end
+
       private
 
       def pagy_arg(opts = default_opts)
@@ -26,7 +31,7 @@ module UI
       end
 
       def default_opts
-        {count: 1_000, limit: 10, page: 3}
+        {count: 1_384_155, limit: 10, page: 3, max_pages: 100}
       end
     end
   end
