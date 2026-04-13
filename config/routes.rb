@@ -61,4 +61,9 @@ Rails.application.routes.draw do
   authenticate :user, lambda { |u| u.developer? } do
     mount Sidekiq::Web, at: "/sidekiq"
   end
+
+  # Lookbook auto-mounts in development; explicitly mount for test (system specs)
+  if Rails.env.test? && defined?(Lookbook)
+    mount Lookbook::Engine, at: "/lookbook"
+  end
 end

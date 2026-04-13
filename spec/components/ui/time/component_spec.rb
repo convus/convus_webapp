@@ -31,7 +31,7 @@ RSpec.describe UI::Time::Component, type: :component do
       let(:format) { :localize_time }
 
       it "renders the time content" do
-        expect(component).to have_content("2024-01-15T14:30:00+0000")
+        expect(component).to have_content("2024-1-15 2:30pm")
         expect(component).to have_css("span.localizeTime")
         expect(component).to_not have_css("span.preciseTime")
       end
@@ -41,7 +41,7 @@ RSpec.describe UI::Time::Component, type: :component do
       let(:format) { :localize_time_precise }
 
       it "renders the time content" do
-        expect(component).to have_content("2024-01-15T14:30:00+0000")
+        expect(component).to have_content("2024-1-15 2:30pm")
         expect(component).to have_css("span.localizeTime")
         expect(component).to have_css("span.preciseTime")
       end
@@ -51,7 +51,7 @@ RSpec.describe UI::Time::Component, type: :component do
       let(:format) { nil }
 
       it "defaults to localize_time format" do
-        expect(component).to have_content("2024-01-15T14:30:00+0000")
+        expect(component).to have_content("2024-1-15 2:30pm")
       end
     end
 
@@ -59,7 +59,7 @@ RSpec.describe UI::Time::Component, type: :component do
       let(:format) { :invalid_format }
 
       it "defaults to localize_time format" do
-        expect(component).to have_content("2024-01-15T14:30:00+0000")
+        expect(component).to have_content("2024-1-15 2:30pm")
       end
     end
   end

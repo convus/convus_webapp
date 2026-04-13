@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe Form::RadioButtonGroup::Component, :js, type: :system do
   it "renders and selects on click" do
-    visit "/lookbook/preview/form/radio_button_group/examples"
+    visit "/lookbook/preview/form/radio_button_group/default"
 
     expect(page).to have_css "label", minimum: 3
     expect(page).to have_content "All"

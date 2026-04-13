@@ -8,6 +8,7 @@ class UsernameValidator < ActiveModel::Validator
   end
 
   def validate(record)
+    return if record[:username_slug].blank?
     if record[:username_slug].match?(/\A\d+\z/)
       record.errors.add(:username, "can't be only numbers")
     else

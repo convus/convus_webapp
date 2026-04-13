@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe UI::Dropdown::Component, :js, type: :system do
   context "when interacting with the dropdown" do
     it "opens and closes" do
-      visit "/lookbook/preview/ui/dropdown/variants"
+      visit "/lookbook/preview/ui/dropdown/default"
 
       expect(page).to have_css('[aria-expanded="false"]')
 

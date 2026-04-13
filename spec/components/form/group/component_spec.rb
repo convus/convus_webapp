@@ -8,13 +8,13 @@ RSpec.describe Form::Group::Component, type: :component do
     SethTemplateFormBuilder.new(:user, user, ActionView::Base.new(ActionView::LookupContext.new([]), {}, nil), {})
   end
   let(:component) { render_inline(described_class.new(form_builder:, attribute:, kind:, label_text:)) }
-  let(:attribute) { :name }
+  let(:attribute) { :username }
   let(:kind) { :text_field }
   let(:label_text) { nil }
 
   it "renders label and input" do
-    expect(component).to have_css("label[for='user_name']", text: "Name")
-    expect(component).to have_css("input[type='text'][name='user[name]']")
+    expect(component).to have_css("label[for='user_username']", text: "Username")
+    expect(component).to have_css("input[type='text'][name='user[username]']")
   end
 
   context "with custom label" do
@@ -39,7 +39,7 @@ RSpec.describe Form::Group::Component, type: :component do
     let(:kind) { :text_area }
 
     it "renders textarea with label" do
-      expect(component).to have_css("label", text: "Name")
+      expect(component).to have_css("label", text: "Username")
       expect(component).to have_css("textarea")
     end
   end

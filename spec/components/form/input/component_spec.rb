@@ -8,12 +8,12 @@ RSpec.describe Form::Input::Component, type: :component do
     SethTemplateFormBuilder.new(:user, user, ActionView::Base.new(ActionView::LookupContext.new([]), {}, nil), {})
   end
   let(:component) { render_inline(described_class.new(form_builder:, attribute:, kind:, html_options:)) }
-  let(:attribute) { :name }
+  let(:attribute) { :username }
   let(:kind) { :text_field }
   let(:html_options) { {} }
 
   it "renders a text field" do
-    expect(component).to have_css("input[type='text'][name='user[name]']")
+    expect(component).to have_css("input[type='text'][name='user[username]']")
     expect(component.to_html).to include("rounded-lg")
   end
 
@@ -21,7 +21,7 @@ RSpec.describe Form::Input::Component, type: :component do
     let(:kind) { :text_area }
 
     it "renders a textarea" do
-      expect(component).to have_css("textarea[name='user[name]']")
+      expect(component).to have_css("textarea[name='user[username]']")
     end
   end
 
@@ -51,10 +51,10 @@ RSpec.describe Form::Input::Component, type: :component do
   end
 
   context "with html_options" do
-    let(:html_options) { {placeholder: "Enter name"} }
+    let(:html_options) { {placeholder: "Enter username"} }
 
     it "passes options through" do
-      expect(component).to have_css("input[placeholder='Enter name']")
+      expect(component).to have_css("input[placeholder='Enter username']")
     end
   end
 end
