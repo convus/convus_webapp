@@ -37,7 +37,7 @@ module ConvusReviews
     config.active_record.belongs_to_required_by_default = false
 
     # ViewComponent configuration
-    config.view_component.preview_paths = [Rails.root.join("app/components")]
+    config.view_component.instrumentation_enabled = true
     config.view_component.default_preview_layout = "component_preview"
     # Add app/components to view paths for component preview templates
     initializer "append_component_views", after: :set_autoload_paths do
@@ -45,10 +45,7 @@ module ConvusReviews
         prepend_view_path Rails.root.join("app/components")
       end
     end
-    if defined?(Lookbook)
-      config.lookbook.preview_paths = [Rails.root.join("app/components")]
-      config.lookbook.preview_display_options = {theme: ["light", "dark"]}
-    end
+    config.lookbook.preview_display_options = {theme: ["light", "dark"]} if defined?(Lookbook)
 
     # Don't generate system test files.
     config.generators.system_tests = nil

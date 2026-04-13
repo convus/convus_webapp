@@ -61,9 +61,6 @@ Rails.application.configure do
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
 
-  # Enable ViewComponent previews for Lookbook system specs
-  config.view_component.show_previews = true
-
   # Don't report errors to honeybadger, etc
   config.error_reporting_behavior = :sandbox
 end

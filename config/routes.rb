@@ -62,8 +62,5 @@ Rails.application.routes.draw do
     mount Sidekiq::Web, at: "/sidekiq"
   end
 
-  # Lookbook auto-mounts in development; explicitly mount for test (system specs)
-  if Rails.env.test? && defined?(Lookbook)
-    mount Lookbook::Engine, at: "/lookbook"
-  end
+  mount Lookbook::Engine, at: "/lookbook" if defined?(Lookbook)
 end
