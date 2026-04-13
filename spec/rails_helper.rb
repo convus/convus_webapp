@@ -9,6 +9,7 @@ require "rspec/rails"
 require "view_component/test_helpers"
 require "view_component/system_test_helpers"
 require "capybara/rspec"
+require "super_diff/rspec-rails"
 require "axe-rspec"
 require "sidekiq/testing"
 
@@ -118,6 +119,31 @@ RSpec.configure do |config|
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
-  # arbitrary gems may also be filtered via:
-  # config.filter_gems_from_backtrace("gem name")
+end
+
+# Override capybara methods to support tailwind selectors
+# Original methods defined in 'lib/capybara/rspec/matchers.rb'
+#
+# This is necessary because colons need to be escaped for these matchers (i.e. tw\:p-6)
+#
+module Capybara
+  module RSpecMatchers
+    def have_selector(*args, **, &)
+      args = args.map { |a| a.is_a?(String) ? escape_colon_classes(a) : a }
+      Matchers::HaveSelector.new(*args, **, &)
+    end
+
+    def have_css(expr, **, &)
+      Matchers::HaveSelector.new(:css, escape_colon_classes(expr), **, &)
+    end
+
+    private
+
+    # Automatically escape colons in tailwind class selectors (e.g. .tw\:p-6)
+    # Only escapes colons that appear within class selectors, preserving
+    # pseudo-selectors like :hover, :focus, :disabled, :not(), etc.
+    def escape_colon_classes(expr)
+      expr.gsub(/(\.\w+):/) { "#{$1}\\:" }
+    end
+  end
 end
