@@ -8,7 +8,7 @@
 }
 
 .large-width-container-padded {
-  @apply container-padded large-width-container;
+  @apply py-2 w-full mx-auto max-w-main-content max-lg:px-container-pad;
 }
 
 .small-width-container {
@@ -16,7 +16,7 @@
 }
 
 .small-width-container-padded {
-  @apply container-padded small-width-container;
+  @apply py-2 w-full mx-auto max-w-small-container;
   /* might wanna use max-w-prose sometime - this is close*/
 }
 

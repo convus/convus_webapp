@@ -123,8 +123,6 @@ GEM
     crass (1.0.6)
     css_parser (1.14.0)
       addressable
-    cssbundling-rails (1.1.1)
-      railties (>= 6.0.0)
     csv (3.3.5)
     date (3.5.1)
     descendants_tracker (0.0.4)
@@ -489,6 +487,11 @@ GEM
     stimulus-rails (1.1.1)
       railties (>= 6.0.0)
     stringio (3.2.0)
+    tailwindcss-rails (4.4.0)
+      railties (>= 7.0.0)
+      tailwindcss-ruby (~> 4.0)
+    tailwindcss-ruby (4.2.2-arm64-darwin)
+    tailwindcss-ruby (4.2.2-x86_64-linux-gnu)
     temple (0.9.1)
     thor (1.5.0)
     thread_safe (0.3.6)
@@ -553,7 +556,6 @@ DEPENDENCIES
   coderay
   commonmarker
   connection_pool (< 3)
-  cssbundling-rails
   csv
   devise
   dotenv-rails
@@ -602,6 +604,7 @@ DEPENDENCIES
   stackprof
   standard
   stimulus-rails
+  tailwindcss-rails
   tranzito_utils
   turbo-rails
   turbo_tests
