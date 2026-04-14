@@ -16,7 +16,7 @@
 <% end %>
 <p class="leading-5 mb-1 text-gray-500 text-sm">
   <% if citation.published_at.present? %>
-    <span class="convertTime skipTimeTitle mr-2" title="Published at"><%= l(citation.published_at, format: :convert_time) %></span>
+    <span class="localizeTime skipTimeTitle mr-2" title="Published at"><%= l(citation.published_at, format: :localize_time) %></span>
   <% end %>
   <%# skip showing publisher if self published %>
   <% if [citation.publisher_name] != citation.authors_rendered %>

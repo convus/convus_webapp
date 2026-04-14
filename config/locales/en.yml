@@ -33,6 +33,5 @@ en:
   hello: "Hello world"
   time:
     formats:
-      convert_time: "%FT%T%z"
       dotted: "%Y.%-m.%-d"
       localize_time: "%Y-%-m-%-d %-l:%M%P"

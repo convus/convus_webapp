@@ -5,10 +5,9 @@ class Admin::CitationsController < Admin::BaseController
   before_action :find_citation, except: [:index]
 
   def index
-    page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @citations = searched_citations.reorder("citations.#{sort_column} #{sort_direction}")
-      .includes(:ratings, :topics).page(page).per(@per_page)
+    @pagy, @citations = pagy(searched_citations.reorder("citations.#{sort_column} #{sort_direction}")
+      .includes(:ratings, :topics), limit: @per_page)
   end
 
   def show

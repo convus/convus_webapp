@@ -53,8 +53,8 @@ module SortableHelper
 
   def humanized_time_range(time_range)
     return "" unless time_range.present?
-    start_html = content_tag(:span, time_range.first.to_i, class: "convertTime")
-    end_html = content_tag(:span, time_range.last.to_i, class: "convertTime")
+    start_html = content_tag(:span, time_range.first.to_i, class: "localizeTime")
+    end_html = content_tag(:span, time_range.last.to_i, class: "localizeTime")
     " #{start_html} - #{end_html}".html_safe
   end
 

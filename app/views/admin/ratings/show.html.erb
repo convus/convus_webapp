@@ -18,20 +18,20 @@
           <tr>
             <td>Created</td>
             <td>
-              <span class="convertTime"><%= l(@rating.created_at, format: :convert_time) %></span>
+              <span class="localizeTime"><%= l(@rating.created_at, format: :localize_time) %></span>
             </td>
           </tr>
           <tr>
             <td>Updated</td>
             <td>
-              <span class="convertTime"><%= l(@rating.updated_at, format: :convert_time) %></span>
+              <span class="localizeTime"><%= l(@rating.updated_at, format: :localize_time) %></span>
             </td>
           </tr>
           <tr>
             <td>Metadata</td>
             <td>
               <% if @rating.metadata_at.present? %>
-                <span class="convertTime"><%= l(@rating.updated_at, format: :convert_time) %></span>
+                <span class="localizeTime"><%= l(@rating.updated_at, format: :localize_time) %></span>
               <% end %>
             </td>
           </tr>

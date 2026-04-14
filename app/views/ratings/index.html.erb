@@ -173,7 +173,7 @@
     <% end %>
   </div>
   <div class="large-width-container mt-4">
-    <%= render partial: "/shared/pagination", locals: {collection: @ratings, name: "Rating"} %>
+    <%= render partial: "/shared/pagination", locals: {pagy: @pagy, name: "Rating"} %>
   </div>
   <% hide_private_users = ["all", "other users"].include?(viewing_display_name) %>
   <% if @assigning %>
@@ -195,13 +195,13 @@
     <% end %>
   <% else %>
     <%# duplicating this whole thing is gross. It's also duplicated in admin/citations/edit %>
-    <% if @ratings.total_count > 0 %>
+    <% if @pagy.count > 0 %>
       <%= render partial: "table", locals: {ratings: @ratings, render_user: !@viewing_single_user, hide_private_users: hide_private_users} %>
     <% end %>
   <% end %>
   <div class="large-width-container">
     <div class="row">
-      <%= render partial: "/shared/pagination", locals: {collection: @ratings, name: "Rating", skip_total: true} %>
+      <%= render partial: "/shared/pagination", locals: {pagy: @pagy, name: "Rating", skip_total: true} %>
     </div>
   </div>
 <% end %>

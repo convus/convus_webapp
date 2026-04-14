@@ -5,10 +5,9 @@ class Admin::UsersController < Admin::BaseController
   before_action :find_user, except: [:index]
 
   def index
-    page = params[:page] || 1
     @per_page = params[:per_page] || 25
-    @users = searched_users.reorder("users.#{sort_column} #{sort_direction}")
-      .includes(:ratings).page(page).per(@per_page)
+    @pagy, @users = pagy(searched_users.reorder("users.#{sort_column} #{sort_direction}")
+      .includes(:ratings), limit: @per_page)
   end
 
   def edit

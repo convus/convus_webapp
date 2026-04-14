@@ -5,10 +5,9 @@ class Admin::TopicReviewsController < Admin::BaseController
   before_action :find_topic_review, only: %i[edit update destroy]
 
   def index
-    page = params[:page] || 1
     @per_page = params[:per_page] || 25
-    @topic_reviews = searched_topic_reviews.reorder(order_scope_query)
-      .includes(:topic, :topic_review_votes).page(page).per(@per_page)
+    @pagy, @topic_reviews = pagy(searched_topic_reviews.reorder(order_scope_query)
+      .includes(:topic, :topic_review_votes), limit: @per_page)
   end
 
   def new
@@ -26,14 +25,11 @@ class Admin::TopicReviewsController < Admin::BaseController
   end
 
   def edit
-    page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @topic_review_citations = @topic_review.topic_review_citations.vote_ordered
-      .includes(:topic_review_votes, :citation)
-      .page(page).per(@per_page)
-    @topic_review_votes = searched_topic_review_votes
-      .includes(:rating, :user)
-      .page(page).per(@per_page)
+    @pagy, @topic_review_citations = pagy(@topic_review.topic_review_citations.vote_ordered
+      .includes(:topic_review_votes, :citation), limit: @per_page)
+    @pagy_votes, @topic_review_votes = pagy(searched_topic_review_votes
+      .includes(:rating, :user), limit: @per_page, param_key: :page_votes)
   end
 
   def update

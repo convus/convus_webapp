@@ -22,6 +22,7 @@ const enableFullscreenTableOverflow = () => {
   document.querySelectorAll('.full-screen-table table').forEach(el => {
     const tableWidth = el.offsetWidth
     if (tableWidth > pageWidth) {
+      console.log('overflown')
       el.closest('.full-screen-table').classList.add('full-screen-table-overflown')
     }
   })
@@ -31,6 +32,7 @@ const setMaxWidths = () => {
   if (pageWidth < 501) {
     document.querySelectorAll('.maxWScreen')
       .forEach(el => {
+        // 8px on either side of padding
         el.style.maxWidth = `${pageWidth - 16}px`
       })
   }
@@ -48,9 +50,12 @@ const elementsFromSelectorOrElements = (selOrEl) => {
 // toggle can be: [true, 'hide', 'show']
 const elementsCollapse = (selOrEl, toggle = true) => {
   const els = elementsFromSelectorOrElements(selOrEl)
+  // log.trace(`toggling: ${toggle}`)
+  // If toggling, determine which direction to toggle
   if (toggle === true) {
     toggle = els[0]?.classList.contains('hidden') ? 'show' : 'hide'
   }
+  // TODO: add animation functionality
   if (toggle === 'show') {
     els.forEach(el => el.classList.remove('hidden'))
   } else {
@@ -62,16 +67,19 @@ const expandSiblingsEllipse = (event) => {
   event.preventDefault()
   const target = event.currentTarget
   const parent = target.parentElement
+  // WTF, failing to pass array in
   parent.querySelectorAll('.hidden').forEach(el => elementsCollapse(el, 'show'))
   elementsCollapse(target, 'hide')
 }
 
+// TODO: Move this into a stimulus controller
 // It's impossible to redirect_to anchor locations with Hotwire (because of :see_other)
 // So: this adds an event listener to store anchor locations prior to form submission
 // and scrolls to the stored location
 const scrollToStoredLocation = () => {
   const storedAnchor = localStorage.getItem('storedAnchorLocation')
   if (storedAnchor) {
+    console.debug(`scrolling to stored anchor: ${storedAnchor}`)
     window.location.hash = storedAnchor
     localStorage.removeItem('storedAnchorLocation')
   }
@@ -84,6 +92,7 @@ const scrollToStoredLocation = () => {
     })
 }
 
+// Pull out the anchor target from button_to
 const buttonToAnchorTarget = (el) => {
   const result = el?.action?.match(/#.*/)
   return result && result[0]
@@ -94,6 +103,8 @@ const storeAnchorLocation = (event) => {
   return true
 }
 
+// This has some of the JS that is included in the browser extension, to make testing easier
+// I expect to put more of it in here eventually
 const BrowserExtensionScript = () => {
   const toggleTopicsVisible = (isVisible) => {
     window.topicsVisibile = isVisible
@@ -102,6 +113,7 @@ const BrowserExtensionScript = () => {
     } else {
       document.getElementById('field-group-topics').classList.add('hidden')
     }
+    // browser.storage.local.set({topicsVisible: isVisible})
   }
 
   const toggleMenu = (e) => {

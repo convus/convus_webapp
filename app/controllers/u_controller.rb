@@ -8,19 +8,17 @@ class UController < ApplicationController
   end
 
   def following
-    page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @user_followings = searched_user_followings(@user.user_followings)
+    @pagy, @user_followings = pagy(searched_user_followings(@user.user_followings)
       .reorder("user_followings.#{sort_column} #{sort_direction}")
-      .includes(:following).page(page).per(@per_page)
+      .includes(:following), limit: @per_page)
   end
 
   def followers
-    page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @user_followings = searched_user_followings(@user.user_followers)
+    @pagy, @user_followings = pagy(searched_user_followings(@user.user_followers)
       .reorder("user_followings.#{sort_column} #{sort_direction}")
-      .includes(:following).page(page).per(@per_page)
+      .includes(:following), limit: @per_page)
   end
 
   def edit

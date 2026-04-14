@@ -208,18 +208,6 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.19.3)
-    kaminari (1.2.2)
-      activesupport (>= 4.1.0)
-      kaminari-actionview (= 1.2.2)
-      kaminari-activerecord (= 1.2.2)
-      kaminari-core (= 1.2.2)
-    kaminari-actionview (1.2.2)
-      actionview
-      kaminari-core (= 1.2.2)
-    kaminari-activerecord (1.2.2)
-      activerecord
-      kaminari-core (= 1.2.2)
-    kaminari-core (1.2.2)
     language_server-protocol (3.17.0.5)
     launchy (3.1.1)
       addressable (~> 2.8)
@@ -292,6 +280,10 @@ GEM
     optimist (3.2.1)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
+    pagy (43.5.1)
+      json
+      uri
+      yaml
     parallel (1.28.0)
     parallel_tests (4.10.1)
       parallel
@@ -546,6 +538,7 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
+    yaml (0.4.0)
     yard (0.9.39)
     zeitwerk (2.7.5)
 
@@ -582,13 +575,13 @@ DEPENDENCIES
   hotwire-livereload
   htmlbeautifier
   importmap-rails
-  kaminari
   letter_opener
   listen (>= 3.0.5, < 3.2)
   lograge (>= 0.14)
   logstash-event
   lookbook
   observer
+  pagy
   pg
   premailer-rails
   propshaft

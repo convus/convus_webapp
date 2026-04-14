@@ -30,7 +30,7 @@ gem "tzinfo-data", platforms: %i[windows jruby]
 
 gem "devise" # Users
 
-gem "kaminari" # Pagination
+gem "pagy" # Pagination
 gem "faraday" # How we make requests for integrations
 
 gem "commonmarker" # parse markdown

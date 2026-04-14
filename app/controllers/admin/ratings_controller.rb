@@ -6,10 +6,9 @@ class Admin::RatingsController < Admin::BaseController
   before_action :find_rating, except: [:index]
 
   def index
-    page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @ratings = admin_searched_ratings
-      .includes(:topics, :user).page(page).per(@per_page)
+    @pagy, @ratings = pagy(admin_searched_ratings
+      .includes(:topics, :user), limit: @per_page)
   end
 
   def show
