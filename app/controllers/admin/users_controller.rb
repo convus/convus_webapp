@@ -1,7 +1,6 @@
 class Admin::UsersController < Admin::BaseController
-  include SortableTable
+  include Binxtils::SortableTable
 
-  before_action :set_period, only: [:index]
   before_action :find_user, except: [:index]
 
   def index

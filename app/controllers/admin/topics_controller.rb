@@ -1,7 +1,6 @@
 class Admin::TopicsController < Admin::BaseController
-  include SortableTable
+  include Binxtils::SortableTable
 
-  before_action :set_period, only: [:index]
   before_action :find_topic, except: [:index, :new, :create]
 
   def index

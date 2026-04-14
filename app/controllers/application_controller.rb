@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
   include Pagy::Method
-  include SetPeriod
+  include Binxtils::SetPeriod
+
+  self.default_earliest_time = Time.at(1672560000).freeze # 2023-01-01
 
   before_action do
     if Rails.env.production? && current_user.present?
@@ -12,8 +14,7 @@ class ApplicationController < ActionController::Base
   before_action :enable_rack_profiler
 
   helper_method :display_dev_info?, :user_subject, :user_root_url, :controller_namespace,
-    :current_topics, :primary_topic_review, :default_direction, :default_column,
-    :ratings_landing_url, :viewing_current_user?
+    :current_topics, :primary_topic_review, :ratings_landing_url, :viewing_current_user?
 
   def append_info_to_payload(payload)
     super
@@ -27,6 +28,10 @@ class ApplicationController < ActionController::Base
   def enable_rack_profiler
     return false if !current_user&.developer? || Rails.env.test?
     Rack::MiniProfiler.authorize_request
+  end
+
+  def controller_namespace
+    @controller_namespace ||= (self.class.module_parent.name != "Object") ? self.class.module_parent.name.downcase : nil
   end
 
   def display_dev_info?

@@ -1,30 +1,15 @@
 # frozen_string_literal: true
 
+# App-specific extensions to Binxtils::SortableHelper
 module SortableHelper
-  DEFAULT_SEARCH_KEYS = [
-    :direction, :sort, # sorting params
-    :period, :start_time, :end_time, :render_chart, # Time period params
-    :user_id, :query, :per_page, # General search params
-    :user, :filters, {search_topics: []} # App-specific search params
-  ].freeze
+  include Binxtils::SortableHelper
 
-  def sortable_search_params?(except: [])
-    except_keys = %i[direction sort period per_page] + except
-    s_params = sortable_search_params.except(*except_keys).values.reject(&:blank?).any?
-
-    return true if s_params
-    return false if except.map(&:to_s).include?("period")
-
-    params[:period].present? && params[:period] != "all"
+  # Add app-specific search keys to the base set
+  def default_search_keys
+    super + [:user, :filters, {search_topics: []}]
   end
 
-  def sortable_search_params
-    return @sortable_search_params if defined?(@sortable_search_params)
-
-    search_param_keys = params.keys.select { |k| k.to_s.start_with?("search_") }
-    @sortable_search_params = params.permit(*(DEFAULT_SEARCH_KEYS | search_param_keys))
-  end
-
+  # Override sortable to use **kwargs (required for Ruby 4.0 keyword argument separation)
   def sortable(column, title = nil, **html_options)
     title ||= column.to_s.gsub(/_(id|at)\z/, "").titleize
     render_sortable = !html_options.delete(:skip_sortable)
@@ -56,12 +41,5 @@ module SortableHelper
     start_html = content_tag(:span, time_range.first.to_i, class: "localizeTime")
     end_html = content_tag(:span, time_range.last.to_i, class: "localizeTime")
     " #{start_html} - #{end_html}".html_safe
-  end
-
-  private
-
-  # This is a separate method purely for testing purposes, so it can be stubbed
-  def sortable_url(sort, direction)
-    url_for(sortable_search_params.merge(sort:, direction:))
   end
 end
