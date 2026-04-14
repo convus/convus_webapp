@@ -17,7 +17,7 @@ module ApplicationHelper
 
   def admin_number_display(number)
     content_tag(:span, number_with_delimiter(number),
-      class: number == 0 ? "less-less-strong" : nil)
+      class: (number == 0) ? "less-less-strong" : nil)
   end
 
   def page_description

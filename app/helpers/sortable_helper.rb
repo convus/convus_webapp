@@ -37,7 +37,7 @@ module SortableHelper
       current_direction = respond_to?(:sort_direction) ? sort_direction : "desc"
       direction = (column.to_s == current_sort && current_direction == "asc") ? "desc" : "asc"
       arrow = if column.to_s == current_sort
-        current_direction == "asc" ? " ↑" : " ↓"
+        (current_direction == "asc") ? " ↑" : " ↓"
       end
       link_to("#{title}#{arrow}".html_safe,
         url_for(sortable_search_params.merge(sort: column, direction: direction)),

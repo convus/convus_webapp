@@ -131,5 +131,4 @@ class ApplicationController < ActionController::Base
     return nil if path.blank? || path.start_with?("/")
     path
   end
-
 end
