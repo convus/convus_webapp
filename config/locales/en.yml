@@ -34,3 +34,4 @@ en:
   time:
     formats:
       dotted: "%Y.%-m.%-d"
+      localize_time: "%Y-%-m-%-d %-l:%M%P"

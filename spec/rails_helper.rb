@@ -6,7 +6,15 @@ require_relative "../config/environment"
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
+require "view_component/test_helpers"
+require "view_component/system_test_helpers"
+require "capybara/rspec"
+require "super_diff/rspec-rails"
+require "axe-rspec"
 require "sidekiq/testing"
+
+# Axe rules that are acceptable to skip in component previews
+SKIPPABLE_AXE_RULES = %w[color-contrast empty-table-header heading-order html-has-lang landmark-one-main page-has-heading-one region]
 require "vcr"
 
 VCR.configure do |config|
@@ -83,6 +91,14 @@ RSpec.configure do |config|
   # Add our request spec things
   config.include RequestSpecHelpers, type: :request
 
+  # ViewComponent test helpers
+  config.include ViewComponent::TestHelpers, type: :component
+  config.include ViewComponent::SystemTestHelpers, type: :component
+  config.include Capybara::RSpecMatchers, type: :component
+
+  # System specs use headless Chrome
+  config.before(:each, type: :system) { driven_by :selenium, using: :headless_chrome }
+
   # Clear the sidekiq queue to prevent weird test failures
   config.before { Sidekiq::Worker.clear_all }
 
@@ -103,6 +119,31 @@ RSpec.configure do |config|
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
-  # arbitrary gems may also be filtered via:
-  # config.filter_gems_from_backtrace("gem name")
+end
+
+# Override capybara methods to support tailwind selectors
+# Original methods defined in 'lib/capybara/rspec/matchers.rb'
+#
+# This is necessary because colons need to be escaped for these matchers (i.e. tw\:p-6)
+#
+module Capybara
+  module RSpecMatchers
+    def have_selector(*args, **, &)
+      args = args.map { |a| a.is_a?(String) ? escape_colon_classes(a) : a }
+      Matchers::HaveSelector.new(*args, **, &)
+    end
+
+    def have_css(expr, **, &)
+      Matchers::HaveSelector.new(:css, escape_colon_classes(expr), **, &)
+    end
+
+    private
+
+    # Automatically escape colons in tailwind class selectors (e.g. .tw\:p-6)
+    # Only escapes colons that appear within class selectors, preserving
+    # pseudo-selectors like :hover, :focus, :disabled, :not(), etc.
+    def escape_colon_classes(expr)
+      expr.gsub(/(\.\w+):/) { "#{$1}\\:" }
+    end
+  end
 end

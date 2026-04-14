@@ -49,12 +49,13 @@ gem "coderay" # For pretty printing JSON
 # New shiny frontend stuff
 gem "propshaft" # For Assets Pipeline
 gem "jsbundling-rails" # required for new sourcemaps stuff
-gem "cssbundling-rails" # required for new sourcemaps stuff
+gem "tailwindcss-rails" # Tailwind CSS via standalone binary
 gem "importmap-rails" # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "hotwire-livereload" # Livereload!
 gem "turbo-rails" # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem "stimulus-rails"
 gem "tranzito_utils" # For timeparser, sortable, etc
+gem "view_component" # View components
 
 group :production, :staging do
   gem "honeybadger" # Error reporting
@@ -71,6 +72,10 @@ group :development, :test do
   gem "standard" # Ruby linter
   gem "htmlbeautifier" # html linting
   gem "turbo_tests" # Parallel test execution
+end
+
+group :development, :test do
+  gem "lookbook" # Component previews
 end
 
 group :development do
@@ -91,6 +96,10 @@ group :test do
   # gem "timecop" # Time control
   gem "vcr" # Stub external HTTP requests
   gem "webmock" # mocking for VCR
+  gem "capybara" # For view component system specs
+  gem "selenium-webdriver" # Browser driver for system specs
+  gem "axe-core-rspec" # Accessibility testing
+  gem "super_diff" # Better test output diffs
 end
 
 # Performance Stuff

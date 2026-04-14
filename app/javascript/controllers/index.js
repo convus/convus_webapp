@@ -4,12 +4,22 @@
 
 import { application } from './application'
 
+import AlertController from './alert_controller'
+import CollapseController from './collapse_controller'
+import DropdownController from './dropdown_controller'
+import ModalController from './modal_controller'
 import RatingsFilterController from './ratings_filter_controller'
 import SortableRatingsController from './sortable_ratings_controller'
 import AdminCurrentHeaderController from './admin_current_header_controller'
 import ReloadPageTimerController from './reload_page_timer_controller'
+import ThemeController from './theme_controller'
 
+application.register('alert', AlertController)
+application.register('collapse', CollapseController)
+application.register('dropdown', DropdownController)
+application.register('modal', ModalController)
 application.register('ratings-filter', RatingsFilterController)
 application.register('sortable-ratings', SortableRatingsController)
 application.register('admin-current-header', AdminCurrentHeaderController)
 application.register('reload-page-timer', ReloadPageTimerController)
+application.register('theme', ThemeController)

@@ -39,7 +39,7 @@
     @apply pt-2 pb-1.5 px-2.5;
   }
   & ul {
-    @apply list-striped;
+    @apply border-x border-b border-gray-200;
     border-left: 0; /* can't apply; doesn't override the list-striped styles */
     border-right: 0;
   }

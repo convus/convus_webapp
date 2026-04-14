@@ -61,4 +61,6 @@ Rails.application.routes.draw do
   authenticate :user, lambda { |u| u.developer? } do
     mount Sidekiq::Web, at: "/sidekiq"
   end
+
+  mount Lookbook::Engine, at: "/lookbook" if defined?(Lookbook)
 end

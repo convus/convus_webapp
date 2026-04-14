@@ -1,0 +1,172 @@
+@import "tailwindcss";
+@config "../../../config/tailwind.config.js";
+
+/* Custom theme - colors, spacing, fonts, max-widths */
+@theme {
+  --color-primary: #3366cc;
+  --color-success: #75b798;
+  --color-error: #fecba1;
+  --color-bodytext: #212529;
+
+  --spacing-container-pad: 0.5rem;
+  --spacing-r-width: 42rem;
+
+  --font-serif: 'Iowan Old Style', 'Apple Garamond', 'Baskerville', 'Times New Roman', 'Droid Serif', 'Times', 'Source Serif Pro', serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+
+  --max-width-main-content: 1024px;
+  --max-width-small-container: 580px;
+}
+
+/* Vendor CSS */
+@import "../stylesheets/vendor/tom-select.css";
+
+/* Existing app section styles */
+@import "../stylesheets/sections/container_and_row.css";
+@import "../stylesheets/sections/links_and_buttons.css";
+@import "../stylesheets/sections/navbar.css";
+@import "../stylesheets/sections/alerts.css";
+@import "../stylesheets/sections/forms.css";
+@import "../stylesheets/sections/tables.css";
+@import "../stylesheets/sections/lists.css";
+@import "../stylesheets/sections/browser_extension.css";
+@import "../stylesheets/sections/animations.css";
+@import "../stylesheets/sections/legal.css";
+@import "../stylesheets/sections/tranzito_utils.css";
+
+@layer base {
+  html {
+    @apply font-serif text-bodytext;
+  }
+
+  body {
+    @apply text-gray-700 dark:text-gray-300;
+  }
+}
+
+h1 { @apply text-2xl; }
+h2 { @apply text-xl; }
+h3 { @apply text-lg; }
+h4 { @apply font-bold; }
+
+.hiddenNoJs { @apply hidden; }
+
+/* All buttons get pointer cursor */
+button, [role="button"], .btn {
+  cursor: pointer;
+}
+
+.only-dev-visible, .only-dev-visible-small {
+  border: 1px solid #9400d3;
+  background: rgba(148,0,211,.1);
+}
+.only-dev-visible-small {
+  font-size: 60%;
+}
+.table-list {
+  & tr.only-dev-visible {
+    background: rgba(148,0,211,.1) !important;
+  }
+  & td .only-dev-visible {
+    padding: 2px 0.25rem;
+  }
+}
+
+.landing-list-screenshots {
+  @apply flex mt-3 justify-around;
+  & a {
+    @apply flex;
+    max-width: 100px;
+    border: 1px solid #ccc;
+  }
+  & img { cursor: pointer; }
+}
+
+.decoration-publisher {
+  @apply underline decoration-slate-400;
+}
+
+/* View component styles from rails_template */
+@layer components {
+  .twlink {
+    @apply text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300 transition-colors;
+  }
+
+  .twlink.active,
+  .twlink:active {
+    @apply text-blue-800 dark:text-blue-300 font-bold underline;
+  }
+
+  .dropdown-menu {
+    @apply flex-col list-none py-0;
+  }
+  .dropdown-menu li[role="menuitem"]:first-child > a {
+    @apply pt-2 rounded-t-lg;
+  }
+  .dropdown-menu li[role="menuitem"]:last-child > a {
+    @apply pb-2 rounded-b-lg;
+  }
+  .dropdown-menu li[role="menuitem"] > a {
+    @apply block px-4 py-1 text-left text-base text-gray-700 no-underline
+      hover:bg-gray-100 hover:text-gray-900
+      dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-100;
+  }
+  .dropdown-menu li[role="menuitem"] > a.active {
+    @apply bg-gray-100 font-semibold text-gray-900
+      dark:bg-gray-700 dark:text-gray-100;
+  }
+  .dropdown-menu li[role="menuitem"]:has(+ li[role="separator"]) > a {
+    @apply pb-2;
+  }
+  .dropdown-menu li[role="separator"] + li[role="menuitem"] > a {
+    @apply pt-2;
+  }
+  .dropdown-menu li[role="separator"] {
+    @apply border-t border-gray-200 dark:border-gray-700;
+  }
+
+  .ui-table tbody tr:nth-child(odd) {
+    @apply bg-white dark:bg-gray-900;
+  }
+  .ui-table tbody tr:nth-child(even) {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+  .ui-table thead tr th:first-child {
+    @apply rounded-tl-sm;
+  }
+  .ui-table thead tr th:last-child {
+    @apply rounded-tr-sm;
+  }
+  .ui-table tbody tr:last-child td:first-child {
+    @apply rounded-bl-sm;
+  }
+  .ui-table tbody tr:last-child td:last-child {
+    @apply rounded-br-sm;
+  }
+
+  .ui-table-bordered tbody tr td:first-child {
+    @apply ui-table-bordered-td-first;
+  }
+  .ui-table-bordered tbody tr td:last-child {
+    @apply ui-table-bordered-td-last;
+  }
+  .ui-table-bordered thead tr th:first-child {
+    @apply ui-table-bordered-th-first;
+  }
+  .ui-table-bordered thead tr th:last-child {
+    @apply ui-table-bordered-th-last;
+  }
+}
+
+/* Custom utility classes for table borders (applied in JS when columns are hidden) */
+@utility ui-table-bordered-td-first {
+  @apply border-l border-gray-200 dark:border-gray-700;
+}
+@utility ui-table-bordered-td-last {
+  @apply border-r border-gray-200 dark:border-gray-700;
+}
+@utility ui-table-bordered-th-first {
+  @apply border-l border-gray-200 dark:border-gray-600 rounded-tl-sm;
+}
+@utility ui-table-bordered-th-last {
+  @apply border-r border-gray-200 dark:border-gray-600 rounded-tr-sm;
+}
