@@ -80,7 +80,7 @@ RSpec.describe ApplicationHelper, type: :helper do
 
   describe "active_link" do
     context "match_controller" do
-      let(:request) { double("request", url: root_path) }
+      let(:request) { double("request", url: root_path, path: root_path) }
       before { allow(helper).to receive(:request).and_return(request) }
       it "returns the link active with match_controller if on the controller" do
         expect(active_link("Home", root_path, class: "home_header", id: "something", match_controller: true)).to eq '<a class="home_header active" id="something" href="' + root_path + '">Home</a>'

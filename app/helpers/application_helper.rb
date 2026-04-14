@@ -1,4 +1,6 @@
 module ApplicationHelper
+  include SortableHelper
+
   def in_admin?
     controller_namespace == "admin"
   end
@@ -9,7 +11,7 @@ module ApplicationHelper
     else
       current_page?(link_path)
     end
-  rescue StandardError
+  rescue
     false
   end
 
