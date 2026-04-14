@@ -35,7 +35,6 @@ yarn-error.log
 /node_modules
 /app/assets/builds/*
 !/app/assets/builds/.keep
-esbuild_error
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key

@@ -87,6 +87,6 @@
 <% skip_pagination ||= false %>
 <% unless skip_pagination %>
   <div class="row mt-4">
-    <%= render partial: "tranzito_utils/pagination", locals: {collection: collection, name: viewing} %>
+    <%= render partial: "/shared/pagination", locals: {collection: collection, name: viewing} %>
   </div>
 <% end %>

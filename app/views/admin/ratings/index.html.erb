@@ -25,5 +25,5 @@
 <%= render partial: "/admin/ratings/table", locals: {ratings: @ratings} %>
 
 <div class="mt-4">
-  <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, skip_total: true} %>
+  <%= render partial: "/shared/pagination", locals: {collection: @ratings, skip_total: true} %>
 </div>

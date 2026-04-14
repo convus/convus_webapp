@@ -1,49 +1,23 @@
 {
   "name": "convus_reviews",
-  "private": "false",
-  "scripts": {
-    "build": "node esbuild.config.js",
-    "lint": "standard --fix",
-    "test": "jest"
-  },
-  "dependencies": {
-    "@floating-ui/dom": "^1.7.6",
-    "@hotwired/stimulus": "^3.2.1",
-    "@hotwired/turbo-rails": "^7.2.5",
-    "chart.js": "^3.9.1",
-    "chartkick": "^4.2.0",
-    "esbuild": "^0.15.3",
-    "flowbite": "^1.6.3",
-    "loglevel": "^1.8.1",
-    "moment": "^2.29.1",
-    "moment-timezone": "^0.5.34",
-    "sortablejs": "^1.15.0",
-    "standard": "^16.0.4",
-    "tom-select": "^2.2.2",
-    "tranzito_utils_js": "^1.1.9"
-  },
+  "private": "true",
   "devDependencies": {
-    "@babel/preset-env": "^7.16.4",
-    "babel-jest": "^27.4.6",
-    "jest-cli": "^27.4.7",
-    "jest-junit": "^13.0.0",
-    "standard": "^16.0.4"
+    "standard": "*"
+  },
+  "scripts": {
+    "js:lint": "standard --fix",
+    "js:lint_check": "standard"
   },
   "standard": {
     "globals": [
-      "$",
-      "_",
       "alert",
       "confirm",
       "fetch",
       "localStorage"
     ],
     "ignore": [
-      "/public/*",
-      "node_modules/*"
-    ],
-    "env": [
-      "jest"
+      "/app/assets/",
+      "/public/"
     ]
   }
 }

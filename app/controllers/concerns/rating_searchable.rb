@@ -49,7 +49,7 @@ module RatingSearchable
       ratings = ratings.merge(Citation.search_author(@author))
     end
 
-    @not_rated = TranzitoUtils::Normalize.boolean(p_params[:search_not_rated])
+    @not_rated = Binxtils::InputNormalizer.boolean(p_params[:search_not_rated])
     if @not_rated && current_user.present? && !viewing_current_user?
       ratings = ratings.where.not(citation_id: current_user.citations)
     end
@@ -57,42 +57,42 @@ module RatingSearchable
   end
 
   def boolean_searches(ratings)
-    if TranzitoUtils::Normalize.boolean(p_params[:search_disagree])
+    if Binxtils::InputNormalizer.boolean(p_params[:search_disagree])
       @search_agreement = "disagree"
       ratings = ratings.disagree
-    elsif TranzitoUtils::Normalize.boolean(p_params[:search_agree])
+    elsif Binxtils::InputNormalizer.boolean(p_params[:search_agree])
       @search_agreement = "agree"
       ratings = ratings.agree
     end
 
-    if TranzitoUtils::Normalize.boolean(p_params[:search_quality_low])
+    if Binxtils::InputNormalizer.boolean(p_params[:search_quality_low])
       @search_quality = "low"
       ratings = ratings.quality_low
-    elsif TranzitoUtils::Normalize.boolean(p_params[:search_quality_high])
+    elsif Binxtils::InputNormalizer.boolean(p_params[:search_quality_high])
       @search_quality = "high"
       ratings = ratings.quality_high
     end
 
-    if TranzitoUtils::Normalize.boolean(p_params[:search_learned_something])
+    if Binxtils::InputNormalizer.boolean(p_params[:search_learned_something])
       @search_learned_something = true
       ratings = ratings.learned_something
     end
-    if TranzitoUtils::Normalize.boolean(p_params[:search_changed_opinion])
+    if Binxtils::InputNormalizer.boolean(p_params[:search_changed_opinion])
       @search_changed_opinion = true
       ratings = ratings.changed_opinion
     end
 
-    if TranzitoUtils::Normalize.boolean(p_params[:search_significant_factual_error])
+    if Binxtils::InputNormalizer.boolean(p_params[:search_significant_factual_error])
       @search_significant_factual_error = true
       ratings = ratings.significant_factual_error
     end
 
-    if TranzitoUtils::Normalize.boolean(p_params[:search_not_understood])
+    if Binxtils::InputNormalizer.boolean(p_params[:search_not_understood])
       @search_not_understood = true
       ratings = ratings.not_understood
     end
 
-    if TranzitoUtils::Normalize.boolean(p_params[:search_not_finished])
+    if Binxtils::InputNormalizer.boolean(p_params[:search_not_finished])
       @search_not_finished = true
       ratings = ratings.not_finished
     end

@@ -5,7 +5,7 @@ module CreatedDateable
     def date_in_timezone(time = nil, timezone = nil)
       time ||= Time.current
       return time.to_date if timezone.blank?
-      tz = TranzitoUtils::TimeParser.parse_timezone(timezone)
+      tz = Binxtils::TimeZoneParser.parse(timezone)
       time.in_time_zone(tz).to_date
     end
 

@@ -19,7 +19,7 @@ def expect_attrs_to_match_hash(obj, hash, match_time_within: 1, match_timezone: 
       next
     elsif [true, false].include?(obj_value)
       # If we're comparing a boolean, use params normalizer
-      next if obj_value == TranzitoUtils::Normalize.boolean(value)
+      next if obj_value == Binxtils::InputNormalizer.boolean(value)
     end
     unmatched_obj_attrs[key] = obj_value
   end
@@ -97,8 +97,8 @@ end
 def match_time_error(value, value2, match_time_within, timezone = nil)
   # Converting to time and comparing with #between?
   # I believe this is the best option for the main expected values: Time object or a timestamp
-  t_value = value.is_a?(Time) ? value : TranzitoUtils::TimeParser.parse(value, timezone)
-  t_value2 = value2.is_a?(Time) ? value2 : TranzitoUtils::TimeParser.parse(value2, timezone)
+  t_value = value.is_a?(Time) ? value : Binxtils::TimeParser.parse(value, timezone)
+  t_value2 = value2.is_a?(Time) ? value2 : Binxtils::TimeParser.parse(value2, timezone)
   if t_value.blank? || t_value2.blank?
     return "'#{value}' and '#{value2}' both need to be times to compare within"
   end

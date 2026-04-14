@@ -1,7 +1,5 @@
 /*
-  Override (or cover) things from tranzito_utils bootstrap functionality
-
-  NOTE: TranzitoUtils Table styles are overridden in tables
+  Period selection and pagination styles
 */
 
 #timeSelectionBtnGroup {

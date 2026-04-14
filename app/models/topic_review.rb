@@ -43,11 +43,11 @@ class TopicReview < ApplicationRecord
   end
 
   def start_at_in_zone=(val)
-    self.start_at = TranzitoUtils::TimeParser.parse(val, timezone)
+    self.start_at = Binxtils::TimeParser.parse(val, timezone)
   end
 
   def end_at_in_zone=(val)
-    self.end_at = TranzitoUtils::TimeParser.parse(val, timezone)
+    self.end_at = Binxtils::TimeParser.parse(val, timezone)
   end
 
   def start_at_in_zone

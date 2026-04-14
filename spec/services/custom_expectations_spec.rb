@@ -120,7 +120,7 @@ RSpec.describe "custom_expectations spec" do
         let(:time) { Time.at(1657223244) } # 2022-07-07 14:47:24
         let(:hash_with_timezone) { hash.merge(updated_at: "2022-07-07 19:47:24", timezone: "UTC") }
         it "matches" do
-          time_utc = TranzitoUtils::TimeParser.parse(hash_with_timezone[:updated_at], hash_with_timezone[:timezone])
+          time_utc = Binxtils::TimeParser.parse(hash_with_timezone[:updated_at], hash_with_timezone[:timezone])
           expect(time_utc).to be_within(1).of time
           expect_attrs_to_match_hash(obj, hash_with_timezone)
 

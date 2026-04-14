@@ -1,5 +1,5 @@
 class Admin::PublishersController < Admin::BaseController
-  include TranzitoUtils::SortableTable
+  include SortableTable
 
   before_action :set_period, only: [:index]
   before_action :find_publisher, except: [:index]
@@ -39,7 +39,7 @@ class Admin::PublishersController < Admin::BaseController
     publishers = Publisher
 
     if params[:search_remove_query].present?
-      @remove_query = TranzitoUtils::Normalize.boolean(params[:search_remove_query])
+      @remove_query = Binxtils::InputNormalizer.boolean(params[:search_remove_query])
       publishers = @remove_query ? publishers.remove_query : publishers.keep_query
     end
 

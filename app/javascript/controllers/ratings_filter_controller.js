@@ -1,6 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
 // import TomSelect from 'tom-select/dist/js/tom-select.popular.js'
-import log from '../scripts/log' // eslint-disable-line
 
 // Connects to data-controller="ratings-filter"
 export default class extends Controller {

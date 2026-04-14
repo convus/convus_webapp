@@ -1,6 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
 import Sortable from 'sortablejs'
-import log from '../scripts/log' // eslint-disable-line
 
 // Connects to data-controller="sortable-ratings"
 export default class extends Controller {

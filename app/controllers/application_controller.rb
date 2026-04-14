@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
-  include TranzitoUtils::SetPeriod
-  include RenderEsbuildErrors
+  include SetPeriod
 
   before_action do
     if Rails.env.production? && current_user.present?
@@ -85,14 +84,6 @@ class ApplicationController < ActionController::Base
     after_sign_in_path_for(resource) || user_root_url
   end
 
-  def default_direction
-    "desc"
-  end
-
-  def default_column
-    sortable_columns&.first
-  end
-
   protected
 
   def configure_permitted_parameters
@@ -141,7 +132,4 @@ class ApplicationController < ActionController::Base
     path
   end
 
-  def controller_namespace
-    @controller_namespace ||= (self.class.module_parent.name != "Object") ? self.class.module_parent.name.downcase : nil
-  end
 end

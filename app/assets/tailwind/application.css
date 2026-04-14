@@ -31,7 +31,7 @@
 @import "../stylesheets/sections/browser_extension.css";
 @import "../stylesheets/sections/animations.css";
 @import "../stylesheets/sections/legal.css";
-@import "../stylesheets/sections/tranzito_utils.css";
+@import "../stylesheets/sections/period_and_pagination.css";
 
 @layer base {
   html {

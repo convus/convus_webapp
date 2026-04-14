@@ -1,5 +1,5 @@
 class Admin::TopicReviewsController < Admin::BaseController
-  include TranzitoUtils::SortableTable
+  include SortableTable
 
   before_action :set_period, only: [:index]
   before_action :find_topic_review, only: %i[edit update destroy]

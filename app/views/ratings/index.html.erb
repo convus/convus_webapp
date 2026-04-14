@@ -173,7 +173,7 @@
     <% end %>
   </div>
   <div class="large-width-container mt-4">
-    <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating"} %>
+    <%= render partial: "/shared/pagination", locals: {collection: @ratings, name: "Rating"} %>
   </div>
   <% hide_private_users = ["all", "other users"].include?(viewing_display_name) %>
   <% if @assigning %>
@@ -201,7 +201,7 @@
   <% end %>
   <div class="large-width-container">
     <div class="row">
-      <%= render partial: "tranzito_utils/pagination", locals: {collection: @ratings, name: "Rating", skip_total: true} %>
+      <%= render partial: "/shared/pagination", locals: {collection: @ratings, name: "Rating", skip_total: true} %>
     </div>
   </div>
 <% end %>

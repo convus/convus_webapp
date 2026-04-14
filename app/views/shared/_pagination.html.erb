@@ -1,0 +1,33 @@
+<%# Requires locals: collection, name %>
+<%# total_count is pagination method. Handle non-paginated collections %>
+<% count = defined?(collection.total_count) ? collection.total_count : collection.count %>
+<% skip_total ||= false %>
+<% skip_pagination ||= false %>
+
+<div class="pagination-container">
+  <% unless skip_total %>
+    <div class="col-md-5">
+      <p class="pagination-number">
+        <strong><%= number_with_delimiter(count) %></strong>
+        Matching <%= name.pluralize(count) %>
+        <% if defined?(@time_range) && @period != "all" %>
+          <em>
+            <% if defined?(@time_range_column) %>
+              <strong><%= humanized_time_range_column(@time_range_column) %></strong>
+            <% end %>
+            <%= humanized_time_range(@time_range) %>
+          </em>
+        <% end %>
+      </p>
+    </div>
+  <% end %>
+  <% unless skip_pagination %>
+    <div class="pagination-flex justify-content-md-end <%= skip_total ? 'col-12' : 'col-md-7' %>">
+      <%= paginate collection, outer_window: 1 %>
+      <% if count > @per_page.to_i %>
+        <% per_pages = [10, 25, 50, 100, @per_page.to_i].uniq.sort %>
+        <%= select_tag :per_page_select, options_for_select(per_pages.map { |i| ["#{i} / page", i] }, selected: @per_page), class: "form-control per-page-select" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

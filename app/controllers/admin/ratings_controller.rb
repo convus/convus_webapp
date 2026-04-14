@@ -1,6 +1,6 @@
 class Admin::RatingsController < Admin::BaseController
   include RatingSearchable
-  include TranzitoUtils::SortableTable
+  include SortableTable
 
   before_action :set_period, only: [:index]
   before_action :find_rating, except: [:index]
@@ -16,7 +16,7 @@ class Admin::RatingsController < Admin::BaseController
   end
 
   def update
-    if TranzitoUtils::Normalize.boolean(params[:set_metadata_attributes])
+    if Binxtils::InputNormalizer.boolean(params[:set_metadata_attributes])
       @rating.set_metadata_attributes!
       UpdateCitationMetadataFromRatingsJob.perform_async(@rating.citation_id)
       flash[:success] = "Rating metadata reprocessed"

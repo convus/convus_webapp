@@ -2,7 +2,7 @@ class UController < ApplicationController
   before_action :find_user!
   before_action :ensure_user_is_current_user!, except: %i[show following followers]
   before_action :redirect_unless_approved!, only: %i[following followers]
-  include TranzitoUtils::SortableTable
+  include SortableTable
 
   def show
   end

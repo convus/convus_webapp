@@ -48,13 +48,12 @@ gem "coderay" # For pretty printing JSON
 
 # New shiny frontend stuff
 gem "propshaft" # For Assets Pipeline
-gem "jsbundling-rails" # required for new sourcemaps stuff
 gem "tailwindcss-rails" # Tailwind CSS via standalone binary
 gem "importmap-rails" # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "hotwire-livereload" # Livereload!
 gem "turbo-rails" # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem "stimulus-rails"
-gem "tranzito_utils" # For timeparser, sortable, etc
+gem "binxtils" # Bike Index utilities
 gem "view_component" # View components
 
 group :production, :staging do

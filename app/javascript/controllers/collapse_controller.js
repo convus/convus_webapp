@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
-import { collapse } from '../utils/collapse_utils'
+import { collapse } from 'utils/collapse_utils'
 
 // Connects to data-controller='collapse'
 export default class extends Controller {
