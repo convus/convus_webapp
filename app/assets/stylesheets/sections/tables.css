@@ -60,7 +60,7 @@
   @apply px-container-pad px-0 max-w-full;
 }
 
-/*/* override period/pagination styles */
+/* override period/pagination styles */
 .convus-body .full-screen-table {
   @apply mx-0;
 }
