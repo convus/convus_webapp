@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe Form::Group::Component, type: :component do
   let(:user) { User.new }
   let(:form_builder) do
-    SethTemplateFormBuilder.new(:user, user, ActionView::Base.new(ActionView::LookupContext.new([]), {}, nil), {})
+    ConvusFormBuilder.new(:user, user, ActionView::Base.new(ActionView::LookupContext.new([]), {}, nil), {})
   end
   let(:component) { render_inline(described_class.new(form_builder:, attribute:, kind:, label_text:)) }
   let(:attribute) { :username }
