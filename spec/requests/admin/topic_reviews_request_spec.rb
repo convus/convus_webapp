@@ -66,7 +66,7 @@ RSpec.describe base_url, type: :request do
         topic_review = TopicReview.last
         expect(topic_review.topic_name).to eq "Example topic"
         expect(Time.zone.name).to eq "America/Los_Angeles"
-        zone_difference = Time.current.utc_offset - TranzitoUtils::TimeParser.parse_timezone(valid_params[:timezone]).utc_offset
+        zone_difference = Time.current.utc_offset - Binxtils::TimeZoneParser.parse(valid_params[:timezone]).utc_offset
         # TODO: this fail when DST changes - fix it!
         # expect(zone_difference).to eq(-7200)
         expect(topic_review.start_at.to_i).to be_within(60).of(start_at.to_i + zone_difference)

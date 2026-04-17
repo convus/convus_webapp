@@ -1,13 +1,8 @@
-// Entry point for the build script in your package.json
 import '@hotwired/turbo-rails'
-import './controllers'
-import BrowserExtensionScript from './scripts/browser_extension_script.js'
-// Import flowbite, a tailwind component library, for interactions
-import 'flowbite/dist/flowbite.turbo.js'
-import { PeriodSelector, Pagination } from 'tranzito_utils_js'
-
-import TimeParser from './scripts/time_parser'
-import log from './scripts/log' // eslint-disable-line
+import 'controllers'
+import 'chartkick'
+import 'Chart.bundle'
+import TimeLocalizer from '@bikeindex/time-localizer'
 
 const toggleChecks = (event) => {
   const checked = event.target.checked
@@ -84,7 +79,7 @@ const expandSiblingsEllipse = (event) => {
 const scrollToStoredLocation = () => {
   const storedAnchor = localStorage.getItem('storedAnchorLocation')
   if (storedAnchor) {
-    log.debug(`scrolling to stored anchor: ${storedAnchor}`)
+    console.debug(`scrolling to stored anchor: ${storedAnchor}`)
     window.location.hash = storedAnchor
     localStorage.removeItem('storedAnchorLocation')
   }
@@ -108,19 +103,102 @@ const storeAnchorLocation = (event) => {
   return true
 }
 
-document.addEventListener('turbo:load', () => {
-  scrollToStoredLocation()
-
-  if (document.getElementById('timeSelectionBtnGroup')) {
-    const periodSelector = new PeriodSelector()
-    periodSelector.init()
+// This has some of the JS that is included in the browser extension, to make testing easier
+// I expect to put more of it in here eventually
+const BrowserExtensionScript = () => {
+  const toggleTopicsVisible = (isVisible) => {
+    window.topicsVisibile = isVisible
+    if (window.topicsVisibile) {
+      document.getElementById('field-group-topics').classList.remove('hidden')
+    } else {
+      document.getElementById('field-group-topics').classList.add('hidden')
+    }
+    // browser.storage.local.set({topicsVisible: isVisible})
   }
 
-  if (!window.timeParser) window.timeParser = new TimeParser()
-  window.timeParser.localize()
+  const toggleMenu = (e) => {
+    e.preventDefault()
+    const menuBtn = document.getElementById('rating-menu-btn')
+    const menu = document.getElementById('rating-menu')
+    if (menu.classList.contains('active')) {
+      menu.classList.add('hidden')
+      menu.classList.remove('active')
+      menuBtn.classList.remove('active')
+    } else {
+      menu.classList.remove('hidden')
+      menu.classList.add('active')
+      menuBtn.classList.add('active')
+    }
+  }
+  const updateMenuCheck = (e) => {
+    const el = e.target
+    const fieldId = el.getAttribute('data-target-id')
 
-  window.pagination = new Pagination()
-  window.pagination.init()
+    if (fieldId === 'field-group-topics') {
+      toggleTopicsVisible(el.checked)
+    } else if (el.checked) {
+      document.getElementById(fieldId).classList.remove('hidden')
+    } else {
+      document.getElementById(fieldId).classList.add('hidden')
+    }
+  }
+
+  document.getElementById('rating-menu-btn').addEventListener('click', toggleMenu)
+  document.querySelectorAll('#rating-menu .form-control-check input').forEach(el => el.addEventListener('change', updateMenuCheck))
+}
+
+// PeriodSelector - handles custom period selection UI
+const initPeriodSelector = () => {
+  const btnGroup = document.getElementById('timeSelectionBtnGroup')
+  if (!btnGroup) return
+
+  const customBtn = document.getElementById('periodSelectCustom')
+  const customForm = document.getElementById('timeSelectionCustom')
+  const updateBtn = document.getElementById('updatePeriodSelectCustom')
+  if (!customBtn || !customForm) return
+
+  customBtn.addEventListener('click', () => {
+    customForm.classList.toggle('show')
+    customForm.classList.toggle('in')
+    btnGroup.classList.toggle('custom-period-selected')
+  })
+
+  if (updateBtn) {
+    updateBtn.addEventListener('click', (e) => {
+      e.preventDefault()
+      const startTime = document.getElementById('start_time_selector')?.value
+      const endTime = document.getElementById('end_time_selector')?.value
+      if (startTime && endTime) {
+        const url = new URL(window.location.href)
+        url.searchParams.set('start_time', startTime)
+        url.searchParams.set('end_time', endTime)
+        url.searchParams.set('period', 'custom')
+        window.location.href = url.toString()
+      }
+    })
+  }
+
+  // Pagination per_page select
+  const perPageSelect = document.getElementById('per_page_select')
+  if (perPageSelect) {
+    perPageSelect.addEventListener('change', () => {
+      const url = new URL(window.location.href)
+      url.searchParams.set('per_page', perPageSelect.value)
+      window.location.href = url.toString()
+    })
+  }
+}
+
+function localizeTime () {
+  if (!window.timeLocalizer) window.timeLocalizer = new TimeLocalizer()
+  window.timeLocalizer.localize()
+}
+
+document.addEventListener('DOMContentLoaded', localizeTime)
+document.addEventListener('turbo:load', () => {
+  localizeTime()
+  scrollToStoredLocation()
+  initPeriodSelector()
 
   if (document.getElementById('rating-menu')) {
     BrowserExtensionScript()
@@ -137,3 +215,5 @@ document.addEventListener('turbo:load', () => {
   document.querySelectorAll('.expandSiblingsEllipse')
     .forEach(el => el.addEventListener('click', expandSiblingsEllipse))
 })
+document.addEventListener('turbo:render', localizeTime)
+document.addEventListener('turbo:frame-render', localizeTime)

@@ -9,11 +9,22 @@ RSpec.describe UI::Pagination::Component, type: :component do
   let(:page_params) { {} }
   let(:data) { {} }
 
-  # Pagination component requires Pagy gem (project uses kaminari)
-  # These tests are skipped until pagy is added or the component is adapted
-
   context "no pagy" do
     let(:pagy) { nil }
+    it "doesn't render" do
+      expect(instance.render?).to be_falsey
+    end
+  end
+
+  context "with pagy on first page" do
+    let(:pagy) { Pagy::Offset.new(count: 100, limit: 10, page: 1) }
+    it "renders" do
+      expect(instance.render?).to be_truthy
+    end
+  end
+
+  context "with single page" do
+    let(:pagy) { Pagy::Offset.new(count: 5, limit: 10, page: 1) }
     it "doesn't render" do
       expect(instance.render?).to be_falsey
     end

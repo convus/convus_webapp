@@ -1,5 +1,4 @@
 import { Controller } from '@hotwired/stimulus'
-import log from '../scripts/log' // eslint-disable-line
 
 // Connects to data-controller="reload-page-timer"
 export default class extends Controller {

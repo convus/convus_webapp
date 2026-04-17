@@ -12,7 +12,7 @@ a, .link {
   @apply text-primary no-underline;
 }
 
-/* Done by tranzito_utils, but - may modify later */
+/* Button styling */
 .gray-link {
   color: #6c757d;
   opacity: 0.65;

@@ -1,22 +1,20 @@
 class Admin::RatingsController < Admin::BaseController
   include RatingSearchable
-  include TranzitoUtils::SortableTable
+  include Binxtils::SortableTable
 
-  before_action :set_period, only: [:index]
   before_action :find_rating, except: [:index]
 
   def index
-    page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @ratings = admin_searched_ratings
-      .includes(:topics, :user).page(page).per(@per_page)
+    @pagy, @ratings = pagy(admin_searched_ratings
+      .includes(:topics, :user), limit: @per_page)
   end
 
   def show
   end
 
   def update
-    if TranzitoUtils::Normalize.boolean(params[:set_metadata_attributes])
+    if Binxtils::InputNormalizer.boolean(params[:set_metadata_attributes])
       @rating.set_metadata_attributes!
       UpdateCitationMetadataFromRatingsJob.perform_async(@rating.citation_id)
       flash[:success] = "Rating metadata reprocessed"

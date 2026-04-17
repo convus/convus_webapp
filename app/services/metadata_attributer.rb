@@ -129,14 +129,14 @@ class MetadataAttributer
 
       time ||= proprietary_property_content(rating_metadata, "published_time")
       time ||= prop_or_name_content(rating_metadata, "article:published_time")
-      TranzitoUtils::TimeParser.parse(time)&.to_i # timestamp for ease of comparison
+      Binxtils::TimeParser.parse(time)&.to_i # timestamp for ease of comparison
     end
 
     def metadata_published_updated_at(rating_metadata, json_ld)
       time = json_ld&.dig("dateModified")
 
       time ||= prop_or_name_content(rating_metadata, "article:modified_time")
-      TranzitoUtils::TimeParser.parse(time)&.to_i # timestamp for ease of comparison
+      Binxtils::TimeParser.parse(time)&.to_i # timestamp for ease of comparison
     end
 
     def metadata_publisher_name(rating_metadata, json_ld)
@@ -168,7 +168,7 @@ class MetadataAttributer
 
     def metadata_paywall(rating_metadata, json_ld)
       if json_ld&.key?("isAccessibleForFree")
-        return !TranzitoUtils::Normalize.boolean(json_ld["isAccessibleForFree"])
+        return !Binxtils::InputNormalizer.boolean(json_ld["isAccessibleForFree"])
       end
       false # TODO: include publisher
     end

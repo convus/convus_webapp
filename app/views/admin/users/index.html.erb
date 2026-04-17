@@ -40,10 +40,10 @@
         <tr>
           <td>
             <% if display_dev_info? %><code class="only-dev-visible-small"><%= user.id %></code><% end %>
-            <span class="convertTime"><%= l(user.created_at, format: :convert_time) %></span>
+            <span class="localizeTime"><%= l(user.created_at, format: :localize_time) %></span>
           </td>
           <td>
-            <small class="convertTime"><%= l(user.updated_at, format: :convert_time) %></small>
+            <small class="localizeTime"><%= l(user.updated_at, format: :localize_time) %></small>
           </td>
           <td>
             <%= link_to user&.username, edit_admin_user_path(user.id) %>

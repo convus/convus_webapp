@@ -10,13 +10,13 @@
         <tr>
           <td>Created</td>
           <td>
-            <span class="convertTime"><%= l(@user.created_at, format: :convert_time) %></span>
+            <span class="localizeTime"><%= l(@user.created_at, format: :localize_time) %></span>
           </td>
         </tr>
         <tr>
           <td>Updated</td>
           <td>
-            <small class="convertTime"><%= l(@user.updated_at, format: :convert_time) %></small>
+            <small class="localizeTime"><%= l(@user.updated_at, format: :localize_time) %></small>
           </td>
         </tr>
         <tr>

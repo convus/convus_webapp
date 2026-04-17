@@ -143,11 +143,11 @@ class Citation < ApplicationRecord
   end
 
   def published_at_in_zone=(val)
-    self.published_at = TranzitoUtils::TimeParser.parse(val, timezone)
+    self.published_at = Binxtils::TimeParser.parse(val, timezone)
   end
 
   def published_updated_at_in_zone=(val)
-    self.published_updated_at = TranzitoUtils::TimeParser.parse(val, timezone)
+    self.published_updated_at = Binxtils::TimeParser.parse(val, timezone)
   end
 
   def published_at_in_zone

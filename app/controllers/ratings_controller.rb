@@ -1,8 +1,7 @@
 class RatingsController < ApplicationController
   include RatingSearchable
-  include TranzitoUtils::SortableTable
+  include Binxtils::SortableTable
 
-  before_action :set_period, only: %i[index] # Actually, will want to set after assigning via
   before_action :redirect_to_signup_unless_user_present!, except: %i[new index]
   before_action :find_and_authorize_rating, only: %i[edit update destroy]
   helper_method :viewing_display_name, :viewable_ratings
@@ -14,12 +13,10 @@ class RatingsController < ApplicationController
         return
       end
     end
-    page = params[:page] || 1
     @per_page = params[:per_page] || 50
 
-    @ratings = viewable_ratings.reorder(order_scope_query)
-      .includes(:user) # RatingSearchable joins :citation
-      .page(page).per(@per_page)
+    @pagy, @ratings = pagy(viewable_ratings.reorder(order_scope_query)
+      .includes(:user), limit: @per_page) # RatingSearchable joins :citation
 
     @viewing_primary_topic = current_topics.present? && current_topics.pluck(:id) == [primary_topic_review&.topic_id]
     set_rating_assigment_if_passed if viewing_current_user?
@@ -136,7 +133,7 @@ class RatingsController < ApplicationController
     end
     # Not implemented yet, just shows a message
     if current_user.present? && !viewing_current_user?
-      @disagree_following = TranzitoUtils::Normalize.boolean(p_params[:search_disagree_following])
+      @disagree_following = Binxtils::InputNormalizer.boolean(p_params[:search_disagree_following])
     end
     @viewable_ratings = searched_ratings(viewed_ratings) # in RatingSearchable
   end
@@ -177,7 +174,7 @@ class RatingsController < ApplicationController
   end
 
   def set_rating_assigment_if_passed
-    if TranzitoUtils::Normalize.boolean(params[:search_topic_assignment])
+    if Binxtils::InputNormalizer.boolean(params[:search_topic_assignment])
       topic = current_topics.any? ? current_topics : primary_topic_review&.topic
       return unless topic.present?
       @assigning = true

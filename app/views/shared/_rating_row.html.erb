@@ -8,7 +8,7 @@
 
 <span class="block <%= wrapper_class %>">
   <small class="">
-    Rated <span class="convertTime"><%= l(rating.created_at, format: :convert_time) %></span>
+    Rated <span class="localizeTime"><%= l(rating.created_at, format: :localize_time) %></span>
   </small>
   <% if render_user %>
     <small class="mr-1">

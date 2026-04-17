@@ -97,7 +97,7 @@
           <% else %>
             <p class="form-control bg-gray-100 cursor-not-allowed">
               <% if @citation.published_at.present? %>
-                <span class="convertTime"><%= l(@citation.published_at, format: :convert_time) %></span>
+                <span class="localizeTime"><%= l(@citation.published_at, format: :localize_time) %></span>
               <% else %>
                 <span class="less-strong">none</span>
               <% end %>
@@ -113,7 +113,7 @@
           <% else %>
             <p class="form-control bg-gray-100 cursor-not-allowed">
               <% if @citation.published_updated_at.present? %>
-                <span class="convertTime"><%= l(@citation.published_updated_at, format: :convert_time) %></span>
+                <span class="localizeTime"><%= l(@citation.published_updated_at, format: :localize_time) %></span>
               <% else %>
                 <span class="less-strong">none</span>
               <% end %>
@@ -142,7 +142,7 @@
       <span class="small block">
         At:
         <% if @citation.manually_updated_at.present? %>
-          <span class="convertTime"><%= l(@citation.manually_updated_at, format: :convert_time) %></span>
+          <span class="localizeTime"><%= l(@citation.manually_updated_at, format: :localize_time) %></span>
         <% else %>
           <span class="less-strong">none</span>
         <% end %>
@@ -176,7 +176,7 @@
     <% ratings_ordered.each do |rating| %>
       <div class="col mt-4 mr-2 py-2 border-gray-200 border">
         <p>
-          <%= link_to l(rating.created_at, format: :convert_time), admin_rating_path(rating), class: "convertTime" %>
+          <%= link_to l(rating.created_at, format: :localize_time), admin_rating_path(rating), class: "localizeTime" %>
           by: <%= rating.user&.username %>
 
         </p>

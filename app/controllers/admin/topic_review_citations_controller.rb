@@ -2,12 +2,10 @@ class Admin::TopicReviewCitationsController < Admin::BaseController
   before_action :find_topic_review_citation
 
   def edit
-    page = params[:page] || 1
     @per_page = params[:per_page] || 50
     @topic_review = @topic_review_citation.topic_review
-    @topic_review_votes = @topic_review_citation.topic_review_votes.vote_ordered
-      .includes(:user)
-      .page(page).per(@per_page)
+    @pagy, @topic_review_votes = pagy(@topic_review_citation.topic_review_votes.vote_ordered
+      .includes(:user), limit: @per_page)
   end
 
   def update

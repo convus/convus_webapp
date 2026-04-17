@@ -6,4 +6,4 @@
 
 <%= render partial: "/admin/citations/table", locals: {citations: @citations, skip_sortable: false} %>
 
-<%= render partial: "tranzito_utils/pagination", locals: {collection: @citations, skip_total: true} %>
+<%= render partial: "/shared/pagination", locals: {pagy: @pagy, skip_total: true} %>

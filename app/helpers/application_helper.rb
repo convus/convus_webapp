@@ -1,5 +1,24 @@
 module ApplicationHelper
-  include TranzitoUtils::Helpers
+  include SortableHelper
+
+  def in_admin?
+    controller_namespace == "admin"
+  end
+
+  def current_page_active?(link_path, match_controller = false)
+    if match_controller
+      request.path.start_with?(link_path.split("?").first)
+    else
+      current_page?(link_path)
+    end
+  rescue
+    false
+  end
+
+  def admin_number_display(number)
+    content_tag(:span, number_with_delimiter(number),
+      class: (number == 0) ? "less-less-strong" : nil)
+  end
 
   def page_description
     return nil unless render_user_page_description?
@@ -9,7 +28,7 @@ module ApplicationHelper
     "(#{user.ratings.created_yesterday.count} ratings and #{user.total_kudos_yesterday} kudos yesterday)"
   end
 
-  # Overrides tranzito_utils, correct page title for convus
+  # Correct page title for convus
   def page_title
     prefix = in_admin? ? "🧰" : nil
     return [prefix, @page_title].compact.join(" ") if defined?(@page_title)
@@ -22,7 +41,7 @@ module ApplicationHelper
     ].compact.join(" ")
   end
 
-  # Overrides tranzito_utils, enables using a block
+  # Enables using a block
   def active_link(name = nil, options = nil, html_options = nil, &block)
     html_options, options, name = options, name, block if block
     options ||= {}
@@ -60,7 +79,7 @@ module ApplicationHelper
   end
 
   def render_updated_at?
-    TranzitoUtils::Normalize.boolean(params[:search_updated_at])
+    Binxtils::InputNormalizer.boolean(params[:search_updated_at])
   end
 
   def sortable_params
@@ -153,7 +172,7 @@ module ApplicationHelper
     }, " ")
   end
 
-  # Overrides tranzito_utils, strips out blank lines
+  # Strips out blank lines
   def pretty_print_json(data)
     require "coderay"
     CodeRay.scan(JSON.pretty_generate(data), :json).div.gsub(/\s*\n\n\s*/, "").html_safe

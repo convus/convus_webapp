@@ -1,14 +1,12 @@
 class Admin::PublishersController < Admin::BaseController
-  include TranzitoUtils::SortableTable
+  include Binxtils::SortableTable
 
-  before_action :set_period, only: [:index]
   before_action :find_publisher, except: [:index]
 
   def index
-    page = params[:page] || 1
     @per_page = params[:per_page] || 500
-    @publishers = searched_publishers.reorder("publishers.#{sort_column} #{sort_direction}")
-      .includes(:citations).page(page).per(@per_page)
+    @pagy, @publishers = pagy(searched_publishers.reorder("publishers.#{sort_column} #{sort_direction}")
+      .includes(:citations), limit: @per_page)
   end
 
   def show
@@ -39,7 +37,7 @@ class Admin::PublishersController < Admin::BaseController
     publishers = Publisher
 
     if params[:search_remove_query].present?
-      @remove_query = TranzitoUtils::Normalize.boolean(params[:search_remove_query])
+      @remove_query = Binxtils::InputNormalizer.boolean(params[:search_remove_query])
       publishers = @remove_query ? publishers.remove_query : publishers.keep_query
     end
 

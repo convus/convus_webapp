@@ -1,14 +1,12 @@
 class Admin::CitationsController < Admin::BaseController
-  include TranzitoUtils::SortableTable
+  include Binxtils::SortableTable
 
-  before_action :set_period, only: [:index]
   before_action :find_citation, except: [:index]
 
   def index
-    page = params[:page] || 1
     @per_page = params[:per_page] || 50
-    @citations = searched_citations.reorder("citations.#{sort_column} #{sort_direction}")
-      .includes(:ratings, :topics).page(page).per(@per_page)
+    @pagy, @citations = pagy(searched_citations.reorder("citations.#{sort_column} #{sort_direction}")
+      .includes(:ratings, :topics), limit: @per_page)
   end
 
   def show
@@ -17,11 +15,11 @@ class Admin::CitationsController < Admin::BaseController
   end
 
   def edit
-    @edit_published_date = TranzitoUtils::Normalize.boolean(params[:edit_published_date])
+    @edit_published_date = Binxtils::InputNormalizer.boolean(params[:edit_published_date])
   end
 
   def update
-    if TranzitoUtils::Normalize.boolean(params[:update_citation_metadata_from_ratings])
+    if Binxtils::InputNormalizer.boolean(params[:update_citation_metadata_from_ratings])
       # Perform inline, so you see if there is an error
       UpdateCitationMetadataFromRatingsJob.new.perform(@citation.id)
       flash[:success] = "Rating metadata reprocessed"

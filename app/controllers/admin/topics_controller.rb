@@ -1,14 +1,12 @@
 class Admin::TopicsController < Admin::BaseController
-  include TranzitoUtils::SortableTable
+  include Binxtils::SortableTable
 
-  before_action :set_period, only: [:index]
   before_action :find_topic, except: [:index, :new, :create]
 
   def index
-    page = params[:page] || 1
     @per_page = params[:per_page] || 200
-    @topics = searched_topics.reorder("topics.#{sort_column} #{sort_direction}")
-      .includes(:rating_topics).page(page).per(@per_page)
+    @pagy, @topics = pagy(searched_topics.reorder("topics.#{sort_column} #{sort_direction}")
+      .includes(:rating_topics), limit: @per_page)
   end
 
   def show

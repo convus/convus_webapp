@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
-  include TranzitoUtils::SetPeriod
-  include RenderEsbuildErrors
+  include Pagy::Method
+  include Binxtils::SetPeriod
+
+  self.default_earliest_time = Time.at(1672560000).freeze # 2023-01-01
 
   before_action do
     if Rails.env.production? && current_user.present?
@@ -12,8 +14,7 @@ class ApplicationController < ActionController::Base
   before_action :enable_rack_profiler
 
   helper_method :display_dev_info?, :user_subject, :user_root_url, :controller_namespace,
-    :current_topics, :primary_topic_review, :default_direction, :default_column,
-    :ratings_landing_url, :viewing_current_user?
+    :current_topics, :primary_topic_review, :ratings_landing_url, :viewing_current_user?
 
   def append_info_to_payload(payload)
     super
@@ -27,6 +28,10 @@ class ApplicationController < ActionController::Base
   def enable_rack_profiler
     return false if !current_user&.developer? || Rails.env.test?
     Rack::MiniProfiler.authorize_request
+  end
+
+  def controller_namespace
+    @controller_namespace ||= (self.class.module_parent.name != "Object") ? self.class.module_parent.name.downcase : nil
   end
 
   def display_dev_info?
@@ -85,14 +90,6 @@ class ApplicationController < ActionController::Base
     after_sign_in_path_for(resource) || user_root_url
   end
 
-  def default_direction
-    "desc"
-  end
-
-  def default_column
-    sortable_columns&.first
-  end
-
   protected
 
   def configure_permitted_parameters
@@ -139,9 +136,5 @@ class ApplicationController < ActionController::Base
   def permitted_user_redirect_path(path = nil)
     return nil if path.blank? || path.start_with?("/")
     path
-  end
-
-  def controller_namespace
-    @controller_namespace ||= (self.class.module_parent.name != "Object") ? self.class.module_parent.name.downcase : nil
   end
 end
