@@ -2,7 +2,7 @@
 <div class="large-width-container mb-5">
   <h1 class="standard-top-offset mb-4">Admin Rating</h1>
   <div class="mb-4"><%# must be div, escapes p tag %>
-    <%= button_to "Delete rating", {controller: "ratings", action: "destroy", id: @rating.id}, method: :delete, class: "gray-link"  %>
+    <%= button_to "Delete rating", {controller: "ratings", action: "destroy", id: @rating.id}, method: :delete, class: "gray-link" %>
   </div>
 </div>
 
@@ -128,7 +128,7 @@
     <% end %>
   </h3>
   <% if @rating.citation_text_best.present? %>
-    <textarea class="form-control text-sm" rows=3><%= @rating.citation_text_best %></textarea>
+    <textarea class="form-control text-sm" rows="3"><%= @rating.citation_text_best %></textarea>
   <% else %>
     No citation text
   <% end %>

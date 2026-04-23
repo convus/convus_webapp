@@ -2,11 +2,19 @@
   "name": "convus_reviews",
   "private": "true",
   "devDependencies": {
+    "@herb-tools/formatter": "*",
+    "@herb-tools/linter": "*",
     "standard": "*"
   },
   "scripts": {
     "js:lint": "standard --fix",
-    "js:lint_check": "standard"
+    "js:lint_check": "standard",
+    "html:lint": "herb-lint --fix --format=simple",
+    "html:lint_check": "herb-lint --format=simple --github",
+    "html:format": "herb-format .",
+    "html:format_check": "herb-format --check .",
+    "lint": "npm run js:lint && npm run html:lint && npm run html:format",
+    "lint_check": "npm run js:lint_check && npm run html:lint_check && npm run html:format_check"
   },
   "standard": {
     "globals": [

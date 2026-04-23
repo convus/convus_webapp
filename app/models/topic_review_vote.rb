@@ -3,17 +3,17 @@ class TopicReviewVote < ApplicationRecord
 
   RENDERED_OFFSET = 50
 
+  enum :rank, RANK_ENUM
   belongs_to :topic_review
   belongs_to :user
   belongs_to :rating
   belongs_to :topic_review_citation
 
-  enum :rank, RANK_ENUM
-
   validates_presence_of :rating_id
   validates_presence_of :topic_review_id
   validates_uniqueness_of :rating_id, scope: [:topic_review_id]
 
+  attr_accessor :skip_vote_score_calculated
   before_validation :set_calculated_attributes
 
   scope :manual_score, -> { where(manual_score: true) }
@@ -21,8 +21,6 @@ class TopicReviewVote < ApplicationRecord
   scope :vote_ordered, -> { order(vote_score: :desc) }
   scope :rating_ordered, -> { order(:rating_at) }
   scope :recommended, -> { where(rank: recommended_ranks) }
-
-  attr_accessor :skip_vote_score_calculated
 
   def self.recommended_ranks
     %w[constructive required].freeze

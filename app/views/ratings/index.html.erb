@@ -30,7 +30,7 @@
     </div>
   <% else %>
     <h1>
-      <%if viewing_display_name == "following" %>
+      <% if viewing_display_name == "following" %>
         Ratings by people you <%= link_to "follow", following_u_path(id: current_user.to_param) %>
       <% else %>
         Ratings

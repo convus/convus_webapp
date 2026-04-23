@@ -16,12 +16,17 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Lint code for consistent style
-        run: bin/lint --no-fix
+      - name: Lint Ruby for consistent style
+        run: bundle exec standardrb --no-fix
+        if: success() || failure()
+
+      - name: Lint Ruby with custom rules
+        run: bundle exec rubocop -c .rubocop_custom.yml
+        if: success() || failure()
 
       - name: Scan for common Rails security vulnerabilities using static analysis
-        if: success() || failure()
         run: bin/brakeman
+        if: success() || failure()
 
   # scan_js:
   #   runs-on: ubuntu-latest

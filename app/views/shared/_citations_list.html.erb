@@ -12,7 +12,7 @@
 <% wrapper_class += " ranking-list" if render_ranking %>
 
 <% ranking_modifier ||= 0 %>
-<% ranking_count = render_ranking && objects.count  %>
+<% ranking_count = render_ranking && objects.count %>
 
 <div class="<%= wrapper_class %>">
   <% unless skip_title %>

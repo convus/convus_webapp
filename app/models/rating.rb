@@ -28,6 +28,8 @@ class Rating < ApplicationRecord
   validates_uniqueness_of :citation_id, scope: [:user_id]
   validate :not_error_url
 
+  attr_accessor :skip_rating_created_event, :skip_topics_job
+  delegate :publisher, to: :citation, allow_nil: true
   before_validation :set_calculated_attributes
   before_save :associate_citation
 
@@ -45,10 +47,6 @@ class Rating < ApplicationRecord
   scope :metadata_blank, -> { where("length(citation_metadata::text) <= 2").or(where(citation_metadata: nil)) }
   scope :metadata_processed, -> { where("citation_metadata ->> '#{ATTRS_KEY}' IS NOT NULL") }
   scope :metadata_unprocessed, -> { metadata_present.where("citation_metadata ->> '#{ATTRS_KEY}' IS NULL") }
-
-  attr_accessor :skip_rating_created_event, :skip_topics_job
-
-  delegate :publisher, to: :citation, allow_nil: true
 
   class << self
     def find_for_url(submitted_url, user_id)

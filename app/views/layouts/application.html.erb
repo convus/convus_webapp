@@ -2,25 +2,25 @@
 <html>
   <head>
     <% if @render_api_token %><%# put at the top so it is loaded absolutely as quickly as possible %>
-      <meta name="ext-token" content="<%= current_user.api_token %>"/>
-      <meta name="ext-username" content="<%= current_user.username %>"/>
+      <meta name="ext-token" content="<%= current_user.api_token %>">
+      <meta name="ext-username" content="<%= current_user.username %>">
     <% end %>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
-    <meta content="width=device-width,initial-scale=1" name="viewport"/>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="width=device-width,initial-scale=1" name="viewport">
     <title><%= page_title %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <% if page_description.present? %>
-      <meta name="description" content="<%= page_description %>" />
+      <meta name="description" content="<%= page_description %>">
     <% end %>
     <% if Rails.env.development? %>
       <link href="/favicon-dev.png" rel="icon" sizes="192x192">
       <%= hotwire_livereload_tags %>
     <% else %>
       <link href="/favicon.ico" rel="icon" sizes="192x192">
-      <link rel="apple-touch-icon-precomposed apple-touch-icon" href="/apple-touch-icon.png" />
+      <link rel="apple-touch-icon-precomposed apple-touch-icon" href="/apple-touch-icon.png">
     <% end %>
   </head>
   <body class="convus-body"> <%# class added to override external styles %>
@@ -57,7 +57,7 @@
               <% user_active = controller_name == "ratings" && user_subject&.id == current_user.id %>
               <%= link_to current_user.username.truncate(40), ratings_path(user: current_user.to_param), title: current_user.username, class: "main-nav-link #{user_active ? 'active' : ''}" %>
               <span class="text-gray-400">|</span>
-              <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "main-nav-link"  %>
+              <%= button_to "logout", destroy_user_session_path, method: "delete", data: {turbo: false}, class: "main-nav-link" %>
             <% else %>
               <%= link_to "login", new_user_session_path, class: "main-nav-link" %>
             <% end %>

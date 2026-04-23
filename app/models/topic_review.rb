@@ -4,15 +4,15 @@ class TopicReview < ApplicationRecord
   STATUS_ENUM = {pending: 0, active: 1, ended: 2, hidden: 3}.freeze
   STANDARD_PERIOD = 4.days
 
+  enum :status, STATUS_ENUM
   belongs_to :topic
 
   has_many :topic_review_votes
   has_many :topic_review_citations
 
-  enum :status, STATUS_ENUM
-
   validates_presence_of :display_name
 
+  attr_accessor :timezone
   before_validation :set_calculated_attributes
   after_commit :update_associations
 
@@ -21,8 +21,6 @@ class TopicReview < ApplicationRecord
   scope :pending_but_started, -> { pending.where("start_at < ?", Time.current) }
   scope :with_end_date, -> { where.not(end_at: nil) }
   scope :incorrect_status, -> { active_but_ended.or(pending_but_started) }
-
-  attr_accessor :timezone
 
   # Make it so that there is a single review, for MVP convenience
   def self.primary
