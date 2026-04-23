@@ -6,6 +6,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :trackable,
     :recoverable, :rememberable, :validatable
 
+  enum :role, ROLE_ENUM
   has_many :ratings
   has_many :citations, through: :ratings
   has_many :events
@@ -21,7 +22,6 @@ class User < ApplicationRecord
   has_many :followers_approved, through: :user_followers_approved, source: :user
   has_many :topic_review_votes
 
-  enum :role, ROLE_ENUM
 
   validates_uniqueness_of :username, case_sensitive: false
   validates_with UsernameValidator

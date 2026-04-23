@@ -17,12 +17,12 @@ class Citation < ApplicationRecord
 
   validates_presence_of :url
 
+  attr_accessor :timezone, :manually_updating
+  delegate :remove_query, to: :publisher, allow_nil: true
   before_validation :set_calculated_attributes
   before_save :set_manually_updated_attributes
 
-  delegate :remove_query, to: :publisher, allow_nil: true
 
-  attr_accessor :timezone, :manually_updating
 
   class << self
     def find_for_url(str, url: nil, url_components: nil)

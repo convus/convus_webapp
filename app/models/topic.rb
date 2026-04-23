@@ -22,6 +22,7 @@ class Topic < ApplicationRecord
   validates :name, format: {without: /,/, message: "can't contain commas"}
   validate :slug_uniq_if_name_uniq
 
+  attr_accessor :skip_update_associations, :skip_distant_children
   before_validation :set_calculated_attributes
   after_commit :update_associations
 
@@ -29,7 +30,6 @@ class Topic < ApplicationRecord
   scope :active, -> { where(orphaned: false) }
   scope :orphaned, -> { where(orphaned: true) }
 
-  attr_accessor :skip_update_associations, :skip_distant_children
 
   class << self
     def without_parent

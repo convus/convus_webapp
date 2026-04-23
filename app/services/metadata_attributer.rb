@@ -9,6 +9,11 @@ class MetadataAttributer
   PROPRIETARY_TAGS = ["sailthru.", "parsely-", "dc."].freeze
 
   class << self
+    PROPRIETARY_RENAMES = {
+      "dc." => {"author" => "creator", "published_time" => "date"},
+      "sailthru." => {"published_time" => "date"},
+      "parsely-" => {"published_time" => "pub-date"}
+    }.freeze
     def from_rating(rating, skip_clean_attrs: false)
       rating_metadata = rating.citation_metadata_raw
       return {} if rating_metadata.blank?
@@ -192,11 +197,6 @@ class MetadataAttributer
       items.blank? ? nil : items
     end
 
-    PROPRIETARY_RENAMES = {
-      "dc." => {"author" => "creator", "published_time" => "date"},
-      "sailthru." => {"published_time" => "date"},
-      "parsely-" => {"published_time" => "pub-date"}
-    }.freeze
 
     def proprietary_property_content(rating_metadata, prop_or_name)
       PROPRIETARY_TAGS.map do |proprietary|
