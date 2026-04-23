@@ -573,7 +573,6 @@ DEPENDENCIES
   hamlit
   honeybadger
   hotwire-livereload
-  htmlbeautifier
   importmap-rails
   letter_opener
   listen (>= 3.0.5, < 3.2)

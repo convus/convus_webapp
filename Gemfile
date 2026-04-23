@@ -69,7 +69,6 @@ group :development, :test do
   gem "factory_bot_rails" # mocking/stubbing
   gem "rubocop"
   gem "standard" # Ruby linter
-  gem "htmlbeautifier" # html linting
   gem "turbo_tests" # Parallel test execution
 end
 
