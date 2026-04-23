@@ -78,7 +78,7 @@ end
 
 group :development do
   # gem "web-console", ">= 3.3.0" # Access an interactive console on exception pages or by calling "console" anywhere in the code - commented out because annoying
-  gem "listen", ">= 3.0.5", "< 3.2"
+  gem "listen", ">= 3.0.5", "< 3.11"
   gem "rerun" # For restarting sidekiq on file changes
   gem "letter_opener" # For displaying emails in development
 end
