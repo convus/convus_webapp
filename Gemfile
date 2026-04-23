@@ -16,7 +16,7 @@ gem "redis" # Redis itself
 gem "observer" # Required for Ruby 3.4+ (removed from stdlib)
 gem "csv" # Required for Ruby 3.4+ (removed from stdlib)
 gem "sidekiq" # Background job processing (with redis)
-gem "connection_pool", "< 3" # temporary - see github.com/mperham/connection_pool/issues/212
+gem "connection_pool", "< 4" # temporary - see github.com/mperham/connection_pool/issues/212
 gem "sinatra" # Used for sidekiq web
 gem "sidekiq-failures" # Show sidekiq failures
 gem "sidekiq-logstash" # Better sidekiq logging
