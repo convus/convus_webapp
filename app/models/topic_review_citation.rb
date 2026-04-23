@@ -6,7 +6,6 @@ class TopicReviewCitation < ApplicationRecord
 
   has_many :topic_review_votes
 
-
   validates_presence_of :citation_id
   validates_presence_of :topic_review_id
   validates_uniqueness_of :citation_id, scope: [:topic_review_id]

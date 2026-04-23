@@ -22,7 +22,6 @@ class User < ApplicationRecord
   has_many :followers_approved, through: :user_followers_approved, source: :user
   has_many :topic_review_votes
 
-
   validates_uniqueness_of :username, case_sensitive: false
   validates_with UsernameValidator
 

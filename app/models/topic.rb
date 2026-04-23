@@ -30,7 +30,6 @@ class Topic < ApplicationRecord
   scope :active, -> { where(orphaned: false) }
   scope :orphaned, -> { where(orphaned: true) }
 
-
   class << self
     def without_parent
       select { |t| t.parents.limit(1).none? }

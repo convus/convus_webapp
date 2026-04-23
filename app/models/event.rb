@@ -15,7 +15,6 @@ class Event < ApplicationRecord
 
   has_many :kudos_events, dependent: :delete_all
 
-
   before_validation :set_calculated_attributes
 
   def total_kudos

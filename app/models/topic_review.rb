@@ -10,7 +10,6 @@ class TopicReview < ApplicationRecord
   has_many :topic_review_votes
   has_many :topic_review_citations
 
-
   validates_presence_of :display_name
 
   attr_accessor :timezone
@@ -22,7 +21,6 @@ class TopicReview < ApplicationRecord
   scope :pending_but_started, -> { pending.where("start_at < ?", Time.current) }
   scope :with_end_date, -> { where.not(end_at: nil) }
   scope :incorrect_status, -> { active_but_ended.or(pending_but_started) }
-
 
   # Make it so that there is a single review, for MVP convenience
   def self.primary

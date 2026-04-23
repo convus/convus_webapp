@@ -48,8 +48,6 @@ class Rating < ApplicationRecord
   scope :metadata_processed, -> { where("citation_metadata ->> '#{ATTRS_KEY}' IS NOT NULL") }
   scope :metadata_unprocessed, -> { metadata_present.where("citation_metadata ->> '#{ATTRS_KEY}' IS NULL") }
 
-
-
   class << self
     def find_for_url(submitted_url, user_id)
       citation = Citation.find_for_url(submitted_url)

@@ -197,7 +197,6 @@ class MetadataAttributer
       items.blank? ? nil : items
     end
 
-
     def proprietary_property_content(rating_metadata, prop_or_name)
       PROPRIETARY_TAGS.map do |proprietary|
         rename = PROPRIETARY_RENAMES.dig(proprietary, prop_or_name).presence

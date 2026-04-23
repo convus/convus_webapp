@@ -22,8 +22,6 @@ class Citation < ApplicationRecord
   before_validation :set_calculated_attributes
   before_save :set_manually_updated_attributes
 
-
-
   class << self
     def find_for_url(str, url: nil, url_components: nil)
       url ||= normalized_url(str)

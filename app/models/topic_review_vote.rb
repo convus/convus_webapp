@@ -9,7 +9,6 @@ class TopicReviewVote < ApplicationRecord
   belongs_to :rating
   belongs_to :topic_review_citation
 
-
   validates_presence_of :rating_id
   validates_presence_of :topic_review_id
   validates_uniqueness_of :rating_id, scope: [:topic_review_id]
@@ -22,7 +21,6 @@ class TopicReviewVote < ApplicationRecord
   scope :vote_ordered, -> { order(vote_score: :desc) }
   scope :rating_ordered, -> { order(:rating_at) }
   scope :recommended, -> { where(rank: recommended_ranks) }
-
 
   def self.recommended_ranks
     %w[constructive required].freeze
