@@ -1,0 +1,7 @@
+#!/bin/sh
+
+bundle exec honeybadger deploy \
+  --repository https://github.com/convus/convus_webapp \
+  --revision $KAMAL_VERSION \
+  --environment production \
+  --user $KAMAL_PERFORMER

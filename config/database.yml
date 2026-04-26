@@ -26,6 +26,7 @@ test:
 
 production:
   <<: *default
-  database: convus_reviews_production
-  username: convus_reviews
-  password: <%= ENV["CONVUS_REVIEWS_DATABASE_PASSWORD"] %>
+  host: <%= ENV.fetch("POSTGRESQL_ADDRESS", "localhost") %>
+  username: <%= ENV.fetch("POSTGRESQL_USERNAME", "convus_webapp") %>
+  password: <%= ENV["POSTGRES_PASSWORD"] %>
+  database: convus_webapp_production

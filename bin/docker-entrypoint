@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+# If running the rails server, provision the app's database user and run migrations
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  # Create the app's Postgres user and database if they don't exist
+  if [ -n "$POSTGRES_PASSWORD" ] && [ -n "$POSTGRESQL_ADDRESS" ]; then
+    echo "Ensuring database user and database exist..."
+    PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRESQL_ADDRESS" -U postgres -tc \
+      "SELECT 1 FROM pg_roles WHERE rolname='$POSTGRESQL_USERNAME'" | grep -q 1 || \
+      PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRESQL_ADDRESS" -U postgres -c \
+      "CREATE ROLE $POSTGRESQL_USERNAME WITH LOGIN PASSWORD '$POSTGRES_PASSWORD' CREATEDB;"
+  fi
+
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"

@@ -43,3 +43,7 @@ yarn-error.log
 .env.*
 
 .claude/*
+
+# Ignore Kamal secrets.
+/.kamal/secrets*
+!/.kamal/secrets-ci

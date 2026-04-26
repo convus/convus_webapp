@@ -2,6 +2,15 @@ name: CI
 
 on:
   push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   lint_and_scan_ruby:
@@ -115,3 +124,61 @@ jobs:
                             --order random \
                             --format documentation \
                             --format RSpec::Github::Formatter
+
+  deploy:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    needs: [lint_and_scan_ruby, test]
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/convus/convus_webapp:${{ github.sha }}
+            ghcr.io/convus/convus_webapp:latest
+          labels: service=convus_webapp
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy with Kamal
+        run: |
+          cp .kamal/secrets-ci .kamal/secrets
+          bundle exec kamal deploy --skip-push
+        env:
+          KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          HONEYBADGER_API_KEY: ${{ secrets.HONEYBADGER_API_KEY }}
+          DEVISE_SECRET_KEY: ${{ secrets.DEVISE_SECRET_KEY }}
+          DEVISE_PEPPER: ${{ secrets.DEVISE_PEPPER }}
