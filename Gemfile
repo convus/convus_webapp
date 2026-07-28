@@ -6,6 +6,8 @@ ruby "4.0.6"
 gem "rails"
 
 gem "puma" # Use Puma as the app server
+gem "thruster", require: false # Asset compression and caching for Puma
+gem "kamal", require: false # Deploy with Kamal
 gem "rack-cors" # Make cors requests
 
 # database stuff
