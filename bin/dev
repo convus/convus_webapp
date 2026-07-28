@@ -16,6 +16,11 @@ redis-server > log/redis.log &
 
 eval "$(ruby bin/env --export)"
 
+# Let the debug gem allow remote connections,
+# but avoid loading until `debugger` is called
+export RUBY_DEBUG_OPEN="true"
+export RUBY_DEBUG_LAZY="true"
+
 # If there is a development specific environment file
 if test -f .env.development; then
   bundle exec foreman start -f Procfile.dev --env .env.development

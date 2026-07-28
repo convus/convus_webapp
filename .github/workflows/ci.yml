@@ -75,7 +75,6 @@ jobs:
       PGPORT: 5432
       PGUSER: postgres
       PGPASSWORD: password
-      SKIP_PARALLEL_MIGRATIONS: true
       TZ: "America/Los_Angeles"
       COVERAGE: false # additional configuration is needed for parallelized tests
       RETRY_FLAKY: true

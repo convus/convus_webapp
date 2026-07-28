@@ -3,8 +3,8 @@ require "rails_helper"
 base_url = "/admin/topic_reviews"
 RSpec.describe base_url, type: :request do
   let(:topic_review) { FactoryBot.create(:topic_review) }
-  let(:start_at) { (Time.current - 1.day) }
-  let(:end_at) { (Time.current + 1.day) }
+  let(:start_at) { Time.current - 1.day }
+  let(:end_at) { Time.current + 1.day }
   let(:valid_params) do
     {
       topic_name: "Example topic",
