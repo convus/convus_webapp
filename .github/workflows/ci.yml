@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -33,7 +33,7 @@ jobs:
 
   #   steps:
   #     - name: Checkout code
-  #       uses: actions/checkout@v6
+  #       uses: actions/checkout@v7
 
   #     - name: Set up Ruby
   #       uses: ruby/setup-ruby@v1
@@ -88,7 +88,7 @@ jobs:
           packages: libvips postgresql-client
           version: 1.0
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       # Install Ruby dependencies
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
