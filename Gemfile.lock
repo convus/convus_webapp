@@ -122,6 +122,9 @@ GEM
       ssrf_filter (~> 1.5)
     csv (3.3.6)
     date (3.5.1)
+    debug (1.11.1)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     devise (5.0.4)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -554,6 +557,7 @@ DEPENDENCIES
   coderay
   commonmarker
   csv
+  debug
   devise
   dotenv-rails
   factory_bot_rails

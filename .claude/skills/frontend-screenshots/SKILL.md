@@ -12,7 +12,7 @@ description: >-
   / feature flag / hard-to-reach state, screenshot its Lookbook preview URL
   instead of a full page. Inputs: `(url-path, page-slug)` pairs, optionally with
   per-URL interaction steps. Output: local PNG paths.
-allowed-tools: Bash, Read
+allowed-tools: Bash, Read, ToolSearch, mcp__playwright__*
 ---
 
 # Frontend screenshots

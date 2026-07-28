@@ -3,7 +3,7 @@
 
 # Clean up workspace-specific resources for this checkout: stops bin/dev,
 # drops postgres databases whose names end in `_<workspace_id>` (optionally
-# followed by `_replica` and/or a single digit 1-8 for parallel test DBs),
+# followed by `_replica` and/or a TEST_ENV_NUMBER for parallel test DBs),
 # soft-deletes the row in dev_workspaces.workspace_ids (so the ID can be
 # reused after DELETED_REUSE_DELAY in bin/workspace_setup), and deletes
 # .workspace_id.
@@ -61,7 +61,7 @@ if listener_pid
 end
 
 # Discover postgres databases tied to this workspace_id.
-databases = psql("postgres", "SELECT datname FROM pg_database WHERE datname ~ '_#{workspace_id}(_replica)?[1-8]?$' ORDER BY datname")
+databases = psql("postgres", "SELECT datname FROM pg_database WHERE datname ~ '_#{workspace_id}(_replica)?[0-9]*$' ORDER BY datname")
   .split("\n").map(&:strip).reject(&:empty?)
 
 if databases.empty?

@@ -77,6 +77,7 @@ end
 
 group :development do
   # gem "web-console", ">= 3.3.0" # Access an interactive console on exception pages or by calling "console" anywhere in the code - commented out because annoying
+  gem "debug", require: "debug/prelude" # For `debugger` - prelude defines it without loading the session
   gem "listen"
   gem "rerun" # For restarting sidekiq on file changes
   gem "letter_opener" # For displaying emails in development

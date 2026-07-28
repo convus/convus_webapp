@@ -23,7 +23,7 @@ Ruby is formatted with the standard gem. Run `bin/lint` to automatically format 
 - Don't monkeypatch
 - make methods private if possible
 - Omit named arguments' values from hashes (ie prefer `{x:, y:}` instead of `{x: x, y: y}`)
-- Prefer less code, by character count (excluding whitespace and comments)
+- Prefer less code, by character count (excluding whitespace and comments). Use `bin/char_count {FILE OR FOLDER}` to get the non-whitespace character count
 
 ## Testing
 
