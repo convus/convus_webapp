@@ -16,7 +16,6 @@ gem "redis" # Redis itself
 gem "observer" # Required for Ruby 3.4+ (removed from stdlib)
 gem "csv" # Required for Ruby 3.4+ (removed from stdlib)
 gem "sidekiq" # Background job processing (with redis)
-gem "connection_pool", "< 3" # temporary - see github.com/mperham/connection_pool/issues/212
 gem "sinatra" # Used for sidekiq web
 gem "sidekiq-failures" # Show sidekiq failures
 gem "sidekiq-logstash" # Better sidekiq logging
@@ -78,7 +77,7 @@ end
 
 group :development do
   # gem "web-console", ">= 3.3.0" # Access an interactive console on exception pages or by calling "console" anywhere in the code - commented out because annoying
-  gem "listen", ">= 3.0.5", "< 3.2"
+  gem "listen"
   gem "rerun" # For restarting sidekiq on file changes
   gem "letter_opener" # For displaying emails in development
 end
