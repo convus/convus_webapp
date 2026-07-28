@@ -12,8 +12,8 @@ if File.exist?(workspace_file)
   ENV["DEV_PORT"] ||= workspace_int
 end
 
-# Falls back to Conductor's port for workspaces predating bin/workspace_setup
-ENV["DEV_PORT"] ||= ENV.fetch("CONDUCTOR_PORT", "3009")
+# The root checkout has no .workspace_id and uses the default port
+ENV["DEV_PORT"] ||= "3009"
 ENV["BASE_URL"] ||= "http://localhost:#{ENV["DEV_PORT"]}"
 # Give each workspace its own redis database so sidekiq and cable don't collide
 ENV["REDIS_URL"] ||= "redis://localhost:6379/#{(ENV["DEV_PORT"].to_i - 1) % 16}"

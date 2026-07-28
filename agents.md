@@ -8,7 +8,7 @@ Start the dev server with `bin/dev`
 
 Run `eval "$(ruby bin/env --export)"` once so `$WORKSPACE_ID`, `$DEV_PORT`, `$BASE_URL`, and `$REDIS_URL` are set. `config/boot.rb` loads `bin/env` for every Ruby entry point, so those are already set inside any Rails process; only export them into the shell when the shell itself reads them (e.g. `curl "$BASE_URL/..."`).
 
-`bin/env` reads the workspace ID from `.workspace_id` (written by `bin/workspace_setup`) and uses it as `$DEV_PORT`, so each checkout gets its own port, its own postgres databases (`convus_reviews_{development,test}_<id>`), and its own redis database. Without a `.workspace_id` it falls back to `$CONDUCTOR_PORT`, then `3009`, and the databases go un-suffixed.
+`bin/env` reads the workspace ID from `.workspace_id` (written by `bin/workspace_setup`) and uses it as `$DEV_PORT`, so each checkout gets its own port, its own postgres databases (`convus_reviews_{development,test}_<id>`), and its own redis database. Without a `.workspace_id` — the root checkout — it falls back to port `3009` and the databases go un-suffixed.
 
 Check whether the dev server is up: `curl -fs "$BASE_URL/" >/dev/null`. If it isn't, **stop and ask the user to start it**.
 

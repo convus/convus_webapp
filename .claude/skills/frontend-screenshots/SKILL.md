@@ -26,7 +26,7 @@ Drive Playwright MCP to capture viewport screenshots of pages served by `bin/dev
 ## Preflight
 
 - `eval "$(ruby bin/env --export)"` so `$WORKSPACE_ID`, `$DEV_PORT`, `$BASE_URL`, and `$REDIS_URL` are set. **Each Bash tool call is a fresh shell, so re-export in any shell that reads `$BASE_URL`** — `eval "$(ruby bin/env --export)" && curl …` chained in one call is the safe pattern.
-- `curl -fs "$BASE_URL/" >/dev/null` — if it isn't up, **stop and ask the user to start it** (`bin/dev`). `bin/env` resolves `$DEV_PORT` from the workspace ID in `.workspace_id` (falling back to `$CONDUCTOR_PORT`, then `3009`), so the `bin/dev` the user starts binds to the same port and databases this skill expects.
+- `curl -fs "$BASE_URL/" >/dev/null` — if it isn't up, **stop and ask the user to start it** (`bin/dev`). `bin/env` resolves `$DEV_PORT` from the workspace ID in `.workspace_id` (falling back to `3009` in the root checkout), so the `bin/dev` the user starts binds to the same port and databases this skill expects.
 - If `bin/dev` exits immediately with `Could not find 'bundler' (X.X.X)` or similar, the shell resolved system Ruby 2.6 instead of mise-installed 4.0.6 — see the [`sandbox-test-setup`](../sandbox-test-setup/SKILL.md) skill's local-macOS section for the one-line PATH fix; don't reinstall.
 - If `mcp__playwright__*` tools aren't registered, the project's `.mcp.json` defines the `playwright` server — approve it on project entry (Claude Code prompts) and restart the session, or `/mcp` → **playwright** → reconnect. A server added mid-session doesn't load until restart.
 
