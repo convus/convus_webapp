@@ -53,9 +53,17 @@ bundle exec rspec spec/path/to/file_spec.rb
 ```
 
 (No need to `eval "$(ruby bin/env --export)"` first — `config/boot.rb` loads
-`bin/env` for every Ruby entry point, so `DEV_PORT` / `BASE_URL` are
-already set inside the process. Only export them into the shell when
-the shell itself reads them, e.g. `curl "$BASE_URL/..."`.)
+`bin/env` for every Ruby entry point, so `WORKSPACE_ID` / `DEV_PORT` /
+`BASE_URL` / `REDIS_URL` are already set inside the process. Only export
+them into the shell when the shell itself reads them, e.g.
+`curl "$BASE_URL/..."`.)
+
+If this checkout has a `.workspace_id`, its databases are suffixed with that
+ID (`convus_reviews_test_<id>`). A workspace that has never run
+`bin/workspace_setup` has no `.workspace_id` and falls back to the
+un-suffixed `convus_reviews_test`, **shared with the root checkout** — if
+specs here are clobbering another checkout's data, that's why. Run
+`bin/workspace_setup` to get an isolated database.
 
 If `rails_helper` aborts complaining about a pending migration, run
 `bundle exec rails db:create db:migrate` first
@@ -143,6 +151,12 @@ Start postgres and redis once per session (redis logs a benign ulimit
 warning). Set the `postgres` superuser's password + create the test DB
 once per machine. `CI=1` makes `database.yml` use the postgres/password
 creds at 127.0.0.1. This app is single-database (no analytics DB).
+
+The sandbox is a fresh checkout with no `.workspace_id`, so `WORKSPACE_ID` is
+unset and the database name is the un-suffixed `convus_reviews_test` below.
+Don't run `bin/workspace_setup` here — workspace IDs exist to keep concurrent
+local checkouts apart, which doesn't apply in a throwaway sandbox, and it
+would only add a suffix the commands below don't expect.
 
 ```bash
 service postgresql start

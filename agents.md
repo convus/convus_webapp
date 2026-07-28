@@ -6,7 +6,9 @@ ConvusRevies is a Rails webapp
 
 Start the dev server with `bin/dev`
 
-Run `eval "$(ruby bin/env --export)"` once so `$DEV_PORT` and `$BASE_URL` are set — `bin/env` reads `$CONDUCTOR_PORT` and falls back to `3009`, so the dev server is at `$BASE_URL` ([http://localhost:3009](http://localhost:3009) outside a Conductor workspace). `config/boot.rb` requires `bin/env`, so Ruby entry points already have them; only export into the shell when the shell itself reads them (e.g. `curl "$BASE_URL/..."`).
+Run `eval "$(ruby bin/env --export)"` once so `$WORKSPACE_ID`, `$DEV_PORT`, `$BASE_URL`, and `$REDIS_URL` are set. `config/boot.rb` loads `bin/env` for every Ruby entry point, so those are already set inside any Rails process; only export them into the shell when the shell itself reads them (e.g. `curl "$BASE_URL/..."`).
+
+`bin/env` reads the workspace ID from `.workspace_id` (written by `bin/workspace_setup`) and uses it as `$DEV_PORT`, so each checkout gets its own port, its own postgres databases (`convus_reviews_{development,test}_<id>`), and its own redis database. Without a `.workspace_id` it falls back to `$CONDUCTOR_PORT`, then `3009`, and the databases go un-suffixed.
 
 Check whether the dev server is up: `curl -fs "$BASE_URL/" >/dev/null`. If it isn't, **stop and ask the user to start it**.
 
@@ -49,6 +51,21 @@ The `frontend-conventions` skill covers the `Form::Group`/`Form::Input` componen
 # Initial setup
 
 ```bash
-bundle install # install ruby dependencies
-bundle exec rails db:create db:migrate # create the databases
+bin/workspace_setup # assign a workspace ID, then run bin/setup
 ```
+
+`bin/workspace_setup` claims the next free ID from the local `dev_workspaces`
+postgres database, writes it to `.workspace_id` (gitignored), and execs
+`bin/setup` — which installs gems and JS deps, then creates, loads, migrates,
+and seeds the databases. Pass `--without_seeds` to skip seeding and
+`parallel:prepare`. Conductor runs it automatically on workspace creation
+(`conductor.json`).
+
+Use `bin/setup` on its own only when the checkout already has a `.workspace_id`
+(or is the root checkout, which intentionally has none and uses the un-suffixed
+databases).
+
+`bin/workspace_teardown` reverses it: stops `bin/dev`, drops that workspace's
+databases, releases the ID for reuse, and removes `.workspace_id`. It only
+touches databases whose names end in `_<id>`, so the shared un-suffixed ones are
+never at risk. Conductor runs it on workspace deletion.
