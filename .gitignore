@@ -43,7 +43,11 @@ esbuild_error
 # Ignore special configuration env file
 .env.*
 
-.claude/*
+# Ignore local Claude Code settings
+.claude/settings.local.json
+
+# Workspace ID assigned by bin/workspace_setup
+.workspace_id
 
 # Ignore Kamal secrets.
 /.kamal/secrets*
