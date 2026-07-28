@@ -16,8 +16,8 @@
       <meta name="description" content="<%= page_description %>">
     <% end %>
     <% if Rails.env.development? %>
+      <%# hotwire-livereload v2+ injects its script via Rack middleware — no view helper needed %>
       <link href="/favicon-dev.png" rel="icon" sizes="192x192">
-      <%= hotwire_livereload_tags %>
     <% else %>
       <link href="/favicon.ico" rel="icon" sizes="192x192">
       <link rel="apple-touch-icon-precomposed apple-touch-icon" href="/apple-touch-icon.png">
