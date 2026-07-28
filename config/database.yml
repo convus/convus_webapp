@@ -18,11 +18,11 @@ default_local: &default_local
 
 development:
   <<: *default_local
-  database: convus_reviews_development<%= ENV["CONDUCTOR_WORKSPACE_NAME"] %>
+  database: convus_reviews_development<%= "_#{ENV["WORKSPACE_ID"]}" if ENV["WORKSPACE_ID"] %>
 
 test:
   <<: *default_local
-  database: convus_reviews_test<%= ENV["CONDUCTOR_WORKSPACE_NAME"] %><%= ENV["TEST_ENV_NUMBER"] %>
+  database: convus_reviews_test<%= "_#{ENV["WORKSPACE_ID"]}" if ENV["WORKSPACE_ID"] %><%= ENV["TEST_ENV_NUMBER"] %>
 
 production:
   <<: *default
