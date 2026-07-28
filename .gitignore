@@ -42,4 +42,5 @@ yarn-error.log
 # Ignore special configuration env file
 .env.*
 
-.claude/*
+# Ignore local Claude Code settings
+.claude/settings.local.json
