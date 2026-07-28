@@ -11,7 +11,6 @@ if Rails.env.development? && ENV["PARALLEL_MIGRATIONS"].present?
     puts "Running parallel:migrate for test databases..."
     system("rake parallel:migrate")
     system("rake parallel:prepare")
-    # Postgres 17 pg_dump artifacts are stripped by the db:schema:dump enhancement
   end
 
   Rake::Task["db:drop"].enhance do
