@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "4.0.2"
+ruby "4.0.6"
 
 gem "rails"
 
@@ -16,7 +16,6 @@ gem "redis" # Redis itself
 gem "observer" # Required for Ruby 3.4+ (removed from stdlib)
 gem "csv" # Required for Ruby 3.4+ (removed from stdlib)
 gem "sidekiq" # Background job processing (with redis)
-gem "connection_pool", "< 3" # temporary - see github.com/mperham/connection_pool/issues/212
 gem "sinatra" # Used for sidekiq web
 gem "sidekiq-failures" # Show sidekiq failures
 gem "sidekiq-logstash" # Better sidekiq logging
@@ -78,7 +77,8 @@ end
 
 group :development do
   # gem "web-console", ">= 3.3.0" # Access an interactive console on exception pages or by calling "console" anywhere in the code - commented out because annoying
-  gem "listen", ">= 3.0.5", "< 3.2"
+  gem "debug", require: "debug/prelude" # For `debugger` - prelude defines it without loading the session
+  gem "listen"
   gem "rerun" # For restarting sidekiq on file changes
   gem "letter_opener" # For displaying emails in development
 end
