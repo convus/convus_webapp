@@ -150,6 +150,21 @@ RSpec.describe MetadataJsonLdParser do
         end
       end
     end
+    context "array of @types" do
+      let(:values) do
+        [
+          {"url" => "https://www.example.com", "@type" => ["WebSite"]},
+          {"name" => "Jane Doe", "@type" => ["Person", "Organization"]},
+          {"name" => "John Doe", "@type" => ["Person", "Unknownthing"]}
+        ]
+      end
+      let(:target) { %w[WebSite Organization Person].zip(values).to_h }
+      it "uses the prioritized type" do
+        expect(subject.content_hash(rating_metadata)).to eq target
+
+        expect(subject.parse(rating_metadata)).to eq(values.first.merge("@type" => "WebSite", "publisher" => "Jane Doe"))
+      end
+    end
     context "more dataexample" do
       let(:values) { [{"url" => "https://example.com", "@type" => "NewsArticle", "image" => {"url" => "https://example.com/image.png", "@type" => "ImageObject", "width" => 2057, "height" => 1200}, "author" => ["John Doe"], "creator" => ["John Doe"], "hasPart" => [], "@context" => "http://schema.org", "headline" => "example title", "keywords" => ["topic: Cool Matters"]}, {"@type" => "BreadcrumbList", "@context" => "https://schema.org/"}] }
       let(:target) do
