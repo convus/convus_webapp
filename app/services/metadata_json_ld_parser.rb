@@ -70,7 +70,13 @@ class MetadataJsonLdParser
 
     def type_values(values)
       values = val_or_first_item(values)
-      [val_or_first_item(values["@type"]), values]
+      [type_key(values["@type"]), values]
+    end
+
+    # @type is sometimes an array of types (e.g. ["Person", "Organization"])
+    def type_key(type)
+      return type unless type.is_a?(Array)
+      ((KEY_PRIORITY + PUBLISHER_KEY_PRIORITY) & type).first || type.first
     end
 
     # IDK why they wrap some values in arrays! Just deal with it
